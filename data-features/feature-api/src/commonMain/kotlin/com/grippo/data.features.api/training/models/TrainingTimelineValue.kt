@@ -54,7 +54,7 @@ public sealed interface TrainingTimelineValue {
 
     public data class DateTime(
         val createdAt: LocalDateTime,
-        val duration: Duration,
+        val duration: Duration?,
         val trainingId: String,
         override val position: TrainingTimelinePosition,
         override val key: String,

@@ -18,9 +18,11 @@ public class TrainingGoalDetailsComponent(
     override val viewModel: TrainingGoalDetailsViewModel = componentContext.retainedInstance {
         TrainingGoalDetailsViewModel(
             range = range,
-            trainingFeature = getKoin().get(),
-            goalFollowingUseCase = getKoin().get(),
             analytics = getKoin().get(),
+            trainingFeature = getKoin().get(),
+            goalFeature = getKoin().get(),
+            exerciseExampleFeature = getKoin().get(),
+            goalFollowingUseCase = getKoin().get(),
         )
     }
 

@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
+import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.volume.stubTotal
 import com.grippo.core.state.metrics.volume.stubVolumeSeries
@@ -30,10 +31,11 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.available_training_details_notice
 import com.grippo.design.resources.provider.muscles
-import com.grippo.design.resources.provider.statistics
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.datetime.LocalDateTime
 
@@ -56,7 +58,7 @@ internal fun StatisticsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                text = mode.range.display,
+                text = mode.range.short(),
                 style = AppTokens.typography.b14Med(),
                 color = AppTokens.colors.text.secondary,
                 textAlign = TextAlign.Center
@@ -87,6 +89,20 @@ internal fun StatisticsScreen(
             ),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
         ) {
+            if (state.total != null ||
+                state.exerciseVolume?.entries?.isNotEmpty() == true ||
+                state.muscleLoad != null
+            ) {
+                item(key = "available_details_notice") {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = AppTokens.strings.res(Res.string.available_training_details_notice),
+                        style = AppTokens.typography.b12Med(),
+                        color = AppTokens.colors.text.secondary,
+                    )
+                }
+            }
+
             state.total?.let { metrics ->
                 item(key = "total_chips") {
                     TrainingTotalSection(
@@ -112,7 +128,6 @@ internal fun StatisticsScreen(
                 }
 
             state.muscleLoad
-                ?.takeIf { it.perGroup.entries.isNotEmpty() }
                 ?.let { summary ->
                     item(key = "muscles_spliter") {
                         ContentSpliter(
@@ -212,4 +227,61 @@ private fun StatisticsTrainingsWithoutMuscleLoadPreview() {
             contract = StatisticsContract.Empty,
         )
     }
+}
+
+@AppPreview
+@Composable
+private fun StatisticsUnknownMuscleDataPreview() {
+    PreviewContainer {
+        StatisticsScreen(
+            state = StatisticsState(
+                mode = StatisticsMode.Exercises,
+                total = stubTotal(),
+                exerciseVolume = stubVolumeSeries(),
+                muscleLoad = unknownMuscleLoadPreview(),
+            ),
+            loaders = persistentSetOf(),
+            contract = StatisticsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun StatisticsTrainingsUnknownMuscleDataPreview() {
+    PreviewContainer {
+        StatisticsScreen(
+            state = StatisticsState(
+                mode = StatisticsMode.Trainings(
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 5, 0, 0),
+                        to = LocalDateTime(2026, 10, 11, 23, 59),
+                    ),
+                ),
+                total = stubTotal(),
+                exerciseVolume = stubVolumeSeries(),
+                muscleLoad = unknownMuscleLoadPreview(),
+            ),
+            loaders = persistentSetOf(),
+            contract = StatisticsContract.Empty,
+        )
+    }
+}
+
+private fun unknownMuscleLoadPreview(): MuscleLoadSummaryState {
+    val summary = stubMuscleLoadSummary()
+    val emptyBreakdown = summary.perGroup.copy(entries = persistentListOf())
+
+    return summary.copy(
+        meta = summary.meta.copy(
+            dominantGroup = null,
+            unassignedSets = summary.meta.totalSets,
+        ),
+        perGroup = emptyBreakdown,
+        perMuscle = emptyBreakdown,
+        volumePerGroup = emptyBreakdown,
+        volumePerMuscle = emptyBreakdown,
+        dominance = summary.dominance.copy(top1SharePercent = 0f, top2SharePercent = 0f),
+        groupDominance = summary.groupDominance.copy(top1SharePercent = 0f, top2SharePercent = 0f),
+    )
 }

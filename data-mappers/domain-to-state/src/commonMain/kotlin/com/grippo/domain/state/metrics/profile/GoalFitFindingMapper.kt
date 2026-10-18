@@ -2,6 +2,7 @@ package com.grippo.domain.state.metrics.profile
 
 import com.grippo.core.state.metrics.profile.GoalFitFindingState
 import com.grippo.data.features.api.metrics.profile.models.GoalFitFinding
+import com.grippo.domain.state.muscles.toState
 import kotlinx.collections.immutable.toPersistentList
 
 public fun GoalFitFinding.toState(): GoalFitFindingState = GoalFitFindingState(
@@ -10,5 +11,5 @@ public fun GoalFitFinding.toState(): GoalFitFindingState = GoalFitFindingState(
     actualValue = actualValue,
     targetMin = targetMin,
     targetMax = targetMax,
-    context = context.toPersistentList(),
+    context = context.map { it.toState() }.toPersistentList(),
 )

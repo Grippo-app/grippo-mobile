@@ -5,6 +5,7 @@ import com.grippo.core.state.formatters.DateTimeFormatState
 
 @Immutable
 public data class PerformanceTrendHistoryEntry(
+    val trainingId: String,
     val endDate: DateTimeFormatState,
     val metric: PerformanceMetricState,
 )

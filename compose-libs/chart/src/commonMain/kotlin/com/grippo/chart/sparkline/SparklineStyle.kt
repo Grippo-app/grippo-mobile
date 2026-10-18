@@ -1,12 +1,13 @@
 package com.grippo.chart.sparkline
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 
-@Immutable
+@Stable
 public data class SparklineStyle(
     val line: Line,
     val fill: Fill?,
@@ -16,7 +17,7 @@ public data class SparklineStyle(
     val dots: Dots,
     val extremes: Extremes,
 ) {
-    @Immutable
+    @Stable
     public data class Line(
         val stroke: Dp,
         val color: Color,
@@ -26,7 +27,7 @@ public data class SparklineStyle(
         val clampOvershoot: Boolean,
     )
 
-    @Immutable
+    @Stable
     public data class Fill(
         val provider: ((Rect) -> Brush)?,
     )
@@ -59,12 +60,12 @@ public data class SparklineStyle(
         ) : Midline
     }
 
-    @Immutable
+    @Stable
     public sealed interface Peek {
         @Immutable
         public data object None : Peek
 
-        @Immutable
+        @Stable
         public data class Visible(
             val hitSlop: Dp,
 
@@ -88,6 +89,7 @@ public data class SparklineStyle(
 
             val decimals: Int = 0,
             val showLabel: Boolean = true,
+            val valueFormatter: ((Float) -> String)? = null,
         ) : Peek
     }
 

@@ -155,6 +155,13 @@ Start dialog. Early Add can establish an empty draft and skip the original sourc
 load. No guard or disabled state was added; this is retained by request, not a
 fixed finding or a preservation pass.
 
+The completed-session summary labels mapped iteration counts as Available sets,
+including zero. Saved duration, repetitions and volume remain independent recorded
+aggregates; the muscle section explicitly scopes analysis to available details.
+This presentation change preserves TrainingScreen.Completed, all callbacks and
+operations, and the existing savedTrainingId restoration owner; no analytics-facing
+symbol, consent or persisted field changes.
+
 ## Preservation inventory
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |

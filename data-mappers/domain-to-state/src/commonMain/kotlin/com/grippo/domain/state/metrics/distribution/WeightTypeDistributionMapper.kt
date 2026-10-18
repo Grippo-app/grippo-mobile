@@ -9,17 +9,16 @@ import com.grippo.domain.state.exercise.example.toState
 import kotlinx.collections.immutable.toPersistentList
 
 public fun ExerciseDistribution<WeightTypeEnum>.toState(): ExerciseDistributionState<WeightTypeEnumState> {
-    val entries = entries.mapNotNull { entry ->
-        val value = entry.value
-        if (value <= 0f) {
-            null
-        } else {
-            ExerciseDistributionEntryState(
-                key = entry.key.toState(),
-                value = value
-            )
-        }
+    val entries = entries.map { entry ->
+        ExerciseDistributionEntryState(
+            key = entry.key.toState(),
+            value = entry.value,
+        )
     }.toPersistentList()
 
-    return ExerciseDistributionState(entries = entries)
+    return ExerciseDistributionState(
+        weighting = weighting.toState(),
+        entries = entries,
+        excludedVolumeSetCount = excludedVolumeSetCount,
+    )
 }

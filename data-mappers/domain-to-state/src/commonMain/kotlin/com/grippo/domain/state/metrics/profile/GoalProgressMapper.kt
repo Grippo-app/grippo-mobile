@@ -1,6 +1,8 @@
 package com.grippo.domain.state.metrics.profile
 
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.DateTimeFormatState
+import com.grippo.core.state.metrics.profile.GoalAnalysisEvidenceState
 import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.data.features.api.metrics.profile.models.GoalAdherence
 import com.grippo.domain.state.user.toState
@@ -8,16 +10,8 @@ import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.daysUntil
 
 public fun GoalAdherence.toState(now: LocalDateTime): GoalProgressState {
-    val startDate = goal.createdAt.date
-    val targetDate = goal.target.date
-
-    val daysTotal = startDate.daysUntil(targetDate).coerceAtLeast(1)
-    val daysElapsed = startDate.daysUntil(now.date).coerceIn(0, daysTotal)
-    val daysRemaining = now.date.daysUntil(targetDate)
-
     return GoalProgressState(
         goal = goal.toState(),
         now = DateTimeFormatState.of(
@@ -29,12 +23,13 @@ public fun GoalAdherence.toState(now: LocalDateTime): GoalProgressState {
         strengthShare = strengthShare,
         hypertrophyShare = hypertrophyShare,
         enduranceShare = enduranceShare,
-        daysTotal = daysTotal,
-        daysElapsed = daysElapsed,
-        daysRemaining = daysRemaining,
-        progressFraction = (daysElapsed.toFloat() / daysTotal.toFloat()).coerceIn(0f, 1f),
-        isFinished = now.date >= targetDate,
         sessionCount = sessionCount,
         findings = findings.map { it.toState() }.toPersistentList(),
+        evidence = GoalAnalysisEvidenceState(
+            range = analysisRange?.let(DateRangeFormatState::of) ?: DateRangeFormatState.Empty(),
+            setCount = setCount,
+            excludedSetCount = excludedSetCount,
+            missingMetadataSetCount = missingMetadataSetCount,
+        ),
     )
 }

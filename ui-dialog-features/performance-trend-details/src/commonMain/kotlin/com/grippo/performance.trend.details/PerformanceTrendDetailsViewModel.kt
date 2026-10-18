@@ -7,19 +7,14 @@ import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.performance.PerformanceTrendHistoryEntry
-import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.metrics.performance.PerformanceTrendUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
-import com.grippo.data.features.api.user.UserFeature
 import com.grippo.domain.state.metrics.performance.toState
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateRangePresets
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onEach
 
 public class PerformanceTrendDetailsViewModel(
@@ -27,7 +22,6 @@ public class PerformanceTrendDetailsViewModel(
     metricType: PerformanceMetricTypeState,
     private val analytics: PerformanceTrendDetailsAnalytics,
     trainingFeature: TrainingFeature,
-    private val userFeature: UserFeature,
     private val performanceTrendUseCase: PerformanceTrendUseCase,
 ) : BaseViewModel<PerformanceTrendDetailsDialogState, PerformanceTrendDetailsDirection, PerformanceTrendDetailsLoader>(
     PerformanceTrendDetailsDialogState(
@@ -36,62 +30,42 @@ public class PerformanceTrendDetailsViewModel(
     )
 ), PerformanceTrendDetailsContract {
 
-    private companion object {
-        private const val HISTORY_LIMIT = 10
-    }
-
     init {
         trainingFeature
-            .observeTrainings(range.from, range.to)
+            .observeTrainings(start = range.from, end = range.to)
             .onEach(::providePerformance)
             .safeLaunch()
     }
 
-    private suspend fun providePerformance(trainings: List<Training>) {
-        if (trainings.size < 2) {
-            update { it.copy(history = persistentListOf()) }
-            return
-        }
-        val experience = userFeature.observeUser().firstOrNull()?.experience
-            ?: ExperienceEnum.BEGINNER
-        val history = buildHistory(trainings, experience)
-        update { it.copy(history = history) }
-    }
-
-    private fun buildHistory(
-        trainings: List<Training>,
-        experience: ExperienceEnum,
-    ): ImmutableList<PerformanceTrendHistoryEntry> {
-        val sorted = trainings.sortedBy { it.createdAt }
-        val history = mutableListOf<PerformanceTrendHistoryEntry>()
-
-        for (index in sorted.lastIndex downTo 1) {
-            if (history.size >= HISTORY_LIMIT) break
-            val slice = sorted.subList(0, index + 1)
-
+    private fun providePerformance(trainings: List<Training>) {
+        val sorted = trainings.sortedWith(compareBy<Training> { it.createdAt }.thenBy { it.id })
+        val history = sorted.indices.reversed().take(HISTORY_LIMIT).map { index ->
+            val training = sorted[index]
             val metric = performanceTrendUseCase
-                .fromTrainings(trainings = slice, experience = experience)
+                .fromTrainings(trainings = sorted.subList(0, index + 1))
                 .toState()
                 .first { it.type == state.value.metricType }
 
-            val endAt = slice.last().createdAt
-            history.add(
-                PerformanceTrendHistoryEntry(
-                    endDate = DateTimeFormatState.of(
-                        value = endAt,
-                        range = DateRangePresets.infinity(),
-                        format = DateFormat.DateOnly.DateMmmDdYyyy,
-                    ),
-                    metric = metric,
-                )
+            PerformanceTrendHistoryEntry(
+                trainingId = training.id,
+                endDate = DateTimeFormatState.of(
+                    value = training.createdAt,
+                    range = DateRangePresets.infinity(),
+                    format = DateFormat.DateOnly.DateMmmDdYyyy,
+                ),
+                metric = metric,
             )
-        }
+        }.toPersistentList()
 
-        return history.toPersistentList()
+        update { it.copy(history = history) }
     }
 
     override fun onBack() {
         analytics.trackEvent(PerformanceTrendDetailsEvent.DismissRequested)
         navigateTo(PerformanceTrendDetailsDirection.Back)
+    }
+
+    private companion object {
+        const val HISTORY_LIMIT = 10
     }
 }

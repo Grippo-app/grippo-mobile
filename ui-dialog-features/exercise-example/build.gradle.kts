@@ -28,5 +28,6 @@ kotlin {
         implementation(libs.compose.material3)
 
         implementation(libs.immutable.collections)
+        implementation(libs.datetime)
     }
 }

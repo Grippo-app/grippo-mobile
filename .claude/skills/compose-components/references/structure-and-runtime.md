@@ -27,6 +27,11 @@ visibility and comments follow [code style](../../validation-gates/references/co
   Reusable widgets forward neutral callbacks; business decisions and analytics
   remain at their [component contract owner](../../design-system/references/components.md).
 
+When adding a shared explanation, inspect the enclosing hosts for the same copy.
+Keep that explanation at one visible owner in each context; distinct methodology
+and data-quality notices may describe different facts. Deduplicate existing copy
+or composition before adding another presentation switch.
+
 Mutable UI state retained across recompositions uses observable remembered state
 or an existing state holder, never a plain local or file-level `var`. Choose
 `remember` versus `rememberSaveable` from the actual presentation lifetime;
@@ -154,6 +159,15 @@ new subscription. The invented source is a presentation observer, not business
 observation or navigation; [feature effects](../../ui-feature/references/compose-rules.md#feature-effects)
 retain their owner. Keep remembered state and saveable identity tied to the
 actual presentation lifetime; do not retain logical selection in a shadow cache.
+
+Before adding or removing `try/finally` around a suspend effect, name what is
+committed, what can cancel the work and which cleanup must still run. `finally`
+is cleanup, not error recovery; cancellation must still propagate. Do not invoke
+success callbacks after cancellation of an uncommitted operation. A host's
+already-committed dismissal may require release when a library animation is
+interrupted; inspect the pinned implementation and the session/identity guards
+before treating that cleanup as redundant. Existing runtime evidence takes
+precedence over an assumed absence of animation races.
 
 ## Hot paths and lazy content
 

@@ -1,5 +1,6 @@
 package com.grippo.core.state.formatters
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.daily
@@ -12,6 +13,7 @@ import com.grippo.design.resources.provider.monthly
 import com.grippo.design.resources.provider.weekly
 import com.grippo.design.resources.provider.yearly
 import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.toolkit.date.utils.DateRangePresets
@@ -48,6 +50,18 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
         override val value: DateRange? = null,
         override val kind: DateRangeKind = DateRangeKind.Custom,
     ) : DateRangeFormatState(), FormatState.Empty<DateRange>
+
+    @Composable
+    public fun short(): String {
+        val range = value ?: return display
+        val format = DateRangeFormatter.dateFormat(kind)
+        val from = DateCompose.rememberFormat(value = range.from, format = format)
+        if (DateRangeFormatter.isSingleDate(value = range, kind = kind)) {
+            return from
+        }
+        val to = DateCompose.rememberFormat(value = range.to, format = format)
+        return "$from - $to"
+    }
 
     public fun label(): UiText? = when (kind) {
         DateRangeKind.Daily -> UiText.Res(Res.string.daily)
@@ -136,34 +150,34 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
     }
 
     private object DateRangeFormatter {
-        fun format(value: DateRange, kind: DateRangeKind): String = when (kind) {
-            DateRangeKind.Daily -> DateTimeUtils.format(value.from, DateFormat.DateOnly.DateDdMmmm)
+        fun format(value: DateRange, kind: DateRangeKind): String {
+            val format = dateFormat(kind)
+            val from = DateTimeUtils.format(value = value.from, format = format)
+            if (isSingleDate(value = value, kind = kind)) {
+                return from
+            }
+            val to = DateTimeUtils.format(value = value.to, format = format)
+            return "$from - $to"
+        }
+
+        fun dateFormat(kind: DateRangeKind): DateFormat.DateOnly = when (kind) {
+            DateRangeKind.Daily -> DateFormat.DateOnly.DateDdMmmm
             DateRangeKind.Weekly,
             DateRangeKind.Last7Days,
             DateRangeKind.Last14Days,
             DateRangeKind.Monthly,
             DateRangeKind.Last30Days,
-            DateRangeKind.Last60Days -> span(value, DateFormat.DateOnly.DateDdMmm)
+            DateRangeKind.Last60Days -> DateFormat.DateOnly.DateDdMmm
 
             DateRangeKind.Last365Days,
-            DateRangeKind.Yearly -> span(value, DateFormat.DateOnly.DateMmmDdYyyy)
+            DateRangeKind.Yearly -> DateFormat.DateOnly.DateMmmDdYyyy
 
             DateRangeKind.Custom,
-            DateRangeKind.Infinity -> undefined(value)
+            DateRangeKind.Infinity -> DateFormat.DateOnly.DateMmmDdYyyy
         }
 
-        private fun span(value: DateRange, format: DateFormat.DateOnly): String {
-            val from = DateTimeUtils.format(value.from, format)
-            val to = DateTimeUtils.format(value.to, format)
-            return "$from - $to"
-        }
-
-        private fun undefined(value: DateRange): String {
-            val sameDay = value.from.date == value.to.date
-            val from = DateTimeUtils.format(value.from, DateFormat.DateOnly.DateMmmDdYyyy)
-            if (sameDay) return from
-            val to = DateTimeUtils.format(value.to, DateFormat.DateOnly.DateMmmDdYyyy)
-            return "$from - $to"
-        }
+        fun isSingleDate(value: DateRange, kind: DateRangeKind): Boolean =
+            kind == DateRangeKind.Daily ||
+                ((kind == DateRangeKind.Custom || kind == DateRangeKind.Infinity) && value.from.date == value.to.date)
     }
 }

@@ -2,7 +2,6 @@ package com.grippo.home.home.components
 
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.DateTimeFormatState
-import com.grippo.core.state.formatters.DensityFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
@@ -169,47 +168,42 @@ internal fun homePreviewEmptyPerformance(): ImmutableList<PerformanceMetricState
     stubPerformanceMetrics().distinctBy { it.type }.map { metric ->
         when (metric) {
             is PerformanceMetricState.Duration -> metric.copy(
-                deltaPercentage = 0,
-                currentVsAveragePercentage = 0,
-                current = DurationFormatState.of(0.minutes),
-                average = DurationFormatState.of(0.minutes),
-                best = DurationFormatState.of(0.minutes),
+                currentVsAveragePercentage = null,
+                current = null,
+                average = null,
+                best = null,
                 status = PerformanceTrendStatusState.Empty,
             )
 
             is PerformanceMetricState.Volume -> metric.copy(
-                deltaPercentage = 0,
-                currentVsAveragePercentage = 0,
-                current = VolumeFormatState.of(0f),
-                average = VolumeFormatState.of(0f),
-                best = VolumeFormatState.of(0f),
+                currentVsAveragePercentage = null,
+                current = null,
+                average = null,
+                best = null,
                 status = PerformanceTrendStatusState.Empty,
             )
 
             is PerformanceMetricState.Density -> metric.copy(
-                deltaPercentage = 0,
-                currentVsAveragePercentage = 0,
-                current = DensityFormatState.of(0f),
-                average = DensityFormatState.of(0f),
-                best = DensityFormatState.of(0f),
+                currentVsAveragePercentage = null,
+                current = null,
+                average = null,
+                best = null,
                 status = PerformanceTrendStatusState.Empty,
             )
 
             is PerformanceMetricState.Repetitions -> metric.copy(
-                deltaPercentage = 0,
-                currentVsAveragePercentage = 0,
-                current = RepetitionsFormatState.of(0),
-                average = RepetitionsFormatState.of(0),
-                best = RepetitionsFormatState.of(0),
+                currentVsAveragePercentage = null,
+                current = null,
+                average = null,
+                best = null,
                 status = PerformanceTrendStatusState.Empty,
             )
 
             is PerformanceMetricState.Intensity -> metric.copy(
-                deltaPercentage = 0,
-                currentVsAveragePercentage = 0,
-                current = IntensityFormatState.of(0f),
-                average = IntensityFormatState.of(0f),
-                best = IntensityFormatState.of(0f),
+                currentVsAveragePercentage = null,
+                current = null,
+                average = null,
+                best = null,
                 status = PerformanceTrendStatusState.Empty,
             )
         }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.metrics.distribution.MuscleLoadEntryState
+import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.design.components.indicators.LineIndicator
 import com.grippo.design.core.AppTokens
@@ -15,7 +16,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.AppColor
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.percent
+import com.grippo.design.resources.provider.muscle_load_less_than_one_percent
 import kotlin.math.roundToInt
 
 @Immutable
@@ -46,8 +47,7 @@ internal fun MuscleLoadingItem(
         if (dominant) AppTokens.colors.text.primary
         else AppTokens.colors.text.secondary
 
-    val percentSymbol = AppTokens.strings.res(Res.string.percent)
-    val valueText = "${entry.value.roundToInt()}$percentSymbol"
+    val valueText = muscleLoadPercentage(entry.value)
 
     LineIndicator(
         modifier = modifier.fillMaxWidth(),
@@ -70,6 +70,14 @@ internal fun MuscleLoadingItem(
             )
         },
     )
+}
+
+@Composable
+internal fun muscleLoadPercentage(value: Float): String {
+    if (value > 0f && value.roundToInt() == 0) {
+        return AppTokens.strings.res(Res.string.muscle_load_less_than_one_percent)
+    }
+    return PercentageFormatState.of(value.roundToInt()).short()
 }
 
 internal fun colorizeEntries(

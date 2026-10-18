@@ -8,9 +8,11 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.decimal_separator
 import com.grippo.design.resources.provider.percent
-import kotlinx.serialization.Serializable
+import com.grippo.toolkit.number.utils.formatDecimal
 import kotlin.math.roundToInt
+import kotlinx.serialization.Serializable
 
 @Immutable
 @Serializable
@@ -38,6 +40,16 @@ public sealed class PercentageFormatState : FormatState<Int> {
     ) : PercentageFormatState(), FormatState.Empty<Int>
 
     public companion object {
+        @Composable
+        public fun shortDelta(value: Double): String {
+            if (!value.isFinite()) return "—"
+            val number = formatDecimal(
+                value = value,
+                decimalSeparator = AppTokens.strings.res(Res.string.decimal_separator),
+            )
+            val sign = if (value > 0.0) "+" else ""
+            return "$sign$number%"
+        }
 
         public fun of(display: String): PercentageFormatState {
             val raw = display.trim()

@@ -126,6 +126,16 @@ Read-only values reuse the existing unit formatter's display methods, such as
 formatting belong to that `*FormatState`; MUST NOT add a standalone formatting
 extension file or a screen-specific presentation model as a second owner.
 
+`FormatState<T>` holds only the common contract. Unit, aggregate, missing-value
+and feature-specific rules MUST NOT be placed in that contract or its file.
+Shared numeric representation follows
+[toolkit ownership](../../platform-build-toolkit/references/toolkit-utilities-core.md);
+concrete unit formatters delegate to that owner instead of keeping a general
+numeric utility in `:ui-core:state`.
+Resolve the active decimal separator at rendering; never freeze a localized
+display string in a shared helper. Read-only aggregate factories may differ from
+editable-field limits only when actual callers require that distinction.
+
 Keep a small surface-specific display choice, such as a missing-value dash or a
 known-zero label, at its rendering site instead of introducing another formatter
 or presentation layer. A numeric factory's `Empty` result is an input convention;
@@ -169,8 +179,32 @@ holds the resolved data; the Composable combines it with the existing loader to
 render a skeleton or populated content. A distinct layout alone does not justify
 another owner of the same operation lifecycle.
 
-State must not hide restoration/edit flags or previous-source copies removed from
-the ViewModel. Store actual draft values and needed display data; follow the
+### Minimal runtime state
+
+ViewModels MUST NOT own mutable feature-data members outside BaseViewModel State:
+no `var`, `MutableStateFlow`, Compose state holder, mutable collection, retained
+request result or mutable closure acting as another store. Injected dependencies,
+unchanging caller inputs and the existing foundation hooks keep their own roles.
+Intermediate locals and source Flow composition do not create another store.
+Combine sources at their observation boundary instead of retaining a second copy
+to coordinate callbacks; preserve each source's failure and lifecycle semantics.
+
+State holds the smallest independent feature values. Before adding a field,
+trace its producer and consumer: if existing values determine it, derive it at
+use or in a computed getter. MUST NOT store counts beside their complete
+collection, a subtype discriminator beside its sealed value, a copied sub-state
+field, or a Boolean that merely caches a current condition. Moving a forbidden
+cache/flag from a ViewModel into State, a wrapper or another owner is not a fix.
+Genuinely distinct source data, such as a server summary without its details,
+must be established from the actual contract rather than invented to justify
+extra fields. Domain-model minimality belongs to
+[the data-layer owner](../../data-layer/references/repositories.md#minimal-domain-models).
+
+A prepared domain evaluation may remain a UI result beside its displayed
+evidence; do not move business scoring/weighting into UI to remove that result.
+This does not permit copying a field already present in another UI sub-state.
+
+Draft seeding, edit detection and synchronization also follow the
 [canonical draft policy](../../state-preservation/SKILL.md#data-backed-form-synchronization).
 
 ### Immutable collections (MUST)

@@ -58,9 +58,9 @@ A compact navigation item and a screen heading do not need the same font size.
 - Detailed muscle-distribution rows keep the same calm data hues as the map;
   rank alone carries no success/warning/error meaning. Goal diagnostic stripes
   use their severity accent directly while their explanatory text stays neutral.
-- Empty muscle-balance summaries show neutral unavailable information without an
-  inferred score or status. The top-two load difference is neutral data, not a
-  warning on its own; the existing balance status/ring conveys the assessment.
+- Muscle-focus summaries show the leading recorded-set share with `charts.ring.info`;
+  the ring is descriptive data and has no success/warning thresholds. Empty summaries
+  show neutral unavailable information without an inferred score or status.
   Progress bars use linear proportions and outside
   values; pie slices preserve their actual shares.
 - Timeline points use `timeline.marker/markerBackground` for a warm chronological
@@ -216,8 +216,10 @@ A compact navigation item and a screen heading do not need the same font size.
   another list gap or vertical wrapper. Timeline time uses `b14Semi` and duration
   uses secondary `b12Med` text.
 - The monthly training digest uses the Small MetricSectionPanel with an inline
-  `h4` volume and tertiary `b12Med` label. Its date, total heading and three
-  breakdown metrics stay visible; empty values retain their dimmed treatment.
+  `h4` total volume and tertiary `b12Med` label. Its date and training-summary
+  heading precede workouts, duration and sets; populated content adds training
+  days and average volume per workout. Empty values retain their dimmed treatment,
+  while recorded zero and unavailable duration have distinct labels.
   The history toolbar uses `divider.subtle` to separate controls from records.
 - Home uses `MetricCardPresentation.Overview` for goal, muscle, streak and
   performance summaries; goal, streak and performance dialogs retain `Detailed`,
@@ -271,11 +273,13 @@ A compact navigation item and a screen heading do not need the same font size.
   Overview content determines its own height without filler spacers; the existing
   remaining/overdue message and Update eligibility are preserved.
   Performance labels explain weight/minute and average weight; overview compares
-  the latest workout with the prior positive-workout average only when available.
+  the latest workout with available prior measurements in the selected period.
   Numeric averages and their percentage comparison occupy separate lines so both
   remain visible within the metric panel's intrinsic height.
-  Duration comparison stays neutral and omits the numeric average truncated to
-  whole minutes; its always-Stable chip is omitted in Home.
+  Duration comparison stays neutral in both Home and Details; no duration status
+  or best-duration claim is shown. Aggregate values preserve fractional means and
+  format through canonical unit owners without input-field limits. Percentage
+  colors follow the status, with ordinary variation staying neutral.
 - Exercise highlights use the Large panel geometry (20 dp corners, 16 dp padding)
   in a horizontal gallery with regular 64 dp thumbnails,
   complete insight text and existing detail actions; a next-card peek signals more
@@ -322,8 +326,8 @@ A compact navigation item and a screen heading do not need the same font size.
   row; their trailing Toggle is passive. Input clear/copy/password actions have
   separate localized labels. Read-only exercise summaries have no click target
   or detail chevron; recording/completed-workout rows retain their detail action.
-- Detailed performance cards keep the metric name beside its icon and the status
-  below the value. Home uses the common title/chevron header; names, units,
+- Detailed performance cards keep the metric name beside its icon and, for
+  non-duration metrics with an available comparison, the status below the value. Home uses the common title/chevron header; names, units,
   comparison text and statuses wrap naturally. Its paired metric cards share an
   intrinsic-height row, so localized headings can grow without uneven card bottoms.
 - Regular exercise thumbnails remain `ExerciseExampleImageStyle.MEDIUM` (64 dp).
@@ -417,8 +421,9 @@ A compact navigation item and a screen heading do not need the same font size.
   Custom centers the existing empty-exercises artwork in IllustratedEmptyState
   with a Large illustration, `h4` title and secondary `b14Med` description.
   Populated modes use a left-aligned `h3` introduction and secondary `b14Med`
-  explanation. Repeat places its Small CheckSelectableCard historical dates
-  after that introduction, in the same scroll area as the exercises. The date row
+  explanation. Introduction and plan-edit guidance stay above the exercise scroll
+  area. Repeat pins its Small CheckSelectableCard historical dates after that
+  introduction. The date row
   uses the full dialog width with `dialog.horizontalPadding` as internal scroll
   content padding; its label and the plan content retain the same gutter. Plan previews
   lead directly into ExerciseCardStyle.Planned with Compact exercise images, full
@@ -426,17 +431,18 @@ A compact navigation item and a screen heading do not need the same font size.
   completion counters, stale tonnage or detail chevrons.
   The single pinned Primary action names the selected next step, with measured
   BottomOverlayContainer padding rather than a manually reserved overlay height.
-  Its pinned action padding, including the single navigation inset, uses an opaque
-  dialog surface so scrolled rows cannot show through the action region.
+  Its pinned action padding includes the single navigation inset; the shared
+  bottom-action gradient overlays the exercises without an opaque footer surface.
 - Draft workout sheets use a left-aligned task heading and short secondary
   explanation. A single Large neutral metrics panel groups exercise count,
   filled/all sets and positive saved duration with the existing `TrainingStat`
   (`h5` values, secondary `b12Med` labels); zero duration is omitted. Empty drafts
   show guidance instead of a zero-value panel. Read-only Medium exercise rows
   stay open with text-aligned dividers between adjacent rows. Introduction,
-  summary and exercises share one scroll area. Full-width Primary Continue and
-  Secondary Start new stay pinned on an opaque `background.dialog` footer that
-  includes the navigation inset, with a secondary consequence caption; Edit
+  summary and contents heading stay above the exercise scroll area. Full-width
+  Primary Continue and Secondary Start new stay pinned over the shared
+  `background.dialog` bottom-action gradient with the navigation inset and a
+  secondary consequence caption; Edit
   distinguishes discarded draft edits from the unchanged saved workout.
 - Workout completion confirmation keeps the host title and left-aligned secondary
   introduction. One Large neutral metrics panel groups only recorded exercise and

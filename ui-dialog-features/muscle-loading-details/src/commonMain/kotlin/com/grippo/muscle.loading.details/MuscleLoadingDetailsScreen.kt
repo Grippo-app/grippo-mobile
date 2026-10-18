@@ -22,7 +22,7 @@ import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
-import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingBalanceCard
+import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingFocusCard
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingImagesMode
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingImagesRow
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
@@ -39,6 +39,7 @@ import com.grippo.design.resources.provider.muscle_loading_distribution_title
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
 
@@ -55,7 +56,7 @@ internal fun MuscleLoadingDetailsScreen(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        text = state.range.display,
+        text = state.range.short(),
         style = AppTokens.typography.b14Med(),
         color = AppTokens.colors.text.secondary,
         textAlign = TextAlign.Center
@@ -72,7 +73,7 @@ internal fun MuscleLoadingDetailsScreen(
         behavior = AnchorScrollBehavior.Animated
     )
     state.summary?.let { summary ->
-        MuscleLoadingBalanceCard(
+        MuscleLoadingFocusCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
@@ -202,6 +203,26 @@ private fun ScreenPerMusclePreview() {
             ),
             loaders = persistentSetOf(),
             contract = MuscleLoadingDetailsContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun UnknownMuscleDataPreview() {
+    PreviewContainer {
+        val summary = stubMuscleLoadSummary()
+        MuscleLoadingDetailsScreen(
+            state = MuscleLoadingDetailsState(
+                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
+                summary = summary.copy(
+                    meta = summary.meta.copy(unassignedSets = summary.meta.totalSets),
+                    perGroup = summary.perGroup.copy(entries = persistentListOf()),
+                    perMuscle = summary.perMuscle.copy(entries = persistentListOf()),
+                ),
+            ),
+            loaders = persistentSetOf(),
+            contract = MuscleLoadingDetailsContract.Empty,
         )
     }
 }

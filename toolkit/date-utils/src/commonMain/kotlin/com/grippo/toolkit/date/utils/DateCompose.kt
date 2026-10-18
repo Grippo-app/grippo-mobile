@@ -11,6 +11,7 @@ import com.grippo.design.resources.provider.yesterday
 import com.grippo.toolkit.date.utils.internal.SystemDateFormatter
 import com.grippo.toolkit.localization.AppLocale
 import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.minus
@@ -19,6 +20,24 @@ import kotlin.time.Duration
 
 @Stable
 public object DateCompose {
+
+    @Composable
+    public fun rememberWeekDayShortLabels(): List<String> {
+        val localeTag = AppLocale.current.split(',').firstOrNull { it.isNotBlank() }?.trim()
+
+        return remember(localeTag) {
+            // This date anchors the labels in ISO Monday-first order.
+            val monday = LocalDate(2023, 1, 2)
+            val formatter = SystemDateFormatter()
+            DayOfWeek.entries.map { day ->
+                formatter.format(
+                    value = monday.plus(DatePeriod(days = day.ordinal)),
+                    pattern = DateFormat.DateOnly.WeekdayShort.pattern,
+                    localeTag = localeTag,
+                ) ?: "-"
+            }
+        }
+    }
 
     @Composable
     public fun rememberFormat(value: LocalDateTime, format: DateFormat): String {

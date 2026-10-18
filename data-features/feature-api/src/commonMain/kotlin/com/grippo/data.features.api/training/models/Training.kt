@@ -5,10 +5,11 @@ import kotlin.time.Duration
 
 public data class Training(
     val id: String,
+    /** Available mapped details; saved training aggregates remain independent of this list. */
     val exercises: List<Exercise>,
     val duration: Duration,
     val createdAt: LocalDateTime,
     val volume: Float,
     val repetitions: Int,
-    val intensity: Float
+    val intensity: Float,
 )

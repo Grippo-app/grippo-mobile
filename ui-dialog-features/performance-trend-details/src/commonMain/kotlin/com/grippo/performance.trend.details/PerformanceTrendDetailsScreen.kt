@@ -18,6 +18,8 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
+import com.grippo.core.state.metrics.performance.PerformanceTrendStatusState
+import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.stubPerformanceTrendHistory
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.performance.PerformanceMetricCard
@@ -29,9 +31,11 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.history
-import com.grippo.toolkit.date.utils.DateRangeKind
+import com.grippo.design.resources.provider.performance_history_scope
+import com.grippo.design.resources.provider.performance_history_empty
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDateTime
 
 @Composable
@@ -47,7 +51,7 @@ internal fun PerformanceTrendDetailsScreen(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        text = state.range.display,
+        text = state.range.short(),
         style = AppTokens.typography.b14Med(),
         color = AppTokens.colors.text.secondary,
         textAlign = TextAlign.Center
@@ -77,11 +81,23 @@ internal fun PerformanceTrendDetailsScreen(
         item(key = "info") {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = state.metricType.description(),
+                text = "${state.metricType.description()}\n\n${AppTokens.strings.res(Res.string.performance_history_scope)}",
                 style = AppTokens.typography.b14Med(),
                 color = AppTokens.colors.text.secondary,
                 textAlign = TextAlign.Center
             )
+        }
+
+        if (state.history.isEmpty()) {
+            item(key = "empty") {
+                Text(
+                    modifier = Modifier.fillMaxWidth().padding(top = AppTokens.dp.contentPadding.content),
+                    text = AppTokens.strings.res(Res.string.performance_history_empty),
+                    style = AppTokens.typography.b14Med(),
+                    color = AppTokens.colors.text.secondary,
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
 
         item(key = "chart") {
@@ -108,7 +124,7 @@ internal fun PerformanceTrendDetailsScreen(
 
         itemsIndexed(
             items = state.history,
-            key = { index, _ -> "history_$index" }
+            key = { _, entry -> entry.trainingId }
         ) { index, entry ->
             Column(
                 modifier = Modifier
@@ -130,7 +146,7 @@ internal fun PerformanceTrendDetailsScreen(
 
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = entry.endDate.display,
+                    text = entry.endDate.short(),
                     style = style,
                     color = color
                 )
@@ -151,7 +167,10 @@ private fun ScreenPreview() {
     PreviewContainer {
         PerformanceTrendDetailsScreen(
             state = PerformanceTrendDetailsDialogState(
-                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(2026, 10, 11, 0, 0),
+                    to = LocalDateTime(2026, 10, 17, 23, 59),
+                ),
                 metricType = PerformanceMetricTypeState.Volume,
                 history = stubPerformanceTrendHistory(),
             ),
@@ -172,6 +191,35 @@ private fun WithoutHistoryPreview() {
                     to = LocalDateTime(2026, 10, 17, 23, 59),
                 ),
                 metricType = PerformanceMetricTypeState.Volume,
+            ),
+            loaders = persistentSetOf(),
+            contract = PerformanceTrendDetailsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun SingleWorkoutPreview() {
+    PreviewContainer {
+        val entry = stubPerformanceTrendHistory().first()
+        val metric = entry.metric as PerformanceMetricState.Volume
+        PerformanceTrendDetailsScreen(
+            state = PerformanceTrendDetailsDialogState(
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(2026, 10, 11, 0, 0),
+                    to = LocalDateTime(2026, 10, 17, 23, 59),
+                ),
+                metricType = PerformanceMetricTypeState.Volume,
+                history = persistentListOf(
+                    entry.copy(
+                        metric = metric.copy(
+                            average = null,
+                            currentVsAveragePercentage = null,
+                            status = PerformanceTrendStatusState.Stable,
+                        ),
+                    ),
+                ),
             ),
             loaders = persistentSetOf(),
             contract = PerformanceTrendDetailsContract.Empty,

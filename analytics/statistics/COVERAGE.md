@@ -58,12 +58,18 @@ error messages or request/response data enter the payload.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | StatisticsViewModel | mode / configured range or training ID | Runtime only | Existing DialogConfig inputs | Live dialog session; no editable filters or accepted results |
-| StatisticsViewModel | total, exerciseVolume, muscleLoad | Rebuild | observeTrainings/observeTraining plus existing metric use cases | Fresh VM rebuilds current presentation on opening |
+| StatisticsViewModel | total, exerciseVolume, muscleLoad | Rebuild | observeTrainings/observeTraining plus metric use cases; muscleLoad also observes referenced anatomy through observeFromTrainings/observeFromExercises | Both modes calculate from available mapped exercise details. A static localized scope caption accompanies displayed totals/charts/muscle data, including zero; no completeness state is inferred. Anatomy changes recalculate shares and excluded/unassigned notices |
 | StatisticsViewModel | Charts loader, jobs, Back direction, telemetry | Runtime only | Foundation runtime owners | No archive supplier or serializer |
 | StatisticsComponent | ViewModel | Runtime retention | Existing retainedInstance | Ordinary configuration recreation retains VM; process restart closes dialog |
+| StatisticsScreen | Configured range label | Rebuild in composition | `DateRangeFormatState.short()` from the existing mode range | Uses the current locale without changing the range, VM state, inputs or dialog lifetime |
 
 No user-owned draft, selection or parent-flow output exists in this module.
 Therefore no StateKeeper key, initialState boundary or serialization is required.
+Both modes calculate from available mapped exercise details. The visible scope
+caption states that records may be unavailable; a detail-derived zero describes
+that available sample, rather than the entire saved history. Independent saved
+training aggregates retain their existing owners. No completeness flag, extra
+draft, retry, cache or operation is added.
 Both shared dialog hosts use serializer=null intentionally. No dialog sessions,
 callbacks, metrics, secrets or telemetry provenance are archived. Opening the sheet
 again supplies business inputs and recomputes data; it does not replay user actions.
@@ -117,8 +123,7 @@ found. Corrected the omission inventory to include host Compose Back and toolbar
 Close/Back paths; those callbacks do not invoke the statistics VM. StateKeeper
 remains unnecessary because there is no editable draft or accepted output.
 
-Independent review was not performed: no permitted independent reviewer is available
-in this chat (subagent delegation is not authorized; the connected code-review tool
-only reads PR CI checks). This self-review is not an independent-review PASS.
-Follow-up changed documentation only; successful scoped build results above remain
-historical compilation evidence, not a fresh build/runtime claim.
+Those earlier analytics revisions had no independent review. The current digest
+consumer changes have independent code, design and analytics/preservation reviews;
+source acceptance does not establish delivery, restoration or failure-injection
+behavior. Earlier scoped build results above remain historical evidence.

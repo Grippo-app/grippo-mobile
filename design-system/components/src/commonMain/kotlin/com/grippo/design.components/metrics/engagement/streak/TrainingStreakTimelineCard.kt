@@ -5,7 +5,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.engagement.TrainingStreakProgressState
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
 import com.grippo.design.components.indicators.LineIndicator
@@ -16,10 +15,9 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.training_streak_period_value
+import com.grippo.design.resources.provider.training_streak_partial_period
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
-import kotlinx.datetime.LocalDateTime
 
 @Composable
 public fun TrainingStreakTimelineCard(
@@ -45,8 +43,8 @@ private fun TrainingStreakTimelineRow(
     entry: TrainingStreakProgressState,
 ) {
     val progressColors = when {
-        entry.progressPercent >= 80 -> AppTokens.colors.charts.indicator.success
-        entry.progressPercent >= 40 -> AppTokens.colors.charts.indicator.info
+        entry.progressPercent >= 100 -> AppTokens.colors.charts.indicator.success
+        entry.isPartial -> AppTokens.colors.charts.indicator.info
         else -> AppTokens.colors.charts.indicator.warning
     }
 
@@ -57,7 +55,7 @@ private fun TrainingStreakTimelineRow(
         labelSpacing = AppTokens.dp.contentPadding.text,
         startLabel = {
             Text(
-                text = entry.range.display,
+                text = entry.range.short(),
                 style = AppTokens.typography.b13Med(),
                 color = AppTokens.colors.text.primary,
             )
@@ -66,8 +64,8 @@ private fun TrainingStreakTimelineRow(
             Text(
                 text = AppTokens.strings.res(
                     Res.string.training_streak_period_value,
-                    entry.achievedSessions,
-                    entry.targetSessions
+                    entry.achievedTrainingDays,
+                    entry.targetTrainingDays
                 ),
                 style = AppTokens.typography.b13Med(),
                 color = AppTokens.colors.text.secondary,
@@ -75,6 +73,14 @@ private fun TrainingStreakTimelineRow(
             )
         },
     )
+
+    if (entry.isPartial) {
+        Text(
+            text = AppTokens.strings.res(Res.string.training_streak_partial_period),
+            style = AppTokens.typography.b12Med(),
+            color = AppTokens.colors.text.secondary,
+        )
+    }
 }
 
 @AppPreview
@@ -83,14 +89,7 @@ private fun TrainingStreakTimelineCardPreview() {
     PreviewContainer {
         stubTrainingStreaks().forEach { value ->
             TrainingStreakTimelineCard(
-                entries = value.timeline.map { entry ->
-                    entry.copy(
-                        range = DateRangeFormatState.of(
-                            from = LocalDateTime(2026, 10, 5, 0, 0),
-                            to = LocalDateTime(2026, 10, 11, 23, 59),
-                        ),
-                    )
-                }.toPersistentList(),
+                entries = value.timeline,
             )
         }
     }

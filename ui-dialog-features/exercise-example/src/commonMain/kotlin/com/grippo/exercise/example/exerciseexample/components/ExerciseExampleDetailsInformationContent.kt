@@ -93,6 +93,7 @@ private fun EquipmentWithoutDescriptionPreview() {
 @Composable
 private fun AnatomyWithoutDescriptionPreview() {
     val example = stubExerciseExample()
+    val summary = stubMuscleLoadSummary()
     PreviewContainer {
         ExerciseExampleDetailsInformationContent(
             modifier = Modifier.fillMaxWidth(),
@@ -100,7 +101,7 @@ private fun AnatomyWithoutDescriptionPreview() {
                 value = example.value.copy(id = "anatomy-only", description = ""),
                 equipments = persistentListOf(),
             ),
-            muscleLoad = stubMuscleLoadSummary(),
+            muscleLoad = summary.copy(meta = summary.meta.copy(trainingsCount = 0, totalSets = 0)),
         )
     }
 }

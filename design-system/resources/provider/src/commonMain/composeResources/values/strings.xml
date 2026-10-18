@@ -19,16 +19,15 @@
     <string name="home_metrics_empty_description">No metric data for this period yet. Try another period.</string>
     <string name="home_last_workout_in_period">Latest workout in period</string>
     <string name="metric_overview_muscle_distribution">Muscle load distribution</string>
-    <string name="metric_overview_muscle_context">Workouts: %1$d · Sets: %2$d</string>
-    <string name="metric_overview_muscle_shares">Share of estimated training load</string>
+    <string name="metric_overview_muscle_context">Workouts: %1$d · Available sets: %2$d</string>
     <string name="metric_overview_muscle_primary">Most loaded muscle: %1$s</string>
     <string name="metric_overview_muscle_details">All groups and muscles</string>
     <string name="metric_overview_streak_title">Training rhythm</string>
     <string name="metric_overview_streak_active_days">Active days</string>
     <string name="metric_overview_streak_daily_pattern">Rhythm: consecutive training days</string>
-    <string name="metric_overview_streak_weekly_pattern">Workouts per week: %1$d</string>
+    <string name="metric_overview_streak_weekly_pattern">Training days per week: %1$d</string>
     <string name="metric_overview_streak_rhythm_pattern">Training days: %1$d · Rest days: %2$d</string>
-    <string name="metric_overview_streak_pattern_pattern">Workouts: %1$d · Days per cycle: %2$d</string>
+    <string name="metric_overview_streak_pattern_pattern">Training days: %1$d · Days per cycle: %2$d</string>
     <string name="metric_overview_performance_average">Previous avg: %1$s</string>
     <string name="metric_overview_performance_comparison">%1$s vs previous average</string>
     <string name="metric_overview_duration">Workout time</string>
@@ -39,10 +38,10 @@
     <string name="metric_overview_goal_score">Goal fit</string>
     <string name="metric_overview_goal_analyzed">Workouts analyzed in period: %1$d</string>
     <string name="metric_overview_goal_target">Target date: %1$s</string>
-    <string name="spotlight_progress_win_title">Progress win</string>
-    <string name="spotlight_needs_attention_title">Needs attention</string>
-    <string name="spotlight_good_frequency_title">Good frequency</string>
-    <string name="spotlight_near_best_title">Near best</string>
+    <string name="spotlight_progress_win_title">More training volume</string>
+    <string name="spotlight_needs_attention_title">Longer break</string>
+    <string name="spotlight_good_frequency_title">Consistent practice</string>
+    <string name="spotlight_near_best_title">Near your best volume</string>
     <string name="repetitions_input_hint">1–99 reps</string>
     <string name="exercise_details_btn">Exercise details</string>
     <string name="push_token">Push token</string>
@@ -50,45 +49,39 @@
     <string name="weight">Weight</string>
     <string name="choose_your_experience_level">Choose your current training experience level.</string>
     <string name="weight_input_hint">1–999 kg</string>
-    <string name="spotlight_progress_win_metric">+%1$s% vs last %2$d sessions</string>
-    <string name="spotlight_progress_win_context">Now %1$s kg vs usual %2$s kg</string>
-    <string name="spotlight_progress_win_action">Repeat this load once before moving up.</string>
-    <string name="spotlight_needs_attention_metric">No sessions for %1$d days</string>
-    <string name="spotlight_needs_attention_context">Usual gap ~%1$d days; alert at %2$d days</string>
-    <string name="spotlight_needs_attention_action">Add it back this week if recovery allows.</string>
-    <string name="spotlight_good_frequency_metric">%1$sx/week in the last %2$d weeks</string>
-    <string name="spotlight_good_frequency_context">Active in %1$d of %2$d weeks, %3$d total sessions</string>
-    <string name="spotlight_good_frequency_action">Keep this cadence.</string>
-    <string name="spotlight_near_best_metric">Gap to your best: %1$s%</string>
-    <string name="spotlight_near_best_context">Now %1$s kg vs best %2$s kg</string>
-    <string name="spotlight_near_best_action">Same setup next time and go for it.</string>
+    <string name="spotlight_progress_win_metric">+%1$s% volume · prior sessions: %2$d</string>
+    <string name="spotlight_progress_win_context">Latest %1$s vs median %2$s kg·reps over %3$d days</string>
+    <string name="spotlight_progress_win_action">Recorded volume is weight × reps across sets; more volume does not necessarily mean more strength.</string>
+    <string name="spotlight_needs_attention_metric">Last recorded %1$d days ago</string>
+    <string name="spotlight_needs_attention_context">Recent usual gap ~%1$d days; longer break from %2$d days</string>
+    <string name="spotlight_needs_attention_action">Check whether this exercise still fits your current plan.</string>
+    <string name="spotlight_good_frequency_metric">%1$s training days/week over %2$d weeks</string>
+    <string name="spotlight_good_frequency_context">Recorded in %1$d of %2$d weeks, %3$d training days</string>
+    <string name="spotlight_good_frequency_action">Several sessions on one day count as one training day.</string>
+    <string name="spotlight_near_best_metric">Gap to your best volume: %1$s%</string>
+    <string name="spotlight_near_best_context">Recorded %1$s vs prior best %2$s kg·reps over %3$d days</string>
+    <string name="spotlight_near_best_action">Compare volume with the same technique and range of motion.</string>
     <string name="dashboard">Dashboard</string>
-    <string name="highlight_vs_average">avg</string>
-    <string name="highlight_best_value">Best %1$s</string>
-    <string name="highlight_status_record">Record</string>
-    <string name="highlight_status_improved">Uptrend</string>
-    <string name="highlight_status_stable">Steady</string>
-    <string name="highlight_status_declined">Focus</string>
     <string name="highlight_muscle_focus">Muscle focus</string>
     <string name="highlight_streaks">Streaks</string>
     <string name="highlight_active_days">%1$s active days</string>
     <string name="highlight_streak">%1$d-day streak</string>
     <string name="highlight_streak_weekly_headline_primary">%1$d-week streak</string>
-    <string name="highlight_streak_weekly_target">Goal · %1$d workouts/week</string>
-    <string name="highlight_streak_daily_target">Goal · Back-to-back days</string>
-    <string name="highlight_streak_rhythm">%1$d-on / %2$d-off streak</string>
-    <string name="highlight_streak_rhythm_target">Goal · %1$d training days · %2$d rest</string>
+    <string name="highlight_streak_weekly_target">Observed rhythm · %1$d training days/week</string>
+    <string name="highlight_streak_daily_target">Consecutive active days</string>
+    <string name="highlight_streak_rhythm">%1$d-cycle streak</string>
+    <string name="highlight_streak_rhythm_target">Observed rhythm · %1$d active days · %2$d rest days</string>
     <string name="highlight_streak_pattern_headline_primary">Pattern streak: %1$d cycles</string>
-    <string name="highlight_streak_pattern_target">Goal · %1$d workouts / %2$d days</string>
+    <string name="highlight_streak_pattern_target">Observed rhythm · %1$d active days / %2$d days</string>
     <string name="highlight_streak_mood_crushing">🔥 You’re doing great. Keep it up.</string>
     <string name="highlight_streak_mood_on_track">💪 Nice progress. Stay consistent.</string>
     <string name="highlight_streak_mood_paused">It’s okay to pause. Come back anytime.</string>
     <string name="highlight_streak_mood_restart">🚀 Start fresh. One step is enough.</string>
-    <string name="performance_trend_desc_duration">Shows how your workout duration changes over time. A rising line means sessions are getting longer; a falling line means you’re finishing faster.</string>
-    <string name="performance_trend_desc_volume">Shows how much work you do per workout. A rising line means more work; several drops in a row may mean it’s time to ease up or add rest.</string>
-    <string name="performance_trend_desc_density">Your work rate — how much volume you complete per minute. Higher means more work in the same time; lower means a slower or more rest-heavy session.</string>
-    <string name="performance_trend_desc_repetitions">Total reps per workout. A rising line means you’re handling more work; several drops in a row often signal fatigue.</string>
-    <string name="performance_trend_desc_intensity">Average working weight per weighted rep. Higher means heavier working loads on average.</string>
+    <string name="performance_trend_desc_duration">Duration of each workout in the selected period. Longer or shorter does not mean better. Each comparison uses earlier workouts in that period with available duration data.</string>
+    <string name="performance_trend_desc_volume">Total weight moved: working weight × repetitions. Each workout is compared with the average of earlier workouts in this period with available volume data. Exercise choice and session length affect this total; it does not measure strength on its own.</string>
+    <string name="performance_trend_desc_density">Volume divided by the full workout duration in minutes, including rests. Compared with earlier workouts in this period with available density data. More work per minute does not by itself mean a better workout.</string>
+    <string name="performance_trend_desc_repetitions">Total repetitions per workout, compared with earlier workouts in this period with available repetition data. Exercise choice, sets and planned easier sessions affect the total; fewer reps do not establish fatigue.</string>
+    <string name="performance_trend_desc_intensity">Average working weight per weighted repetition, compared with earlier workouts in this period with available weight data. Exercise choice affects this average; it does not measure effort or strength on its own.</string>
     <string name="sets_value">Sets (%1$s)</string>
     <string name="percent">%</string>
     <string name="selected">Selected</string>
@@ -128,7 +121,6 @@
     <string name="training_completed_updated_title">Workout updated</string>
     <string name="training_completed_updated_description">Your changes are saved in your workout history.</string>
     <string name="training_completed_session_title">This session</string>
-    <string name="training_completed_muscle_load_caption">Share of estimated muscle load</string>
     <string name="training_completed_details_unavailable">Workout saved. You can find it in your history.</string>
     <string name="training_completed_result_unavailable">The workout result could not be confirmed. Check your history before trying again.</string>
     <string name="training_completed_done">Done</string>
@@ -253,28 +245,17 @@
     <string name="value_statistics">%1$s statistics</string>
     <string name="value_muscle_loading">%1$s muscle loading</string>
     <string name="muscle_loading">Muscle loading</string>
-    <string name="muscle_load_balance">Balance</string>
-    <string name="muscle_load_balance_score">%1$d/100</string>
-    <string name="muscle_load_balance_score_label">score</string>
-    <string name="muscle_load_balance_status_balanced">balanced load</string>
-    <string name="muscle_load_balance_status_moderate">moderate bias</string>
-    <string name="muscle_load_balance_status_strong">strong bias</string>
-    <string name="muscle_load_bias">Bias: %1$s +%2$d%</string>
-    <string name="muscle_load_gap">Gap: %1$s %2$s</string>
-    <string name="muscle_load_trainings_count">%1$d trainings</string>
     <string name="muscle_load_no_data">No data yet.</string>
-    <string name="muscle_load_single_group">One loaded muscle group: %1$s</string>
     <string name="muscle_loading_distribution_title">Distribution</string>
     <string name="value_training_streak">%1$s training streak</string>
     <string name="training_streak">Training streak</string>
     <string name="value_performance_trend">%1$s — %2$s trend</string>
     <string name="performance_trend">%1$s trend</string>
-    <string name="training_streak_confidence_title">Consistency insight</string>
-    <string name="training_streak_confidence_value">%1$d% confidence</string>
+    <string name="training_streak_insights_title">About this calculation</string>
+    <string name="training_streak_history_value">Observed history: %1$d days</string>
     <string name="training_streak_timeline_title">Timeline progress</string>
-    <string name="training_streak_period_value">%1$d of %2$d sessions completed</string>
-    <string name="estimated_one_rm">Estimated 1RM</string>
-    <string name="estimated_one_rm_peak">Peak %1$s</string>
+    <string name="training_streak_period_value">Active days: %1$d / %2$d</string>
+    <string name="estimated_one_rm">Estimated one-rep max</string>
     <string name="equipments">Equipment</string>
     <string name="muscles">Muscles</string>
     <string name="profile_equipment_description">Enable the equipment available for your workouts.</string>
@@ -616,7 +597,6 @@
     <string name="goal_card_status_on_track">On track</string>
     <string name="goal_card_status_drifting">Drifting</string>
     <string name="goal_card_status_off_track">Off track</string>
-    <string name="goal_card_status_completed">Goal reached</string>
     <string name="goal_card_progress_day">Day %1$d of %2$d</string>
     <string name="goal_card_progress_days_left">%1$d days left</string>
     <string name="goal_card_progress_overdue">Overdue by %1$d days</string>
@@ -626,66 +606,32 @@
     <!-- Training goal details dialog -->
     <string name="goal_details_title">Goal details</string>
     <string name="goal_details_subtitle">A closer look at how your training matches the goal you picked.</string>
-    <string name="goal_details_insights_title">What's driving your score</string>
+    <string name="goal_details_insights_title">Training summary</string>
 
     <!-- Training goal details: reason headlines -->
     <string name="goal_details_reason_no_data_title">Not enough data yet</string>
-    <string name="goal_details_reason_no_data_detail">Log a few workouts in this period so we can score adherence.</string>
+    <string name="goal_details_reason_no_data_detail">There are not enough valid recorded sets or evaluated criteria in this period to score the training pattern.</string>
     <string name="goal_details_reason_too_early_title">It's still early</string>
-    <string name="goal_details_reason_too_early_detail">Your goal just started — a stable pattern usually takes about a week of training to show up.</string>
+    <string name="goal_details_reason_too_early_detail">At least seven observed days are needed to assess weekly training patterns.</string>
     <string name="goal_details_reason_overdue_title">Target date has passed</string>
     <string name="goal_details_reason_overdue_detail">You're past the original target. Consider extending the deadline or wrapping the goal up.</string>
     <string name="goal_details_reason_almost_done_title">Home stretch</string>
-    <string name="goal_details_reason_almost_done_detail">You're in the final stretch. Lock in the pattern that has been working.</string>
-    <string name="goal_details_reason_completed_title">Goal reached</string>
-    <string name="goal_details_reason_completed_detail">Your training matched the plan through the full period — nice work.</string>
+    <string name="goal_details_reason_almost_done_detail">The target date is approaching. Review your training and next steps.</string>
     <string name="goal_details_reason_on_track_title">On track</string>
-    <string name="goal_details_reason_on_track_detail">Your recent training pattern matches the goal you chose.</string>
+    <string name="goal_details_reason_on_track_detail">Most evaluated training criteria are met in the analyzed period.</string>
     <string name="goal_details_reason_drifting_title">Slightly off</string>
-    <string name="goal_details_reason_drifting_detail">Some sessions don't fit the pattern this goal needs. Small adjustments will get you back.</string>
+    <string name="goal_details_reason_drifting_detail">Some evaluated training criteria need attention. See their values and targets above.</string>
     <string name="goal_details_reason_off_track_title">Off track</string>
-    <string name="goal_details_reason_off_track_detail">Most of your recent work goes toward a different quality than what this goal needs.</string>
+    <string name="goal_details_reason_off_track_detail">Several evaluated training criteria are below their targets. Review the recorded period and the individual criteria above.</string>
 
     <!-- Training goal details: per-axis reasons -->
-    <string name="goal_details_reason_strength_low_title">Not enough heavy work</string>
-    <string name="goal_details_reason_strength_low_detail">Low-rep, high-load sets are the key driver of getting stronger, and they're a small share of your volume.</string>
-    <string name="goal_details_reason_strength_ok_title">Strength focus looks right</string>
-    <string name="goal_details_reason_strength_ok_detail">A clear majority of your work is heavy enough to build strength.</string>
 
-    <string name="goal_details_reason_hypertrophy_low_title">Too little hypertrophy work</string>
-    <string name="goal_details_reason_hypertrophy_low_detail">Moderate-load, moderate-rep sets (6–12 reps) drive muscle growth — you're not doing enough of them.</string>
-    <string name="goal_details_reason_hypertrophy_ok_title">Hypertrophy focus looks right</string>
-    <string name="goal_details_reason_hypertrophy_ok_detail">Most of your work lives in the hypertrophy rep range.</string>
 
-    <string name="goal_details_reason_endurance_low_title">Not enough metabolic work</string>
-    <string name="goal_details_reason_endurance_low_detail">Fat-loss goals benefit from higher reps and shorter rest — you're leaning heavy instead.</string>
-    <string name="goal_details_reason_endurance_ok_title">Endurance emphasis is right</string>
-    <string name="goal_details_reason_endurance_ok_detail">You're keeping the pace high enough to drive the conditioning you need.</string>
 
-    <string name="goal_details_reason_balance_drift_title">Your axes are off balance</string>
-    <string name="goal_details_reason_balance_drift_detail">This goal rewards a rough 50/50 split between the two core qualities — you're leaning into one.</string>
-    <string name="goal_details_reason_balance_ok_title">Balance looks healthy</string>
-    <string name="goal_details_reason_balance_ok_detail">The two core qualities are trading weight evenly, which is what this goal needs.</string>
 
-    <string name="goal_details_reason_suppressed_axis_high_title">A third quality is crowding in</string>
-    <string name="goal_details_reason_suppressed_axis_high_detail">The quality this goal wants suppressed is taking up too much of your session time.</string>
 
-    <string name="goal_details_reason_rtt_under_title">Still ramping up slowly</string>
-    <string name="goal_details_reason_rtt_under_detail">You're training below the minimum work needed to rebuild capacity. Add a couple more light sessions.</string>
-    <string name="goal_details_reason_rtt_over_title">Coming back too hot</string>
-    <string name="goal_details_reason_rtt_over_detail">Volume and intensity are already high for a return phase. Pull back to protect recovery.</string>
-    <string name="goal_details_reason_rtt_in_range_title">Ramp-up pace looks right</string>
-    <string name="goal_details_reason_rtt_in_range_detail">You're training enough to rebuild without overshooting.</string>
 
     <!-- Training goal details: actionable tips -->
-    <string name="goal_details_tip_add_heavy">Work in 3–5 reps at 85%+ of your 1RM on a main compound lift.</string>
-    <string name="goal_details_tip_hypertrophy_reps">Target 8–12 reps at 65–75% 1RM and do 3–4 sets per muscle group.</string>
-    <string name="goal_details_tip_metabolic">Try shorter rests, higher reps (12–20), and circuit-style finishers.</string>
-    <string name="goal_details_tip_balance_strength_hyp">Plan one heavy lower-rep day and one moderate-rep day each week.</string>
-    <string name="goal_details_tip_balance_strength_end">Alternate a strength session with a conditioning session — keep them roughly equal in volume.</string>
-    <string name="goal_details_tip_reduce_suppressed">Swap one conditioning or hypertrophy day for the axis this goal cares about.</string>
-    <string name="goal_details_tip_ramp_up">Add one more short session this week, keeping every set 2–3 reps shy of failure.</string>
-    <string name="goal_details_tip_dial_back">Cut the heaviest set off each exercise for a week and prioritize recovery.</string>
     <string name="goal_details_tip_review_deadline">Revisit the target date — either extend it or close the goal and start a fresh one.</string>
 
     <!-- Goal-fit diagnostic sections -->
@@ -696,55 +642,40 @@
     <string name="goal_fit_target_at_least">≥%1$s</string>
     <string name="goal_fit_target_at_most">≤%1$s</string>
     <string name="goal_fit_target_range">%1$s–%2$s</string>
-    <string name="goal_fit_target_count_of">%1$s of %2$s</string>
 
     <!-- Goal-fit unit suffixes (concatenated with numbers in code; never used as printf %d) -->
     <string name="goal_fit_unit_sets_per_week">sets/wk</string>
-    <string name="goal_fit_unit_sessions_per_week">sessions/wk</string>
-    <string name="goal_fit_unit_lifts">lifts</string>
     <string name="goal_fit_unit_groups">groups</string>
-    <string name="goal_fit_unit_qualities">qualities</string>
     <string name="goal_fit_unit_ratio">×</string>
 
     <!-- Goal-fit context labels (shown next to per-group sub-findings) -->
-    <string name="goal_fit_inversion_none">No accessory inversion</string>
-    <string name="goal_fit_inversion_inverted">Above all primary groups: %1$s</string>
 
     <!-- Goal-fit rule titles — BUILD_MUSCLE -->
-    <string name="goal_fit_rule_build_muscle_hypertrophy_rep_range_share_title">Hypertrophy rep range</string>
-    <string name="goal_fit_rule_build_muscle_weekly_sets_per_primary_group_title">Weekly sets per primary group</string>
-    <string name="goal_fit_rule_build_muscle_weekly_frequency_per_primary_group_title">Sessions per primary group</string>
-    <string name="goal_fit_rule_build_muscle_accessory_inversion_title">Accessory vs primary balance</string>
-    <string name="goal_fit_rule_build_muscle_load_progression_title">Load progression</string>
+    <string name="goal_fit_rule_build_muscle_weekly_sets_per_primary_group_title">Estimated sets by muscle group</string>
+    <string name="goal_fit_rule_build_muscle_weekly_frequency_per_primary_group_title">Training days by muscle group</string>
+    <string name="goal_fit_rule_build_muscle_load_progression_title">Estimated strength change over period</string>
 
     <!-- Goal-fit rule titles — GET_STRONGER -->
-    <string name="goal_fit_rule_get_stronger_compound_presence_title">Compound lifts present</string>
-    <string name="goal_fit_rule_get_stronger_heavy_intensity_share_title">Heavy top-set share</string>
     <string name="goal_fit_rule_get_stronger_strength_rep_range_share_title">Strength rep range</string>
-    <string name="goal_fit_rule_get_stronger_compound_to_isolation_ratio_title">Compound to isolation</string>
-    <string name="goal_fit_rule_get_stronger_strength_progression_title">Compound load progression</string>
+    <string name="goal_fit_rule_get_stronger_strength_progression_title">Estimated strength change over period</string>
 
     <!-- Goal-fit rule titles — MAINTAIN -->
-    <string name="goal_fit_rule_maintain_work_balance_skew_title">Strength vs hypertrophy balance</string>
-    <string name="goal_fit_rule_maintain_group_coverage_title">Muscle group coverage</string>
-    <string name="goal_fit_rule_maintain_weekly_frequency_title">Sessions per week</string>
-    <string name="goal_fit_rule_maintain_weekly_volume_stability_title">Weekly volume stability</string>
+    <string name="goal_fit_rule_maintain_group_coverage_title">Chest, back and leg coverage</string>
+    <string name="goal_fit_rule_maintain_weekly_frequency_title">Training days per week</string>
+    <string name="goal_fit_rule_maintain_weekly_volume_stability_title">Weekly set-count variation</string>
 
     <!-- Goal-fit rule titles — GENERAL_FITNESS -->
-    <string name="goal_fit_rule_general_fitness_quality_variety_title">Quality variety</string>
-    <string name="goal_fit_rule_general_fitness_group_coverage_title">Muscle group coverage</string>
-    <string name="goal_fit_rule_general_fitness_weekly_frequency_title">Sessions per week</string>
-    <string name="goal_fit_rule_general_fitness_work_balance_skew_title">Strength vs endurance balance</string>
+    <string name="goal_fit_rule_general_fitness_group_coverage_title">Chest, back and leg coverage</string>
+    <string name="goal_fit_rule_general_fitness_weekly_frequency_title">Training days per week</string>
 
     <!-- Goal-fit rule titles — LOSE_FAT -->
-    <string name="goal_fit_rule_lose_fat_session_adherence_title">Sessions per week</string>
+    <string name="goal_fit_rule_lose_fat_session_adherence_title">Training days per week</string>
     <string name="goal_fit_rule_lose_fat_resistance_presence_title">Resistance work per week</string>
-    <string name="goal_fit_rule_lose_fat_weekly_volume_trend_title">Weekly volume trend</string>
+    <string name="goal_fit_rule_lose_fat_weekly_volume_trend_title">Latest full week’s set count vs previous</string>
 
     <!-- Goal-fit rule titles — RETURN_TO_TRAINING -->
-    <string name="goal_fit_rule_return_to_training_weekly_frequency_title">Sessions per week</string>
-    <string name="goal_fit_rule_return_to_training_load_ramp_gentle_title">Weekly load ramp</string>
-    <string name="goal_fit_rule_return_to_training_intensity_floor_title">Intensity ceiling</string>
+    <string name="goal_fit_rule_return_to_training_weekly_frequency_title">Training days per week</string>
+    <string name="goal_fit_rule_return_to_training_load_ramp_gentle_title">Largest weekly set-count increase</string>
 
     <!-- Personalizations: schedule -->
     <string name="personalization_low_frequency">1–2 times a week</string>
@@ -887,29 +818,6 @@
     <string name="personalization_phase_competition_prep">Competition prep</string>
 
     <!-- Muscle load summary -->
-    <string name="muscle_load_summary_empty">Log a workout to see your muscle load distribution.</string>
-    <string name="muscle_load_summary_top_group_fallback">top group</string>
-    <string name="muscle_load_summary_weakest_group_fallback">the weakest group</string>
-    <string name="muscle_load_summary_note">Note: stimulus-weighted load. Compounds get a small boost; tiny shares are damped; small/sensitive muscles are capped.</string>
-    <string name="muscle_load_summary_headline_strong_focus">Strong focus: %1$s ~%2$d%% (top-2 ~%3$d%%).</string>
-    <string name="muscle_load_summary_headline_clear_split">Clear split: top-2 ~%1$d%% (top ~%2$d%%, second ~%3$d%%).</string>
-    <string name="muscle_load_summary_headline_balanced">Balanced: top ~%1$d%%, top-2 ~%2$d%%.</string>
-    <string name="muscle_load_summary_headline_mild_bias">Mild bias: top ~%1$d%%, top-2 ~%2$d%% (rest ~%3$d%%).</string>
-    <string name="muscle_load_summary_action_strong_focus_with_target">If this is the goal, keep it 2–3 weeks. If not: add 2–4 sets/week for %1$s until rest share is above ~25%%.</string>
-    <string name="muscle_load_summary_action_strong_focus_no_target">If this is the goal, keep it 2–3 weeks. If not: add 2–4 sets/week to the least trained group until rest share is above ~25%%.</string>
-    <string name="muscle_load_summary_action_clear_split_with_target">Good split. To avoid lag: keep 1–3 sets/week for %1$s and other low-share groups.</string>
-    <string name="muscle_load_summary_action_clear_split_no_target">Good split. To avoid lag: keep 1–3 sets/week for low-share groups.</string>
-    <string name="muscle_load_summary_action_balanced">Solid base. If progress stalls: pick one group and add 2–3 sets/week.</string>
-    <string name="muscle_load_summary_action_mild_bias_with_target">If you want it cleaner: add 1–2 sets per session to %1$s (or whichever is lowest) until top-2 is ~70–75%%.</string>
-    <string name="muscle_load_summary_action_mild_bias_no_target">If you want it cleaner: add 1–2 sets per session to the lowest-share group until top-2 is ~70–75%%.</string>
-    <string name="muscle_load_summary_top_muscle">Top muscle: %1$s (~%2$d%%).</string>
-    <string name="muscle_load_summary_volume_higher_than_stimulus">Volume is higher than stimulus for %1$s. Lots of tonnage, less focus. For size: add 1–2 back-off sets. For strength: keep it, but keep one heavy top set.</string>
-    <string name="muscle_load_summary_stimulus_higher_than_volume">Stimulus is higher than volume for %1$s. More effort with less tonnage. For strength: add a heavier top set. For size: keep it and add 1 set.</string>
-    <string name="muscle_load_summary_stimulus_volume_match">Stimulus and volume match for the top group.</string>
-    <string name="muscle_load_summary_second_driver">Second driver: %1$s.</string>
-    <string name="muscle_load_summary_assist_suppressed">Assist groups look quiet — expected. The score dampens tiny shares, so compounds don't inflate arms or shoulders. If you want them to grow, add 2–6 isolation sets/week.</string>
-    <string name="muscle_load_summary_tail_with_weakest">Low tail: remaining groups ~%1$d%%. %2$s ~%3$d%%. Consider a short maintenance block.</string>
-    <string name="muscle_load_summary_tail_without_weakest">Low tail: remaining groups ~%1$d%%. Consider a short maintenance block.</string>
 
     <!-- Goal setup suggestion dialog -->
     <string name="goal_setup_suggestion_title">What's your goal?</string>
@@ -985,4 +893,51 @@
     <string name="exercise_history_set_result">%1$s × %2$s</string>
     <string name="exercise_history_previous_short">%1$s · %2$s</string>
     <string name="exercise_history_vs_date">vs %1$s</string>
+    <string name="training_streak_calculation_description">Only days with completed sets count. Multiple workouts on the same day count once. Weekly and cycle targets describe your recent history.</string>
+    <string name="training_streak_current_progress">Latest period: %1$d / %2$d active days</string>
+    <string name="estimated_one_rm_source">From %1$s × %2$s · %3$s</string>
+    <string name="estimated_one_rm_history_peak">Best in this history: %1$s</string>
+    <string name="estimated_one_rm_method">Best set in each record, using 1–10 reps. Rep formulas assume a set near your limit; your actual maximum may differ.</string>
+    <string name="estimated_one_rm_effective_load">Effective load = body weight × coefficient + added weight − assistance. This is not the added weight alone.</string>
+    <string name="estimated_one_rm_unavailable">No suitable 1RM data yet. Record a set of 1–10 reps with complete load information.</string>
+    <string name="performance_comparison_unavailable">Comparison unavailable</string>
+    <string name="performance_history_empty">No workouts in this period</string>
+    <string name="decimal_separator">.</string>
+    <string name="performance_status_record">Period best</string>
+    <string name="performance_status_improved">Above usual</string>
+    <string name="performance_status_declined">Below usual</string>
+    <string name="performance_status_stable">Within usual range</string>
+    <string name="performance_best_value">Best in period so far %1$s</string>
+
+    <string name="digest_title">Training summary</string>
+    <string name="digest_total_volume">Total volume</string>
+    <string name="digest_active_days">Training days</string>
+    <string name="digest_volume_per_workout">Average volume / workout</string>
+    <string name="digest_unavailable">—</string>
+    <string name="digest_zero_duration">0 min</string>
+    <string name="goal_card_status_not_evaluated">Not evaluated yet</string>
+    <string name="goal_details_analysis_period">Analyzed: %1$s – %2$s</string>
+    <string name="goal_details_analysis_evidence">%1$d days · %2$d recorded sets</string>
+    <string name="goal_details_analysis_excluded">Excluded sets with invalid or incomplete entries: %1$d</string>
+    <string name="goal_details_analysis_missing_metadata">Muscle diagnostics unavailable: exercise data missing for %1$d sets.</string>
+    <string name="goal_details_analysis_unavailable">The selected period does not overlap the goal history available today.</string>
+    <string name="goal_details_analysis_method">Training-pattern estimate, not a measure of results. Each evaluated criterion has equal weight: met 100, partly met 50, unmet 0; muscle-group rows are averaged within their criterion. Unknown criteria are omitted. Recorded sets may include warm-ups; effort, recovery, nutrition and activity outside Grippo are unknown. Fat-loss goals assess training support, not fat lost. Muscle-group set counts are estimates weighted by involvement.</string>
+    <string name="training_streak_partial_period">Partially observed period</string>
+    <string name="goal_fit_rule_build_muscle_weekly_frequency_title">Training frequency</string>
+    <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Training frequency</string>
+    <string name="goal_fit_rule_get_stronger_compound_set_share_title">Compound set share</string>
+    <string name="goal_fit_unit_training_days_per_week">training days/wk</string>
+    <string name="muscle_load_set_share_note">Estimated set shares from available exercise details with known muscle involvement.</string>
+    <string name="muscle_load_anatomy_note">Estimated muscle involvement in this exercise.</string>
+    <string name="muscle_load_excluded_sets">Sets not counted (missing repetitions or invalid measurements): %1$d.</string>
+    <string name="muscle_load_unassigned_sets">Recorded sets with unknown muscle involvement: %1$d.</string>
+    <string name="muscle_load_focus_title">Largest share</string>
+    <string name="muscle_load_focus_note">These shares describe training focus, not fatigue or recovery.</string>
+    <string name="muscle_load_less_than_one_percent">&lt;1%</string>
+    <string name="performance_history_scope">Up to 10 latest workouts. The chart follows workout order and connects available values. Comparisons use earlier workouts in the selected period.</string>
+    <string name="muscle_load_unmeasured_volume_sets">Sets with incomplete load data: %1$d. Muscle shares use recorded sets; volume includes fully measured sets only.</string>
+    <string name="goal_card_limited_data">Limited data</string>
+    <string name="available_training_details_notice">Calculated from available exercise details. Some records may be unavailable.</string>
+    <string name="available_sets_label">Available sets</string>
+    <string name="available_exercises_label">Available exercises</string>
 </resources>

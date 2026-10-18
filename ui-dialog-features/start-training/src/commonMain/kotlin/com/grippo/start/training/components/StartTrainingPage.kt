@@ -86,74 +86,71 @@ internal fun StartTrainingPage(
         end = contentPadding.calculateEndPadding(layoutDirection),
     )
 
-    LazyColumn(
+    Column(
         modifier = modifier,
-        state = listState,
-        contentPadding = PaddingValues(
-            top = contentPadding.calculateTopPadding(),
-            bottom = contentPadding.calculateBottomPadding(),
-        ),
-        verticalArrangement = Arrangement.Top,
     ) {
-        item(key = "introduction", contentType = "introduction") {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontalPadding)
-                    .padding(bottom = AppTokens.dp.contentPadding.content),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-            ) {
-                Text(
-                    text = AppTokens.strings.res(title),
-                    style = AppTokens.typography.h3(),
-                    color = AppTokens.colors.text.primary,
-                )
-                Text(
-                    text = AppTokens.strings.res(description),
-                    style = AppTokens.typography.b14Med(),
-                    color = AppTokens.colors.text.secondary,
-                )
-            }
-        }
-        if (recentPicker != null) {
-            item(key = "recent-picker", contentType = "recent-picker") {
-                Box(modifier = Modifier.padding(bottom = AppTokens.dp.contentPadding.content)) {
-                    recentPicker()
-                }
-            }
-        }
-        itemsIndexed(
-            items = exercises,
-            key = { _, exercise -> exercise.id },
-            contentType = { _, _ -> "exercise" },
-        ) { index, exercise ->
-            ExerciseCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontalPadding),
-                value = exercise,
-                style = ExerciseCardStyle.Planned,
-            )
-            if (index < exercises.lastIndex) {
-                ContentDivider(
-                    modifier = Modifier
-                        .padding(horizontalPadding)
-                        .padding(
-                            start = AppTokens.dp.exerciseExampleImage.compact.size +
-                                    AppTokens.dp.contentPadding.subContent,
-                        ),
-                )
-            }
-        }
-        item(key = "edit-hint", contentType = "hint") {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontalPadding)
+                .padding(
+                    top = contentPadding.calculateTopPadding(),
+                    bottom = AppTokens.dp.contentPadding.content,
+                ),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        ) {
             Text(
-                modifier = Modifier
-                    .padding(horizontalPadding)
-                    .padding(top = AppTokens.dp.contentPadding.content),
+                text = AppTokens.strings.res(title),
+                style = AppTokens.typography.h3(),
+                color = AppTokens.colors.text.primary,
+            )
+            Text(
+                text = AppTokens.strings.res(description),
+                style = AppTokens.typography.b14Med(),
+                color = AppTokens.colors.text.secondary,
+            )
+            Text(
                 text = AppTokens.strings.res(Res.string.start_training_plan_edit_hint),
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,
             )
+        }
+        if (recentPicker != null) {
+            Box(modifier = Modifier.padding(bottom = AppTokens.dp.contentPadding.content)) {
+                recentPicker()
+            }
+        }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            state = listState,
+            contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
+            verticalArrangement = Arrangement.Top,
+        ) {
+            itemsIndexed(
+                items = exercises,
+                key = { _, exercise -> exercise.id },
+                contentType = { _, _ -> "exercise" },
+            ) { index, exercise ->
+                ExerciseCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontalPadding),
+                    value = exercise,
+                    style = ExerciseCardStyle.Planned,
+                )
+                if (index < exercises.lastIndex) {
+                    ContentDivider(
+                        modifier = Modifier
+                            .padding(horizontalPadding)
+                            .padding(
+                                start = AppTokens.dp.exerciseExampleImage.compact.size +
+                                        AppTokens.dp.contentPadding.subContent,
+                            ),
+                    )
+                }
+            }
         }
     }
 }

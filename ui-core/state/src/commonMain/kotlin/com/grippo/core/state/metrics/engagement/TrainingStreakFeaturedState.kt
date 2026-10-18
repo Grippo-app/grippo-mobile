@@ -6,7 +6,7 @@ import kotlinx.collections.immutable.ImmutableList
 @Immutable
 public sealed interface TrainingStreakFeaturedState {
     public val length: Int
-    public val targetSessionsPerPeriod: Int
+    public val targetTrainingDaysPerPeriod: Int
     public val periodLengthDays: Int
     public val mood: TrainingStreakMood
     public val progressPercent: Int
@@ -19,14 +19,14 @@ public sealed interface TrainingStreakFeaturedState {
         override val progressPercent: Int,
         override val confidence: Float,
     ) : TrainingStreakFeaturedState {
-        override val targetSessionsPerPeriod: Int = 1
+        override val targetTrainingDaysPerPeriod: Int = 1
         override val periodLengthDays: Int = 1
     }
 
     @Immutable
     public data class Weekly(
         override val length: Int,
-        override val targetSessionsPerPeriod: Int,
+        override val targetTrainingDaysPerPeriod: Int,
         override val mood: TrainingStreakMood,
         override val progressPercent: Int,
         override val confidence: Float,
@@ -43,18 +43,24 @@ public sealed interface TrainingStreakFeaturedState {
         override val progressPercent: Int,
         override val confidence: Float,
     ) : TrainingStreakFeaturedState {
-        override val targetSessionsPerPeriod: Int = workDays
-        override val periodLengthDays: Int = workDays + restDays
+        override val targetTrainingDaysPerPeriod: Int
+            get() = workDays
+        override val periodLengthDays: Int
+            get() = workDays + restDays
     }
 
     @Immutable
     public data class Pattern(
         override val length: Int,
-        override val targetSessionsPerPeriod: Int,
-        override val periodLengthDays: Int,
         val mask: ImmutableList<Boolean>,
         override val mood: TrainingStreakMood,
         override val progressPercent: Int,
         override val confidence: Float,
-    ) : TrainingStreakFeaturedState
+    ) : TrainingStreakFeaturedState {
+        override val targetTrainingDaysPerPeriod: Int
+            get() = mask.count { it }
+
+        override val periodLengthDays: Int
+            get() = mask.size
+    }
 }

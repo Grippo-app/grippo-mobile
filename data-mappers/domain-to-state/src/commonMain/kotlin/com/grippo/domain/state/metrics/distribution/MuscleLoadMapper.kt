@@ -33,5 +33,8 @@ private fun DomainMuscleLoadMeta.toState(): StateMuscleLoadMeta {
         totalRepetitions = totalRepetitions,
         totalVolume = totalVolume,
         dominantGroup = dominantGroup?.toState(),
+        excludedSets = excludedSets,
+        unassignedSets = unassignedSets,
+        unmeasuredVolumeSets = unmeasuredVolumeSets,
     )
 }

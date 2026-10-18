@@ -9,55 +9,70 @@ import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
 public data class ExerciseDistributionState<T>(
+    val weighting: DistributionWeightingState,
     val entries: ImmutableList<ExerciseDistributionEntryState<T>>,
+    /** Completed sets omitted from the positive-volume total; zero for other weightings. */
+    val excludedVolumeSetCount: Long,
 )
 
 public fun stubCategoryDistribution(): ExerciseDistributionState<CategoryEnumState> {
     val entries = listOf(
         ExerciseDistributionEntryState(
             key = CategoryEnumState.COMPOUND,
-            value = 40f
+            value = 4.0
         ),
         ExerciseDistributionEntryState(
             key = CategoryEnumState.ISOLATION,
-            value = 60f
+            value = 6.0
         ),
     ).toPersistentList()
-    return ExerciseDistributionState(entries = entries)
+    return ExerciseDistributionState(
+        weighting = DistributionWeightingState.Count,
+        entries = entries,
+        excludedVolumeSetCount = 0L,
+    )
 }
 
 public fun stubWeightDistribution(): ExerciseDistributionState<WeightTypeEnumState> {
     val entries = listOf(
         ExerciseDistributionEntryState(
             key = WeightTypeEnumState.FREE,
-            value = 55f
+            value = 11.0
         ),
         ExerciseDistributionEntryState(
             key = WeightTypeEnumState.FIXED,
-            value = 30f
+            value = 6.0
         ),
         ExerciseDistributionEntryState(
             key = WeightTypeEnumState.BODY_WEIGHT,
-            value = 15f
+            value = 3.0
         ),
     ).toPersistentList()
-    return ExerciseDistributionState(entries = entries)
+    return ExerciseDistributionState(
+        weighting = DistributionWeightingState.Count,
+        entries = entries,
+        excludedVolumeSetCount = 0L,
+    )
 }
 
 public fun stubForceDistribution(): ExerciseDistributionState<ForceTypeEnumState> {
     val entries = listOf(
         ExerciseDistributionEntryState(
             key = ForceTypeEnumState.PUSH,
-            value = 45f
+            value = 9.0
         ),
         ExerciseDistributionEntryState(
             key = ForceTypeEnumState.PULL,
-            value = 35f
+            value = 7.0
         ),
         ExerciseDistributionEntryState(
             key = ForceTypeEnumState.HINGE,
-            value = 20f
+            value = 4.0
         ),
     ).toPersistentList()
-    return ExerciseDistributionState(entries = entries)
+    return ExerciseDistributionState(
+        weighting = DistributionWeightingState.Count,
+        entries = entries,
+        excludedVolumeSetCount = 0L,
+    )
 }

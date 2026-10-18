@@ -29,6 +29,7 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.trainings.trainings.MonthlyCalendarDayState
 import com.grippo.trainings.trainings.TrainingsTimelinePeriod
 import kotlinx.collections.immutable.ImmutableList
@@ -67,7 +68,6 @@ internal fun MonthlyTrainingsPage(
 
         MonthCalendar(
             modifier = Modifier.fillMaxWidth(),
-            weekDayLabels = period.weekDayLabels,
             weeks = period.weeks,
             onDayClick = onOpenDaily,
         )
@@ -77,10 +77,11 @@ internal fun MonthlyTrainingsPage(
 @Composable
 private fun MonthCalendar(
     modifier: Modifier = Modifier,
-    weekDayLabels: ImmutableList<String>,
     weeks: ImmutableList<ImmutableList<MonthlyCalendarDayState>>,
     onDayClick: (LocalDate) -> Unit,
 ) {
+    val weekDayLabels = DateCompose.rememberWeekDayShortLabels()
+
     BoxWithConstraints(modifier = modifier) {
         val horizontalSpacing = AppTokens.dp.contentPadding.subContent
         val totalHorizontalSpacing = horizontalSpacing * (weekDayLabels.size - 1)

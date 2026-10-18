@@ -2,29 +2,15 @@ package com.grippo.training.goal.details
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.profile.GoalProgressState
+import com.grippo.data.features.api.metrics.profile.models.GoalAdherence
 import com.grippo.design.components.metrics.profile.goal.GoalInsightSeverity
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_details_reason_almost_done_detail
 import com.grippo.design.resources.provider.goal_details_reason_almost_done_title
-import com.grippo.design.resources.provider.goal_details_reason_balance_drift_detail
-import com.grippo.design.resources.provider.goal_details_reason_balance_drift_title
-import com.grippo.design.resources.provider.goal_details_reason_balance_ok_detail
-import com.grippo.design.resources.provider.goal_details_reason_balance_ok_title
-import com.grippo.design.resources.provider.goal_details_reason_completed_detail
-import com.grippo.design.resources.provider.goal_details_reason_completed_title
 import com.grippo.design.resources.provider.goal_details_reason_drifting_detail
 import com.grippo.design.resources.provider.goal_details_reason_drifting_title
-import com.grippo.design.resources.provider.goal_details_reason_endurance_low_detail
-import com.grippo.design.resources.provider.goal_details_reason_endurance_low_title
-import com.grippo.design.resources.provider.goal_details_reason_endurance_ok_detail
-import com.grippo.design.resources.provider.goal_details_reason_endurance_ok_title
-import com.grippo.design.resources.provider.goal_details_reason_hypertrophy_low_detail
-import com.grippo.design.resources.provider.goal_details_reason_hypertrophy_low_title
-import com.grippo.design.resources.provider.goal_details_reason_hypertrophy_ok_detail
-import com.grippo.design.resources.provider.goal_details_reason_hypertrophy_ok_title
 import com.grippo.design.resources.provider.goal_details_reason_no_data_detail
 import com.grippo.design.resources.provider.goal_details_reason_no_data_title
 import com.grippo.design.resources.provider.goal_details_reason_off_track_detail
@@ -33,38 +19,57 @@ import com.grippo.design.resources.provider.goal_details_reason_on_track_detail
 import com.grippo.design.resources.provider.goal_details_reason_on_track_title
 import com.grippo.design.resources.provider.goal_details_reason_overdue_detail
 import com.grippo.design.resources.provider.goal_details_reason_overdue_title
-import com.grippo.design.resources.provider.goal_details_reason_rtt_in_range_detail
-import com.grippo.design.resources.provider.goal_details_reason_rtt_in_range_title
-import com.grippo.design.resources.provider.goal_details_reason_rtt_over_detail
-import com.grippo.design.resources.provider.goal_details_reason_rtt_over_title
-import com.grippo.design.resources.provider.goal_details_reason_rtt_under_detail
-import com.grippo.design.resources.provider.goal_details_reason_rtt_under_title
-import com.grippo.design.resources.provider.goal_details_reason_strength_low_detail
-import com.grippo.design.resources.provider.goal_details_reason_strength_low_title
-import com.grippo.design.resources.provider.goal_details_reason_strength_ok_detail
-import com.grippo.design.resources.provider.goal_details_reason_strength_ok_title
-import com.grippo.design.resources.provider.goal_details_reason_suppressed_axis_high_detail
-import com.grippo.design.resources.provider.goal_details_reason_suppressed_axis_high_title
 import com.grippo.design.resources.provider.goal_details_reason_too_early_detail
 import com.grippo.design.resources.provider.goal_details_reason_too_early_title
-import com.grippo.design.resources.provider.goal_details_tip_add_heavy
-import com.grippo.design.resources.provider.goal_details_tip_balance_strength_end
-import com.grippo.design.resources.provider.goal_details_tip_balance_strength_hyp
-import com.grippo.design.resources.provider.goal_details_tip_dial_back
-import com.grippo.design.resources.provider.goal_details_tip_hypertrophy_reps
-import com.grippo.design.resources.provider.goal_details_tip_metabolic
-import com.grippo.design.resources.provider.goal_details_tip_ramp_up
-import com.grippo.design.resources.provider.goal_details_tip_reduce_suppressed
 import com.grippo.design.resources.provider.goal_details_tip_review_deadline
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
 public data class TrainingGoalDetailsDialogState(
-    val range: DateRangeFormatState,
     val progress: GoalProgressState? = null,
-    val insights: ImmutableList<InsightItem> = persistentListOf(),
 ) {
+    public val insights: ImmutableList<InsightItem>
+        get() {
+            val progress = progress ?: return persistentListOf(
+                InsightItem(severity = InsightItem.Severity.Neutral, reason = ReasonCode.NoData)
+            )
+            val score = progress.score
+            val evidence = progress.evidence
+            val summary = when {
+                score == null && evidence.days < GoalAdherence.MIN_ANALYSIS_DAYS && evidence.setCount > 0 ->
+                    InsightItem(severity = InsightItem.Severity.Neutral, reason = ReasonCode.TooEarly)
+
+                score == null ->
+                    InsightItem(severity = InsightItem.Severity.Neutral, reason = ReasonCode.NoData)
+
+                score >= GoalProgressState.ON_TRACK_MIN ->
+                    InsightItem(severity = InsightItem.Severity.Positive, reason = ReasonCode.ScoreOnTrack)
+
+                score >= GoalProgressState.DRIFTING_MIN ->
+                    InsightItem(severity = InsightItem.Severity.Warning, reason = ReasonCode.ScoreDrifting)
+
+                else ->
+                    InsightItem(severity = InsightItem.Severity.Negative, reason = ReasonCode.ScoreOffTrack)
+            }
+            val timeline = when {
+                progress.daysRemaining < 0 -> InsightItem(
+                    severity = InsightItem.Severity.Warning,
+                    reason = ReasonCode.Overdue,
+                    action = TipCode.ReviewDeadline,
+                )
+
+                progress.progressFraction >= GoalAdherence.ALMOST_DONE_FRACTION -> InsightItem(
+                    severity = InsightItem.Severity.Neutral,
+                    reason = ReasonCode.AlmostDone,
+                )
+
+                else -> null
+            }
+
+            return listOfNotNull(summary, timeline).toPersistentList()
+        }
 
     @Immutable
     public data class InsightItem(
@@ -95,33 +100,12 @@ public data class TrainingGoalDetailsDialogState(
         }
     }
 
-    /**
-     * Diagnostic reason codes. Each code is mapped to a localized
-     * headline + detail string in the screen layer (via AppTokens.strings).
-     */
     @Immutable
     public enum class ReasonCode {
         NoData,
         TooEarly,
         Overdue,
         AlmostDone,
-        Completed,
-
-        // Primary-goal-specific deviations
-        StrengthShareLow,
-        StrengthShareOk,
-        HypertrophyShareLow,
-        HypertrophyShareOk,
-        EnduranceShareLow,
-        EnduranceShareOk,
-        BalanceDrift,
-        BalanceOk,
-        SuppressedAxisTooHigh,
-        ReturnToTrainingUnderWork,
-        ReturnToTrainingOverWork,
-        ReturnToTrainingInRange,
-
-        // Score-level summary reasons
         ScoreOnTrack,
         ScoreDrifting,
         ScoreOffTrack;
@@ -140,9 +124,6 @@ public data class TrainingGoalDetailsDialogState(
             AlmostDone -> AppTokens.strings.res(Res.string.goal_details_reason_almost_done_title) to
                     AppTokens.strings.res(Res.string.goal_details_reason_almost_done_detail)
 
-            Completed -> AppTokens.strings.res(Res.string.goal_details_reason_completed_title) to
-                    AppTokens.strings.res(Res.string.goal_details_reason_completed_detail)
-
             ScoreOnTrack -> AppTokens.strings.res(Res.string.goal_details_reason_on_track_title) to
                     AppTokens.strings.res(Res.string.goal_details_reason_on_track_detail)
 
@@ -151,75 +132,15 @@ public data class TrainingGoalDetailsDialogState(
 
             ScoreOffTrack -> AppTokens.strings.res(Res.string.goal_details_reason_off_track_title) to
                     AppTokens.strings.res(Res.string.goal_details_reason_off_track_detail)
-
-            StrengthShareLow -> AppTokens.strings.res(Res.string.goal_details_reason_strength_low_title) to
-                    AppTokens.strings.res(Res.string.goal_details_reason_strength_low_detail)
-
-            StrengthShareOk -> AppTokens.strings.res(Res.string.goal_details_reason_strength_ok_title) to
-                    AppTokens.strings.res(Res.string.goal_details_reason_strength_ok_detail)
-
-            HypertrophyShareLow -> AppTokens.strings.res(Res.string.goal_details_reason_hypertrophy_low_title) to
-                    AppTokens.strings.res(Res.string.goal_details_reason_hypertrophy_low_detail)
-
-            HypertrophyShareOk -> AppTokens.strings.res(Res.string.goal_details_reason_hypertrophy_ok_title) to
-                    AppTokens.strings.res(Res.string.goal_details_reason_hypertrophy_ok_detail)
-
-            EnduranceShareLow -> AppTokens.strings.res(Res.string.goal_details_reason_endurance_low_title) to
-                    AppTokens.strings.res(Res.string.goal_details_reason_endurance_low_detail)
-
-            EnduranceShareOk -> AppTokens.strings.res(Res.string.goal_details_reason_endurance_ok_title) to
-                    AppTokens.strings.res(Res.string.goal_details_reason_endurance_ok_detail)
-
-            BalanceDrift -> AppTokens.strings.res(Res.string.goal_details_reason_balance_drift_title) to
-                    AppTokens.strings.res(Res.string.goal_details_reason_balance_drift_detail)
-
-            BalanceOk -> AppTokens.strings.res(Res.string.goal_details_reason_balance_ok_title) to
-                    AppTokens.strings.res(Res.string.goal_details_reason_balance_ok_detail)
-
-            SuppressedAxisTooHigh ->
-                AppTokens.strings.res(Res.string.goal_details_reason_suppressed_axis_high_title) to
-                        AppTokens.strings.res(Res.string.goal_details_reason_suppressed_axis_high_detail)
-
-            ReturnToTrainingUnderWork ->
-                AppTokens.strings.res(Res.string.goal_details_reason_rtt_under_title) to
-                        AppTokens.strings.res(Res.string.goal_details_reason_rtt_under_detail)
-
-            ReturnToTrainingOverWork ->
-                AppTokens.strings.res(Res.string.goal_details_reason_rtt_over_title) to
-                        AppTokens.strings.res(Res.string.goal_details_reason_rtt_over_detail)
-
-            ReturnToTrainingInRange ->
-                AppTokens.strings.res(Res.string.goal_details_reason_rtt_in_range_title) to
-                        AppTokens.strings.res(Res.string.goal_details_reason_rtt_in_range_detail)
         }
     }
 
-    /**
-     * Action codes paired into insights. Each code resolves to a concrete,
-     * actionable sentence rendered as the action line on a [InsightItem].
-     */
     @Immutable
     public enum class TipCode {
-        AddHeavyCompounds,
-        IncreaseHypertrophyReps,
-        AddMetabolicWork,
-        BalanceStrengthAndHypertrophy,
-        BalanceStrengthAndEndurance,
-        ReduceSuppressedAxis,
-        RampUpGradually,
-        DialBackIntensity,
         ReviewDeadline;
 
         @Composable
         public fun tipText(): String = when (this) {
-            AddHeavyCompounds -> AppTokens.strings.res(Res.string.goal_details_tip_add_heavy)
-            IncreaseHypertrophyReps -> AppTokens.strings.res(Res.string.goal_details_tip_hypertrophy_reps)
-            AddMetabolicWork -> AppTokens.strings.res(Res.string.goal_details_tip_metabolic)
-            BalanceStrengthAndHypertrophy -> AppTokens.strings.res(Res.string.goal_details_tip_balance_strength_hyp)
-            BalanceStrengthAndEndurance -> AppTokens.strings.res(Res.string.goal_details_tip_balance_strength_end)
-            ReduceSuppressedAxis -> AppTokens.strings.res(Res.string.goal_details_tip_reduce_suppressed)
-            RampUpGradually -> AppTokens.strings.res(Res.string.goal_details_tip_ramp_up)
-            DialBackIntensity -> AppTokens.strings.res(Res.string.goal_details_tip_dial_back)
             ReviewDeadline -> AppTokens.strings.res(Res.string.goal_details_tip_review_deadline)
         }
     }

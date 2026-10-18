@@ -17,7 +17,8 @@ import com.grippo.design.preview.PreviewContainer
 @Composable
 internal fun Sparkline(
     modifier: Modifier = Modifier,
-    data: SparklineData
+    data: SparklineData,
+    valueFormatter: ((Float) -> String)? = null,
 ) {
     val charts = AppTokens.colors.charts
 
@@ -76,6 +77,7 @@ internal fun Sparkline(
 
             decimals = 0,
             showLabel = true,
+            valueFormatter = valueFormatter,
         ),
         dots = SparklineStyle.Dots.Visible(
             radius = AppTokens.dp.metrics.charts.sparkline.dotRadius,

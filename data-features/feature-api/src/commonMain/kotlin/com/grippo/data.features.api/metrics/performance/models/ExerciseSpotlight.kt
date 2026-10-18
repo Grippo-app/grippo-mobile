@@ -6,9 +6,8 @@ import kotlinx.datetime.LocalDateTime
 public sealed interface ExerciseSpotlight {
     public val kind: Kind
     public val severity: Severity
-    public val subjectId: String
-    public val subjectLabel: String
     public val example: ExerciseExampleValue
+    /** Evidence support used for selection, not a statistical probability. */
     public val confidence: Float
     public val score: Float
     public val sampleSize: Int
@@ -27,24 +26,23 @@ public sealed interface ExerciseSpotlight {
     }
 
     public data class ProgressWin(
-        override val subjectId: String,
-        override val subjectLabel: String,
         override val example: ExerciseExampleValue,
         override val confidence: Float,
         override val score: Float,
-        override val sampleSize: Int,
         override val lastSeenAt: LocalDateTime,
         val baselineVolumeMedian: Float,
         val latestSessionVolume: Float,
         val improvementPercent: Int,
+        val comparedSessions: Int,
+        val comparisonWindowDays: Int,
     ) : ExerciseSpotlight {
         override val kind: Kind = Kind.ProgressWin
         override val severity: Severity = Severity.Positive
+        override val sampleSize: Int
+            get() = comparedSessions + 1
     }
 
     public data class NeedsAttention(
-        override val subjectId: String,
-        override val subjectLabel: String,
         override val example: ExerciseExampleValue,
         override val confidence: Float,
         override val score: Float,
@@ -59,12 +57,9 @@ public sealed interface ExerciseSpotlight {
     }
 
     public data class GoodFrequency(
-        override val subjectId: String,
-        override val subjectLabel: String,
         override val example: ExerciseExampleValue,
         override val confidence: Float,
         override val score: Float,
-        override val sampleSize: Int,
         override val lastSeenAt: LocalDateTime,
         val appearancesInWindow: Int,
         val activeWeeks: Int,
@@ -73,21 +68,24 @@ public sealed interface ExerciseSpotlight {
     ) : ExerciseSpotlight {
         override val kind: Kind = Kind.GoodFrequency
         override val severity: Severity = Severity.Positive
+        override val sampleSize: Int
+            get() = appearancesInWindow
     }
 
     public data class NearBest(
-        override val subjectId: String,
-        override val subjectLabel: String,
         override val example: ExerciseExampleValue,
         override val confidence: Float,
         override val score: Float,
-        override val sampleSize: Int,
         override val lastSeenAt: LocalDateTime,
         val bestSessionVolume: Float,
         val latestSessionVolume: Float,
         val gapPercent: Int,
+        val comparedSessions: Int,
+        val comparisonWindowDays: Int,
     ) : ExerciseSpotlight {
         override val kind: Kind = Kind.NearBest
         override val severity: Severity = Severity.Positive
+        override val sampleSize: Int
+            get() = comparedSessions + 1
     }
 }

@@ -16,6 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import com.grippo.core.state.formatters.DateTimeFormatState
+import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.trainings.TimelineState
 import com.grippo.core.state.trainings.TimelineState.Companion.exercise
 import com.grippo.core.state.trainings.stubDailyTrainingTimeline
@@ -32,6 +34,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.digest_unavailable
+import com.grippo.design.resources.provider.digest_zero_duration
 import com.grippo.design.resources.provider.empty_daily_trainings
 import com.grippo.design.resources.provider.empty_workouts
 import com.grippo.design.resources.provider.icons.MoreVertical
@@ -43,6 +47,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlin.time.Duration
 
 @Composable
 internal fun DailyTrainingsPage(
@@ -103,6 +108,13 @@ private fun DailyTimelineItem(
     ) {
         if (value is TimelineState.DateTime) {
             val menuLabel = AppTokens.strings.res(Res.string.menu)
+            val start = (value.startAt as? DateTimeFormatState.Valid)?.display
+                ?: AppTokens.strings.res(Res.string.digest_unavailable)
+            val duration = when (value.duration.value) {
+                null -> AppTokens.strings.res(Res.string.digest_unavailable)
+                Duration.ZERO -> AppTokens.strings.res(Res.string.digest_zero_duration)
+                else -> value.duration.short()
+            }
 
             Row(
                 modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
@@ -111,7 +123,7 @@ private fun DailyTimelineItem(
                 Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.subContent))
 
                 Text(
-                    text = "${value.startAt.display} - ${value.createAt.display}",
+                    text = "$start - ${value.createAt.display}",
                     style = AppTokens.typography.b14Semi(),
                     color = AppTokens.colors.text.primary,
                 )
@@ -119,7 +131,7 @@ private fun DailyTimelineItem(
                 Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
 
                 Text(
-                    text = value.duration.short(),
+                    text = duration,
                     style = AppTokens.typography.b12Med(),
                     color = AppTokens.colors.text.secondary,
                 )
@@ -185,6 +197,34 @@ private fun DailyTrainingsEmptyPagePreview() {
     PreviewContainer {
         DailyTrainingsPage(
             items = persistentListOf(),
+            contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
+            loaders = persistentSetOf(),
+            onTrainingMenuClick = {},
+            onExerciseClick = {},
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun DailyTrainingsUnavailableHeaderPreview() {
+    val items = stubDailyTrainingTimeline()
+        .filterIsInstance<TimelineState.Daily.Item>()
+        .map { item ->
+            if (item is TimelineState.DateTime) {
+                item.copy(
+                    startAt = DateTimeFormatState.Empty(format = item.startAt.format),
+                    duration = DurationFormatState.Empty(),
+                )
+            } else {
+                item
+            }
+        }
+        .toPersistentList()
+
+    PreviewContainer {
+        DailyTrainingsPage(
+            items = items,
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
             loaders = persistentSetOf(),
             onTrainingMenuClick = {},

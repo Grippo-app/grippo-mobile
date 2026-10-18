@@ -44,7 +44,7 @@ An existing deviation in the code never authorizes copying it.
 - **Local exception handling that hides, replaces or presents unhandled failures
   in a ViewModel** (`try/catch`, `runCatching`, result failure branches). Unwrap
   with `getOrThrow()` inside `safeLaunch`, including private suspend helpers.
-  Do not add extra launches, recovery wrappers or stage flags; see
+  Request isolation, recovery wrappers and stage flags follow
   [the error pipeline](../../ui-feature/references/error-pipeline.md).
 - **`async { }.await()`** to start a single piece of async work. Use `safeLaunch { ... }`. `async` is for parallel forks.
 
@@ -129,7 +129,7 @@ Screen-result rules are defined in the ui-feature skill,
   `getOrElse` that hide, replace or present unhandled failures in a ViewModel**,
   including private helpers and extensions. Use `safeLaunch` → `ErrorProvider`.
   Private suspend helpers propagate original errors through the same pipeline;
-  no extra launches, scopes, recovery wrappers or stage flags.
+  request isolation follows the [error pipeline](../../ui-feature/references/error-pipeline.md#requests-driven-by-a-long-lived-source), with no new scopes, recovery wrappers or stage flags.
   `Result.onSuccess` alone does not propagate failure. The required Result MUST
   be unwrapped with `getOrThrow()` inside the owned error pipeline or propagated
   to a caller that handles it; failure MUST NOT be silently discarded.
@@ -163,6 +163,10 @@ Screen-result rules are defined in the ui-feature skill,
 - **`var` in state classes.** All `val`.
 - **Mutable collections in state.** Immutable only.
 - **State that duplicates a sub-state**'s field. Derive locally.
+- **Shadow ViewModel stores or derivable State fields** — apply
+  [minimal runtime state](../../ui-feature/references/state.md#minimal-runtime-state).
+- **Redundant domain constructor fields** — apply
+  [minimal domain models](../../data-layer/references/repositories.md#minimal-domain-models).
 - **Flat scalar pile.** 15+ primitive fields, or booleans encoding one lifecycle (`isRunning` + `hasCompletedTest` + `activePhase`). Group clusters into sub-states, fixed sets into enums, the lifecycle into a sealed interface. See the ui-feature skill, references/state.md § "No flat scalar piles". Reviewer-enforced.
 
 ## Build

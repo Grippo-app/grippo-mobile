@@ -6,7 +6,7 @@ public sealed interface TrainingStreakFeatured {
     public val progressPercent: Int
 
     /**
-     * 0..1 confidence of the featured streak.
+     * 0..1 strength of the observed history; this is not a forecast probability.
      */
     public val confidence: Float
 
@@ -19,7 +19,7 @@ public sealed interface TrainingStreakFeatured {
 
     public data class Weekly(
         override val length: Int,
-        val targetSessionsPerWeek: Int,
+        val targetTrainingDaysPerWeek: Int,
         override val mood: TrainingStreakMood,
         override val progressPercent: Int,
         override val confidence: Float,
@@ -36,11 +36,15 @@ public sealed interface TrainingStreakFeatured {
 
     public data class Pattern(
         override val length: Int,
-        val targetSessionsPerPeriod: Int,
-        val periodLengthDays: Int,
         val mask: List<Boolean>,
         override val mood: TrainingStreakMood,
         override val progressPercent: Int,
         override val confidence: Float,
-    ) : TrainingStreakFeatured
+    ) : TrainingStreakFeatured {
+        public val targetTrainingDaysPerPeriod: Int
+            get() = mask.count { it }
+
+        public val periodLengthDays: Int
+            get() = mask.size
+    }
 }

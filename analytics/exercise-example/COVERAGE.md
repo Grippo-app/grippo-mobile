@@ -18,7 +18,8 @@ Scope: `ui-dialog-features:exercise-example`, reviewed 2026-10-13.
 |---|---|---|
 | `DialogConfig.ExerciseExampleDetails`, Default or Action mode; Information and Achievements tabs | ExerciseExampleDetailsComponent → ExerciseExampleDetailsViewModel | Live overlay; default null screenPresentation, no dedicated dialog presentation contract |
 
-Both modes and tabs render one dialog, including loading and empty states. The
+Both modes and tabs render one dialog, including loading, empty, available and
+unavailable 1RM states. The
 shared DialogContentComponent also creates it for nested Exercise detail actions.
 There are no independent screens or child screen VMs in this module. The existing
 shared foundation presentation boundary is unchanged. Analytics is injected in the
@@ -32,19 +33,20 @@ normal retainedInstance factory; shared registers ExerciseExampleAnalyticsModule
 | Segment → Contract → VM `onTabSelected` | `exercise_example_tab_selected`, bounded information/achievements enum | Real selection callback, including clicking the already selected tab; initial/default/restored widget selection emits nothing |
 | VM `onAction` | `exercise_example_action_clicked` | Before existing Action direction; button rendered only in Action mode; label and downstream result omitted |
 | Existing startup safeLaunch | LoadExample | Complete getExerciseExampleById/getOrThrow refresh block |
-| Existing RecentExercises safeLaunch | LoadRecentExercises | Request/getOrThrow, state mapping, volume/one-rep-max calculation and state publication |
+| Finite observeRecentExercises Flow combined with the example observer under Processing.Infinity | LoadRecentExercises | Request/getOrThrow, chronological history mapping and volume publication; runs once per VM, then its result feeds the observed-example one-rep-max calculation |
 | Existing Achievements safeLaunch | LoadAchievements | Request/getOrThrow, state mapping and publication |
 
 Operations use `exercise_example_task_started/completed/failed/interrupted` v1,
 with closed `exercise_example_operation` codes; terminal events include duration_ms.
 The shared decorator supplies fresh operation IDs and monotonic duration, isolates
 reporting Exceptions and preserves return values, original errors and cancellation.
-No loader, job, dispatcher, retry, eligibility guard or business outcome changes.
+Analytics wiring introduces no loader, job, dispatcher, retry or operation-boundary changes.
 All seven schemas register once under the unique exercise_example_analytics qualifier.
 
 Deliberate omissions: dialog view/close, swipe/outside dismissal, entry/referrer,
 mode/action label, downstream action success, data-flow emissions and muscle summary
-recomputation. No callback or routing context is added to observe unavailable facts.
+recomputation and local chart tooltip/exploration. No callback or routing context
+is added to observe unavailable facts.
 No exercise IDs, titles, URLs, history counts, body measurements, weights,
 achievements, request/response payloads or exception text are encoded.
 
@@ -54,8 +56,9 @@ achievements, request/response payloads or exception text are encoded.
 |---|---|---|---|---|
 | Shared dialog host | Session, id, mode/title, action/back callbacks and nested step | Runtime only | Existing retained host; slot/step serializer = null | Ordinary recreation can retain the session; process death closes it |
 | ExerciseExampleDetailsViewModel | mode | Runtime only | Existing DialogConfig input | Fresh opening uses supplied mode; no editable draft |
-| ExerciseExampleDetailsViewModel | example, muscleLoad | Rebuild | ExerciseExampleFeature observer/refresh; MuscleLoadingSummaryUseCase | Fresh opening observes current data and recomputes summary |
-| ExerciseExampleDetailsViewModel | recent, exerciseVolume, estimatedOneRepMax | Rebuild | ExerciseMetricsFeature, VolumeSeriesUseCase, EstimatedOneRepMaxUseCase | Existing startup fetch and mapping |
+| ExerciseExampleDetailsViewModel | example, muscleLoad | Rebuild | ExerciseExampleFeature observer/refresh; pure MuscleLoadingSummaryUseCase.fromExerciseExample(observedExample) | Fresh opening observes current data and derives anatomy directly, without re-reading a separate cache snapshot |
+| ExerciseExampleDetailsViewModel | recent, exerciseVolume, estimatedOneRepMax (dated source set and External/Effective load basis) | Rebuild | ExerciseMetricsFeature, VolumeSeriesUseCase, EstimatedOneRepMaxUseCase with the observed route example and its component requirements | Startup fetch rebuilds chronological records; combining them with the current example recalculates valid 1–10-rep estimates; no eligible estimates, including empty history, show an explicit explanation |
+| ExerciseExampleDetailsViewModel | Recent-record source | Rebuild | Finite request Flow combined with the observed example through Processing.Infinity | Runs once per VM; an empty result remains a known empty sample. No member cache/MutableStateFlow or loading flag; the independent metadata observation survives a failed history request |
 | ExerciseExampleDetailsViewModel | achievements | Rebuild | ExerciseMetricsFeature | Existing startup fetch and mapping |
 | ExerciseExampleDetailsScreen | selected tab and scroll | Runtime only, presentation widget state | Existing rememberSaveable(example id) and rememberScrollState | No business draft; new dialog defaults to Information; existing saveable UI behavior unchanged |
 | VM/foundation | Loaders, jobs, directions, errors, telemetry provenance | Runtime only | Existing foundation ownership | No StateKeeper supplier, secret archive, restoration flag or shadow snapshot added |
@@ -65,13 +68,42 @@ No serializer or PersistenceKey is required: the module has no editable business
 state and its dialog session is intentionally unsaved. No parent drafts, routes or
 DialogConfig contracts change. Retained VM ownership and one-shot startup operations
 remain unchanged; source observation retains its existing lifecycle policy.
+Recent records are explicitly sorted by creation time and stable ID: newest-first
+for history cards and oldest-first for volume and estimated 1RM. Remote response
+order does not define the latest value or align dates by accident.
 The history tab uses the shared flat volume bar style with exact tooltip units
 and a complete series accessibility description. Its existing chronological
 series uses each recent record's formatted session date as the presentation label;
-the categorical workout-statistics series retains exercise-name labels.
+dates are formatted in composition so locale changes update tooltip labels and
+the compact history cards. The
+categorical workout-statistics series retains exercise-name labels.
+Compact and row summaries exclude pending sets from their maximum as before,
+but withhold that maximum when a completed set has an unknown recorded load.
+For a bodyweight exercise, both recorded body weight and coefficient are required
+before its effective load can be known.
+They do not substitute zero or publish a partial maximum from the known sets;
+a genuinely recorded zero remains visible. Maximum labels use the same localized
+read-only weight formatter as the estimated maximum.
+The estimated 1RM card uses the strongest valid set per record for the route's
+exercise ID. Singles preserve the recorded load; 2–10 reps use the mean of Epley
+and Brzycki. Dates, source weight/reps and external versus effective body-inclusive
+load remain rebuilt metadata. The sparkline uses recorded time intervals, dated
+labels and weight-unit tooltips; its history peak is bounded by the fetched
+history. Read-only weight labels use the active locale's decimal separator and
+a space before the unit. Component requirements reject missing mandatory assistance/added weight
+and fields unsupported by the example; optional absence alone means zero. Body
+weight and coefficient always come from the recorded set, never today's profile
+or catalog coefficient. The finite request Flow combines its emitted records with the existing example
+observer, so either arrival order and later catalog updates recalculate the
+estimate without a member cache or a second request. Processing.Infinity keeps
+that one-time source from restarting after pause/resume; independent metadata
+observation retains its WhileActive lifetime and survives a failed history load. Empty
+estimates, including an entirely empty history, show eligibility information
+without a fabricated zero or confidence score. No new interaction or event is
+introduced.
 Tap and horizontal exploration
 stay local to the chart; recent records and exerciseVolume keep their existing
-rebuild sources. No VM State field, draft, callback, operation, analytics symbol,
+rebuild sources. No top-level VM State field, draft, callback, operation, analytics symbol,
 consent or transport contract changes.
 
 ## Verification

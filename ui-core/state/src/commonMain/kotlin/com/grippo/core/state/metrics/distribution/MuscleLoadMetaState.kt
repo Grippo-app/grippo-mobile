@@ -11,4 +11,7 @@ public data class MuscleLoadMetaState(
     val totalRepetitions: Int,
     val totalVolume: Float,
     val dominantGroup: MuscleGroupEnumState?,
+    val excludedSets: Int = 0,
+    val unassignedSets: Int = 0,
+    val unmeasuredVolumeSets: Int = 0,
 )

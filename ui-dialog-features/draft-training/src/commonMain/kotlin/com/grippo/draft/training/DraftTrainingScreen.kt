@@ -1,6 +1,5 @@
 package com.grippo.draft.training
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,6 +11,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DurationFormatState
@@ -65,6 +65,54 @@ internal fun DraftTrainingScreen(
         else -> actionState
     }
 
+    if (!isLoading) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = AppTokens.dp.dialog.horizontalPadding,
+                    end = AppTokens.dp.dialog.horizontalPadding,
+                    top = AppTokens.dp.dialog.top,
+                ),
+        ) {
+            Column(
+                modifier = Modifier.padding(bottom = AppTokens.dp.contentPadding.block),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            ) {
+                Text(
+                    text = when (state.stage) {
+                        StageState.Add, StageState.Draft -> AppTokens.strings.res(Res.string.draft_training_alert_title_add)
+                        is StageState.Edit -> AppTokens.strings.res(Res.string.draft_training_alert_title_edit)
+                    },
+                    style = AppTokens.typography.h3(),
+                    color = AppTokens.colors.text.primary,
+                )
+                Text(
+                    text = when (state.stage) {
+                        StageState.Add, StageState.Draft -> AppTokens.strings.res(Res.string.draft_training_alert_description_add)
+                        is StageState.Edit -> AppTokens.strings.res(Res.string.draft_training_alert_description_edit)
+                    },
+                    style = AppTokens.typography.b14Med(),
+                    color = AppTokens.colors.text.secondary,
+                )
+            }
+            if (state.exercises.isNotEmpty()) {
+                DraftTrainingSummary(state = state)
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = AppTokens.dp.contentPadding.block,
+                            bottom = AppTokens.dp.contentPadding.text,
+                        ),
+                    text = AppTokens.strings.res(Res.string.draft_training_contents),
+                    style = AppTokens.typography.h4(),
+                    color = AppTokens.colors.text.primary,
+                )
+            }
+        }
+    }
+
     BottomOverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
@@ -72,7 +120,7 @@ internal fun DraftTrainingScreen(
         contentPadding = PaddingValues(
             start = AppTokens.dp.dialog.horizontalPadding,
             end = AppTokens.dp.dialog.horizontalPadding,
-            top = AppTokens.dp.dialog.top,
+            top = if (isLoading) AppTokens.dp.dialog.top else 0.dp,
             bottom = AppTokens.dp.contentPadding.block,
         ),
         overlay = AppTokens.colors.background.dialog,
@@ -90,32 +138,6 @@ internal fun DraftTrainingScreen(
                         )
                     }
                 } else {
-                    item(key = "introduction", contentType = "introduction") {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = AppTokens.dp.contentPadding.block),
-                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-                        ) {
-                            Text(
-                                text = when (state.stage) {
-                                    StageState.Add, StageState.Draft -> AppTokens.strings.res(Res.string.draft_training_alert_title_add)
-                                    is StageState.Edit -> AppTokens.strings.res(Res.string.draft_training_alert_title_edit)
-                                },
-                                style = AppTokens.typography.h3(),
-                                color = AppTokens.colors.text.primary,
-                            )
-                            Text(
-                                text = when (state.stage) {
-                                    StageState.Add, StageState.Draft -> AppTokens.strings.res(Res.string.draft_training_alert_description_add)
-                                    is StageState.Edit -> AppTokens.strings.res(Res.string.draft_training_alert_description_edit)
-                                },
-                                style = AppTokens.typography.b14Med(),
-                                color = AppTokens.colors.text.secondary,
-                            )
-                        }
-                    }
-
                     if (state.exercises.isEmpty()) {
                         item(key = "empty", contentType = "empty") {
                             Text(
@@ -126,22 +148,6 @@ internal fun DraftTrainingScreen(
                             )
                         }
                     } else {
-                        item(key = "summary", contentType = "summary") {
-                            DraftTrainingSummary(state = state)
-                        }
-                        item(key = "contents", contentType = "heading") {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        top = AppTokens.dp.contentPadding.block,
-                                        bottom = AppTokens.dp.contentPadding.text,
-                                    ),
-                                text = AppTokens.strings.res(Res.string.draft_training_contents),
-                                style = AppTokens.typography.h4(),
-                                color = AppTokens.colors.text.primary,
-                            )
-                        }
                         itemsIndexed(
                             items = state.exercises,
                             key = { _, exercise -> exercise.id },
@@ -169,7 +175,6 @@ internal fun DraftTrainingScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(AppTokens.colors.background.dialog)
                     .navigationBarsPadding()
                     .padding(
                         start = AppTokens.dp.dialog.horizontalPadding,

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.examples.WeightTypeEnumState
 import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
@@ -18,7 +19,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_max_weight
 import com.grippo.design.resources.provider.exercise_sets_count
-import com.grippo.design.resources.provider.kg
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
@@ -35,9 +35,22 @@ internal fun ExerciseSummary(
         else -> AppTokens.colors.text.secondary
     }
 
-    val maximum = value.iterations
+    val completedLoads = value.iterations
         .filterNot { it.isPending }
-        .maxOfOrNull { it.volume().value ?: 0f }
+        .map { iteration ->
+            if (value.exerciseExample.weightType == WeightTypeEnumState.BODY_WEIGHT &&
+                (iteration.bodyWeight.value == null || iteration.bodyMultiplier.value == null)
+            ) {
+                null
+            } else {
+                iteration.recordedVolume()
+            }
+        }
+    val maximum = if (completedLoads.any { it == null }) {
+        null
+    } else {
+        completedLoads.filterNotNull().maxOrNull()
+    }
 
     FlowRow(
         modifier = modifier,
@@ -50,10 +63,7 @@ internal fun ExerciseSummary(
             color = setsColor,
         )
         if (maximum != null) {
-            val maximumWeight = when (maximum) {
-                0f -> "0${AppTokens.strings.res(Res.string.kg)}"
-                else -> VolumeFormatState.of(maximum).short()
-            }
+            val maximumWeight = VolumeFormatState.shortTotal(maximum)
             Text(
                 text = "·",
                 style = AppTokens.typography.b13Med(),
@@ -65,6 +75,46 @@ internal fun ExerciseSummary(
                 color = AppTokens.colors.text.secondary,
             )
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseSummaryUnknownBodyLoadPreview() {
+    val unknownBodyLoad = stubPendingIteration().copy(
+        bodyWeight = WeightFormatState.of(80f),
+        extraWeight = VolumeFormatState.of(125f),
+        repetitions = RepetitionsFormatState.of(8),
+    )
+    val knownLoad = stubPendingIteration().copy(
+        bodyWeight = WeightFormatState.of(80f),
+        bodyMultiplier = MultiplierFormatState.of(1f),
+        repetitions = RepetitionsFormatState.of(8),
+    )
+    PreviewContainer {
+        ExerciseSummary(
+            value = stubExercise().copy(iterations = persistentListOf(unknownBodyLoad, knownLoad)),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseSummaryMissingBodyWeightPreview() {
+    val unknownBodyLoad = stubPendingIteration().copy(
+        extraWeight = VolumeFormatState.of(20f),
+        bodyMultiplier = MultiplierFormatState.of(1f),
+        repetitions = RepetitionsFormatState.of(8),
+    )
+    val knownLoad = stubPendingIteration().copy(
+        bodyWeight = WeightFormatState.of(80f),
+        bodyMultiplier = MultiplierFormatState.of(1f),
+        repetitions = RepetitionsFormatState.of(8),
+    )
+    PreviewContainer {
+        ExerciseSummary(
+            value = stubExercise().copy(iterations = persistentListOf(unknownBodyLoad, knownLoad)),
+        )
     }
 }
 
@@ -91,7 +141,10 @@ private fun ExerciseSummaryPresetPreview() {
         val base = stubExercise()
         val weights = listOf<Float>()
         val exercise = base.copy(
-            exerciseExample = base.exerciseExample.copy(name = "Bench press"),
+            exerciseExample = base.exerciseExample.copy(
+                name = "Bench press",
+                weightType = WeightTypeEnumState.FREE,
+            ),
             iterations = List(3) { index ->
                 stubPendingIteration().copy(
                     externalWeight = weights.getOrNull(index)?.let { VolumeFormatState.of(it) }
@@ -112,7 +165,10 @@ private fun ExerciseSummaryInProgressPreview() {
         val base = stubExercise()
         val weights = listOf<Float>(60f, 80f)
         val exercise = base.copy(
-            exerciseExample = base.exerciseExample.copy(name = "Barbell squat"),
+            exerciseExample = base.exerciseExample.copy(
+                name = "Barbell squat",
+                weightType = WeightTypeEnumState.FREE,
+            ),
             iterations = List(5) { index ->
                 stubPendingIteration().copy(
                     externalWeight = weights.getOrNull(index)?.let { VolumeFormatState.of(it) }
@@ -133,7 +189,10 @@ private fun ExerciseSummaryCompletedPreview() {
         val base = stubExercise()
         val weights = listOf<Float>(80f, 100f, 120f, 140f)
         val exercise = base.copy(
-            exerciseExample = base.exerciseExample.copy(name = "Deadlift"),
+            exerciseExample = base.exerciseExample.copy(
+                name = "Deadlift",
+                weightType = WeightTypeEnumState.FREE,
+            ),
             iterations = List(4) { index ->
                 stubPendingIteration().copy(
                     externalWeight = weights.getOrNull(index)?.let { VolumeFormatState.of(it) }
@@ -175,7 +234,10 @@ private fun ExerciseSummaryLongTitlePreview() {
         val base = stubExercise()
         val weights = listOf<Float>(22.5f)
         val exercise = base.copy(
-            exerciseExample = base.exerciseExample.copy(name = "Жим гантелей лёжа на наклонной скамье нейтральным хватом"),
+            exerciseExample = base.exerciseExample.copy(
+                name = "Жим гантелей лёжа на наклонной скамье нейтральным хватом",
+                weightType = WeightTypeEnumState.FREE,
+            ),
             iterations = List(12) { index ->
                 stubPendingIteration().copy(
                     externalWeight = weights.getOrNull(index)?.let { VolumeFormatState.of(it) }

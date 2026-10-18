@@ -48,7 +48,7 @@ public object DateRangePresets {
     public fun monthly(): DateRange = DateTimeUtils.thisMonth()
     public fun last30Days(): DateRange = DateTimeUtils.trailingMonth()
     public fun last60Days(): DateRange = DateTimeUtils.trailing60Days()
-    public fun last365Days(): DateRange = DateTimeUtils.trailingYear()
+    public fun last365Days(): DateRange = DateTimeUtils.trailingDays(365)
     public fun yearly(): DateRange = DateTimeUtils.thisYear()
     public fun infinity(): DateRange = DateTimeUtils.infinity()
 

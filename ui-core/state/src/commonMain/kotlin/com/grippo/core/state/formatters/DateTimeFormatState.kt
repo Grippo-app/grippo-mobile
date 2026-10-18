@@ -1,6 +1,8 @@
 package com.grippo.core.state.formatters
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -36,6 +38,12 @@ public sealed class DateTimeFormatState : FormatState<LocalDateTime> {
         override val display: String = "",
         override val value: LocalDateTime? = null,
     ) : DateTimeFormatState(), FormatState.Empty<LocalDateTime>
+
+    @Composable
+    public fun short(): String {
+        val date = value ?: return display
+        return DateCompose.rememberFormat(value = date, format = format)
+    }
 
     public companion object {
         public fun of(

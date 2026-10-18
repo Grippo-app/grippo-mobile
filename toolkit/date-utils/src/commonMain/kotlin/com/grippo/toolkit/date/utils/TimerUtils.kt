@@ -2,11 +2,29 @@ package com.grippo.toolkit.date.utils
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.plus
 import kotlin.math.abs
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource
+
+/** Refreshes date-dependent state on collection and at the next local midnight. */
+public fun currentDateFlow(): Flow<LocalDate> = flow {
+    while (true) {
+        val now = DateTimeUtils.now()
+        emit(now.date)
+
+        val nextDate = now.date.plus(DatePeriod(days = 1))
+        val nextMidnight = DateTimeUtils.startOfDay(nextDate)
+        val remaining = DateTimeUtils.asInstant(nextMidnight) - Clock.System.now()
+        delay(remaining)
+    }
+}.distinctUntilChanged()
 
 public fun timerTextFlow(
     start: LocalDateTime,

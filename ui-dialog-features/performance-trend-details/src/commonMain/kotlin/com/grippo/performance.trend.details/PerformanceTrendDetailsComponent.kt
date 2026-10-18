@@ -22,7 +22,6 @@ public class PerformanceTrendDetailsComponent(
             metricType = metricType,
             analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
-            userFeature = getKoin().get(),
             performanceTrendUseCase = getKoin().get()
         )
     }

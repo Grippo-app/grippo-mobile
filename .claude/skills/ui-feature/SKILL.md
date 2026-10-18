@@ -202,6 +202,9 @@ Review the actual source/diff for the seven MVI files, correct visibility,
 State/update ownership, immutable collections, neutral UI, typed navigation/results,
 shared error handling and cancellation. Trace each acceptance criterion to its
 implementation. Apply the mandatory analytics and preservation gates before completion.
+Inventory every changed ViewModel member and State constructor field against
+[minimal runtime state](references/state.md#minimal-runtime-state); reject shadow
+stores and fields whose value is already determined by the retained inputs.
 Fix findings and review the resulting diff again. Run the checks the
 [verification policy](../../../CLAUDE.md#verification-policy) names; report
 evidence and unverified runtime scenarios.

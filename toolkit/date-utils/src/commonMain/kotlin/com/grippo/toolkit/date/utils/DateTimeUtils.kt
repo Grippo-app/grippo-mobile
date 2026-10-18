@@ -104,13 +104,7 @@ public object DateTimeUtils {
     }
 
     public fun trailingMonth(): DateRange {
-        val today = Clock.System.now().toLocalDateTime(timeZone).date
-        val monthAgo = today.minus(DatePeriod(days = 30))
-
-        return DateRange(
-            from = monthAgo.atTime(DayTime.StartOfDay.localTime),
-            to = today.atTime(DayTime.EndOfDay.localTime)
-        )
+        return trailingDays(30)
     }
 
     public fun trailing14Days(): DateRange {
@@ -122,18 +116,15 @@ public object DateTimeUtils {
     }
 
     public fun trailingWeek(): DateRange {
-        val today = Clock.System.now().toLocalDateTime(timeZone).date
-        val weekAgo = today.minus(DatePeriod(days = 7))
-
-        return DateRange(
-            from = weekAgo.atTime(DayTime.StartOfDay.localTime),
-            to = today.atTime(DayTime.EndOfDay.localTime)
-        )
+        return trailingDays(7)
     }
 
-    private fun trailingDays(days: Int): DateRange {
+    /** Includes today as one of the requested calendar dates. */
+    internal fun trailingDays(days: Int): DateRange {
+        require(days > 0)
+
         val today = Clock.System.now().toLocalDateTime(timeZone).date
-        val daysAgo = today.minus(DatePeriod(days = days))
+        val daysAgo = today.minus(DatePeriod(days = days - 1))
 
         return DateRange(
             from = daysAgo.atTime(DayTime.StartOfDay.localTime),
@@ -281,17 +272,5 @@ public object DateTimeUtils {
         val firstOfNextMonth = LocalDate(nextYear, nextMonth, 1)
         val lastDayOfThisMonth = firstOfNextMonth.minus(DatePeriod(days = 1))
         return lastDayOfThisMonth.day
-    }
-
-    /**
-     * Localized short weekday labels in ISO order (Monday → Sunday): "Mon", "Tue", …
-     * Stable within the current locale — compute once and reuse.
-     */
-    public fun weekDayShortLabels(): List<String> {
-        // 2023-01-02 is a known Monday — anchor for building the ISO-ordered list.
-        val monday = LocalDate(2023, 1, 2)
-        return DayOfWeek.entries.map { day ->
-            format(monday.plus(DatePeriod(days = day.ordinal)), DateFormat.DateOnly.WeekdayShort)
-        }
     }
 }

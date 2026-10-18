@@ -10,77 +10,67 @@ import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
-import com.grippo.toolkit.date.utils.DateTimeUtils
+import kotlin.time.Duration as KotlinDuration
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.DurationUnit
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlin.time.Duration.Companion.minutes
+import kotlinx.datetime.LocalDateTime
 
 @Immutable
 public sealed interface PerformanceMetricState {
     public val type: PerformanceMetricTypeState
-    public val deltaPercentage: Int
-    public val currentVsAveragePercentage: Int
+    public val currentVsAveragePercentage: Double?
     public val status: PerformanceTrendStatusState
 
     public fun isEmpty(): Boolean = status == PerformanceTrendStatusState.Empty
 
-    public fun hasComparison(): Boolean = when (this) {
-        is Volume -> (average.value ?: 0f) > 0f
-        is Density -> (average.value ?: 0f) > 0f
-        is Intensity -> (average.value ?: 0f) > 0f
-        is Duration -> (average.value ?: kotlin.time.Duration.ZERO) > kotlin.time.Duration.ZERO
-        is Repetitions -> (average.value ?: 0) > 0
-    }
-
-    /**
-     * Returns a single Float suitable for plotting on a chart, or null when
-     * this metric has no value to plot (Empty status or non-positive current).
-     */
+    /** Values retain their calculation precision; only display text is rounded. */
     public fun chartValue(): Float? {
         if (isEmpty()) return null
-        return when (this) {
-            is Duration -> current.value?.inWholeSeconds?.toFloat()?.div(60f)?.takeIf { it > 0f }
-            is Volume -> current.value?.takeIf { it > 0f }
-            is Density -> current.value?.takeIf { it > 0f }
-            is Repetitions -> current.value?.toFloat()?.takeIf { it > 0f }
-            is Intensity -> current.value?.takeIf { it > 0f }
+        val value = when (this) {
+            is Duration -> current?.toDouble(DurationUnit.MINUTES)?.toFloat()
+            is Volume -> current
+            is Density -> current
+            is Repetitions -> current?.toFloat()
+            is Intensity -> current
         }
+        return value?.takeIf { it.isFinite() && it > 0f }
     }
 
     @Composable
     public fun currentDisplay(): String = when (this) {
-        is Duration -> current.short()
-        is Volume -> current.short()
-        is Density -> current.short()
-        is Repetitions -> current.short()
-        is Intensity -> current.short()
+        is Duration -> DurationFormatState.shortMinutes(current)
+        is Volume -> VolumeFormatState.shortTotal(current)
+        is Density -> DensityFormatState.shortTotal(current)
+        is Repetitions -> RepetitionsFormatState.shortAverage(current?.toDouble())
+        is Intensity -> IntensityFormatState.shortAverage(current)
     }
 
     @Composable
     public fun averageDisplay(): String = when (this) {
-        is Duration -> average.short()
-        is Volume -> average.short()
-        is Density -> average.short()
-        is Repetitions -> average.short()
-        is Intensity -> average.short()
+        is Duration -> DurationFormatState.shortMinutes(average)
+        is Volume -> VolumeFormatState.shortTotal(average)
+        is Density -> DensityFormatState.shortTotal(average)
+        is Repetitions -> RepetitionsFormatState.shortAverage(average)
+        is Intensity -> IntensityFormatState.shortAverage(average)
     }
 
     @Composable
     public fun bestDisplay(): String = when (this) {
-        is Duration -> best.short()
-        is Volume -> best.short()
-        is Density -> best.short()
-        is Repetitions -> best.short()
-        is Intensity -> best.short()
+        is Duration -> DurationFormatState.shortMinutes(best)
+        is Volume -> VolumeFormatState.shortTotal(best)
+        is Density -> DensityFormatState.shortTotal(best)
+        is Repetitions -> RepetitionsFormatState.shortAverage(best?.toDouble())
+        is Intensity -> IntensityFormatState.shortAverage(best)
     }
 
     @Immutable
     public data class Volume(
-        override val deltaPercentage: Int,
-        override val currentVsAveragePercentage: Int,
-        val current: VolumeFormatState,
-        val average: VolumeFormatState,
-        val best: VolumeFormatState,
+        override val currentVsAveragePercentage: Double?,
+        val current: Float?,
+        val average: Float?,
+        val best: Float?,
         override val status: PerformanceTrendStatusState,
     ) : PerformanceMetricState {
         override val type: PerformanceMetricTypeState = PerformanceMetricTypeState.Volume
@@ -88,11 +78,10 @@ public sealed interface PerformanceMetricState {
 
     @Immutable
     public data class Density(
-        override val deltaPercentage: Int,
-        override val currentVsAveragePercentage: Int,
-        val current: DensityFormatState,
-        val average: DensityFormatState,
-        val best: DensityFormatState,
+        override val currentVsAveragePercentage: Double?,
+        val current: Float?,
+        val average: Float?,
+        val best: Float?,
         override val status: PerformanceTrendStatusState,
     ) : PerformanceMetricState {
         override val type: PerformanceMetricTypeState = PerformanceMetricTypeState.Density
@@ -100,11 +89,10 @@ public sealed interface PerformanceMetricState {
 
     @Immutable
     public data class Duration(
-        override val deltaPercentage: Int,
-        override val currentVsAveragePercentage: Int,
-        val current: DurationFormatState,
-        val average: DurationFormatState,
-        val best: DurationFormatState,
+        override val currentVsAveragePercentage: Double?,
+        val current: KotlinDuration?,
+        val average: KotlinDuration?,
+        val best: KotlinDuration?,
         override val status: PerformanceTrendStatusState,
     ) : PerformanceMetricState {
         override val type: PerformanceMetricTypeState = PerformanceMetricTypeState.Duration
@@ -112,11 +100,10 @@ public sealed interface PerformanceMetricState {
 
     @Immutable
     public data class Repetitions(
-        override val deltaPercentage: Int,
-        override val currentVsAveragePercentage: Int,
-        val current: RepetitionsFormatState,
-        val average: RepetitionsFormatState,
-        val best: RepetitionsFormatState,
+        override val currentVsAveragePercentage: Double?,
+        val current: Int?,
+        val average: Double?,
+        val best: Int?,
         override val status: PerformanceTrendStatusState,
     ) : PerformanceMetricState {
         override val type: PerformanceMetricTypeState = PerformanceMetricTypeState.Repetitions
@@ -124,11 +111,10 @@ public sealed interface PerformanceMetricState {
 
     @Immutable
     public data class Intensity(
-        override val deltaPercentage: Int,
-        override val currentVsAveragePercentage: Int,
-        val current: IntensityFormatState,
-        val average: IntensityFormatState,
-        val best: IntensityFormatState,
+        override val currentVsAveragePercentage: Double?,
+        val current: Float?,
+        val average: Float?,
+        val best: Float?,
         override val status: PerformanceTrendStatusState,
     ) : PerformanceMetricState {
         override val type: PerformanceMetricTypeState = PerformanceMetricTypeState.Intensity
@@ -136,32 +122,35 @@ public sealed interface PerformanceMetricState {
 }
 
 public fun stubPerformanceTrendHistory(): ImmutableList<PerformanceTrendHistoryEntry> {
-    val now = DateTimeUtils.now()
+    val date = LocalDateTime(2026, 10, 15, 10, 0)
     val anyRange = DateRangePresets.infinity()
     return persistentListOf(
         PerformanceTrendHistoryEntry(
+            trainingId = "preview-performance-1",
             endDate = DateTimeFormatState.of(
-                value = now,
+                value = date,
                 range = anyRange,
                 format = DateFormat.DateOnly.DateMmmDdYyyy,
             ),
-            metric = stubPerformanceMetrics().random()
+            metric = stubPerformanceMetrics().first()
         ),
         PerformanceTrendHistoryEntry(
+            trainingId = "preview-performance-2",
             endDate = DateTimeFormatState.of(
-                value = now,
+                value = date,
                 range = anyRange,
                 format = DateFormat.DateOnly.DateMmmDdYyyy,
             ),
-            metric = stubPerformanceMetrics().random()
+            metric = stubPerformanceMetrics().first()
         ),
         PerformanceTrendHistoryEntry(
+            trainingId = "preview-performance-3",
             endDate = DateTimeFormatState.of(
-                value = now,
+                value = date,
                 range = anyRange,
                 format = DateFormat.DateOnly.DateMmmDdYyyy,
             ),
-            metric = stubPerformanceMetrics().random()
+            metric = stubPerformanceMetrics().first()
         ),
     )
 }
@@ -169,67 +158,59 @@ public fun stubPerformanceTrendHistory(): ImmutableList<PerformanceTrendHistoryE
 public fun stubPerformanceMetrics(): ImmutableList<PerformanceMetricState> {
     return persistentListOf(
         PerformanceMetricState.Volume(
-            deltaPercentage = 24,
-            currentVsAveragePercentage = 33,
-            current = VolumeFormatState.of(1_200f),
-            average = VolumeFormatState.of(900f),
-            best = VolumeFormatState.of(1_200f),
+            currentVsAveragePercentage = 33.0,
+            current = 1_200f,
+            average = 900f,
+            best = 1_200f,
             status = PerformanceTrendStatusState.Record
         ),
         PerformanceMetricState.Density(
-            deltaPercentage = 10,
-            currentVsAveragePercentage = 10,
-            current = DensityFormatState.of(22f),
-            average = DensityFormatState.of(20f),
-            best = DensityFormatState.of(24f),
+            currentVsAveragePercentage = 10.0,
+            current = 22f,
+            average = 20f,
+            best = 24f,
             status = PerformanceTrendStatusState.Improved
         ),
         PerformanceMetricState.Volume(
-            deltaPercentage = -12,
-            currentVsAveragePercentage = -12,
-            current = VolumeFormatState.of(780f),
-            average = VolumeFormatState.of(890f),
-            best = VolumeFormatState.of(1_050f),
+            currentVsAveragePercentage = -12.0,
+            current = 780f,
+            average = 890f,
+            best = 1_050f,
             status = PerformanceTrendStatusState.Declined
         ),
         PerformanceMetricState.Duration(
-            deltaPercentage = 0,
-            currentVsAveragePercentage = -7,
-            current = DurationFormatState.of(65.minutes),
-            average = DurationFormatState.of(70.minutes),
-            best = DurationFormatState.of(80.minutes),
+            currentVsAveragePercentage = -7.0,
+            current = 65.minutes,
+            average = 70.minutes,
+            best = 80.minutes,
             status = PerformanceTrendStatusState.Stable
         ),
         PerformanceMetricState.Repetitions(
-            deltaPercentage = 12,
-            currentVsAveragePercentage = 12,
-            current = RepetitionsFormatState.of(84),
-            average = RepetitionsFormatState.of(75),
-            best = RepetitionsFormatState.of(92),
+            currentVsAveragePercentage = 12.0,
+            current = 84,
+            average = 75.0,
+            best = 92,
             status = PerformanceTrendStatusState.Improved
         ),
         PerformanceMetricState.Repetitions(
-            deltaPercentage = 0,
-            currentVsAveragePercentage = 0,
-            current = RepetitionsFormatState.of(70),
-            average = RepetitionsFormatState.of(70),
-            best = RepetitionsFormatState.of(85),
+            currentVsAveragePercentage = 0.0,
+            current = 70,
+            average = 70.0,
+            best = 85,
             status = PerformanceTrendStatusState.Stable
         ),
         PerformanceMetricState.Intensity(
-            deltaPercentage = 3,
-            currentVsAveragePercentage = 3,
-            current = IntensityFormatState.of(36f),
-            average = IntensityFormatState.of(35f),
-            best = IntensityFormatState.of(42f),
+            currentVsAveragePercentage = 3.0,
+            current = 36f,
+            average = 35f,
+            best = 42f,
             status = PerformanceTrendStatusState.Stable
         ),
         PerformanceMetricState.Intensity(
-            deltaPercentage = 9,
-            currentVsAveragePercentage = 18,
-            current = IntensityFormatState.of(40f),
-            average = IntensityFormatState.of(34f),
-            best = IntensityFormatState.of(43f),
+            currentVsAveragePercentage = 18.0,
+            current = 40f,
+            average = 34f,
+            best = 40f,
             status = PerformanceTrendStatusState.Record
         )
     )
@@ -237,10 +218,9 @@ public fun stubPerformanceMetrics(): ImmutableList<PerformanceMetricState> {
 
 public fun stubEmptyPerformanceMetric(): PerformanceMetricState =
     PerformanceMetricState.Volume(
-        deltaPercentage = 0,
-        currentVsAveragePercentage = 0,
-        current = VolumeFormatState.of(0f),
-        average = VolumeFormatState.of(0f),
-        best = VolumeFormatState.of(0f),
+        currentVsAveragePercentage = null,
+        current = null,
+        average = null,
+        best = null,
         status = PerformanceTrendStatusState.Empty,
     )

@@ -15,7 +15,7 @@ app is unreleased and every schema is version 1.
 
 | Route / rendered surface | Component → ViewModel | Presentation | Coverage |
 |---|---|---|---|
-| `DialogConfig.DraftTraining(title, onContinue, onStartNew)` → DialogContentComponent factory → DraftTrainingScreen (scrolling introduction, exercise/filled-set/saved-time summary, display-only exercise rows; pinned Continue and Start new with stage-specific discard guidance; Draft and Add stages share copy) | DraftTrainingComponent → retained DraftTrainingViewModel | Live bottom sheet; default null screen hook, no screen enum, no nested independent screen or container in the module | Stateless service and TrainingFeature injected inside retainedInstance; Essenty BackCallback → `onBack`; event listener maps Continue/StartNew/Back to the config closures and host back |
+| `DialogConfig.DraftTraining(title, onContinue, onStartNew)` → DialogContentComponent factory → DraftTrainingScreen (fixed introduction, exercise/filled-set/saved-time summary and contents heading; scrolling display-only exercise rows; pinned Continue and Start new over the shared bottom gradient with stage-specific discard guidance; Draft and Add stages share copy) | DraftTrainingComponent → retained DraftTrainingViewModel | Live bottom sheet; default null screen hook, no screen enum, no nested independent screen or container in the module | Stateless service and TrainingFeature injected inside retainedInstance; Essenty BackCallback → `onBack`; event listener maps Continue/StartNew/Back to the config closures and host back |
 
 MainViewModel opens the dialog from `resumeOrStartTraining()` inside
 `safeLaunch(loader = StartTraining)` when `getDraftTraining().first()` is nonnull;

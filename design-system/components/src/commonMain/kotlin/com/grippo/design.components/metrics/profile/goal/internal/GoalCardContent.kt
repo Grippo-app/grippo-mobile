@@ -40,7 +40,9 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.AppColor
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.available_training_details_notice
 import com.grippo.design.resources.provider.goal_card_progress_day
+import com.grippo.design.resources.provider.goal_card_limited_data
 import com.grippo.design.resources.provider.goal_card_title
 import com.grippo.design.resources.provider.goal_card_update_btn
 import com.grippo.design.resources.provider.metric_overview_goal_analyzed
@@ -55,7 +57,7 @@ internal fun GoalCardContent(
     onUpdateClick: () -> Unit,
     presentation: MetricCardPresentation = MetricCardPresentation.Detailed,
 ) {
-    val score = value.score.coerceIn(0, 100)
+    val score = value.score?.coerceIn(0, 100)
     val ringColors = goalRingColors(score = score)
 
     if (presentation == MetricCardPresentation.Overview) {
@@ -81,16 +83,36 @@ internal fun GoalCardContent(
                     .fillMaxHeight(),
                 title = value.goal.primaryGoal.label(),
                 score = score,
-                statusText = value.statusLabel()
+                statusText = value.statusLabel(),
+                hasPartialEvidence = value.evidence.excludedSetCount > 0 || value.evidence.missingMetadataSetCount > 0,
             )
 
-            AdherenceRing(
-                modifier = Modifier.size(AppTokens.dp.metrics.profile.goal.chart),
-                score = score,
-                ringColors = ringColors,
-            )
+            Column(
+                modifier = Modifier.width(AppTokens.dp.metrics.profile.goal.chart),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+            ) {
+                AdherenceRing(
+                    modifier = Modifier.size(AppTokens.dp.metrics.profile.goal.chart),
+                    score = score,
+                    ringColors = ringColors,
+                )
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = AppTokens.strings.res(Res.string.metric_overview_goal_score),
+                    style = AppTokens.typography.b11Med(),
+                    color = AppTokens.colors.text.secondary,
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
     }
+
+    Text(
+        text = AppTokens.strings.res(Res.string.available_training_details_notice),
+        style = AppTokens.typography.b12Med(),
+        color = AppTokens.colors.text.secondary,
+    )
 
     Column(
         Modifier.fillMaxWidth(),
@@ -173,7 +195,7 @@ internal fun GoalCardContent(
             } else {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = if (presentation == MetricCardPresentation.Overview && !value.isFinished) {
+                    text = if (presentation == MetricCardPresentation.Overview) {
                         AnnotatedString(value.remainingLine())
                     } else {
                         progressLineHighlighted(value)
@@ -189,7 +211,7 @@ internal fun GoalCardContent(
 @Composable
 private fun GoalOverviewSummary(
     value: GoalProgressState,
-    score: Int,
+    score: Int?,
     ringColors: AppColor.Charts.RingColor.RingPalette,
 ) {
     val target = value.goal.target
@@ -218,6 +240,7 @@ private fun GoalOverviewSummary(
             GoalStatusLabel(
                 statusText = value.statusLabel(),
                 score = score,
+                hasPartialEvidence = value.evidence.excludedSetCount > 0 || value.evidence.missingMetadataSetCount > 0,
             )
 
             Column(
@@ -290,7 +313,8 @@ private fun GoalTitleBlock(
     modifier: Modifier = Modifier,
     title: String,
     statusText: String,
-    score: Int,
+    score: Int?,
+    hasPartialEvidence: Boolean,
 ) {
     Column(
         modifier = modifier,
@@ -314,6 +338,7 @@ private fun GoalTitleBlock(
         GoalStatusLabel(
             statusText = statusText,
             score = score,
+            hasPartialEvidence = hasPartialEvidence,
         )
 
         Spacer(Modifier.weight(1f))
@@ -323,7 +348,8 @@ private fun GoalTitleBlock(
 @Composable
 private fun GoalStatusLabel(
     statusText: String,
-    score: Int,
+    score: Int?,
+    hasPartialEvidence: Boolean,
 ) {
     val statusColor = goalStatusColor(score = score)
 
@@ -338,18 +364,27 @@ private fun GoalStatusLabel(
                 .background(statusColor),
         )
 
-        Text(
-            text = statusText,
-            style = AppTokens.typography.b11Semi(),
-            color = AppTokens.colors.text.secondary,
-        )
+        Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
+            Text(
+                text = statusText,
+                style = AppTokens.typography.b11Semi(),
+                color = AppTokens.colors.text.secondary,
+            )
+            if (score != null && hasPartialEvidence) {
+                Text(
+                    text = AppTokens.strings.res(Res.string.goal_card_limited_data),
+                    style = AppTokens.typography.b11Med(),
+                    color = AppTokens.colors.text.secondary,
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun AdherenceRing(
     modifier: Modifier = Modifier,
-    score: Int,
+    score: Int?,
     ringColors: AppColor.Charts.RingColor.RingPalette,
 ) {
     Box(
@@ -358,7 +393,7 @@ private fun AdherenceRing(
     ) {
         RingChart(
             modifier = Modifier.matchParentSize(),
-            value = score.toFloat(),
+            value = score?.toFloat() ?: 0f,
             max = 100f,
             colors = ringColors,
         )
@@ -370,11 +405,11 @@ private fun AdherenceRing(
                 withStyle(
                     AppTokens.typography.h4().toSpanStyle()
                         .copy(color = AppTokens.colors.text.primary)
-                ) { append(score.toString()) }
+                ) { append(score?.toString() ?: "—") }
                 withStyle(
                     AppTokens.typography.b14Med().toSpanStyle()
                         .copy(color = AppTokens.colors.text.secondary)
-                ) { append(percent) }
+                ) { if (score != null) append(percent) }
             },
             style = AppTokens.typography.h4(),
             color = AppTokens.colors.text.primary,
@@ -387,7 +422,7 @@ private fun AdherenceRing(
 private fun GoalCardContentOnTrackPreview() {
     PreviewContainer {
         val value =
-            goalCardPreviewValues().first { !it.isFinished && it.score >= GoalProgressState.ON_TRACK_MIN }
+            goalCardPreviewValues().first { !it.isFinished && it.score?.let { score -> score >= GoalProgressState.ON_TRACK_MIN } == true }
         MetricSectionPanel(
             style = MetricSectionPanelStyle.Large,
             content = {
@@ -424,7 +459,7 @@ private fun GoalCardContentDriftingPreview() {
 @Composable
 private fun GoalCardContentOffTrackPreview() {
     PreviewContainer {
-        val value = goalCardPreviewValues().first { it.score < GoalProgressState.DRIFTING_MIN }
+        val value = goalCardPreviewValues().first { it.score?.let { score -> score < GoalProgressState.DRIFTING_MIN } == true }
         MetricSectionPanel(
             style = MetricSectionPanelStyle.Large,
             content = {

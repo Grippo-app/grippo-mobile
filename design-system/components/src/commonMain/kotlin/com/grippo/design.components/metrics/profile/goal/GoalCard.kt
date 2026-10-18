@@ -90,8 +90,7 @@ private fun GoalCardOverviewPreview() {
 private fun GoalCardOverviewDueTodayPreview() {
     PreviewContainer {
         GoalCard(
-            value = goalCardPreviewValues().first { !it.isFinished && it.daysRemaining == 0 }
-                .copy(isFinished = true),
+            value = goalCardPreviewValues().first { it.daysRemaining == 0 },
             onUpdateClick = {},
             presentation = MetricCardPresentation.Overview,
         )
@@ -117,7 +116,7 @@ private fun GoalCardOverviewDriftingPreview() {
 @Composable
 private fun GoalCardOverviewOffTrackPreview() {
     PreviewContainer {
-        val value = goalCardPreviewValues().first { it.score < GoalProgressState.DRIFTING_MIN }
+        val value = goalCardPreviewValues().first { it.score?.let { score -> score < GoalProgressState.DRIFTING_MIN } == true }
         GoalCard(
             value = value.copy(
                 goal = value.goal.copy(primaryGoal = GoalPrimaryGoalEnumState.RETURN_TO_TRAINING),
@@ -160,8 +159,10 @@ private fun GoalCardOverviewNoAnalyzedWorkoutsPreview() {
         GoalCard(
             value = value.copy(
                 goal = value.goal.copy(primaryGoal = GoalPrimaryGoalEnumState.RETURN_TO_TRAINING),
-                score = 0,
+                score = null,
                 sessionCount = 0,
+                evidence = value.evidence.copy(setCount = 0),
+                findings = kotlinx.collections.immutable.persistentListOf(),
             ),
             onUpdateClick = {},
             presentation = MetricCardPresentation.Overview,
@@ -173,11 +174,27 @@ private fun GoalCardOverviewNoAnalyzedWorkoutsPreview() {
 @Composable
 private fun GoalCardOverviewFinishedOffTrackPreview() {
     PreviewContainer {
+        val value = goalCardPreviewValues().first { it.isFinished }
         GoalCard(
-            value = goalCardPreviewValues().first { it.isFinished }.copy(
-                score = 0,
+            value = value.copy(
+                score = null,
                 sessionCount = 0,
+                evidence = value.evidence.copy(setCount = 0),
+                findings = kotlinx.collections.immutable.persistentListOf(),
             ),
+            onUpdateClick = {},
+            presentation = MetricCardPresentation.Overview,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalCardOverviewPartialEvidencePreview() {
+    PreviewContainer {
+        val value = goalCardPreviewValues().first { it.daysRemaining > 0 }
+        GoalCard(
+            value = value.copy(evidence = value.evidence.copy(missingMetadataSetCount = 8)),
             onUpdateClick = {},
             presentation = MetricCardPresentation.Overview,
         )

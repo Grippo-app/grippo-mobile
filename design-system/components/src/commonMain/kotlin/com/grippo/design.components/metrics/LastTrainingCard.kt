@@ -29,7 +29,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.calendar
 import com.grippo.design.resources.provider.empty_workouts
-import com.grippo.design.resources.provider.exercises
+import com.grippo.design.resources.provider.available_exercises_label
 import com.grippo.design.resources.provider.home_last_workout_in_period
 import com.grippo.design.resources.provider.metric_overview_duration
 import com.grippo.design.resources.provider.metric_overview_volume
@@ -118,7 +118,7 @@ public fun LastTrainingCard(
             RecapMetric(
                 modifier = Modifier.weight(1f),
                 value = value.exercises.size.toString(),
-                label = AppTokens.strings.res(Res.string.exercises),
+                label = AppTokens.strings.res(Res.string.available_exercises_label),
             )
             Button(
                 content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.calendar)),

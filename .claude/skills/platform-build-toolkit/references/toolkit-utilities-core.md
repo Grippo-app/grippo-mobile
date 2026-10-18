@@ -9,8 +9,20 @@ Inspect the affected `toolkit/<module>/` implementation and direct consumers.
   on request bodies is described in [DTO/API](../../data-layer/references/dtos-and-api.md#omitted-versus-explicit-null).
 - `logger` owns sinks/categories. AppLogger currently dispatches in all build modes;
   do not assume its onDebug method checks the build variant.
+- `localization` owns locale access (`AppLocale`).
+- `number-utils` owns pure numeric representation with explicit separator inputs.
+  Inspect `NumberFormatting.kt` and its callers before adding another numeric helper.
+  Keep stateless transformations as top-level functions, independent of Compose,
+  resources, locale lookup, DI and domain types. Unit, nullable-data and
+  business-validation policies stay with their consumers.
 - `date-utils` owns timezone/date representation. Persist UTC-normalized values and review round-trip
   conversions; formatting is presentation, a clock-based business decision belongs to its operation owner.
+  A new clock Flow/timer needs a concrete consumer that becomes stale while its
+  source data stays unchanged. Prefer existing source/lifecycle emissions when
+  they satisfy that contract; otherwise choose the required boundary (for example
+  local midnight), keep it cancellable and avoid arbitrary polling. Before
+  removing a clock source, inspect retained screens/dialogs and fixed date ranges
+  whose equality filters can suppress an otherwise necessary refresh.
 - Analytics/crash-reporting/messaging API modules expose typed consumer/bootstrap contracts;
   cores own app-lifetime state/policy. SDK transport is app-owned. Do not add data/domain dependencies.
 - Documented upward dependency exceptions ([module dependency rules](../../../../CLAUDE.md#module-dependency-rules)),

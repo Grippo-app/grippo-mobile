@@ -20,13 +20,16 @@ import com.grippo.domain.state.metrics.volume.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.exercise.example.exerciseexample.analytics.toAnalytics
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 
 public class ExerciseExampleDetailsViewModel(
-    private val analytics: ExerciseExampleAnalytics,
     id: String,
     mode: ExerciseExampleDetailsModeState,
-    private val exerciseExampleFeature: ExerciseExampleFeature,
+    private val analytics: ExerciseExampleAnalytics,
+    exerciseExampleFeature: ExerciseExampleFeature,
     private val exerciseMetricsFeature: ExerciseMetricsFeature,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
@@ -36,9 +39,18 @@ public class ExerciseExampleDetailsViewModel(
 ), ExerciseExampleDetailsContract {
 
     init {
-        exerciseExampleFeature.observeExerciseExample(id)
+        val example = exerciseExampleFeature.observeExerciseExample(id)
+
+        example
             .onEach(::provideExerciseExample)
             .safeLaunch()
+
+        example
+            .combine(observeRecentExercises(id)) { example, exercises ->
+                example to exercises
+            }
+            .onEach(::provideEstimatedOneRepMax)
+            .safeLaunch(processing = Processing.Infinity)
 
         safeLaunch {
             analytics.trackOperation(ExerciseExampleOperation.LoadExample) {
@@ -46,55 +58,68 @@ public class ExerciseExampleDetailsViewModel(
             }
         }
 
-        safeLaunch(loader = ExerciseExampleDetailsLoader.RecentExercises) {
-            analytics.trackOperation(ExerciseExampleOperation.LoadRecentExercises) {
-                val exercises = exerciseMetricsFeature.getRecentExercisesByExampleId(id).getOrThrow()
-                provideRecentExercises(exercises)
-            }
-        }
-
         safeLaunch(loader = ExerciseExampleDetailsLoader.Achievements) {
             analytics.trackOperation(ExerciseExampleOperation.LoadAchievements) {
-                val exercises = exerciseMetricsFeature.getAchievementsByExampleId(id).getOrThrow()
-                provideAchievements(exercises)
+                val achievements = exerciseMetricsFeature.getAchievementsByExampleId(id).getOrThrow()
+                provideAchievements(achievements)
             }
         }
     }
 
+    private fun observeRecentExercises(id: String): Flow<List<Exercise>> = flow {
+        val exercises = withLoader(ExerciseExampleDetailsLoader.RecentExercises) {
+            analytics.trackOperation(ExerciseExampleOperation.LoadRecentExercises) {
+                val exercises = exerciseMetricsFeature.getRecentExercisesByExampleId(id).getOrThrow()
+                provideRecentExercises(exercises)
+                exercises
+            }
+        }
+        emit(exercises)
+    }
+
+    private fun provideEstimatedOneRepMax(value: Pair<ExerciseExample?, List<Exercise>>) {
+        val (example, exercises) = value
+        val oneRepMax = example?.let {
+            estimatedOneRepMaxUseCase.fromExercises(
+                exercises = exercises,
+                exerciseExample = it,
+            ).toState()
+        }
+
+        update { it.copy(estimatedOneRepMax = oneRepMax) }
+    }
+
     private fun provideRecentExercises(value: List<Exercise>) {
-        val exercisesState = value.toState()
+        val chronological = value.sortedWith(compareBy<Exercise> { it.createdAt }.thenBy { it.id })
+
+        val exercisesState = chronological.asReversed().toState()
 
         val exerciseVolume = volumeSeriesUseCase
-            .fromExercises(value.asReversed())
-            .toState()
-
-        val oneRepMax = estimatedOneRepMaxUseCase
-            .fromExercises(value)
+            .fromExercises(chronological)
             .toState()
 
         update {
             it.copy(
                 recent = exercisesState,
                 exerciseVolume = exerciseVolume,
-                estimatedOneRepMax = oneRepMax
             )
         }
     }
 
     private fun provideAchievements(value: List<Achievement>) {
-        val achievements = value.toState()
+        val achievements = value.toState().toPersistentList()
 
-        update { it.copy(achievements = achievements.toPersistentList()) }
+        update { it.copy(achievements = achievements) }
     }
 
-    private suspend fun provideExerciseExample(value: ExerciseExample?) {
+    private fun provideExerciseExample(value: ExerciseExample?) {
         val exampleState = value?.toState() ?: return
 
         val muscleLoad = muscleLoadingSummaryUseCase
-            .fromExerciseExample(exampleState.value.id)
+            .fromExerciseExample(value)
             .toState()
 
-        update { current -> current.copy(example = exampleState, muscleLoad = muscleLoad) }
+        update { it.copy(example = exampleState, muscleLoad = muscleLoad) }
     }
 
     override fun onTabSelected(value: ExerciseExampleDetailsTabState) {

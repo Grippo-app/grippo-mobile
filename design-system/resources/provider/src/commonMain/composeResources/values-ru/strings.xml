@@ -19,16 +19,15 @@
     <string name="home_metrics_empty_description">За этот период пока нет показателей. Попробуй другой период.</string>
     <string name="home_last_workout_in_period">Последняя тренировка за период</string>
     <string name="metric_overview_muscle_distribution">Как распределилась нагрузка</string>
-    <string name="metric_overview_muscle_context">Тренировки: %1$d · Подходы: %2$d</string>
-    <string name="metric_overview_muscle_shares">Доля расчётной нагрузки</string>
+    <string name="metric_overview_muscle_context">Тренировки: %1$d · Доступные подходы: %2$d</string>
     <string name="metric_overview_muscle_primary">Наибольшая нагрузка: %1$s</string>
     <string name="metric_overview_muscle_details">Все группы и мышцы</string>
     <string name="metric_overview_streak_title">Ритм тренировок</string>
     <string name="metric_overview_streak_active_days">Активные дни</string>
     <string name="metric_overview_streak_daily_pattern">Ритм: тренировки подряд</string>
-    <string name="metric_overview_streak_weekly_pattern">Тренировок в неделю: %1$d</string>
+    <string name="metric_overview_streak_weekly_pattern">Дней тренировок в неделю: %1$d</string>
     <string name="metric_overview_streak_rhythm_pattern">Дни тренировок: %1$d · Дни отдыха: %2$d</string>
-    <string name="metric_overview_streak_pattern_pattern">Тренировок: %1$d · Дней в цикле: %2$d</string>
+    <string name="metric_overview_streak_pattern_pattern">Дней тренировок: %1$d · Дней в цикле: %2$d</string>
     <string name="metric_overview_performance_average">В среднем раньше: %1$s</string>
     <string name="metric_overview_performance_comparison">%1$s по сравнению с предыдущим средним</string>
     <string name="metric_overview_duration">Время тренировки</string>
@@ -39,10 +38,10 @@
     <string name="metric_overview_goal_score">Соответствие цели</string>
     <string name="metric_overview_goal_analyzed">Проанализировано тренировок за период: %1$d</string>
     <string name="metric_overview_goal_target">Дата цели: %1$s</string>
-    <string name="spotlight_progress_win_title">Прогресс</string>
-    <string name="spotlight_needs_attention_title">Нужно вернуть</string>
-    <string name="spotlight_good_frequency_title">Хорошая частота</string>
-    <string name="spotlight_near_best_title">Рядом с лучшим</string>
+    <string name="spotlight_progress_win_title">Рост объёма</string>
+    <string name="spotlight_needs_attention_title">Дольше без упражнения</string>
+    <string name="spotlight_good_frequency_title">Регулярность</string>
+    <string name="spotlight_near_best_title">Близко к лучшему объёму</string>
     <string name="repetitions_input_hint">1–99 повторений</string>
     <string name="exercise_details_btn">Детали упражнения</string>
     <string name="push_token">Пуш-токен</string>
@@ -50,45 +49,39 @@
     <string name="weight">Вес</string>
     <string name="choose_your_experience_level">Выбери свой текущий уровень подготовки.</string>
     <string name="weight_input_hint">1–999 кг</string>
-    <string name="spotlight_progress_win_metric">+%1$s% к последним %2$d сессиям</string>
-    <string name="spotlight_progress_win_context">Сейчас %1$s кг против обычных %2$s кг</string>
-    <string name="spotlight_progress_win_action">Повтори этот вес ещё раз, потом повышай.</string>
-    <string name="spotlight_needs_attention_metric">%1$d дн. без сессий</string>
-    <string name="spotlight_needs_attention_context">Обычный разрыв ~%1$d дн.; сигнал с %2$d дн.</string>
-    <string name="spotlight_needs_attention_action">Верни это упражнение на этой неделе, если восстановился.</string>
-    <string name="spotlight_good_frequency_metric">%1$sx/нед. за последние %2$d нед.</string>
-    <string name="spotlight_good_frequency_context">Активно в %1$d из %2$d недель, всего %3$d сессий</string>
-    <string name="spotlight_good_frequency_action">Держи тот же ритм.</string>
-    <string name="spotlight_near_best_metric">Разница с лучшим результатом: %1$s%</string>
-    <string name="spotlight_near_best_context">Сейчас %1$s кг против лучшего %2$s кг</string>
-    <string name="spotlight_near_best_action">Повтори тот же сетап и попробуй добрать.</string>
+    <string name="spotlight_progress_win_metric">+%1$s% объёма · прошлых тренировок: %2$d</string>
+    <string name="spotlight_progress_win_context">Последний объём %1$s против медианы %2$s кг·повт. за %3$d дн.</string>
+    <string name="spotlight_progress_win_action">Объём в журнале — вес × повторы во всех подходах; его рост не обязательно означает рост силы.</string>
+    <string name="spotlight_needs_attention_metric">Последняя запись %1$d дн. назад</string>
+    <string name="spotlight_needs_attention_context">Недавний интервал ~%1$d дн.; затянувшийся перерыв с %2$d дн.</string>
+    <string name="spotlight_needs_attention_action">Проверь, вписывается ли упражнение в текущий план.</string>
+    <string name="spotlight_good_frequency_metric">%1$s дн./нед. за %2$d нед.</string>
+    <string name="spotlight_good_frequency_context">Записи в %1$d из %2$d недель, всего %3$d тренировочных дн.</string>
+    <string name="spotlight_good_frequency_action">Несколько тренировок в один день считаются одним тренировочным днём.</string>
+    <string name="spotlight_near_best_metric">До лучшего объёма: %1$s%</string>
+    <string name="spotlight_near_best_context">Объём в журнале %1$s против прежнего лучшего %2$s кг·повт. за %3$d дн.</string>
+    <string name="spotlight_near_best_action">Сравнивай объём при одинаковой технике и амплитуде.</string>
     <string name="dashboard">Главная</string>
-    <string name="highlight_vs_average">ср.</string>
-    <string name="highlight_best_value">Лучшее %1$s</string>
-    <string name="highlight_status_record">Рекорд</string>
-    <string name="highlight_status_improved">Рост</string>
-    <string name="highlight_status_stable">Стабильно</string>
-    <string name="highlight_status_declined">Фокус</string>
     <string name="highlight_muscle_focus">Фокус на мышцы</string>
     <string name="highlight_streaks">Серии</string>
     <string name="highlight_active_days">%1$s активных дней</string>
     <string name="highlight_streak">%1$d-дневная серия</string>
     <string name="highlight_streak_weekly_headline_primary">%1$d-недельная серия</string>
-    <string name="highlight_streak_weekly_target">Цель · %1$d тренировок/нед.</string>
-    <string name="highlight_streak_daily_target">Цель · Дни подряд</string>
-    <string name="highlight_streak_rhythm">Серия: %1$d трен. / %2$d отдых</string>
-    <string name="highlight_streak_rhythm_target">Цель · %1$d трен. дней · %2$d отдых</string>
+    <string name="highlight_streak_weekly_target">Ваш ритм · %1$d дн. тренировок/нед.</string>
+    <string name="highlight_streak_daily_target">Активные дни подряд</string>
+    <string name="highlight_streak_rhythm">Серия циклов: %1$d</string>
+    <string name="highlight_streak_rhythm_target">Ваш ритм · %1$d дн. тренировок · %2$d дн. отдыха</string>
     <string name="highlight_streak_pattern_headline_primary">Паттерн: %1$d циклов</string>
-    <string name="highlight_streak_pattern_target">Цель · %1$d тренировок / %2$d дн.</string>
+    <string name="highlight_streak_pattern_target">Ваш ритм · %1$d активных дн. / %2$d дн.</string>
     <string name="highlight_streak_mood_crushing">🔥 Ты отлично справляешься. Так держать.</string>
     <string name="highlight_streak_mood_on_track">💪 Отличный прогресс. Держи стабильный ритм.</string>
     <string name="highlight_streak_mood_paused">Можно сделать паузу. Возвращайся в любой момент.</string>
     <string name="highlight_streak_mood_restart">🚀 Начни заново. Достаточно одного шага.</string>
-    <string name="performance_trend_desc_duration">Показывает, как меняется длительность тренировок. Линия растёт — сессии становятся длиннее; падает — ты заканчиваешь быстрее.</string>
-    <string name="performance_trend_desc_volume">Показывает, сколько работы за тренировку. Линия растёт — работы больше; несколько падений подряд — пора снизить нагрузку или добавить отдых.</string>
-    <string name="performance_trend_desc_density">Темп работы — сколько объёма за минуту. Выше — больше работы за то же время; ниже — более спокойная сессия или больше отдыха.</string>
-    <string name="performance_trend_desc_repetitions">Сколько повторений за тренировку. Линия растёт — выдерживаешь больше работы; несколько падений подряд — скорее всего накопилась усталость.</string>
-    <string name="performance_trend_desc_intensity">Средний рабочий вес на повторение с весом. Выше — в тренировке в среднем были более тяжёлые рабочие веса.</string>
+    <string name="performance_trend_desc_duration">Длительность каждой тренировки в выбранном периоде. Дольше или короче не значит лучше. Сравнение — с предыдущими тренировками этого периода, у которых есть данные о длительности.</string>
+    <string name="performance_trend_desc_volume">Суммарный поднятый вес: рабочий вес × повторения. Сравнение — со средним предыдущих тренировок этого периода с данными об объёме. На итог влияют упражнения и длина сессии; сам по себе он не показывает рост силы.</string>
+    <string name="performance_trend_desc_density">Объём, разделённый на полную длительность тренировки в минутах, включая отдых. Сравнение — с предыдущими тренировками этого периода с данными о плотности. Больше работы за минуту само по себе не значит лучше.</string>
+    <string name="performance_trend_desc_repetitions">Всего повторений за тренировку в сравнении с предыдущими тренировками этого периода, где есть эти данные. На итог влияют упражнения, подходы и плановые лёгкие сессии; меньше повторений не доказывает усталость.</string>
+    <string name="performance_trend_desc_intensity">Средний рабочий вес на повторение с весом в сравнении с предыдущими тренировками этого периода, где есть данные о весе. Выбор упражнений влияет на среднее; само по себе оно не показывает усилие или рост силы.</string>
     <string name="sets_value">Подходы (%1$s)</string>
     <string name="percent">%</string>
     <string name="selected">Выбрано</string>
@@ -128,7 +121,6 @@
     <string name="training_completed_updated_title">Тренировка обновлена</string>
     <string name="training_completed_updated_description">Изменения сохранены в истории тренировок.</string>
     <string name="training_completed_session_title">За эту тренировку</string>
-    <string name="training_completed_muscle_load_caption">Доля расчётной нагрузки</string>
     <string name="training_completed_details_unavailable">Тренировка сохранена. Посмотреть её можно в истории.</string>
     <string name="training_completed_result_unavailable">Не удалось подтвердить результат тренировки. Проверь историю перед повторной попыткой.</string>
     <string name="training_completed_done">Готово</string>
@@ -252,28 +244,17 @@
     <string name="value_statistics">%1$s — статистика</string>
     <string name="value_muscle_loading">%1$s — мышечная нагрузка</string>
     <string name="muscle_loading">Мышечная нагрузка</string>
-    <string name="muscle_load_balance">Баланс</string>
-    <string name="muscle_load_balance_score">%1$d/100</string>
-    <string name="muscle_load_balance_score_label">оценка</string>
-    <string name="muscle_load_balance_status_balanced">ровное распределение</string>
-    <string name="muscle_load_balance_status_moderate">умеренный перекос</string>
-    <string name="muscle_load_balance_status_strong">сильный перекос</string>
-    <string name="muscle_load_bias">Перекос: %1$s +%2$d%</string>
-    <string name="muscle_load_gap">Пробел: %1$s %2$s</string>
-    <string name="muscle_load_trainings_count">%1$d тренировок</string>
     <string name="muscle_load_no_data">Нет данных.</string>
-    <string name="muscle_load_single_group">Нагружена одна группа мышц: %1$s</string>
     <string name="muscle_loading_distribution_title">Распределение</string>
     <string name="value_training_streak">%1$s — серия тренировок</string>
     <string name="training_streak">Серия тренировок</string>
     <string name="value_performance_trend">%1$s — тренд %2$s</string>
     <string name="performance_trend">Тренд %1$s</string>
-    <string name="training_streak_confidence_title">Стабильность стрика</string>
-    <string name="training_streak_confidence_value">%1$d% уверенности</string>
+    <string name="training_streak_insights_title">Как это рассчитано</string>
+    <string name="training_streak_history_value">Дней наблюдаемой истории: %1$d</string>
     <string name="training_streak_timeline_title">Прогресс по периодам</string>
-    <string name="training_streak_period_value">%1$d из %2$d тренировок выполнено</string>
-    <string name="estimated_one_rm">Расчётный 1ПМ</string>
-    <string name="estimated_one_rm_peak">Пик %1$s</string>
+    <string name="training_streak_period_value">Активные дни: %1$d / %2$d</string>
+    <string name="estimated_one_rm">Расчётный максимум на 1 повтор</string>
     <string name="equipments">Оборудование</string>
     <string name="muscles">Мышцы</string>
     <string name="profile_equipment_description">Включи оборудование, доступное для тренировок.</string>
@@ -613,7 +594,6 @@
     <string name="goal_card_status_on_track">По плану</string>
     <string name="goal_card_status_drifting">Уходишь в сторону</string>
     <string name="goal_card_status_off_track">Сбился с цели</string>
-    <string name="goal_card_status_completed">Цель достигнута</string>
     <string name="goal_card_progress_day">День %1$d из %2$d</string>
     <string name="goal_card_progress_days_left">Осталось %1$d дн.</string>
     <string name="goal_card_progress_overdue">Просрочено на %1$d дн.</string>
@@ -623,66 +603,32 @@
     <!-- Training goal details dialog -->
     <string name="goal_details_title">Детали цели</string>
     <string name="goal_details_subtitle">Смотрим внимательнее, насколько твои тренировки совпадают с выбранной целью.</string>
-    <string name="goal_details_insights_title">Что влияет на счёт</string>
+    <string name="goal_details_insights_title">Итоги тренировок</string>
 
     <!-- Training goal details: reason headlines -->
     <string name="goal_details_reason_no_data_title">Пока мало данных</string>
-    <string name="goal_details_reason_no_data_detail">Добавь несколько тренировок за этот период, чтобы мы оценили соответствие.</string>
+    <string name="goal_details_reason_no_data_detail">В этом периоде недостаточно корректно записанных подходов или доступных критериев для оценки тренировок.</string>
     <string name="goal_details_reason_too_early_title">Ещё слишком рано</string>
-    <string name="goal_details_reason_too_early_detail">Цель только началась — устойчивый паттерн обычно проявляется примерно через неделю тренировок.</string>
+    <string name="goal_details_reason_too_early_detail">Для оценки недельной структуры тренировок нужен период наблюдения не короче семи дней.</string>
     <string name="goal_details_reason_overdue_title">Дата финиша прошла</string>
     <string name="goal_details_reason_overdue_detail">Ты прошёл исходный дедлайн. Продли срок или закрой цель.</string>
     <string name="goal_details_reason_almost_done_title">Финишная прямая</string>
-    <string name="goal_details_reason_almost_done_detail">Ты на финишной прямой. Закрепи то, что уже работает.</string>
-    <string name="goal_details_reason_completed_title">Цель достигнута</string>
-    <string name="goal_details_reason_completed_detail">Тренировки соответствовали плану весь период — отличная работа.</string>
+    <string name="goal_details_reason_almost_done_detail">Целевая дата приближается. Оцените свои тренировки и дальнейшие шаги.</string>
     <string name="goal_details_reason_on_track_title">В графике</string>
-    <string name="goal_details_reason_on_track_detail">Последние тренировки совпадают с выбранной целью.</string>
+    <string name="goal_details_reason_on_track_detail">Большинство доступных критериев тренировок выполнено в периоде анализа.</string>
     <string name="goal_details_reason_drifting_title">Немного в сторону</string>
-    <string name="goal_details_reason_drifting_detail">Часть сессий не вписывается в нужный паттерн. Небольшие правки вернут тебя в строй.</string>
+    <string name="goal_details_reason_drifting_detail">Часть доступных критериев тренировок требует внимания. Значения и ориентиры показаны выше.</string>
     <string name="goal_details_reason_off_track_title">Не по курсу</string>
-    <string name="goal_details_reason_off_track_detail">Большая часть работы уходит в другую сторону, чем нужно этой цели.</string>
+    <string name="goal_details_reason_off_track_detail">Несколько доступных критериев тренировок ниже ориентиров. Проверьте записи за период и отдельные критерии выше.</string>
 
     <!-- Training goal details: per-axis reasons -->
-    <string name="goal_details_reason_strength_low_title">Мало тяжёлой работы</string>
-    <string name="goal_details_reason_strength_low_detail">Малоповторные подходы с большим весом — главный драйвер силы, а у тебя их доля невелика.</string>
-    <string name="goal_details_reason_strength_ok_title">Фокус на силу выдержан</string>
-    <string name="goal_details_reason_strength_ok_detail">Большая часть работы достаточно тяжёлая, чтобы развивать силу.</string>
 
-    <string name="goal_details_reason_hypertrophy_low_title">Слишком мало работы на массу</string>
-    <string name="goal_details_reason_hypertrophy_low_detail">Средний вес на 6–12 повторений — двигатель роста мышц, а у тебя таких подходов мало.</string>
-    <string name="goal_details_reason_hypertrophy_ok_title">Фокус на гипертрофию выдержан</string>
-    <string name="goal_details_reason_hypertrophy_ok_detail">Большая часть работы лежит в диапазоне гипертрофии.</string>
 
-    <string name="goal_details_reason_endurance_low_title">Недостаточно метаболической работы</string>
-    <string name="goal_details_reason_endurance_low_detail">Для жиросжигания полезнее больше повторений и короче отдых — а ты уходишь в тяжёлые веса.</string>
-    <string name="goal_details_reason_endurance_ok_title">Акцент на выносливость выдержан</string>
-    <string name="goal_details_reason_endurance_ok_detail">Темп держится достаточно высоко, чтобы давать нужную кондицию.</string>
 
-    <string name="goal_details_reason_balance_drift_title">Оси разбалансированы</string>
-    <string name="goal_details_reason_balance_drift_detail">Этой цели нужен примерно равный баланс между двумя ключевыми качествами — ты тянешь в одну сторону.</string>
-    <string name="goal_details_reason_balance_ok_title">Баланс выглядит здорово</string>
-    <string name="goal_details_reason_balance_ok_detail">Два ключевых качества распределены примерно поровну — как и нужно этой цели.</string>
 
-    <string name="goal_details_reason_suppressed_axis_high_title">Третье качество лезет в кадр</string>
-    <string name="goal_details_reason_suppressed_axis_high_detail">Качество, которое должно быть приглушено, занимает слишком много времени сессии.</string>
 
-    <string name="goal_details_reason_rtt_under_title">Разгон идёт слишком медленно</string>
-    <string name="goal_details_reason_rtt_under_detail">Ты тренируешься ниже минимума, нужного для восстановления формы. Добавь пару лёгких сессий.</string>
-    <string name="goal_details_reason_rtt_over_title">Возвращаешься слишком горячо</string>
-    <string name="goal_details_reason_rtt_over_detail">Для фазы возврата объём и интенсивность уже высокие. Сбавь, чтобы сохранить восстановление.</string>
-    <string name="goal_details_reason_rtt_in_range_title">Темп разгона подходящий</string>
-    <string name="goal_details_reason_rtt_in_range_detail">Ты тренируешься достаточно, чтобы восстановить форму без перегиба.</string>
 
     <!-- Training goal details: actionable tips -->
-    <string name="goal_details_tip_add_heavy">Добавь 3–5 повторений на 85%+ от 1ПМ в основном базовом движении.</string>
-    <string name="goal_details_tip_hypertrophy_reps">Держи 8–12 повторений на 65–75% от 1ПМ и 3–4 подхода на мышечную группу.</string>
-    <string name="goal_details_tip_metabolic">Попробуй короче отдых, больше повторений (12–20) и круговые добивающие.</string>
-    <string name="goal_details_tip_balance_strength_hyp">Запланируй один тяжёлый малоповторный день и один среднеповторный в неделю.</string>
-    <string name="goal_details_tip_balance_strength_end">Чередуй силовую и кондиционную сессии — держи их примерно равными по объёму.</string>
-    <string name="goal_details_tip_reduce_suppressed">Замени одну кондиционную или гипертрофическую тренировку на ось, важную для цели.</string>
-    <string name="goal_details_tip_ramp_up">Добавь ещё одну короткую тренировку на неделе, останавливайся за 2–3 повторения до отказа.</string>
-    <string name="goal_details_tip_dial_back">Убери самый тяжёлый подход из каждого упражнения на неделю и сделай упор на восстановление.</string>
     <string name="goal_details_tip_review_deadline">Пересмотри дату финиша — продли её или закрой цель и начни новую.</string>
 
     <!-- Goal-fit diagnostic sections -->
@@ -692,47 +638,32 @@
     <string name="goal_fit_target_at_least">≥%1$s</string>
     <string name="goal_fit_target_at_most">≤%1$s</string>
     <string name="goal_fit_target_range">%1$s–%2$s</string>
-    <string name="goal_fit_target_count_of">%1$s из %2$s</string>
 
     <string name="goal_fit_unit_sets_per_week">сетов/нед</string>
-    <string name="goal_fit_unit_sessions_per_week">тренировок/нед</string>
-    <string name="goal_fit_unit_lifts">упражнений</string>
     <string name="goal_fit_unit_groups">групп</string>
-    <string name="goal_fit_unit_qualities">качеств</string>
     <string name="goal_fit_unit_ratio">×</string>
 
-    <string name="goal_fit_inversion_none">Без перекоса на вспомогательные</string>
-    <string name="goal_fit_inversion_inverted">Выше всех основных: %1$s</string>
 
-    <string name="goal_fit_rule_build_muscle_hypertrophy_rep_range_share_title">Диапазон повторов под гипертрофию</string>
-    <string name="goal_fit_rule_build_muscle_weekly_sets_per_primary_group_title">Сетов в неделю на основную группу</string>
-    <string name="goal_fit_rule_build_muscle_weekly_frequency_per_primary_group_title">Тренировок на основную группу</string>
-    <string name="goal_fit_rule_build_muscle_accessory_inversion_title">Баланс основных и вспомогательных</string>
-    <string name="goal_fit_rule_build_muscle_load_progression_title">Прогресс нагрузки</string>
+    <string name="goal_fit_rule_build_muscle_weekly_sets_per_primary_group_title">Расчётные подходы по группам мышц</string>
+    <string name="goal_fit_rule_build_muscle_weekly_frequency_per_primary_group_title">Дни тренировок по группам мышц</string>
+    <string name="goal_fit_rule_build_muscle_load_progression_title">Изменение расчётной силы за период</string>
 
-    <string name="goal_fit_rule_get_stronger_compound_presence_title">Базовые упражнения в наличии</string>
-    <string name="goal_fit_rule_get_stronger_heavy_intensity_share_title">Доля тяжёлых топ-сетов</string>
     <string name="goal_fit_rule_get_stronger_strength_rep_range_share_title">Силовой диапазон повторов</string>
-    <string name="goal_fit_rule_get_stronger_compound_to_isolation_ratio_title">База к изоляции</string>
-    <string name="goal_fit_rule_get_stronger_strength_progression_title">Прогресс на базе</string>
+    <string name="goal_fit_rule_get_stronger_strength_progression_title">Изменение расчётной силы за период</string>
 
-    <string name="goal_fit_rule_maintain_work_balance_skew_title">Баланс силы и гипертрофии</string>
-    <string name="goal_fit_rule_maintain_group_coverage_title">Покрытие мышечных групп</string>
-    <string name="goal_fit_rule_maintain_weekly_frequency_title">Тренировок в неделю</string>
-    <string name="goal_fit_rule_maintain_weekly_volume_stability_title">Стабильность недельного объёма</string>
+    <string name="goal_fit_rule_maintain_group_coverage_title">Охват груди, спины и ног</string>
+    <string name="goal_fit_rule_maintain_weekly_frequency_title">Дни тренировок в неделю</string>
+    <string name="goal_fit_rule_maintain_weekly_volume_stability_title">Разброс числа подходов по неделям</string>
 
-    <string name="goal_fit_rule_general_fitness_quality_variety_title">Разнообразие качеств</string>
-    <string name="goal_fit_rule_general_fitness_group_coverage_title">Покрытие мышечных групп</string>
-    <string name="goal_fit_rule_general_fitness_weekly_frequency_title">Тренировок в неделю</string>
-    <string name="goal_fit_rule_general_fitness_work_balance_skew_title">Баланс силы и выносливости</string>
+    <string name="goal_fit_rule_general_fitness_group_coverage_title">Охват груди, спины и ног</string>
+    <string name="goal_fit_rule_general_fitness_weekly_frequency_title">Дни тренировок в неделю</string>
 
-    <string name="goal_fit_rule_lose_fat_session_adherence_title">Тренировок в неделю</string>
+    <string name="goal_fit_rule_lose_fat_session_adherence_title">Дни тренировок в неделю</string>
     <string name="goal_fit_rule_lose_fat_resistance_presence_title">Силовая работа в неделю</string>
-    <string name="goal_fit_rule_lose_fat_weekly_volume_trend_title">Тренд недельного объёма</string>
+    <string name="goal_fit_rule_lose_fat_weekly_volume_trend_title">Подходы последней полной недели к предыдущей</string>
 
-    <string name="goal_fit_rule_return_to_training_weekly_frequency_title">Тренировок в неделю</string>
-    <string name="goal_fit_rule_return_to_training_load_ramp_gentle_title">Скачок недельной нагрузки</string>
-    <string name="goal_fit_rule_return_to_training_intensity_floor_title">Потолок интенсивности</string>
+    <string name="goal_fit_rule_return_to_training_weekly_frequency_title">Дни тренировок в неделю</string>
+    <string name="goal_fit_rule_return_to_training_load_ramp_gentle_title">Максимальный недельный рост числа подходов</string>
 
     <!-- Personalizations: schedule -->
     <string name="personalization_low_frequency">1–2 раза в неделю</string>
@@ -875,29 +806,6 @@
     <string name="personalization_phase_competition_prep">Подготовка к соревнованиям</string>
 
     <!-- Muscle load summary -->
-    <string name="muscle_load_summary_empty">Запиши тренировку, чтобы увидеть распределение нагрузки по мышцам.</string>
-    <string name="muscle_load_summary_top_group_fallback">топ-группа</string>
-    <string name="muscle_load_summary_weakest_group_fallback">самая слабая группа</string>
-    <string name="muscle_load_summary_note">Примечание: нагрузка по стимулу. Базовые упражнения получают небольшой бонус; крошечные доли сглаживаются; мелкие/чувствительные мышцы ограничены сверху.</string>
-    <string name="muscle_load_summary_headline_strong_focus">Сильный фокус: %1$s ~%2$d%% (топ-2 ~%3$d%%).</string>
-    <string name="muscle_load_summary_headline_clear_split">Чёткий сплит: топ-2 ~%1$d%% (топ ~%2$d%%, второй ~%3$d%%).</string>
-    <string name="muscle_load_summary_headline_balanced">Сбалансировано: топ ~%1$d%%, топ-2 ~%2$d%%.</string>
-    <string name="muscle_load_summary_headline_mild_bias">Небольшой перекос: топ ~%1$d%%, топ-2 ~%2$d%% (остальное ~%3$d%%).</string>
-    <string name="muscle_load_summary_action_strong_focus_with_target">Если это цель — держи 2–3 недели. Если нет: добавь 2–4 подхода/нед. на %1$s, пока доля остальных не превысит ~25%%.</string>
-    <string name="muscle_load_summary_action_strong_focus_no_target">Если это цель — держи 2–3 недели. Если нет: добавь 2–4 подхода/нед. на наименее тренированную группу, пока доля остальных не превысит ~25%%.</string>
-    <string name="muscle_load_summary_action_clear_split_with_target">Хороший сплит. Чтобы не просела: держи 1–3 подхода/нед. на %1$s и другие группы с малой долей.</string>
-    <string name="muscle_load_summary_action_clear_split_no_target">Хороший сплит. Чтобы не просели: держи 1–3 подхода/нед. на группы с малой долей.</string>
-    <string name="muscle_load_summary_action_balanced">Прочная база. Если прогресс застопорится: выбери одну группу и добавь 2–3 подхода/нед.</string>
-    <string name="muscle_load_summary_action_mild_bias_with_target">Если хочешь ровнее: добавь 1–2 подхода за сессию на %1$s (или ту, что ниже всех), пока топ-2 не станет ~70–75%%.</string>
-    <string name="muscle_load_summary_action_mild_bias_no_target">Если хочешь ровнее: добавь 1–2 подхода за сессию на группу с наименьшей долей, пока топ-2 не станет ~70–75%%.</string>
-    <string name="muscle_load_summary_top_muscle">Топ-мышца: %1$s (~%2$d%%).</string>
-    <string name="muscle_load_summary_volume_higher_than_stimulus">Объём выше стимула для %1$s. Много тоннажа, меньше фокуса. Для размера: добавь 1–2 облегчённых подхода. Для силы: сохрани и оставь один тяжёлый топ-сет.</string>
-    <string name="muscle_load_summary_stimulus_higher_than_volume">Стимул выше объёма для %1$s. Больше усилий при меньшем тоннаже. Для силы: добавь более тяжёлый топ-сет. Для размера: сохрани и добавь 1 подход.</string>
-    <string name="muscle_load_summary_stimulus_volume_match">Стимул и объём совпадают для топ-группы.</string>
-    <string name="muscle_load_summary_second_driver">Второй драйвер: %1$s.</string>
-    <string name="muscle_load_summary_assist_suppressed">Вспомогательные группы выглядят тихо — это ожидаемо. Оценка сглаживает мелкие доли, чтобы базовые упражнения не раздували руки и плечи. Если хочешь их рост, добавь 2–6 изолирующих подходов/нед.</string>
-    <string name="muscle_load_summary_tail_with_weakest">Короткий хвост: остальные группы ~%1$d%%. %2$s ~%3$d%%. Рассмотри короткий блок поддержания.</string>
-    <string name="muscle_load_summary_tail_without_weakest">Короткий хвост: остальные группы ~%1$d%%. Рассмотри короткий блок поддержания.</string>
 
     <!-- Goal setup suggestion dialog -->
     <string name="goal_setup_suggestion_title">Какая у тебя цель?</string>
@@ -973,4 +881,51 @@
     <string name="exercise_history_set_result">%1$s × %2$s</string>
     <string name="exercise_history_previous_short">%1$s · %2$s</string>
     <string name="exercise_history_vs_date">Ранее · %1$s</string>
+    <string name="training_streak_calculation_description">Учитываем дни с выполненными подходами. Несколько тренировок в один день считаются один раз. Недельный ритм и циклы определяем по недавней истории.</string>
+    <string name="training_streak_current_progress">Последний период: %1$d / %2$d активных дн.</string>
+    <string name="estimated_one_rm_source">По подходу %1$s × %2$s · %3$s</string>
+    <string name="estimated_one_rm_history_peak">Лучший в этой истории: %1$s</string>
+    <string name="estimated_one_rm_method">Лучший подход каждой записи, от 1 до 10 повторов. Формулы предполагают подход близко к пределу; фактический максимум может отличаться.</string>
+    <string name="estimated_one_rm_effective_load">Нагрузка = вес тела × коэффициент + отягощение − помощь. Это не только вес дополнительного груза.</string>
+    <string name="estimated_one_rm_unavailable">Пока нет подходящих данных для 1ПМ. Нужен подход на 1–10 повторов с полными данными о нагрузке.</string>
+    <string name="performance_comparison_unavailable">Нет данных для сравнения</string>
+    <string name="performance_history_empty">В этом периоде нет тренировок</string>
+    <string name="decimal_separator">,</string>
+    <string name="performance_status_record">Максимум периода</string>
+    <string name="performance_status_improved">Выше обычного</string>
+    <string name="performance_status_declined">Ниже обычного</string>
+    <string name="performance_status_stable">В обычном диапазоне</string>
+    <string name="performance_best_value">Максимум периода на тот момент %1$s</string>
+
+    <string name="digest_title">Итоги тренировок</string>
+    <string name="digest_total_volume">Общий объём</string>
+    <string name="digest_active_days">Дни тренировок</string>
+    <string name="digest_volume_per_workout">Средний объём / тренировку</string>
+    <string name="digest_unavailable">—</string>
+    <string name="digest_zero_duration">0 мин</string>
+    <string name="goal_card_status_not_evaluated">Пока нет оценки</string>
+    <string name="goal_details_analysis_period">Период анализа: %1$s – %2$s</string>
+    <string name="goal_details_analysis_evidence">%1$d дн. · %2$d записанных подходов</string>
+    <string name="goal_details_analysis_excluded">Исключено подходов с ошибочными или неполными данными: %1$d</string>
+    <string name="goal_details_analysis_missing_metadata">Диагностика мышц недоступна: нет данных об упражнениях для %1$d подходов.</string>
+    <string name="goal_details_analysis_unavailable">В выбранном периоде нет доступной истории этой цели.</string>
+    <string name="goal_details_analysis_method">Ориентир по структуре тренировок, а не оценка достигнутого результата. У каждого доступного критерия равный вес: выполнен — 100, частично — 50, не выполнен — 0; строки мышечных групп усредняются внутри критерия. Неизвестные критерии пропускаются. В записи могут входить разминки; усилие, восстановление, питание и активность вне Grippo неизвестны. Для снижения жира оценивается поддерживающая роль тренировок, а не потеря жира. Подходы по группам мышц — приблизительная оценка с учётом доли участия мышц.</string>
+    <string name="training_streak_partial_period">Неполный период наблюдения</string>
+    <string name="goal_fit_rule_build_muscle_weekly_frequency_title">Регулярность тренировок</string>
+    <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Регулярность тренировок</string>
+    <string name="goal_fit_rule_get_stronger_compound_set_share_title">Доля многосуставных подходов</string>
+    <string name="goal_fit_unit_training_days_per_week">дн. тренировок/нед.</string>
+    <string name="muscle_load_set_share_note">Оценочная доля подходов по доступным данным упражнений с известным участием мышц.</string>
+    <string name="muscle_load_anatomy_note">Оценочное участие мышц в этом упражнении.</string>
+    <string name="muscle_load_excluded_sets">Не учтено подходов без повторений или с некорректными измерениями: %1$d.</string>
+    <string name="muscle_load_unassigned_sets">Подходов без данных об участии мышц: %1$d.</string>
+    <string name="muscle_load_focus_title">Наибольшая доля</string>
+    <string name="muscle_load_focus_note">Доли показывают направленность тренировок, а не усталость или восстановление.</string>
+    <string name="muscle_load_less_than_one_percent">&lt;1%</string>
+    <string name="performance_history_scope">До 10 последних тренировок. График идёт в порядке тренировок и соединяет доступные значения. Сравнения учитывают предыдущие тренировки выбранного периода.</string>
+    <string name="muscle_load_unmeasured_volume_sets">Подходов с неполными данными о нагрузке: %1$d. Доли мышц рассчитаны по записанным подходам, тоннаж — только по полностью измеренным.</string>
+    <string name="goal_card_limited_data">Ограниченные данные</string>
+    <string name="available_training_details_notice">Рассчитано по доступным данным упражнений. Часть записей может быть недоступна.</string>
+    <string name="available_sets_label">Доступные подходы</string>
+    <string name="available_exercises_label">Доступные упражнения</string>
 </resources>

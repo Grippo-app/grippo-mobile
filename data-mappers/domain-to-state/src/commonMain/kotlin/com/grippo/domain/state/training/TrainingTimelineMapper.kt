@@ -15,6 +15,8 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.datetime.DateTimeArithmeticException
+import kotlinx.datetime.LocalDateTime
 
 public fun TrainingTimeline.toState(): ImmutableList<TimelineState> {
     if (values.isEmpty()) return persistentListOf()
@@ -34,7 +36,7 @@ private fun TrainingTimelineValue.toStateValue(): TimelineState = when (this) {
 
     is TrainingTimelineValue.DateTime -> TimelineState.DateTime(
         startAt = DateTimeFormatState.of(
-            value = DateTimeUtils.minus(createdAt, duration),
+            value = startAt(),
             range = DateRangePresets.infinity(),
             format = DateFormat.TimeOnly.Time24hHm
         ),
@@ -43,7 +45,7 @@ private fun TrainingTimelineValue.toStateValue(): TimelineState = when (this) {
             range = DateRangePresets.infinity(),
             format = DateFormat.TimeOnly.Time24hHm
         ),
-        duration = DurationFormatState.of(duration),
+        duration = DurationFormatState.ofTotal(duration),
         trainingId = trainingId,
         position = position.toState(),
         key = key,
@@ -120,6 +122,15 @@ private fun TrainingTimelineValue.toStateValue(): TimelineState = when (this) {
         position = position.toState(),
         key = key,
     )
+}
+
+private fun TrainingTimelineValue.DateTime.startAt(): LocalDateTime? {
+    val duration = duration ?: return null
+    return try {
+        DateTimeUtils.minus(value = createdAt, minus = duration)
+    } catch (_: DateTimeArithmeticException) {
+        null
+    }
 }
 
 private fun TrainingTimelinePosition.toState(): TrainingPosition = when (this) {

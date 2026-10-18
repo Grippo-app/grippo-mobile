@@ -26,17 +26,26 @@ import com.grippo.design.resources.provider.spotlight_progress_win_context
 import com.grippo.design.resources.provider.spotlight_progress_win_metric
 import com.grippo.design.resources.provider.spotlight_progress_win_title
 import kotlinx.collections.immutable.persistentListOf
-import kotlin.math.max
+import kotlin.math.floor
 
 @Immutable
 public data class ExerciseSpotlightState(
-    val kind: Kind,
-    val severity: Severity,
     val example: ExerciseExampleValueState,
     val details: Details,
     val confidence: Float,
     val score: Float,
 ) {
+    public val kind: Kind
+        get() = when (details) {
+            is Details.ProgressWin -> Kind.ProgressWin
+            is Details.NeedsAttention -> Kind.NeedsAttention
+            is Details.GoodFrequency -> Kind.GoodFrequency
+            is Details.NearBest -> Kind.NearBest
+        }
+
+    public val severity: Severity
+        get() = if (details is Details.NeedsAttention) Severity.Warning else Severity.Positive
+
     public enum class Kind {
         ProgressWin,
         NeedsAttention,
@@ -55,6 +64,7 @@ public data class ExerciseSpotlightState(
         public data class ProgressWin(
             val improvementPercent: Int,
             val comparedSessions: Int,
+            val comparisonWindowDays: Int,
             val latestSessionVolume: Float,
             val baselineVolumeMedian: Float,
         ) : Details
@@ -77,6 +87,7 @@ public data class ExerciseSpotlightState(
         @Immutable
         public data class NearBest(
             val gapPercent: Int,
+            val comparisonWindowDays: Int,
             val latestSessionVolume: Float,
             val bestSessionVolume: Float,
         ) : Details
@@ -117,7 +128,7 @@ public data class ExerciseSpotlightState(
                 Res.string.spotlight_good_frequency_metric,
                 persistentListOf(
                     decimalText(value.avgWeeklyFrequency),
-                    windowWeeks(value.recentWindowDays)
+                    value.recentWindowDays / 7,
                 ),
             )
 
@@ -133,8 +144,9 @@ public data class ExerciseSpotlightState(
             is Details.ProgressWin -> UiText.Res(
                 Res.string.spotlight_progress_win_context,
                 persistentListOf(
-                    volumeText(value.latestSessionVolume),
-                    volumeText(value.baselineVolumeMedian),
+                    VolumeFormatState.ofTotal(value.latestSessionVolume).display,
+                    VolumeFormatState.ofTotal(value.baselineVolumeMedian).display,
+                    value.comparisonWindowDays,
                 ),
             )
 
@@ -147,7 +159,7 @@ public data class ExerciseSpotlightState(
                 Res.string.spotlight_good_frequency_context,
                 persistentListOf(
                     value.activeWeeks,
-                    windowWeeks(value.recentWindowDays),
+                    value.recentWindowDays / 7,
                     value.appearancesInWindow,
                 ),
             )
@@ -155,8 +167,9 @@ public data class ExerciseSpotlightState(
             is Details.NearBest -> UiText.Res(
                 Res.string.spotlight_near_best_context,
                 persistentListOf(
-                    volumeText(value.latestSessionVolume),
-                    volumeText(value.bestSessionVolume),
+                    VolumeFormatState.ofTotal(value.latestSessionVolume).display,
+                    VolumeFormatState.ofTotal(value.bestSessionVolume).display,
+                    value.comparisonWindowDays,
                 ),
             )
         }
@@ -171,29 +184,21 @@ public data class ExerciseSpotlightState(
         }
     }
 
-    private fun volumeText(value: Float): String {
-        return VolumeFormatState.of(value).display
-    }
-
     private fun decimalText(value: Float): String {
-        return VolumeFormatState.of(value).display
-    }
-
-    private fun windowWeeks(recentWindowDays: Int): Int {
-        return max(recentWindowDays / 7, 1)
+        val rounded = floor(value.toDouble() * 10.0 + 0.5) / 10.0
+        return rounded.toString()
     }
 }
 
 public fun stubExerciseSpotlightProgressWin(): ExerciseSpotlightState {
     return ExerciseSpotlightState(
-        kind = ExerciseSpotlightState.Kind.ProgressWin,
-        severity = ExerciseSpotlightState.Severity.Positive,
         example = stubExerciseExampleValueState(),
         details = ExerciseSpotlightState.Details.ProgressWin(
             improvementPercent = 12,
-            comparedSessions = 4,
-            latestSessionVolume = 28f,
-            baselineVolumeMedian = 25f,
+            comparedSessions = 5,
+            comparisonWindowDays = 30,
+            latestSessionVolume = 2800f,
+            baselineVolumeMedian = 2500f,
         ),
         confidence = 0.84f,
         score = 0.81f,
@@ -202,13 +207,11 @@ public fun stubExerciseSpotlightProgressWin(): ExerciseSpotlightState {
 
 public fun stubExerciseSpotlightNeedsAttention(): ExerciseSpotlightState {
     return ExerciseSpotlightState(
-        kind = ExerciseSpotlightState.Kind.NeedsAttention,
-        severity = ExerciseSpotlightState.Severity.Warning,
         example = stubExerciseExampleValueState(),
         details = ExerciseSpotlightState.Details.NeedsAttention(
-            currentGapDays = 12,
+            currentGapDays = 14,
             typicalGapDays = 7,
-            triggerGapDays = 10,
+            triggerGapDays = 11,
         ),
         confidence = 0.76f,
         score = 0.79f,
@@ -217,11 +220,9 @@ public fun stubExerciseSpotlightNeedsAttention(): ExerciseSpotlightState {
 
 public fun stubExerciseSpotlightGoodFrequency(): ExerciseSpotlightState {
     return ExerciseSpotlightState(
-        kind = ExerciseSpotlightState.Kind.GoodFrequency,
-        severity = ExerciseSpotlightState.Severity.Positive,
         example = stubExerciseExampleValueState(),
         details = ExerciseSpotlightState.Details.GoodFrequency(
-            avgWeeklyFrequency = 1.3f,
+            avgWeeklyFrequency = 1.25f,
             activeWeeks = 3,
             appearancesInWindow = 5,
             recentWindowDays = 28,
@@ -233,13 +234,12 @@ public fun stubExerciseSpotlightGoodFrequency(): ExerciseSpotlightState {
 
 public fun stubExerciseSpotlightNearBest(): ExerciseSpotlightState {
     return ExerciseSpotlightState(
-        kind = ExerciseSpotlightState.Kind.NearBest,
-        severity = ExerciseSpotlightState.Severity.Positive,
         example = stubExerciseExampleValueState(),
         details = ExerciseSpotlightState.Details.NearBest(
             gapPercent = 4,
-            latestSessionVolume = 96f,
-            bestSessionVolume = 100f,
+            comparisonWindowDays = 30,
+            latestSessionVolume = 2880f,
+            bestSessionVolume = 3000f,
         ),
         confidence = 0.71f,
         score = 0.72f,

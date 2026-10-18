@@ -32,11 +32,14 @@ import com.grippo.trainings.trainings.TrainingsDirection.Back
 import com.grippo.trainings.trainings.TrainingsDirection.EditTraining
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -45,7 +48,7 @@ import kotlinx.datetime.plus
 
 internal class TrainingsViewModel(
     private val analytics: TrainingsAnalytics,
-    trainingFeature: TrainingFeature,
+    private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
     private val trainingDigestUseCase: TrainingDigestUseCase,
     private val deleteTrainingUseCase: DeleteTrainingUseCase,
@@ -74,16 +77,7 @@ internal class TrainingsViewModel(
             .distinctUntilChanged()
 
         rangeFlow
-            .mapLatest { range ->
-                withLoader(loader = TrainingsLoader.Trainings) {
-                    analytics.trackOperation(operation = TrainingsOperation.RefreshTrainings) {
-                        trainingFeature.getTrainings(
-                            start = range.from,
-                            end = range.to,
-                        ).getOrThrow()
-                    }
-                }
-            }
+            .mapLatest(::refreshTrainings)
             .safeLaunch()
 
         rangeFlow
@@ -93,6 +87,28 @@ internal class TrainingsViewModel(
             }
             .onEach(::provideTrainings)
             .safeLaunch()
+    }
+
+    private suspend fun refreshTrainings(range: DateRange) {
+        withLoader(loader = TrainingsLoader.Trainings) {
+            val refresh = safeLaunch {
+                analytics.trackOperation(operation = TrainingsOperation.RefreshTrainings) {
+                    trainingFeature.getTrainings(
+                        start = range.from,
+                        end = range.to,
+                    ).getOrThrow()
+                }
+            }
+
+            try {
+                refresh.join()
+            } finally {
+                // A handled request failure must leave this range subscription alive.
+                withContext(NonCancellable) {
+                    refresh.cancelAndJoin()
+                }
+            }
+        }
     }
 
     private fun provideTrainings(value: Pair<DateRange, List<Training>>) {
@@ -244,7 +260,12 @@ internal class TrainingsViewModel(
     override fun onDailyDigestViewStats() {
         analytics.trackEvent(event = TrainingsEvent.DigestClicked)
 
-        val range = state.value.date
+        val current = state.value
+
+        val range = current.period.effectiveRange(
+            anchor = current.date.from,
+            limitations = current.limitations,
+        )
 
         val formattedRange = DateRangeFormatState.of(range)
 

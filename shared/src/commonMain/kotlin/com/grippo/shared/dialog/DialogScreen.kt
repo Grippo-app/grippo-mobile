@@ -65,18 +65,23 @@ private fun BottomSheet(
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { target ->
-            // Use the latest flag; do not rely on a stale capture
-            if (target == SheetValue.Hidden && !isSwipeRef.value && !programmaticDismissRef.value) {
-                return@rememberModalBottomSheetState false
+            when {
+                // Material's initial show must not interrupt the host's hide animation.
+                programmaticDismissRef.value -> target == SheetValue.Hidden
+                target == SheetValue.Hidden -> isSwipeRef.value
+                else -> true
             }
-            true
         },
     )
 
     LaunchedEffect(phase) {
         if (programmaticDismiss) {
-            sheetState.hide()
-            onReleasedRef.value()
+            try {
+                sheetState.hide()
+            } finally {
+                // Dismissing is committed; Material's in-flight show/settle can cancel hide.
+                onReleasedRef.value()
+            }
         }
     }
 
@@ -84,10 +89,12 @@ private fun BottomSheet(
         modifier = Modifier.statusBarsPadding(),
         onDismissRequest = { if (isSwipeRef.value) onReleasedRef.value() }, // latest flag
         sheetState = sheetState,
+        sheetGesturesEnabled = !programmaticDismiss,
         contentWindowInsets = { WindowInsets() },
         scrimColor = AppTokens.colors.dialog.scrim,
         properties = ModalBottomSheetProperties(
             shouldDismissOnBackPress = false, // Back is routed through the inner stack below.
+            shouldDismissOnClickOutside = !programmaticDismiss,
         ),
         containerColor = AppTokens.colors.background.dialog,
         contentColor = AppTokens.colors.text.primary,

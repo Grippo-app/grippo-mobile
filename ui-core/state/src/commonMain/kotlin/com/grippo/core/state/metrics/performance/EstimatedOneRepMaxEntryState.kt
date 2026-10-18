@@ -1,10 +1,13 @@
 package com.grippo.core.state.metrics.performance
 
 import androidx.compose.runtime.Immutable
+import kotlinx.datetime.LocalDateTime
 
 @Immutable
 public data class EstimatedOneRepMaxEntryState(
-    val label: String,
+    val start: LocalDateTime,
     val value: Float,
-    val confidence: Float,
+    val weight: Float,
+    val repetitions: Int,
+    val loadType: EstimatedOneRepMaxLoadTypeState,
 )

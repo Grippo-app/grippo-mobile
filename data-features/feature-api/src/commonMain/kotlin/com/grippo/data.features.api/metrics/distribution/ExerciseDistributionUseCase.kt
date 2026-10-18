@@ -10,18 +10,15 @@ import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.Training
 
+/** Groups recorded exercise work by catalog classification; only positive repetitions contribute. */
 public class ExerciseDistributionUseCase {
-
-    private companion object {
-        private const val EPS = 1e-3f
-    }
 
     public fun categoriesFromTrainings(
         trainings: List<Training>,
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): ExerciseDistribution<CategoryEnum> {
         val exercises = trainings.flatMap(Training::exercises)
-        return categoriesFromExercises(exercises, weighting)
+        return categoriesFromExercises(exercises = exercises, weighting = weighting)
     }
 
     public fun categoriesFromExercises(
@@ -41,7 +38,7 @@ public class ExerciseDistributionUseCase {
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): ExerciseDistribution<WeightTypeEnum> {
         val exercises = trainings.flatMap(Training::exercises)
-        return weightTypesFromExercises(exercises, weighting)
+        return weightTypesFromExercises(exercises = exercises, weighting = weighting)
     }
 
     public fun weightTypesFromExercises(
@@ -61,7 +58,7 @@ public class ExerciseDistributionUseCase {
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): ExerciseDistribution<ForceTypeEnum> {
         val exercises = trainings.flatMap(Training::exercises)
-        return forceTypesFromExercises(exercises, weighting)
+        return forceTypesFromExercises(exercises = exercises, weighting = weighting)
     }
 
     public fun forceTypesFromExercises(
@@ -80,60 +77,93 @@ public class ExerciseDistributionUseCase {
         exercises: List<Exercise>,
         weighting: DistributionWeighting,
         ordered: List<K>,
-        keySelector: (Exercise) -> K?,
+        keySelector: (Exercise) -> K,
     ): ExerciseDistribution<K> {
-        if (exercises.isEmpty()) return ExerciseDistribution(emptyList())
-        val totals = aggregateTotals(exercises, weighting, keySelector)
-        if (totals.isEmpty()) return ExerciseDistribution(emptyList())
+        val totals = HashMap<K, Double>()
+        var excludedVolumeSetCount = 0L
+
+        for (exercise in exercises) {
+            val contribution = when (weighting) {
+                DistributionWeighting.Count -> {
+                    if (exercise.iterations.any { it.repetitions > 0 }) {
+                        1.0
+                    } else {
+                        0.0
+                    }
+                }
+
+                DistributionWeighting.Sets -> {
+                    exercise.iterations.count { it.repetitions > 0 }.toDouble()
+                }
+
+                DistributionWeighting.Repetitions -> {
+                    exercise.iterations.sumOf { it.repetitions.coerceAtLeast(0).toDouble() }
+                }
+
+                DistributionWeighting.Volume -> {
+                    var volume = 0.0
+                    for (iteration in exercise.iterations) {
+                        if (iteration.repetitions <= 0) {
+                            continue
+                        }
+                        val load = effectiveLoad(iteration)
+                        if (load == null) {
+                            excludedVolumeSetCount += 1L
+                            continue
+                        }
+                        volume += load * iteration.repetitions.toDouble()
+                    }
+                    volume
+                }
+            }
+
+            if (contribution > 0.0) {
+                val key = keySelector(exercise)
+                totals[key] = (totals[key] ?: 0.0) + contribution
+            }
+        }
 
         val entries = ordered.mapNotNull { key ->
-            val value = totals[key]?.takeIf { it > EPS } ?: return@mapNotNull null
+            val value = totals[key] ?: return@mapNotNull null
             ExerciseDistributionEntry(
                 key = key,
                 value = value
             )
         }
-        return ExerciseDistribution(entries)
+        return ExerciseDistribution(
+            weighting = weighting,
+            entries = entries,
+            excludedVolumeSetCount = excludedVolumeSetCount
+        )
     }
 
-    private fun <K : Enum<K>> aggregateTotals(
-        exercises: List<Exercise>,
-        weighting: DistributionWeighting,
-        keySelector: (Exercise) -> K?,
-    ): Map<K, Float> {
-        val totals = HashMap<K, Float>(8)
-        exercises.forEach { exercise ->
-            val key = keySelector(exercise) ?: return@forEach
-            val contribution = weightOfExercise(exercise, weighting)
-            if (contribution <= EPS) return@forEach
-            val currentValue = totals[key] ?: 0f
-            totals[key] = currentValue + contribution
+    private fun effectiveLoad(iteration: Iteration): Double? {
+        val components = listOf(
+            iteration.externalWeight,
+            iteration.extraWeight,
+            iteration.assistWeight,
+            iteration.bodyWeight,
+            iteration.bodyMultiplier
+        )
+        if (components.any { it != null && (!it.isFinite() || it < 0f) }) {
+            return null
         }
-        return totals
-    }
 
-    private fun weightOfExercise(
-        exercise: Exercise,
-        weighting: DistributionWeighting,
-    ): Float = when (weighting) {
-        DistributionWeighting.Count -> 1f
-        DistributionWeighting.Sets -> exercise.iterations.count { it.repetitions > 0 }.toFloat()
-        DistributionWeighting.Repetitions -> exercise.iterations.fold(0) { acc, iteration ->
-            val reps = iteration.repetitions
-            if (reps > 0) acc + reps else acc
-        }.toFloat()
-
-        DistributionWeighting.Volume -> exercise.iterations.computeVolume()
-    }.coerceAtLeast(0f)
-
-    private fun List<Iteration>.computeVolume(): Float {
-        if (isEmpty()) return 0f
-        val total = fold(0.0) { acc, iteration ->
-            val reps = iteration.repetitions
-            if (reps <= 0) return@fold acc
-            val weight = iteration.volume
-            if (weight <= EPS) acc else acc + weight.toDouble() * reps.toDouble()
+        val body = iteration.bodyWeight
+        val multiplier = iteration.bodyMultiplier
+        val bodyLoad = if (body != null || multiplier != null) {
+            if (body == null || multiplier == null || body <= 0f || multiplier <= 0f) {
+                return null
+            }
+            body.toDouble() * multiplier.toDouble()
+        } else {
+            0.0
         }
-        return total.toFloat()
+
+        // Convert components before arithmetic: Iteration.volume can overflow in Float.
+        val load = (iteration.externalWeight?.toDouble() ?: 0.0) +
+            (iteration.extraWeight?.toDouble() ?: 0.0) + bodyLoad -
+            (iteration.assistWeight?.toDouble() ?: 0.0)
+        return load.takeIf { it > 0.0 }
     }
 }

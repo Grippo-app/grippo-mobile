@@ -8,8 +8,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.decimal_separator
 import com.grippo.design.resources.provider.repetitions_input_hint
 import com.grippo.design.resources.provider.x
+import com.grippo.toolkit.number.utils.formatDecimal
 import kotlinx.serialization.Serializable
 
 @Immutable
@@ -38,6 +40,16 @@ public sealed class RepetitionsFormatState : FormatState<Int> {
     ) : RepetitionsFormatState(), FormatState.Empty<Int>
 
     public companion object {
+        @Composable
+        public fun shortAverage(value: Double?): String {
+            if (value == null || !value.isFinite()) return "—"
+            val number = formatDecimal(
+                value = value,
+                decimalSeparator = AppTokens.strings.res(Res.string.decimal_separator),
+            )
+            return "${AppTokens.strings.res(Res.string.x)}$number"
+        }
+
         public fun of(display: String): RepetitionsFormatState {
             if (display.isEmpty()) {
                 return Empty()

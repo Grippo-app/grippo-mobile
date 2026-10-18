@@ -1,15 +1,14 @@
 package com.grippo.data.features.api.metrics.engagement.models
 
-import kotlinx.datetime.LocalDate
+import com.grippo.toolkit.date.utils.DateRange
 import kotlin.time.Duration
 
 public data class TrainingDigestResult(
-    val start: LocalDate,
-    val end: LocalDate,
+    val range: DateRange,
     val trainingsCount: Int,
-    val duration: Duration,
-    val totalVolume: Float,
+    val duration: Duration?,
+    val totalVolume: Float?,
     val totalSets: Int,
     val activeDays: Int,
-    val avgVolumePerTraining: Float,
+    val avgVolumePerTraining: Float?,
 )

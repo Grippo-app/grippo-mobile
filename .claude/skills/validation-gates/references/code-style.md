@@ -13,8 +13,12 @@ actual signatures; an existing deviation does not weaken a rule.
 - Independent new types get separate files. Related sealed variants and an
   existing coherent model family may share a file; do not split or merge types
   only to satisfy a template.
-- Composables are `PascalCase`; ViewModel callbacks are `onXxx` (`onApplyClick`,
-  `onBack`). Resource keys are descriptive `snake_case`.
+- UI-emitting composables are `PascalCase`; value-returning composable helpers
+  are `lowerCamelCase`. A helper that retains its result or object identity uses
+  `remember<Noun>` and keys every changing input, including locale. Preserve the
+  naming family of the owning API and migrate every caller when renaming it.
+  ViewModel callbacks are `onXxx` (`onApplyClick`, `onBack`). Resource keys are
+  descriptive `snake_case`.
 - Templates by role:
   - DTO: `<Name>Response` / `<Name>Body`, `@Serializable`, every field nullable
     `= null` with `@SerialName`.

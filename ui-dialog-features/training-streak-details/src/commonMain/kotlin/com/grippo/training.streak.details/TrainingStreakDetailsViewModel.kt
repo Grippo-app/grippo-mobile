@@ -9,6 +9,8 @@ import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.domain.state.metrics.engagement.toState
 import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.currentDateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 
 public class TrainingStreakDetailsViewModel(
@@ -22,26 +24,25 @@ public class TrainingStreakDetailsViewModel(
 
     init {
         trainingFeature
-            .observeTrainings(range.from, range.to)
+            .observeTrainings(start = range.from, end = range.to)
+            .combine(currentDateFlow()) { trainings, _ -> trainings }
             .onEach(::provideTrainingStreak)
             .safeLaunch()
+    }
+
+    private fun provideTrainingStreak(trainings: List<Training>) {
+        val range = state.value.range.value ?: return
+        val streak = trainings.takeIf { it.isNotEmpty() }?.let { values ->
+            trainingStreakUseCase
+                .fromTrainings(trainings = values, range = range)
+                .toState()
+        }
+
+        update { it.copy(streak = streak) }
     }
 
     override fun onBack() {
         analytics.trackEvent(TrainingStreakDetailsEvent.DismissRequested)
         navigateTo(TrainingStreakDetailsDirection.Back)
-    }
-
-    private suspend fun provideTrainingStreak(trainings: List<Training>) {
-        if (trainings.isEmpty()) {
-            update { it.copy(streak = null) }
-            return
-        }
-
-        val streak = trainingStreakUseCase
-            .fromTrainings(trainings)
-            .toState()
-
-        update { it.copy(streak = streak) }
     }
 }

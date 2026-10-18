@@ -30,7 +30,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.history
-import com.grippo.design.resources.provider.no_data_yet
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleDetailsLoader
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleDetailsState
 import kotlinx.collections.immutable.ImmutableSet
@@ -58,23 +57,19 @@ internal fun ExerciseExampleDetailsAchievementsContent(
             )
         }
 
-        if (state.estimatedOneRepMax != null) {
-            if (state.achievements.isNotEmpty()) {
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-            }
-
-            EstimatedOneRepMaxCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                state = state.estimatedOneRepMax,
-            )
+        if (state.achievements.isNotEmpty()) {
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
         }
 
+        EstimatedOneRepMaxCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            state = state.estimatedOneRepMax,
+        )
+
         if (state.recent.isNotEmpty()) {
-            if (state.achievements.isNotEmpty() || state.estimatedOneRepMax != null) {
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-            }
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             Text(
                 modifier = Modifier
@@ -117,18 +112,10 @@ internal fun ExerciseExampleDetailsAchievementsContent(
                 }
             }
         }
-
-        if (state.achievements.isEmpty() && state.estimatedOneRepMax == null && state.recent.isEmpty()) {
-            Text(
-                modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding).fillMaxWidth(),
-                text = AppTokens.strings.res(Res.string.no_data_yet),
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.secondary,
-            )
-        }
     }
 }
 
+@Composable
 private fun ExerciseExampleDetailsState.volumeWithSessionDates(): VolumeSeriesState? {
     val series = exerciseVolume ?: return null
     val chronological = recent.asReversed()
@@ -137,7 +124,7 @@ private fun ExerciseExampleDetailsState.volumeWithSessionDates(): VolumeSeriesSt
     }
 
     val entries = series.entries.mapIndexed { index, entry ->
-        val date = chronological[index].createdAt.display
+        val date = chronological[index].createdAt.short()
         if (date.isNotBlank()) entry.copy(label = date) else entry
     }.toPersistentList()
     return series.copy(entries = entries)

@@ -2,12 +2,18 @@ package com.grippo.core.state.formatters
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.decimal_separator
+import com.grippo.design.resources.provider.minutes_short
 import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateTimeUtils
-import kotlinx.serialization.Serializable
+import com.grippo.toolkit.number.utils.formatDecimal
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.DurationUnit
+import kotlinx.serialization.Serializable
 
 @Immutable
 @Serializable
@@ -41,6 +47,29 @@ public sealed class DurationFormatState : FormatState<Duration> {
     }
 
     public companion object {
+        @Composable
+        public fun shortMinutes(value: Duration?): String {
+            if (value == null || !value.isFinite()) return "—"
+            val number = formatDecimal(
+                value = value.toDouble(DurationUnit.MINUTES),
+                decimalSeparator = AppTokens.strings.res(Res.string.decimal_separator),
+            )
+            return "$number ${AppTokens.strings.res(Res.string.minutes_short)}"
+        }
+
+        /** Read-only accumulated time is allowed to be zero or span multiple days. */
+        public fun ofTotal(value: Duration?): DurationFormatState {
+            if (value == null) {
+                return Empty()
+            }
+            if (!value.isFinite() || value.isNegative()) {
+                return Invalid(display = value.toString(), value = null)
+            }
+
+            val normalized = normalize1m(value)
+            return Valid(display = display(normalized), value = normalized)
+        }
+
         public val DurationLimitation: ClosedRange<Duration> =
             1.minutes..(23.hours + 59.minutes)
 

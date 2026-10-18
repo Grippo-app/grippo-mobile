@@ -3,18 +3,10 @@ package com.grippo.data.features.api.metrics.performance.models
 import kotlinx.datetime.LocalDateTime
 
 public data class EstimatedOneRepMaxEntry(
-    val label: String,
-    val value: Float,
-    /**
-     * 0..1 confidence of the estimate quality (data coverage + reps applicability).
-     */
-    val confidence: Float,
-    /**
-     * Bucket/session start timestamp (when available). Useful for smoothing and debugging.
-     */
     val start: LocalDateTime,
-    /**
-     * How many training sessions contributed to this point.
-     */
-    val sampleCount: Int,
+    val value: Float,
+    /** Load used by the winning set, expressed on [loadType]'s basis. */
+    val weight: Float,
+    val repetitions: Int,
+    val loadType: EstimatedOneRepMaxLoadType,
 )

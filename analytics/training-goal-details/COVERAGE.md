@@ -1,107 +1,77 @@
 # Training goal details coverage
 
-Scope: `:ui-dialog-features:training-goal-details`, 2026-10-13.
+Scope: `:ui-dialog-features:training-goal-details` and its Home entry point.
 
 ## Surface and observation inventory
 
-HomeViewModel.onOpenGoalDetails opens DialogConfig.TrainingGoalDetails after its
-valid-range guard. DialogContentComponent constructs TrainingGoalDetailsComponent,
-whose retained TrainingGoalDetailsViewModel renders TrainingGoalDetailsScreen.
-The sole surface is a read-only bottom sheet, with no nested flow or independent
-screen. Screen coverage gate: config → factory → Component → VM → rendered content
-reviewed; default null screenPresentation is appropriate for this dialog. No
-screen enum or dedicated dialog presentation contract is introduced.
+`HomeViewModel.onOpenGoalDetails` opens `DialogConfig.TrainingGoalDetails` after
+its valid-range guard. `DialogContentComponent` constructs
+`TrainingGoalDetailsComponent`, whose retained `TrainingGoalDetailsViewModel`
+renders `TrainingGoalDetailsScreen`. The sole surface is a read-only bottom
+sheet. It has no nested flow or independent screen, so its default null
+`screenPresentation` is appropriate. Dialogs have no automatic view/close schema.
+No screen enum or separate dialog presentation contract is introduced.
 
 | Owner / callback | Observation | Eligibility / payload |
 |---|---|---|
 | TrainingGoalDetailsViewModel.onBack | DismissRequested / training_goal_details_dismiss_requested v1 | Existing callback without guards; empty payload before Back direction |
 | TrainingGoalDetailsViewModel.onAddGoal | AddGoalClicked / training_goal_details_add_goal v1 | Existing callback without guards; GoalCard update click before AddGoal direction; empty payload |
-| HomeViewModel.onOpenGoalDetails | Existing HomeEvent.GoalDetailsClicked | Existing valid-range guard; parent-owned open intent unchanged |
-| HomeViewModel config onAddGoal closure | Existing HomeEvent.AddGoalClicked | Parent observes its own accepted navigation callback; unchanged, separate from dialog click intent |
-| Training observation / GoalFollowingUseCase / insight calculation | Deliberate omission | Reactive rebuilding and local calculations, no finite command or submission |
+| HomeViewModel.onOpenGoalDetails | HomeEvent.GoalDetailsClicked | Existing valid-range guard; parent-owned open intent |
+| HomeViewModel config onAddGoal closure | HomeEvent.AddGoalClicked | Parent observes its accepted navigation callback, separate from dialog click intent |
+| Training/goal/catalog observation and adherence calculation | Deliberate omission | Reactive presentation rebuilding, no finite command or submission |
 
-BackHandler invokes onBack. DismissRequested is an observed request, not proof of
-cancellation or delivered dismissal. Swipe/outside dismissal can bypass the VM and
-is omitted. Dialog views/close, scrolling, insight/card impressions and navigation
-completion are omitted. There are no editable inputs or picker-result callbacks.
-No operation API is introduced for reactive data observation or pure computation.
-No telemetry carries dates/range, goals, scores, training IDs, raw text, body
-measurements or errors. No reporting context is transported through routes.
+BackHandler invokes `onBack`. `DismissRequested` records a request, not completed
+dismissal. Swipe/outside dismissal can bypass the VM and remains omitted. Dialog
+views/close, scrolling, calculation/card impressions and navigation completion are
+omitted. There are no editable inputs or picker-result callbacks. No operation API
+is introduced for continuous observation or calculation. Events carry no goals,
+scores, dates/range, training IDs, raw text, measurements or errors. No reporting
+context is transported through routes.
 
-One stateless typed service is injected inside the normal retained VM factory.
-Its internal exhaustive matrix encodes two versioned parameterless schemas, and
-its uniquely qualified catalog is registered through the annotated module in
-shared. Ordinary reporting Exceptions cannot block navigation; fatal Errors remain
-fatal. No extra jobs, lifecycle wiring, persistence or business guards are added.
-These are new v1 events; existing Home event meanings/populations remain unchanged.
+The stateless typed service is injected inside the normal retained VM factory.
+Its exhaustive matrix encodes two parameterless v1 schemas; the annotated module
+registers its qualified catalog in shared. Reporting isolation and both existing
+navigation directions retain their current owners.
 
 ## State preservation inventory
 
-| Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or source | Restore/default and check |
+| Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
-| TrainingGoalDetailsComponent / VM | Immutable range seed | Runtime only for live dialog | Caller range, retainedInstance | Ordinary retained recreation uses the same VM; reopening receives current caller range |
-| TrainingGoalDetailsViewModel | progress and insights | Rebuild | TrainingFeature.observeTrainings, GoalFollowingUseCase, current time and existing mapping/calculation | Fresh VM starts with null progress/empty insights, then rebuilds; null adherence produces NoData |
-| Rendered content | Localized range, reasons, tips and goal presentation | Rebuild | Existing resources and rebuilt progress; GoalCard dates use `DateCompose` with the typed values and stored formats | Goal date labels resolve the current composition locale; absent typed values keep their existing display. No business snapshot or additional presentation cache |
-| Dialog host | Session, callbacks, pending directions | Runtime only | DialogComponent slot and DialogContentComponent stack use serializer = null | Actual process death closes the dialog; callbacks are never archived |
-| Foundation / widgets | Jobs, loaders, scroll state and telemetry provenance | Runtime only | Existing foundation/widget ownership | No business snapshot or synthetic interaction replay |
+| TrainingGoalDetailsComponent / VM | Immutable range seed | Runtime only | Caller range, retainedInstance | Reopening receives the current caller range; retained recreation reuses the VM |
+| TrainingGoalDetailsViewModel | progress; presentation insights derive from it | Rebuild | Combined TrainingFeature.observeTrainings, GoalFeature.observeGoal and currentDateFlow; relevant ExerciseExampleFeature.observeExerciseExamples IDs trigger recalculation; GoalFollowingUseCase with explicit range/current goal/current time | Fresh VM starts with null progress and derived NoData insights; goal removal clears progress; an existing goal with empty period retains its card and a null score; latest source updates cancel obsolete computation |
+| GoalProgressState in dialog | grouped GoalAnalysisEvidenceState (range and valid/excluded/metadata-missing set counts), derived days/timeline, findings and prepared optional domain score | Rebuild | Domain adherence mapped through domain-to-state | Only observations since goal creation and inside the selected range are represented; insufficient observations have no numeric score |
+| Rendered content | Localized dates, evidence, reasons, tips and goal presentation | Rebuild | Typed date endpoints rendered with DateCompose; current resources and rebuilt progress | Locale changes resolve period endpoints and copy again; no resolved-label cache or saved business snapshot |
+| Dialog host | Session, callbacks, pending directions | Runtime only | DialogComponent slot and DialogContentComponent stack use serializer = null | Process death closes the dialog; callbacks are never archived |
+| Foundation / widgets | Jobs, loaders, scroll state and telemetry provenance | Runtime only | Existing foundation/widget ownership | No new persistence owner or synthetic interaction replay |
 
-Source preservation gate: no editable fields, selections, filters, accepted picker
-results or parent drafts are owned here. Range is an immutable caller seed. No
-secrets are present. A StateKeeper supplier would save rebuilt presentation for a
-session intentionally excluded from restoration, so no key/serializer is needed.
-Initialization, pause/resume subscription policy, Back and parent navigation remain
-unchanged. Parent Home drafts and shell restoration are outside this change.
+The sheet owns no editable fields, selections, accepted picker results or drafts.
+Range is a caller seed. Data-backed fields rebuild reactively; they are not saved.
+There are no secrets or private initialization/restoration flags, previous-source
+caches or shadow snapshots. Existing Back and parent navigation ownership is
+unchanged. Parent Home drafts and shell restoration retain their own inventories.
 
-## Verification
+## Calculation presentation
 
-Source/diff self-review covered actual callbacks, eligibility, null dialog screen
-hook, complete API consumers, exhaustive encoding, privacy, retained injection,
-settings/shared registration and preservation ownership. No automated test sources,
-infrastructure or verification-only production hooks were introduced.
-Independent review is unperformed: agent delegation is not authorized, and the
-available review connector provides only PR CI diagnostics.
+The score summary follows the optional domain score. A null score shows TooEarly
+only when valid sets exist in a period shorter than `MIN_ANALYSIS_DAYS`; otherwise
+it shows NoData. Numeric summaries use the shared score thresholds. Diagnostic
+cards render the same findings that supply the score. The sheet does not infer
+share-based training prescriptions, overtraining, achieved outcomes or completion
+from a deadline. Overdue/almost-due timeline notes are independent of score.
 
-Runtime checks remain unrun: each callback reports its intent before its existing
-direction; injected reporting Exception does not block navigation; swipe/outside
-produces no inferred VM event; ordinary retained recreation keeps the live VM;
-actual process death closes the dialog; reopening rebuilds current data for the
-caller range, including NoData. Source checks/builds cannot prove device lifecycle,
-SDK delivery, parent navigation execution or resubscription after backgrounding.
+A static localized caption scopes the score, evidence and findings to available
+mapped exercise details; it does not claim complete history or retain a
+completeness flag. Analyzed days and goal timeline values derive from their
+existing dates rather than independent constructor fields.
+Evidence displays the actual analysis period, analyzed days, counted sets and
+conditional excluded/metadata-missing set counts. Method copy explains the
+heuristic scope. The goal remains editable through its existing card action.
 
-Actual checks: `git diff --check` and inline source invariants passed (wire-name
-bounds/pattern/reserved prefixes, implementation dependency boundary, two direct
-callback consumers, default null dialog hook and exactly one settings/shared
-module registration). KSP output was inspected: it binds the typed service and
-registers the qualified catalog. Analytics Android compilation passed in the first
-scoped attempt. The combined Android/iOS Simulator attempt failed in the unrelated
-`:ui-core:state:transformNativeMainDependenciesMetadata`: missing generated
-`build/kotlinTransformedMetadataLibraries/commonMain/commonMain.json`. It did not
-complete UI compilation or the iOS tasks. No cache, dependency or unrelated source
-was changed to work around this failure. Shared composition-root compilation/runtime
-and independent review remain unverified.
+## Admin synchronization impact
 
-Follow-up compilation succeeded without source/cache/dependency changes:
-`:ui-dialog-features:training-goal-details:compileAndroidMain` and
-`:analytics:training-goal-details:compileKotlinIosSimulatorArm64` completed with
-BUILD SUCCESSFUL (1m 24s). A separate
-`:ui-dialog-features:training-goal-details:compileKotlinIosSimulatorArm64` completed
-with BUILD SUCCESSFUL (1m 10s). Together with the first analytics Android task,
-both affected modules now have Android and iOS Simulator compilation evidence;
-this supersedes the first attempt's incomplete scoped compilation limitation.
-Warnings remain in existing conventions/dependencies. Shared full compilation,
-independent review and runtime/SDK checks above remain unperformed.
-
-## Residual review (2026-10-13)
-
-Re-read the actual scope and traced the only caller, factory, retained VM and
-rendered controls. No scoped dangling APIs, duplicate registrations, schema-name
-collisions, template identities/placeholders or required preservation owners were
-found. Both typed variants have a VM consumer and an exhaustive encoder; their
-empty schemas satisfy transport name constraints. Reporting isolation preserves
-both existing directions. The dialog and reactive rebuilding classification remains
-valid, including parent-owned Home intent/navigation observations.
-
-Fresh inline source checks and `git diff --check` passed. Production code is
-unchanged by this review, so the earlier scoped Android/iOS compilation evidence
-still applies to this implementation; no redundant rebuild was run. Shared full
-compilation, independent review and device/SDK runtime checks remain unperformed.
+The behavior change alters no event/operation model, parameter, schema, encoder,
+screen enum/hook, tracking call type/arguments/placement, consent or transport.
+Both direct callback tracking calls remain before their original directions.
+Changes to local calculation, rendered evidence and rebuilt state introduce no
+analytics-facing symbol change, so the admin-sync trigger does not apply. Live
+admin configuration and SDK delivery are not established by this source inventory.

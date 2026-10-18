@@ -1,89 +1,474 @@
 package com.grippo.data.features.api.metrics.distribution
 
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
-import com.grippo.data.features.api.exercise.example.models.CategoryEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
-import com.grippo.data.features.api.exercise.example.models.ForceTypeEnum
-import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
+import com.grippo.data.features.api.exercise.example.models.ExerciseExampleComponents
 import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadBreakdown
 import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadDominance
 import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadEntry
 import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadMeta
 import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadSummary
-import com.grippo.data.features.api.metrics.internal.MuscleBundleMath
-import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleEnum
-import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.muscle.models.MuscleGroupEnum
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.Training
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlin.math.ln
-import kotlin.math.pow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlin.math.abs
 
+/**
+ * Estimates the distribution of performed sets using the exercise's recorded muscle shares.
+ * These weighted sets describe exercise selection, not physiological stimulus or recovery.
+ * Recorded resistance × repetitions is distributed separately using the same linear shares.
+ */
 public class MuscleLoadingSummaryUseCase(
     private val exerciseExampleFeature: ExerciseExampleFeature,
-    private val muscleFeature: MuscleFeature,
 ) {
     private companion object {
-        private const val EPS = 1e-3f
-
-        private const val COMPLEXITY_SHARE_THRESHOLD_PERCENT = 5f
-        private const val COMPLEXITY_K = 0.20f
-        private const val COMPLEXITY_MAX_FACTOR = 1.30f
-
-        private const val STIMULUS_LN_WEIGHT_SCALE = 8f
-
-        private const val FATIGUE_CAPACITY_BASE = 0.80f
-        private const val FATIGUE_CAPACITY_RANGE = 0.40f
-
-        private const val FATIGUE_SENS_BASE = 0.80f
-        private const val FATIGUE_SENS_RANGE = 0.40f
-
-        private const val EXAMPLE_COMPOUND_FACTOR = 1.12f
-        private const val EXAMPLE_ISOLATION_FACTOR = 1.00f
-
-        private const val EXAMPLE_FREE_WEIGHT_FACTOR = 1.06f
-        private const val EXAMPLE_FIXED_WEIGHT_FACTOR = 1.00f
-        private const val EXAMPLE_BODY_WEIGHT_FACTOR = 1.03f
-
-        // Bundle-distribution primitives (damping exponent + PUSH-tiny-share
-        // suppression) live in [MuscleBundleMath] — shared source of truth with
-        // `GoalFollowingUseCase` so the two pipelines cannot drift on these
-        // domain-tuned magic numbers. Re-exported as local `const val`s so the
-        // rest of this file is untouched and call sites stay inlined.
-        private const val SHARE_DAMPING_ALPHA = MuscleBundleMath.SHARE_DAMPING_ALPHA
-        private const val PUSH_TINY_SHARE_MAX_PERCENT = MuscleBundleMath.PUSH_TINY_SHARE_MAX_PERCENT
-        private const val PUSH_TINY_SHARE_FACTOR = MuscleBundleMath.PUSH_TINY_SHARE_FACTOR
-
-        private const val FATIGUE_IMPACT = 0.35f
-
-        private const val HIT_SHARE_THRESHOLD_PERCENT = 10f
         private const val TOP_EXAMPLES_LIMIT = 3
+
+        // Summing equal shares in different orders must not manufacture a single leader.
+        private const val LEADER_RELATIVE_TOLERANCE = 1e-12
     }
 
     public suspend fun fromTrainings(trainings: List<Training>): MuscleLoadSummary {
-        val sessions = trainings.map { it.exercises }
-        return fromSessions(sessions)
+        return observeFromTrainings(trainings).first()
     }
 
     public suspend fun fromTraining(training: Training): MuscleLoadSummary {
-        return fromSessions(listOf(training.exercises))
+        return fromTrainings(listOf(training))
     }
 
     public suspend fun fromExercises(exercises: List<Exercise>): MuscleLoadSummary {
-        return fromSessions(listOf(exercises))
+        return observeFromExercises(exercises).first()
+    }
+
+    /** Recalculates when the referenced exercise anatomy changes in the local cache. */
+    public fun observeFromTrainings(trainings: List<Training>): Flow<MuscleLoadSummary> {
+        return observeFromSessions(sessions = trainings.map { it.exercises })
+    }
+
+    /** Treats the supplied exercises as one logical session. */
+    public fun observeFromExercises(exercises: List<Exercise>): Flow<MuscleLoadSummary> {
+        return observeFromSessions(listOf(exercises))
     }
 
     public suspend fun fromExerciseExample(exampleId: String): MuscleLoadSummary {
-        val examples = loadExamples(setOf(exampleId))
-        val groups = loadMuscleGroups()
+        val example = exerciseExampleFeature.observeExerciseExample(exampleId).first()
+        return if (example != null) {
+            fromExerciseExample(example)
+        } else {
+            summarize(meta = emptyMeta(), muscles = emptyMap(), groups = emptyMap())
+        }
+    }
 
-        val stimulusLoad = computeExampleLoad(example = examples[exampleId])
-        val volumeLoad = emptyMap<MuscleEnum, Float>()
+    /** Anatomy preview; no sessions, performed work or session statistics are inferred. */
+    public fun fromExerciseExample(example: ExerciseExample): MuscleLoadSummary {
+        val muscles = normalizedShares(example).mapValues { (_, ratio) ->
+            EntryStats().apply {
+                total.weightedSets = ratio
+            }
+        }
+        val groups = mutableMapOf<MuscleGroupEnum, EntryStats>()
+        muscles.forEach { (muscle, stats) ->
+            groups.getOrPut(muscle.group()) { EntryStats() }.total.merge(stats.total)
+        }
+        return summarize(meta = emptyMeta(), muscles = muscles, groups = groups)
+    }
 
-        val meta = MuscleLoadMeta(
+    private fun observeFromSessions(
+        sessions: List<List<Exercise>>,
+    ): Flow<MuscleLoadSummary> {
+        val ids = sessions.asSequence()
+            .flatMap { it.asSequence() }
+            .map { it.exerciseExample.id }
+            .filter { it.isNotBlank() }
+            .distinct()
+            .sorted()
+            .toList()
+
+        if (ids.isEmpty()) {
+            val summary = calculate(
+                sessions = sessions,
+                examples = emptyMap(),
+            )
+            return flowOf(summary)
+        }
+
+        return exerciseExampleFeature.observeExerciseExamples(ids).map { examples ->
+            calculate(
+                sessions = sessions,
+                examples = examples.associateBy { it.value.id },
+            )
+        }
+    }
+
+    private fun calculate(
+        sessions: List<List<Exercise>>,
+        examples: Map<String, ExerciseExample>,
+    ): MuscleLoadSummary {
+        var totalExercises = 0L
+        var totalSets = 0L
+        var totalRepetitions = 0L
+        var totalVolume = 0.0
+        var excludedSets = 0L
+        var unassignedSets = 0L
+        var unmeasuredVolumeSets = 0L
+        val muscles = mutableMapOf<MuscleEnum, EntryStats>()
+        val groups = mutableMapOf<MuscleGroupEnum, EntryStats>()
+        val sharesByExample = examples.mapValues { (_, example) -> normalizedShares(example) }
+
+        sessions.forEach { exercises ->
+            val sessionMuscles = mutableMapOf<MuscleEnum, Load>()
+
+            exercises.forEach { exercise ->
+                var acceptedSets = 0
+                var exerciseVolume = 0.0
+                var hasMeasuredVolume = false
+                val exampleId = exercise.exerciseExample.id
+                val components = examples[exampleId]?.components
+                for (iteration in exercise.iterations) {
+                    if (!hasValidRecordedValues(iteration = iteration, components = components)) {
+                        excludedSets = (excludedSets + 1).checkedCount()
+                        continue
+                    }
+
+                    val resistance = measuredResistance(iteration = iteration, components = components)
+                    acceptedSets += 1
+                    totalRepetitions = (totalRepetitions + iteration.repetitions).checkedCount()
+                    if (resistance == null) {
+                        unmeasuredVolumeSets = (unmeasuredVolumeSets + 1).checkedCount()
+                    } else {
+                        hasMeasuredVolume = true
+                        exerciseVolume += resistance * iteration.repetitions
+                    }
+                }
+
+                if (acceptedSets > 0) {
+                    totalExercises = (totalExercises + 1).checkedCount()
+                    totalSets = (totalSets + acceptedSets).checkedCount()
+                    totalVolume += exerciseVolume
+
+                    val shares = sharesByExample[exampleId].orEmpty()
+                    if (shares.isEmpty()) {
+                        unassignedSets = (unassignedSets + acceptedSets).checkedCount()
+                    }
+                    shares.forEach { (muscle, ratio) ->
+                        sessionMuscles.getOrPut(muscle) { Load() }.add(
+                            weightedSets = acceptedSets * ratio,
+                            volume = exerciseVolume * ratio,
+                            hasMeasuredVolume = hasMeasuredVolume,
+                            exampleId = exampleId,
+                        )
+                    }
+                }
+            }
+
+            val sessionGroups = mutableMapOf<MuscleGroupEnum, Load>()
+            sessionMuscles.forEach { (muscle, load) ->
+                muscles.getOrPut(muscle) { EntryStats() }.record(load)
+                sessionGroups.getOrPut(muscle.group()) { Load() }.merge(load)
+            }
+            val leaders = leaders(sessionGroups.mapValues { it.value.weightedSets })
+            sessionGroups.forEach { (group, load) ->
+                groups.getOrPut(group) { EntryStats() }.record(load = load, primary = group in leaders)
+            }
+        }
+
+        return summarize(
+            meta = MuscleLoadMeta(
+                trainingsCount = sessions.size,
+                totalExercises = totalExercises.toInt(),
+                totalSets = totalSets.toInt(),
+                totalRepetitions = totalRepetitions.toInt(),
+                totalVolume = totalVolume.checkedFloat(),
+                dominantGroup = null,
+                excludedSets = excludedSets.toInt(),
+                unassignedSets = unassignedSets.toInt(),
+                unmeasuredVolumeSets = unmeasuredVolumeSets.toInt(),
+            ),
+            muscles = muscles,
+            groups = groups,
+        )
+    }
+
+    private fun normalizedShares(example: ExerciseExample): Map<MuscleEnum, Double> {
+        val shares = mutableMapOf<MuscleEnum, Double>()
+        example.bundles.forEach { bundle ->
+            if (bundle.percentage > 0) {
+                val muscle = bundle.muscle.type
+                shares[muscle] = (shares[muscle] ?: 0.0) + bundle.percentage
+            }
+        }
+        val total = shares.values.sum()
+        return shares.mapValues { (_, share) -> share / total }
+    }
+
+    private fun hasValidRecordedValues(
+        iteration: Iteration,
+        components: ExerciseExampleComponents?,
+    ): Boolean {
+        if (iteration.repetitions <= 0) {
+            return false
+        }
+
+        val weights = listOf(
+            iteration.externalWeight,
+            iteration.extraWeight,
+            iteration.bodyWeight,
+            iteration.assistWeight,
+        )
+        if (weights.any { it != null && (!it.isFinite() || it < 0f) }) {
+            return false
+        }
+        if (iteration.bodyWeight != null && iteration.bodyWeight <= 0f) {
+            return false
+        }
+
+        val multiplier = iteration.bodyMultiplier
+        if (multiplier != null && (!multiplier.isFinite() || multiplier <= 0f)) {
+            return false
+        }
+        if (components is ExerciseExampleComponents.External && components.required &&
+            iteration.externalWeight == 0f
+        ) {
+            return false
+        }
+        return true
+    }
+
+    private fun measuredResistance(
+        iteration: Iteration,
+        components: ExerciseExampleComponents?,
+    ): Double? {
+        if (components == null) {
+            return null
+        }
+
+        val hasBodyWeight = iteration.bodyWeight != null
+        val hasBodyMultiplier = iteration.bodyMultiplier != null
+        if (hasBodyWeight != hasBodyMultiplier) {
+            return null
+        }
+
+        // Unexpected supplied fields make the measurement ambiguous, even when their value is zero.
+        val complete = when (components) {
+            is ExerciseExampleComponents.External ->
+                (!components.required || iteration.externalWeight != null) &&
+                        !hasBodyWeight && iteration.extraWeight == null && iteration.assistWeight == null
+
+            is ExerciseExampleComponents.BodyOnly ->
+                (!components.required || hasBodyWeight) &&
+                        iteration.externalWeight == null && iteration.extraWeight == null &&
+                        iteration.assistWeight == null
+
+            is ExerciseExampleComponents.BodyAndExtra ->
+                (!components.bodyRequired || hasBodyWeight) &&
+                        (!components.extraRequired || iteration.extraWeight != null) &&
+                        iteration.externalWeight == null && iteration.assistWeight == null
+
+            is ExerciseExampleComponents.BodyAndAssist ->
+                (!components.bodyRequired || hasBodyWeight) &&
+                        (!components.assistRequired || iteration.assistWeight != null) &&
+                        iteration.externalWeight == null && iteration.extraWeight == null
+        }
+        if (!complete) {
+            return null
+        }
+
+        // Schema checks establish absent terms as known absent; historical values are never filled.
+        val bodyResistance = (iteration.bodyWeight ?: 0f) * (iteration.bodyMultiplier ?: 0f)
+        if (!bodyResistance.isFinite()) {
+            return null
+        }
+        val resistance = (iteration.externalWeight?.toDouble() ?: 0.0) +
+                (iteration.extraWeight?.toDouble() ?: 0.0) +
+                bodyResistance.toDouble() -
+                (iteration.assistWeight?.toDouble() ?: 0.0)
+        // Negative machine conventions require metadata before they can represent physical volume.
+        return resistance.takeIf { it.isFinite() && it >= 0.0 }
+    }
+
+    private fun summarize(
+        meta: MuscleLoadMeta,
+        muscles: Map<MuscleEnum, EntryStats>,
+        groups: Map<MuscleGroupEnum, EntryStats>,
+    ): MuscleLoadSummary {
+        val groupSets = groups.mapValues { it.value.total.weightedSets }
+        val perGroup = groupEntries(groups = groups, muscles = muscles, volume = false)
+        val perMuscle = muscleEntries(muscles = muscles, volume = false)
+        val volumePerGroup = groupEntries(groups = groups, muscles = muscles, volume = true)
+        val volumePerMuscle = muscleEntries(muscles = muscles, volume = true)
+
+        return MuscleLoadSummary(
+            meta = meta.copy(dominantGroup = leaders(groupSets).singleOrNull()),
+            perGroup = MuscleLoadBreakdown(perGroup),
+            perMuscle = MuscleLoadBreakdown(perMuscle),
+            volumePerGroup = MuscleLoadBreakdown(volumePerGroup),
+            volumePerMuscle = MuscleLoadBreakdown(volumePerMuscle),
+            dominance = dominance(muscles.values.map { it.total.weightedSets }),
+            groupDominance = dominance(groupSets.values.toList()),
+        )
+    }
+
+    private fun muscleEntries(
+        muscles: Map<MuscleEnum, EntryStats>,
+        volume: Boolean,
+    ): List<MuscleLoadEntry> {
+        val sorted = muscles.entries
+            .filter { it.value.total.quantity(volume) > 0.0 }
+            .sortedWith(compareByDescending<Map.Entry<MuscleEnum, EntryStats>> {
+                it.value.total.quantity(volume).checkedFloat()
+            }.thenBy { it.key.name })
+        val total = sorted.sumOf { it.value.total.quantity(volume) }
+        return sorted.map { (muscle, stats) ->
+            stats.toEntry(
+                group = muscle.group(),
+                muscles = listOf(muscle),
+                percentage = stats.total.quantity(volume) / total * 100.0,
+            )
+        }
+    }
+
+    private fun groupEntries(
+        groups: Map<MuscleGroupEnum, EntryStats>,
+        muscles: Map<MuscleEnum, EntryStats>,
+        volume: Boolean,
+    ): List<MuscleLoadEntry> {
+        val sorted = groups.entries
+            .filter { it.value.total.quantity(volume) > 0.0 }
+            .sortedWith(compareByDescending<Map.Entry<MuscleGroupEnum, EntryStats>> {
+                it.value.total.quantity(volume).checkedFloat()
+            }.thenBy { it.key.name })
+        val total = sorted.sumOf { it.value.total.quantity(volume) }
+        return sorted.map { (group, stats) ->
+            stats.toEntry(
+                group = group,
+                muscles = muscles.keys.filter {
+                    it.group() == group && muscles.getValue(it).total.quantity(volume) > 0.0
+                }.sortedBy { it.name },
+                percentage = stats.total.quantity(volume) / total * 100.0,
+            )
+        }
+    }
+
+    private fun dominance(values: List<Double>): MuscleLoadDominance {
+        val sorted = values.filter { it > 0.0 }.sortedDescending()
+        val total = sorted.sum()
+        if (sorted.isEmpty()) {
+            return MuscleLoadDominance(top1SharePercent = 0f, top2SharePercent = 0f)
+        }
+        return MuscleLoadDominance(
+            top1SharePercent = (sorted.first() / total * 100.0).checkedFloat(),
+            top2SharePercent = (sorted.take(2).sum() / total * 100.0).checkedFloat(),
+        )
+    }
+
+    private fun leaders(values: Map<MuscleGroupEnum, Double>): Set<MuscleGroupEnum> {
+        val maximum = values.values.maxOrNull() ?: return emptySet()
+        if (maximum <= 0.0) {
+            return emptySet()
+        }
+        return values.filterValues {
+            abs(it - maximum) <= maximum * LEADER_RELATIVE_TOLERANCE
+        }.keys
+    }
+
+    private class Load {
+        var weightedSets: Double = 0.0
+        var volume: Double = 0.0
+        var hasMeasuredVolume: Boolean = false
+        val examples: MutableMap<String, Double> = mutableMapOf()
+
+        fun add(
+            weightedSets: Double,
+            volume: Double,
+            hasMeasuredVolume: Boolean,
+            exampleId: String,
+        ) {
+            this.weightedSets += weightedSets
+            this.volume += volume
+            this.hasMeasuredVolume = this.hasMeasuredVolume || hasMeasuredVolume
+            examples[exampleId] = (examples[exampleId] ?: 0.0) + weightedSets
+        }
+
+        fun merge(other: Load) {
+            weightedSets += other.weightedSets
+            volume += other.volume
+            hasMeasuredVolume = hasMeasuredVolume || other.hasMeasuredVolume
+            other.examples.forEach { (id, score) ->
+                examples[id] = (examples[id] ?: 0.0) + score
+            }
+        }
+
+        fun quantity(volume: Boolean): Double {
+            return if (volume) {
+                this.volume
+            } else {
+                weightedSets
+            }
+        }
+    }
+
+    private class EntryStats {
+        val total: Load = Load()
+        var hitTrainingsCount: Int = 0
+        var primaryTrainingsCount: Int = 0
+        var measuredVolumeSessions: Int = 0
+        var maxWeightedSets: Double = 0.0
+        var maxVolume: Double = 0.0
+
+        fun record(load: Load, primary: Boolean = false) {
+            total.merge(load)
+            hitTrainingsCount += 1
+            if (primary) {
+                primaryTrainingsCount += 1
+            }
+            maxWeightedSets = maxOf(a = maxWeightedSets, b = load.weightedSets)
+            if (load.hasMeasuredVolume) {
+                measuredVolumeSessions += 1
+                maxVolume = maxOf(a = maxVolume, b = load.volume)
+            }
+        }
+
+        fun toEntry(
+            group: MuscleGroupEnum,
+            muscles: List<MuscleEnum>,
+            percentage: Double,
+        ): MuscleLoadEntry {
+            return MuscleLoadEntry(
+                group = group,
+                percentage = percentage.checkedFloat(),
+                muscles = muscles,
+                hitTrainingsCount = hitTrainingsCount,
+                primaryTrainingsCount = primaryTrainingsCount,
+                avgWeightedSetsPerSession = if (hitTrainingsCount > 0) {
+                    (total.weightedSets / hitTrainingsCount).checkedFloat()
+                } else {
+                    0f
+                },
+                maxWeightedSetsInOneSession = maxWeightedSets.checkedFloat(),
+                avgVolumePerHitSession = if (measuredVolumeSessions > 0) {
+                    (total.volume / measuredVolumeSessions).checkedFloat()
+                } else {
+                    0f
+                },
+                maxVolumeInOneSession = maxVolume.checkedFloat(),
+                topExampleIds = total.examples.entries
+                    .sortedWith(compareByDescending<Map.Entry<String, Double>> {
+                        it.value.checkedFloat()
+                    }.thenBy { it.key })
+                    .take(TOP_EXAMPLES_LIMIT)
+                    .map { it.key },
+            )
+        }
+    }
+
+    private fun emptyMeta(): MuscleLoadMeta {
+        return MuscleLoadMeta(
             trainingsCount = 0,
             totalExercises = 0,
             totalSets = 0,
@@ -91,745 +476,19 @@ public class MuscleLoadingSummaryUseCase(
             totalVolume = 0f,
             dominantGroup = null,
         )
-
-        return buildSummary(
-            meta = meta,
-            stimulusLoad = stimulusLoad,
-            volumeLoad = volumeLoad,
-            groups = groups,
-            perGroupStats = emptyMap(),
-            perMuscleStats = emptyMap(),
-            topExamplesByGroupEnum = emptyMap(),
-            topExamplesByMuscle = emptyMap(),
-        )
     }
+}
 
-    private suspend fun fromSessions(sessions: List<List<Exercise>>): MuscleLoadSummary {
-        val groups = loadMuscleGroups()
-        val allExercises = sessions.flatten()
-
-        val meta = computeMeta(sessions)
-
-        if (allExercises.isEmpty()) {
-            return buildSummary(
-                meta = meta,
-                stimulusLoad = emptyMap(),
-                volumeLoad = emptyMap(),
-                groups = groups,
-                perGroupStats = emptyMap(),
-                perMuscleStats = emptyMap(),
-                topExamplesByGroupEnum = emptyMap(),
-                topExamplesByMuscle = emptyMap(),
-            )
-        }
-
-        val exampleIds =
-            allExercises.map { it.exerciseExample.id }.filter { it.isNotBlank() }.toSet()
-        val examples = loadExamples(exampleIds)
-
-        val fatigueFactorByMuscle = buildFatigueFactorByMuscle(groups)
-        val groupByMuscle = buildGroupByMuscleMap(groups)
-
-        val overallStimulus = mutableMapOf<MuscleEnum, Float>()
-        val overallVolume = mutableMapOf<MuscleEnum, Float>()
-
-        val perGroupStats = mutableMapOf<MuscleGroupEnum, EntryStats>()
-        val perMuscleStats = mutableMapOf<MuscleEnum, EntryStats>()
-
-        val topExampleScoreByGroupEnum = mutableMapOf<MuscleGroupEnum, MutableMap<String, Float>>()
-        val topExampleScoreByMuscle = mutableMapOf<MuscleEnum, MutableMap<String, Float>>()
-
-        sessions.forEach { sessionExercises ->
-            val sessionStimulusByMuscle = mutableMapOf<MuscleEnum, Float>()
-            val sessionVolumeByMuscle = mutableMapOf<MuscleEnum, Float>()
-
-            val sessionExampleScoreByGroupEnum =
-                mutableMapOf<MuscleGroupEnum, MutableMap<String, Float>>()
-            val sessionExampleScoreByMuscle = mutableMapOf<MuscleEnum, MutableMap<String, Float>>()
-
-            sessionExercises.forEach { exercise ->
-                val exampleId = exercise.exerciseExample.id
-                if (exampleId.isBlank()) return@forEach
-
-                val example = examples[exampleId] ?: return@forEach
-                val bundles = example.bundles
-                if (bundles.isEmpty()) return@forEach
-
-                val rawStimulus = exerciseStimulus(exercise.iterations)
-                val rawVolume = exerciseVolume(exercise.iterations)
-
-                if (!rawStimulus.isFinite() && !rawVolume.isFinite()) return@forEach
-                if (rawStimulus <= EPS && rawVolume <= EPS) return@forEach
-
-                val totalShare =
-                    bundles.sumOf { it.percentage.coerceAtLeast(0).toDouble() }.toFloat()
-                if (!totalShare.isFinite() || totalShare <= EPS) return@forEach
-
-                val originalPercents = bundles
-                    .map { it.percentage.coerceAtLeast(0).toFloat() }
-                    .map { share -> (share / totalShare) * 100f }
-
-                val (complexityFactor, enm) = run {
-                    val cleanPercents = originalPercents.filter { it.isFinite() && it > EPS }
-                    if (cleanPercents.isEmpty()) return@forEach
-                    val e = effectiveMuscleCount(
-                        percentages = cleanPercents,
-                        shareThresholdPercent = COMPLEXITY_SHARE_THRESHOLD_PERCENT,
-                    )
-                    val cf = complexityFactorFromEnm(
-                        enm = e,
-                        k = COMPLEXITY_K,
-                        maxFactor = COMPLEXITY_MAX_FACTOR,
-                    ) ?: return@forEach
-                    cf to e
-                }
-
-                val exampleFactor = exampleEffortFactor(
-                    example = example,
-                    complexityFactor = complexityFactor,
-                    enm = enm,
-                ) ?: return@forEach
-
-                val shares = bundles.map { it.percentage.coerceAtLeast(0).toFloat() }
-                val ratios = shares.map { share ->
-                    val r = share / totalShare
-                    if (r.isFinite() && r >= 0f) r else 0f
-                }
-
-                val weights = ratios.map { ratio ->
-                    ratio.toDouble().pow(SHARE_DAMPING_ALPHA.toDouble()).toFloat()
-                }
-
-                val weightsSum = weights.sum()
-                if (!weightsSum.isFinite() || weightsSum <= EPS) return@forEach
-
-                bundles.forEachIndexed { index, bundle ->
-                    val dampedRatio = weights[index] / weightsSum
-                    if (!dampedRatio.isFinite() || dampedRatio <= EPS) return@forEachIndexed
-
-                    val muscle = bundle.muscle.type
-                    val groupEnum = groupByMuscle[muscle]?.type
-
-                    val forceTypePenalty = forceTypePenalty(
-                        example = example,
-                        originalSharePercent = originalPercents.getOrNull(index) ?: 0f,
-                    )
-
-                    if (!forceTypePenalty.isFinite() || forceTypePenalty <= 0f) return@forEachIndexed
-
-                    val fatigueMultiplier = run {
-                        val raw = fatigueFactorByMuscle[muscle] ?: return@forEachIndexed
-                        blendedFatigueMultiplier(raw) ?: return@forEachIndexed
-                    }
-
-                    if (rawStimulus.isFinite() && rawStimulus > EPS) {
-                        val stimulusLoad = rawStimulus * complexityFactor * exampleFactor
-                        if (stimulusLoad.isFinite() && stimulusLoad > EPS) {
-                            val baseValue = stimulusLoad * dampedRatio
-                            if (baseValue.isFinite() && baseValue > EPS) {
-                                val valueToAdd = baseValue * forceTypePenalty * fatigueMultiplier
-                                if (valueToAdd.isFinite() && valueToAdd > EPS) {
-                                    sessionStimulusByMuscle[muscle] =
-                                        (sessionStimulusByMuscle[muscle] ?: 0f) + valueToAdd
-
-                                    sessionExampleScoreByMuscle
-                                        .getOrPut(muscle) { mutableMapOf() }[exampleId] =
-                                        (sessionExampleScoreByMuscle[muscle]?.get(exampleId)
-                                            ?: 0f) + valueToAdd
-
-                                    if (groupEnum != null) {
-                                        sessionExampleScoreByGroupEnum
-                                            .getOrPut(groupEnum) { mutableMapOf() }[exampleId] =
-                                            (sessionExampleScoreByGroupEnum[groupEnum]?.get(
-                                                exampleId
-                                            ) ?: 0f) + valueToAdd
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if (rawVolume.isFinite() && rawVolume > EPS) {
-                        val baseValue = rawVolume * dampedRatio
-                        if (baseValue.isFinite() && baseValue > EPS) {
-                            val valueToAdd = baseValue * forceTypePenalty
-                            if (valueToAdd.isFinite() && valueToAdd > EPS) {
-                                sessionVolumeByMuscle[muscle] =
-                                    (sessionVolumeByMuscle[muscle] ?: 0f) + valueToAdd
-                            }
-                        }
-                    }
-                }
-            }
-
-            mergeInto(overallStimulus, sessionStimulusByMuscle)
-            mergeInto(overallVolume, sessionVolumeByMuscle)
-
-            val sessionStimulusTotal =
-                sessionStimulusByMuscle.values.sum().takeIf { it.isFinite() } ?: 0f
-            sessionVolumeByMuscle.values.sum().takeIf { it.isFinite() } ?: 0f
-
-            val sessionStimulusByGroupEnum =
-                aggregateByGroupEnum(sessionStimulusByMuscle, groupByMuscle)
-            val sessionVolumeByGroupEnum =
-                aggregateByGroupEnum(sessionVolumeByMuscle, groupByMuscle)
-
-            val primaryGroupEnum = sessionStimulusByGroupEnum.entries.maxByOrNull { it.value }?.key
-            if (primaryGroupEnum != null) {
-                perGroupStats.getOrPut(primaryGroupEnum) { EntryStats() }.primaryTrainingsCount += 1
-            }
-
-            sessionStimulusByGroupEnum.forEach { (groupEnum, value) ->
-                val sharePercent =
-                    if (sessionStimulusTotal > EPS) (value / sessionStimulusTotal) * 100f else 0f
-                val hit = sharePercent.isFinite() && sharePercent >= HIT_SHARE_THRESHOLD_PERCENT
-
-                val stats = perGroupStats.getOrPut(groupEnum) { EntryStats() }
-                stats.maxStimulusInOneSession = maxOf(stats.maxStimulusInOneSession, value)
-                stats.totalStimulusAcrossHits += if (hit) value else 0f
-                stats.totalVolumeAcrossHits += if (hit) (sessionVolumeByGroupEnum[groupEnum]
-                    ?: 0f) else 0f
-                stats.maxVolumeInOneSession =
-                    maxOf(stats.maxVolumeInOneSession, sessionVolumeByGroupEnum[groupEnum] ?: 0f)
-                if (hit) stats.hitTrainingsCount += 1
-            }
-
-            sessionStimulusByMuscle.forEach { (muscle, value) ->
-                val sharePercent =
-                    if (sessionStimulusTotal > EPS) (value / sessionStimulusTotal) * 100f else 0f
-                val hit = sharePercent.isFinite() && sharePercent >= HIT_SHARE_THRESHOLD_PERCENT
-
-                val stats = perMuscleStats.getOrPut(muscle) { EntryStats() }
-                stats.maxStimulusInOneSession = maxOf(stats.maxStimulusInOneSession, value)
-                stats.totalStimulusAcrossHits += if (hit) value else 0f
-                stats.totalVolumeAcrossHits += if (hit) (sessionVolumeByMuscle[muscle]
-                    ?: 0f) else 0f
-                stats.maxVolumeInOneSession =
-                    maxOf(stats.maxVolumeInOneSession, sessionVolumeByMuscle[muscle] ?: 0f)
-                if (hit) stats.hitTrainingsCount += 1
-            }
-
-            mergeExampleScoresByGroup(topExampleScoreByGroupEnum, sessionExampleScoreByGroupEnum)
-            mergeExampleScoresByMuscle(topExampleScoreByMuscle, sessionExampleScoreByMuscle)
-        }
-
-        val topExamplesByGroupEnum = topExampleScoreByGroupEnum.mapValues { (_, m) ->
-            m.entries.sortedByDescending { it.value }.take(TOP_EXAMPLES_LIMIT).map { it.key }
-        }
-        val topExamplesByMuscle = topExampleScoreByMuscle.mapValues { (_, m) ->
-            m.entries.sortedByDescending { it.value }.take(TOP_EXAMPLES_LIMIT).map { it.key }
-        }
-
-        meta.dominantGroup?.let {
-            // meta already computed, keep as is
-        }
-
-        return buildSummary(
-            meta = meta,
-            stimulusLoad = overallStimulus,
-            volumeLoad = overallVolume,
-            groups = groups,
-            perGroupStats = perGroupStats.mapValues { it.value.toPublic() },
-            perMuscleStats = perMuscleStats.mapValues { it.value.toPublic() },
-            topExamplesByGroupEnum = topExamplesByGroupEnum,
-            topExamplesByMuscle = topExamplesByMuscle,
-        )
+private fun Long.checkedCount(): Long {
+    check(this in 0..Int.MAX_VALUE.toLong()) {
+        "Muscle load count exceeds the supported Int range"
     }
+    return this
+}
 
-    private data class EntryStats(
-        var hitTrainingsCount: Int = 0,
-        var primaryTrainingsCount: Int = 0,
-        var totalStimulusAcrossHits: Float = 0f,
-        var maxStimulusInOneSession: Float = 0f,
-        var totalVolumeAcrossHits: Float = 0f,
-        var maxVolumeInOneSession: Float = 0f,
-    ) {
-        fun toPublic(): PublicStats {
-            val hit = hitTrainingsCount.coerceAtLeast(0)
-            val avgStimulus = if (hit > 0) totalStimulusAcrossHits / hit else 0f
-            val avgVolume = if (hit > 0) totalVolumeAcrossHits / hit else 0f
-            return PublicStats(
-                hitTrainingsCount = hit,
-                primaryTrainingsCount = primaryTrainingsCount.coerceAtLeast(0),
-                avgStimulusPerHitSession = avgStimulus.takeIf { it.isFinite() } ?: 0f,
-                maxStimulusInOneSession = maxStimulusInOneSession.takeIf { it.isFinite() } ?: 0f,
-                avgVolumePerHitSession = avgVolume.takeIf { it.isFinite() } ?: 0f,
-                maxVolumeInOneSession = maxVolumeInOneSession.takeIf { it.isFinite() } ?: 0f,
-            )
-        }
+private fun Double.checkedFloat(): Float {
+    check(isFinite() && this in 0.0..Float.MAX_VALUE.toDouble()) {
+        "Muscle load quantity exceeds the supported finite Float range"
     }
-
-    private data class PublicStats(
-        val hitTrainingsCount: Int,
-        val primaryTrainingsCount: Int,
-        val avgStimulusPerHitSession: Float,
-        val maxStimulusInOneSession: Float,
-        val avgVolumePerHitSession: Float,
-        val maxVolumeInOneSession: Float,
-    )
-
-    private suspend fun loadExamples(ids: Set<String>): Map<String, ExerciseExample> {
-        if (ids.isEmpty()) return emptyMap()
-        return exerciseExampleFeature.observeExerciseExamples(ids.toList())
-            .first()
-            .associateBy { it.value.id }
-    }
-
-    private suspend fun loadMuscleGroups(): List<MuscleGroup> {
-        return muscleFeature.observeMuscles().first()
-    }
-
-    private fun computeMeta(sessions: List<List<Exercise>>): MuscleLoadMeta {
-        val trainingsCount = sessions.size
-        val totalExercises = sessions.sumOf { it.size }
-        val totalSets = sessions.sumOf { s -> s.sumOf { it.iterations.size } }
-        val totalReps = sessions.sumOf { s ->
-            s.sumOf { ex -> ex.iterations.sumOf { it.repetitions.coerceAtLeast(0) } }
-        }
-
-        val totalVolume = sessions.sumOf { s ->
-            s.sumOf { ex ->
-                ex.iterations.sumOf {
-                    it.volume.toDouble() * it.repetitions.coerceAtLeast(0).toDouble()
-                }
-            }
-        }.toFloat().takeIf { it.isFinite() } ?: 0f
-
-        return MuscleLoadMeta(
-            trainingsCount = trainingsCount,
-            totalExercises = totalExercises,
-            totalSets = totalSets,
-            totalRepetitions = totalReps,
-            totalVolume = totalVolume,
-            dominantGroup = null,
-        )
-    }
-
-    private fun buildFatigueFactorByMuscle(groups: List<MuscleGroup>): Map<MuscleEnum, Float> {
-        val map = mutableMapOf<MuscleEnum, Float>()
-
-        groups.forEach { group ->
-            group.muscles.forEach { muscle ->
-                val capacity = FATIGUE_CAPACITY_BASE + FATIGUE_CAPACITY_RANGE * muscle.size
-                val sens = FATIGUE_SENS_BASE + FATIGUE_SENS_RANGE * muscle.sensitivity
-                val factor = sens / capacity
-                if (factor.isFinite() && factor > 0f) {
-                    map[muscle.type] = factor
-                }
-            }
-        }
-
-        return map
-    }
-
-    private fun forceTypePenalty(
-        example: ExerciseExample,
-        originalSharePercent: Float,
-    ): Float {
-        if (!originalSharePercent.isFinite() || originalSharePercent <= EPS) return 1f
-
-        val isPush = example.value.forceType == ForceTypeEnum.PUSH
-        if (!isPush) return 1f
-
-        val isTinyShare = originalSharePercent <= PUSH_TINY_SHARE_MAX_PERCENT
-        if (!isTinyShare) return 1f
-
-        return PUSH_TINY_SHARE_FACTOR
-    }
-
-    private fun blendedFatigueMultiplier(rawFatigue: Float): Float? {
-        if (!rawFatigue.isFinite() || rawFatigue <= 0f) return null
-
-        val m = 1f + (rawFatigue - 1f) * FATIGUE_IMPACT
-        if (!m.isFinite() || m <= 0f) return null
-
-        return m
-    }
-
-    private fun exampleEffortFactor(
-        example: ExerciseExample,
-        complexityFactor: Float,
-        enm: Float,
-    ): Float? {
-        if (!complexityFactor.isFinite() || complexityFactor <= 0f) return null
-        if (!enm.isFinite() || enm <= 0f) return null
-
-        val weightTypeFactor = when (example.value.weightType) {
-            WeightTypeEnum.FREE -> EXAMPLE_FREE_WEIGHT_FACTOR
-            WeightTypeEnum.FIXED -> EXAMPLE_FIXED_WEIGHT_FACTOR
-            WeightTypeEnum.BODY_WEIGHT -> EXAMPLE_BODY_WEIGHT_FACTOR
-        }
-
-        if (!weightTypeFactor.isFinite() || weightTypeFactor <= 0f) return null
-
-        val categoryFactor = when (example.value.category) {
-            CategoryEnum.COMPOUND -> {
-                val bonus = EXAMPLE_COMPOUND_FACTOR - 1f
-                val scaledBonus = bonus * (1f / complexityFactor)
-                val f = 1f + scaledBonus
-                if (f.isFinite() && f > 0f) f else return null
-            }
-
-            CategoryEnum.ISOLATION -> EXAMPLE_ISOLATION_FACTOR
-        }
-
-        if (!categoryFactor.isFinite() || categoryFactor <= 0f) return null
-
-        val factor = categoryFactor * weightTypeFactor
-        if (!factor.isFinite() || factor <= 0f) return null
-
-        return factor
-    }
-
-    private fun exerciseStimulus(iterations: List<Iteration>): Float {
-        if (iterations.isEmpty()) return 0f
-
-        val total = iterations.sumOf { iteration ->
-            val reps = iteration.repetitions.coerceAtLeast(0)
-            if (reps == 0) 0.0 else {
-                val weight = iteration.volume.coerceAtLeast(0f)
-                val intensity = intensityFactorFromWeight(weight)
-                reps.toDouble() * intensity.toDouble()
-            }
-        }.toFloat()
-
-        return if (total.isFinite() && total > 0f) total else 0f
-    }
-
-    private fun intensityFactorFromWeight(weight: Float): Float {
-        val w = if (weight.isFinite() && weight >= 0f) weight else 0f
-        val scaled = ln(1.0 + w.toDouble()).toFloat()
-        val intensity = 1f + (scaled / STIMULUS_LN_WEIGHT_SCALE)
-        return if (intensity.isFinite() && intensity > 0f) intensity else 1f
-    }
-
-    private fun exerciseVolume(iterations: List<Iteration>): Float {
-        if (iterations.isEmpty()) return 0f
-
-        val total = iterations.sumOf { iteration ->
-            val reps = iteration.repetitions.coerceAtLeast(0)
-            if (reps == 0) 0.0 else {
-                val w = iteration.volume
-                if (!w.isFinite() || w <= EPS) 0.0 else (w.toDouble() * reps.toDouble())
-            }
-        }.toFloat()
-
-        return if (total.isFinite() && total > 0f) total else 0f
-    }
-
-    private fun computeExampleLoad(example: ExerciseExample?): Map<MuscleEnum, Float> {
-        if (example == null) return emptyMap()
-        val bundles = example.bundles
-        if (bundles.isEmpty()) return emptyMap()
-
-        val totals = mutableMapOf<MuscleEnum, Float>()
-
-        bundles.forEach { bundle ->
-            val muscle = bundle.muscle.type
-            val valueToAdd = bundle.percentage.toFloat()
-            if (!valueToAdd.isFinite() || valueToAdd <= EPS) return@forEach
-
-            val updated = (totals[muscle] ?: 0f) + valueToAdd
-            if (!updated.isFinite() || updated <= EPS) return@forEach
-
-            totals[muscle] = updated
-        }
-
-        return totals.filterValues { it.isFinite() && it > EPS }
-    }
-
-    private fun effectiveMuscleCount(
-        percentages: List<Float>,
-        shareThresholdPercent: Float,
-    ): Float {
-        val clean = percentages.filter { it.isFinite() && it > EPS }
-        if (clean.isEmpty()) return 1f
-
-        val filtered = clean.filter { it >= shareThresholdPercent }
-        val chosen = if (filtered.size >= 2) filtered else clean
-
-        val total = chosen.sum()
-        if (!total.isFinite() || total <= EPS) return 1f
-
-        var sumSq = 0f
-        chosen.forEach { s ->
-            val p = s / total
-            if (p.isFinite() && p > 0f) sumSq += p * p
-        }
-
-        if (!sumSq.isFinite() || sumSq <= EPS) return 1f
-
-        val enm = 1f / sumSq
-        return if (enm.isFinite() && enm >= 1f) enm else 1f
-    }
-
-    private fun complexityFactorFromEnm(
-        enm: Float,
-        k: Float,
-        maxFactor: Float,
-    ): Float? {
-        if (!enm.isFinite() || enm < 1f) return null
-        if (!k.isFinite() || k < 0f) return null
-        if (!maxFactor.isFinite() || maxFactor < 1f) return null
-
-        val raw = 1f + k * ln(enm.toDouble()).toFloat()
-        if (!raw.isFinite() || raw <= 0f) return null
-
-        val clamped = raw.coerceIn(1f, maxFactor)
-        if (!clamped.isFinite() || clamped <= 0f) return null
-
-        return clamped
-    }
-
-    private fun buildSummary(
-        meta: MuscleLoadMeta,
-        stimulusLoad: Map<MuscleEnum, Float>,
-        volumeLoad: Map<MuscleEnum, Float>,
-        groups: List<MuscleGroup>,
-        perGroupStats: Map<MuscleGroupEnum, PublicStats>,
-        perMuscleStats: Map<MuscleEnum, PublicStats>,
-        topExamplesByGroupEnum: Map<MuscleGroupEnum, List<String>>,
-        topExamplesByMuscle: Map<MuscleEnum, List<String>>,
-    ): MuscleLoadSummary {
-        val groupByMuscle = buildGroupByMuscleMap(groups)
-
-        val perMuscleEntries = buildPerMuscleBreakdown(
-            muscleLoad = stimulusLoad,
-            groupByMuscle = groupByMuscle,
-            statsByMuscle = perMuscleStats,
-            topExamplesByMuscle = topExamplesByMuscle,
-        )
-
-        val perGroupEntries = buildPerGroupBreakdown(
-            muscleLoad = stimulusLoad,
-            groups = groups,
-            groupByMuscle = groupByMuscle,
-            statsByGroupEnum = perGroupStats,
-            topExamplesByGroupEnum = topExamplesByGroupEnum,
-        )
-
-        val volumePerMuscleEntries = buildPerMuscleBreakdown(
-            muscleLoad = volumeLoad,
-            groupByMuscle = groupByMuscle,
-            statsByMuscle = perMuscleStats,
-            topExamplesByMuscle = topExamplesByMuscle,
-            isVolume = true,
-        )
-
-        val volumePerGroupEntries = buildPerGroupBreakdown(
-            muscleLoad = volumeLoad,
-            groups = groups,
-            groupByMuscle = groupByMuscle,
-            statsByGroupEnum = perGroupStats,
-            topExamplesByGroupEnum = topExamplesByGroupEnum,
-            isVolume = true,
-        )
-
-        val dominance = buildDominanceFromValues(stimulusLoad.values.toList())
-        val groupDominance = buildDominanceFromValues(
-            aggregateByGroupId(stimulusLoad, groupByMuscle).values.toList()
-        )
-
-        val dominantGroup = run {
-            val byGroupEnum = aggregateByGroupEnum(stimulusLoad, groupByMuscle)
-            byGroupEnum.entries.maxByOrNull { it.value }?.key
-        }
-
-        val fixedMeta = meta.copy(dominantGroup = dominantGroup)
-
-        return MuscleLoadSummary(
-            meta = fixedMeta,
-            perGroup = MuscleLoadBreakdown(perGroupEntries),
-            perMuscle = MuscleLoadBreakdown(perMuscleEntries),
-            volumePerGroup = MuscleLoadBreakdown(volumePerGroupEntries),
-            volumePerMuscle = MuscleLoadBreakdown(volumePerMuscleEntries),
-            dominance = dominance,
-            groupDominance = groupDominance,
-        )
-    }
-
-    private fun buildDominanceFromValues(values: List<Float>): MuscleLoadDominance {
-        val sorted = values.filter { it.isFinite() && it > EPS }.sortedDescending()
-        if (sorted.isEmpty()) return MuscleLoadDominance(0f, 0f)
-
-        val total = sorted.sum()
-        if (!total.isFinite() || total <= EPS) return MuscleLoadDominance(0f, 0f)
-
-        val top1 = (sorted.first() / total) * 100f
-        val top2 = ((sorted.take(2).sum()) / total) * 100f
-
-        return MuscleLoadDominance(
-            top1SharePercent = top1.coerceIn(0f, 100f),
-            top2SharePercent = top2.coerceIn(0f, 100f),
-        )
-    }
-
-    private fun buildPerMuscleBreakdown(
-        muscleLoad: Map<MuscleEnum, Float>,
-        groupByMuscle: Map<MuscleEnum, MuscleGroup>,
-        statsByMuscle: Map<MuscleEnum, PublicStats>,
-        topExamplesByMuscle: Map<MuscleEnum, List<String>>,
-        isVolume: Boolean = false,
-    ): List<MuscleLoadEntry> {
-        val filtered = muscleLoad.filterValues { it.isFinite() && it > EPS }
-        if (filtered.isEmpty()) return emptyList()
-
-        val sum = filtered.values.sum()
-        if (!sum.isFinite() || sum <= EPS) return emptyList()
-
-        return filtered.entries
-            .sortedByDescending { it.value }
-            .mapNotNull { (muscle, value) ->
-                val group = groupByMuscle[muscle] ?: return@mapNotNull null
-                val percent = (value / sum) * 100f
-                if (!percent.isFinite() || percent <= EPS) return@mapNotNull null
-
-                val stats = statsByMuscle[muscle]
-                val topExamples = topExamplesByMuscle[muscle] ?: emptyList()
-
-                MuscleLoadEntry(
-                    group = group.type,
-                    percentage = percent.coerceIn(0f, 100f),
-                    muscles = listOf(muscle),
-                    hitTrainingsCount = stats?.hitTrainingsCount ?: 0,
-                    primaryTrainingsCount = 0,
-                    avgStimulusPerHitSession = if (!isVolume) (stats?.avgStimulusPerHitSession
-                        ?: 0f) else 0f,
-                    maxStimulusInOneSession = if (!isVolume) (stats?.maxStimulusInOneSession
-                        ?: 0f) else 0f,
-                    avgVolumePerHitSession = if (isVolume) (stats?.avgVolumePerHitSession
-                        ?: 0f) else (stats?.avgVolumePerHitSession ?: 0f),
-                    maxVolumeInOneSession = if (isVolume) (stats?.maxVolumeInOneSession
-                        ?: 0f) else (stats?.maxVolumeInOneSession ?: 0f),
-                    topExampleIds = if (!isVolume) topExamples else emptyList(),
-                )
-            }
-    }
-
-    private fun buildPerGroupBreakdown(
-        muscleLoad: Map<MuscleEnum, Float>,
-        groups: List<MuscleGroup>,
-        groupByMuscle: Map<MuscleEnum, MuscleGroup>,
-        statsByGroupEnum: Map<MuscleGroupEnum, PublicStats>,
-        topExamplesByGroupEnum: Map<MuscleGroupEnum, List<String>>,
-        isVolume: Boolean = false,
-    ): List<MuscleLoadEntry> {
-        val filtered = muscleLoad.filterValues { it.isFinite() && it > EPS }
-        if (filtered.isEmpty()) return emptyList()
-
-        val totalsByGroupId = mutableMapOf<String, Float>()
-        val contributedMusclesByGroupId = mutableMapOf<String, MutableSet<MuscleEnum>>()
-
-        filtered.forEach { (muscle, value) ->
-            val group = groupByMuscle[muscle] ?: return@forEach
-            val updated = (totalsByGroupId[group.id] ?: 0f) + value
-            if (!updated.isFinite() || updated <= EPS) return@forEach
-
-            totalsByGroupId[group.id] = updated
-            contributedMusclesByGroupId.getOrPut(group.id) { mutableSetOf() }.add(muscle)
-        }
-
-        val sum = totalsByGroupId.values.sum()
-        if (!sum.isFinite() || sum <= EPS) return emptyList()
-
-        val groupById = groups.associateBy { it.id }
-
-        return totalsByGroupId.entries
-            .sortedByDescending { it.value }
-            .mapNotNull { (groupId, totalValue) ->
-                val group = groupById[groupId] ?: return@mapNotNull null
-                val percent = (totalValue / sum) * 100f
-                if (!percent.isFinite() || percent <= EPS) return@mapNotNull null
-
-                val muscles = contributedMusclesByGroupId[groupId]
-                    ?.toList()
-                    ?.sortedBy { it.name }
-                    ?: emptyList()
-
-                val stats = statsByGroupEnum[group.type]
-                val topExamples = topExamplesByGroupEnum[group.type] ?: emptyList()
-
-                MuscleLoadEntry(
-                    group = group.type,
-                    percentage = percent.coerceIn(0f, 100f),
-                    muscles = muscles,
-                    hitTrainingsCount = stats?.hitTrainingsCount ?: 0,
-                    primaryTrainingsCount = stats?.primaryTrainingsCount ?: 0,
-                    avgStimulusPerHitSession = if (!isVolume) (stats?.avgStimulusPerHitSession
-                        ?: 0f) else 0f,
-                    maxStimulusInOneSession = if (!isVolume) (stats?.maxStimulusInOneSession
-                        ?: 0f) else 0f,
-                    avgVolumePerHitSession = stats?.avgVolumePerHitSession ?: 0f,
-                    maxVolumeInOneSession = stats?.maxVolumeInOneSession ?: 0f,
-                    topExampleIds = if (!isVolume) topExamples else emptyList(),
-                )
-            }
-    }
-
-    private fun buildGroupByMuscleMap(groups: List<MuscleGroup>): Map<MuscleEnum, MuscleGroup> {
-        val map = mutableMapOf<MuscleEnum, MuscleGroup>()
-        groups.forEach { group ->
-            group.muscles.forEach { muscle ->
-                map[muscle.type] = group
-            }
-        }
-        return map
-    }
-
-    private fun mergeInto(target: MutableMap<MuscleEnum, Float>, src: Map<MuscleEnum, Float>) {
-        src.forEach { (k, v) ->
-            if (!v.isFinite() || v <= EPS) return@forEach
-            target[k] = (target[k] ?: 0f) + v
-        }
-    }
-
-    private fun aggregateByGroupEnum(
-        byMuscle: Map<MuscleEnum, Float>,
-        groupByMuscle: Map<MuscleEnum, MuscleGroup>,
-    ): Map<MuscleGroupEnum, Float> {
-        val out = mutableMapOf<MuscleGroupEnum, Float>()
-        byMuscle.forEach { (muscle, value) ->
-            val groupEnum = groupByMuscle[muscle]?.type ?: return@forEach
-            out[groupEnum] = (out[groupEnum] ?: 0f) + value
-        }
-        return out
-    }
-
-    private fun aggregateByGroupId(
-        byMuscle: Map<MuscleEnum, Float>,
-        groupByMuscle: Map<MuscleEnum, MuscleGroup>,
-    ): Map<String, Float> {
-        val out = mutableMapOf<String, Float>()
-        byMuscle.forEach { (muscle, value) ->
-            val groupId = groupByMuscle[muscle]?.id ?: return@forEach
-            out[groupId] = (out[groupId] ?: 0f) + value
-        }
-        return out
-    }
-
-    private fun mergeExampleScoresByGroup(
-        target: MutableMap<MuscleGroupEnum, MutableMap<String, Float>>,
-        src: Map<MuscleGroupEnum, MutableMap<String, Float>>,
-    ) {
-        src.forEach { (k, v) ->
-            val t = target.getOrPut(k) { mutableMapOf() }
-            v.forEach { (exampleId, score) ->
-                if (!score.isFinite() || score <= EPS) return@forEach
-                t[exampleId] = (t[exampleId] ?: 0f) + score
-            }
-        }
-    }
-
-    private fun mergeExampleScoresByMuscle(
-        target: MutableMap<MuscleEnum, MutableMap<String, Float>>,
-        src: Map<MuscleEnum, MutableMap<String, Float>>,
-    ) {
-        src.forEach { (k, v) ->
-            val t = target.getOrPut(k) { mutableMapOf() }
-            v.forEach { (exampleId, score) ->
-                if (!score.isFinite() || score <= EPS) return@forEach
-                t[exampleId] = (t[exampleId] ?: 0f) + score
-            }
-        }
-    }
+    return toFloat()
 }

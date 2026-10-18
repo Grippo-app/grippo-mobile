@@ -2,6 +2,7 @@ package com.grippo.core.state.metrics.profile
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
@@ -13,39 +14,70 @@ import com.grippo.design.resources.provider.goal_card_progress_day
 import com.grippo.design.resources.provider.goal_card_progress_days_left
 import com.grippo.design.resources.provider.goal_card_progress_due_today
 import com.grippo.design.resources.provider.goal_card_progress_overdue
-import com.grippo.design.resources.provider.goal_card_status_completed
+import com.grippo.design.resources.provider.goal_card_status_not_evaluated
 import com.grippo.design.resources.provider.goal_card_status_drifting
 import com.grippo.design.resources.provider.goal_card_status_off_track
 import com.grippo.design.resources.provider.goal_card_status_on_track
+import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.atTime
+import kotlinx.datetime.daysUntil
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public data class GoalProgressState(
     val goal: GoalState,
     val now: DateTimeFormatState,
 
-    // Adherence score.
-    val score: Int,
+    // Training-pattern heuristic; null when there is insufficient evidence.
+    val score: Int?,
 
-    // Pooled dimension shares (0..100).
+    // Descriptive shares of recorded sets by repetition range (0..100).
     val strengthShare: Int,
     val hypertrophyShare: Int,
     val enduranceShare: Int,
 
-    // Timeline.
-    val daysTotal: Int,
-    val daysElapsed: Int,
-    val daysRemaining: Int,
-    val progressFraction: Float,
-    val isFinished: Boolean,
-
     // Calculation artifacts.
     val sessionCount: Int,
     val findings: ImmutableList<GoalFitFindingState>,
+    val evidence: GoalAnalysisEvidenceState,
 ) {
+    public val daysTotal: Int
+        get() {
+            val start = goal.createdAt.value?.date ?: return 1
+            val target = goal.target.value?.date ?: return 1
+            return (start.daysUntil(target) + 1).coerceAtLeast(1)
+        }
+
+    public val daysElapsed: Int
+        get() {
+            val start = goal.createdAt.value?.date ?: return 0
+            val date = now.value?.date ?: return 0
+            return start.daysUntil(date).coerceIn(0, daysTotal - 1)
+        }
+
+    public val daysRemaining: Int
+        get() {
+            val date = now.value?.date ?: return 0
+            val target = goal.target.value?.date ?: return 0
+            return date.daysUntil(target)
+        }
+
+    public val progressFraction: Float
+        get() = (daysElapsed.toFloat() / (daysTotal - 1).coerceAtLeast(1)).coerceIn(0f, 1f)
+
+    public val isFinished: Boolean
+        get() {
+            val date = now.value?.date ?: return false
+            val target = goal.target.value?.date ?: return false
+            return date >= target
+        }
+
     @Composable
     public fun progressLine(): String {
         val day = (daysElapsed + 1).coerceAtMost(daysTotal)
@@ -67,9 +99,8 @@ public data class GoalProgressState(
 
     @Composable
     public fun statusLabel(): String {
-        val score = score.coerceIn(0, 100)
+        val score = score ?: return AppTokens.strings.res(Res.string.goal_card_status_not_evaluated)
         return when {
-            isFinished && score >= ON_TRACK_MIN -> AppTokens.strings.res(Res.string.goal_card_status_completed)
             score >= ON_TRACK_MIN -> AppTokens.strings.res(Res.string.goal_card_status_on_track)
             score >= DRIFTING_MIN -> AppTokens.strings.res(Res.string.goal_card_status_drifting)
             else -> AppTokens.strings.res(Res.string.goal_card_status_off_track)
@@ -85,21 +116,36 @@ public data class GoalProgressState(
 public fun stubGoalProgress(
     primary: GoalPrimaryGoalEnumState = GoalPrimaryGoalEnumState.GET_STRONGER,
     secondary: GoalSecondaryGoalEnumState? = GoalSecondaryGoalEnumState.CONSISTENCY,
-    score: Int = 75,
+    score: Int? = 75,
     strengthShare: Int = 52,
     hypertrophyShare: Int = 33,
     enduranceShare: Int = 15,
     daysTotal: Int = 90,
     daysElapsed: Int = 18,
-    isFinished: Boolean = false,
     sessionCount: Int = 6,
     findings: ImmutableList<GoalFitFindingState> = stubGoalFitFindings(primary),
 ): GoalProgressState {
+    val now = DateTimeUtils.now()
+    val start = now.date.minus(DatePeriod(days = daysElapsed.coerceAtLeast(0)))
+    val target = start.plus(DatePeriod(days = daysTotal.coerceAtLeast(1) - 1))
     val baseGoal = stubGoal()
     return GoalProgressState(
-        goal = baseGoal.copy(primaryGoal = primary, secondaryGoal = secondary),
+        goal = baseGoal.copy(
+            primaryGoal = primary,
+            secondaryGoal = secondary,
+            createdAt = DateTimeFormatState.of(
+                value = start.atTime(now.time),
+                range = DateTimeUtils.infinity(),
+                format = DateFormat.DateOnly.DateMmmDdYyyy,
+            ),
+            target = DateTimeFormatState.of(
+                value = target.atTime(now.time),
+                range = DateTimeUtils.infinity(),
+                format = DateFormat.DateOnly.DateMmmDdYyyy,
+            ),
+        ),
         now = DateTimeFormatState.of(
-            value = DateTimeUtils.now(),
+            value = now,
             range = DateTimeUtils.infinity(),
             format = DateFormat.DateOnly.DateMmmDdYyyy,
         ),
@@ -107,63 +153,29 @@ public fun stubGoalProgress(
         strengthShare = strengthShare,
         hypertrophyShare = hypertrophyShare,
         enduranceShare = enduranceShare,
-        daysTotal = daysTotal.coerceAtLeast(1),
-        daysElapsed = daysElapsed.coerceAtLeast(0),
-        daysRemaining = (daysTotal - daysElapsed),
-        progressFraction = (daysElapsed.toFloat() / daysTotal.coerceAtLeast(1).toFloat())
-            .coerceIn(0f, 1f),
-        isFinished = isFinished,
         sessionCount = sessionCount,
         findings = findings,
+        evidence = GoalAnalysisEvidenceState(
+            range = DateRangeFormatState.of(DateRangeKind.Last30Days),
+            setCount = sessionCount * 12,
+            excludedSetCount = 0,
+            missingMetadataSetCount = 0,
+        ),
     )
 }
 
-public fun stubGoalProgressList(): ImmutableList<GoalProgressState> {
-    val seeds = listOf(
-        // score, strength/hyp/end, daysTotal, daysElapsed, daysRemaining, fraction, finished
-        StubSeed(82, 45, 40, 15, 90, 18, 72, 0.2f, false),
-        StubSeed(54, 20, 35, 45, 60, 30, 30, 0.5f, false),
-        StubSeed(28, 10, 25, 65, 45, 38, 7, 0.84f, false),
-        StubSeed(66, 33, 33, 34, 30, 30, 0, 1f, false),
-        StubSeed(47, 25, 50, 25, 30, 34, -4, 1f, false),
-        StubSeed(91, 50, 35, 15, 120, 120, 0, 1f, true),
-        StubSeed(75, 60, 25, 15, 180, 2, 178, 0.01f, false),
-    )
-
-    val now = DateTimeFormatState.of(
-        value = DateTimeUtils.now(),
-        range = DateTimeUtils.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy
-    )
-
-    return seeds.map { s ->
-        GoalProgressState(
-            goal = stubGoal(),
-            now = now,
-            score = s.score,
-            strengthShare = s.str,
-            hypertrophyShare = s.hyp,
-            enduranceShare = s.end,
-            daysTotal = s.daysTotal,
-            daysElapsed = s.daysElapsed,
-            daysRemaining = s.daysRemaining,
-            progressFraction = s.fraction,
-            isFinished = s.finished,
-            sessionCount = 6,
-            findings = stubGoalFitFindings(GoalPrimaryGoalEnumState.GET_STRONGER),
-        )
-    }.toPersistentList()
-}
-
-/** Internal holder used only by stub builders. */
-private data class StubSeed(
-    val score: Int,
-    val str: Int,
-    val hyp: Int,
-    val end: Int,
-    val daysTotal: Int,
-    val daysElapsed: Int,
-    val daysRemaining: Int,
-    val fraction: Float,
-    val finished: Boolean,
+public fun stubGoalProgressList(): ImmutableList<GoalProgressState> = persistentListOf(
+    stubGoalProgress(score = 82, strengthShare = 45, hypertrophyShare = 40, enduranceShare = 15),
+    stubGoalProgress(score = 54, strengthShare = 20, hypertrophyShare = 35, enduranceShare = 45,
+        daysTotal = 60, daysElapsed = 30),
+    stubGoalProgress(score = 28, strengthShare = 10, hypertrophyShare = 25, enduranceShare = 65,
+        daysTotal = 45, daysElapsed = 38),
+    stubGoalProgress(score = 66, strengthShare = 33, hypertrophyShare = 33, enduranceShare = 34,
+        daysTotal = 30, daysElapsed = 29),
+    stubGoalProgress(score = 47, strengthShare = 25, hypertrophyShare = 50, enduranceShare = 25,
+        daysTotal = 30, daysElapsed = 34),
+    stubGoalProgress(score = 91, strengthShare = 50, hypertrophyShare = 35, enduranceShare = 15,
+        daysTotal = 120, daysElapsed = 120),
+    stubGoalProgress(score = 75, strengthShare = 60, hypertrophyShare = 25, enduranceShare = 15,
+        daysTotal = 180, daysElapsed = 2),
 )

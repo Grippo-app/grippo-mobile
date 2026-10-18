@@ -145,7 +145,6 @@ public class FeatureApiModule {
         single {
             MuscleLoadingSummaryUseCase(
                 exerciseExampleFeature = get(),
-                muscleFeature = get(),
             )
         }
 
@@ -158,9 +157,7 @@ public class FeatureApiModule {
         }
 
         single {
-            TrainingStreakUseCase(
-                userFeature = get(),
-            )
+            TrainingStreakUseCase()
         }
 
         single {
@@ -178,7 +175,6 @@ public class FeatureApiModule {
         single {
             GoalFollowingUseCase(
                 exerciseExampleFeature = get(),
-                goalFeature = get()
             )
         }
 
@@ -190,9 +186,7 @@ public class FeatureApiModule {
         }
 
         single {
-            PerformanceTrendUseCase(
-                userFeature = get(),
-            )
+            PerformanceTrendUseCase()
         }
 
         single {

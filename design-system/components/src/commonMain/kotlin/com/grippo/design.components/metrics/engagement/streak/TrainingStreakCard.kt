@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.state.metrics.engagement.TrainingStreakFeaturedState
-import com.grippo.core.state.metrics.engagement.TrainingStreakKind
 import com.grippo.core.state.metrics.engagement.TrainingStreakMood
 import com.grippo.core.state.metrics.engagement.TrainingStreakState
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
@@ -46,6 +45,7 @@ import com.grippo.design.resources.provider.metric_overview_streak_pattern_patte
 import com.grippo.design.resources.provider.metric_overview_streak_rhythm_pattern
 import com.grippo.design.resources.provider.metric_overview_streak_title
 import com.grippo.design.resources.provider.metric_overview_streak_weekly_pattern
+import com.grippo.design.resources.provider.training_streak_current_progress
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -75,8 +75,7 @@ public fun TrainingStreakCard(
 
         is TrainingStreakFeaturedState.Rhythm -> AppTokens.strings.res(
             Res.string.highlight_streak_rhythm,
-            featured.workDays,
-            featured.restDays
+            featured.length,
         )
 
         is TrainingStreakFeaturedState.Pattern -> AppTokens.strings.res(
@@ -92,7 +91,7 @@ public fun TrainingStreakCard(
 
             is TrainingStreakFeaturedState.Weekly -> AppTokens.strings.res(
                 Res.string.metric_overview_streak_weekly_pattern,
-                featured.targetSessionsPerPeriod,
+                featured.targetTrainingDaysPerPeriod,
             )
 
             is TrainingStreakFeaturedState.Rhythm -> AppTokens.strings.res(
@@ -103,7 +102,7 @@ public fun TrainingStreakCard(
 
             is TrainingStreakFeaturedState.Pattern -> AppTokens.strings.res(
                 Res.string.metric_overview_streak_pattern_pattern,
-                featured.targetSessionsPerPeriod,
+                featured.targetTrainingDaysPerPeriod,
                 featured.periodLengthDays,
             )
         }
@@ -114,7 +113,7 @@ public fun TrainingStreakCard(
 
             is TrainingStreakFeaturedState.Weekly -> AppTokens.strings.res(
                 Res.string.highlight_streak_weekly_target,
-                featured.targetSessionsPerPeriod
+                featured.targetTrainingDaysPerPeriod
             )
 
             is TrainingStreakFeaturedState.Rhythm -> AppTokens.strings.res(
@@ -125,7 +124,7 @@ public fun TrainingStreakCard(
 
             is TrainingStreakFeaturedState.Pattern -> AppTokens.strings.res(
                 Res.string.highlight_streak_pattern_target,
-                featured.targetSessionsPerPeriod,
+                featured.targetTrainingDaysPerPeriod,
                 featured.periodLengthDays,
             )
         }
@@ -229,6 +228,18 @@ public fun TrainingStreakCard(
             progress = progressValue,
             colors = progressColors,
         )
+
+        value.timeline.lastOrNull()?.let { currentPeriod ->
+            Text(
+                text = AppTokens.strings.res(
+                    Res.string.training_streak_current_progress,
+                    currentPeriod.achievedTrainingDays,
+                    currentPeriod.targetTrainingDays,
+                ),
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.secondary,
+            )
+        }
 
         if (presentation == MetricCardPresentation.Detailed) {
             val moodLabel = when (value.featured.mood) {
@@ -373,12 +384,10 @@ private fun TrainingStreakCardOverviewRestartPreview() {
 }
 
 private fun trainingStreakCardPreviewValues(): List<TrainingStreakState> {
-    val values = stubTrainingStreaks().map { it.copy(timeline = persistentListOf()) }
+    val values = stubTrainingStreaks()
     val pattern = TrainingStreakFeaturedState.Pattern(
         length = 12,
-        targetSessionsPerPeriod = 3,
-        periodLengthDays = 7,
-        mask = persistentListOf(true, false, true, false, true, false, false),
+        mask = persistentListOf(true, false, true, false, true, false, false, false),
         mood = TrainingStreakMood.OnTrack,
         progressPercent = 67,
         confidence = 0.8f,
@@ -386,8 +395,8 @@ private fun trainingStreakCardPreviewValues(): List<TrainingStreakState> {
     val patternValue = values.first().copy(
         totalActiveDays = 128,
         featured = pattern,
-        kind = TrainingStreakKind.Pattern,
         historyDays = 365,
+        timeline = persistentListOf(),
     )
     return values + patternValue + patternValue.copy(
         totalActiveDays = 0,
@@ -397,7 +406,6 @@ private fun trainingStreakCardPreviewValues(): List<TrainingStreakState> {
             progressPercent = 0,
             confidence = 0.5f,
         ),
-        score = 0f,
         lastTrainingGapDays = 7,
     )
 }

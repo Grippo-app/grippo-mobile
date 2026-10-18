@@ -8,18 +8,23 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
+import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.goal.GoalFeature
+import com.grippo.data.features.api.goal.models.Goal
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
 import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
 import com.grippo.data.features.api.local.settings.models.Range
 import com.grippo.data.features.api.metrics.distribution.MuscleLoadingSummaryUseCase
+import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadSummary
 import com.grippo.data.features.api.metrics.engagement.TrainingStreakUseCase
 import com.grippo.data.features.api.metrics.performance.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.performance.PerformanceTrendUseCase
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase
+import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.api.user.UserFeature
@@ -50,7 +55,9 @@ import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.state.domain.range.toDomain
 import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.date.utils.DateRangeKind
+import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.currentDateFlow
 import com.grippo.toolkit.local.notification.AppNotification
 import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
@@ -58,6 +65,9 @@ import com.grippo.toolkit.permission.AppPermission
 import com.grippo.toolkit.permission.PermissionManager
 import kotlin.time.Duration.Companion.days
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -65,6 +75,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
 
 internal class HomeViewModel(
     private val analytics: HomeAnalytics,
@@ -94,27 +105,24 @@ internal class HomeViewModel(
     }
 
     init {
-        userFeature
-            .observeUser()
+        userFeature.observeUser()
             .onEach(::provideUser)
             .safeLaunch()
 
-        excludedMusclesFeature
-            .observeExcludedMuscles()
-            .onEach { update { state -> state.copy(excludedMusclesCount = it.size) } }
+        excludedMusclesFeature.observeExcludedMuscles()
+            .onEach(::provideExcludedMuscles)
             .safeLaunch()
 
-        excludedEquipmentsFeature
-            .observeExcludedEquipments()
-            .onEach { update { state -> state.copy(missingEquipmentCount = it.size) } }
+        excludedEquipmentsFeature.observeExcludedEquipments()
+            .onEach(::provideExcludedEquipments)
             .safeLaunch()
 
-        goalFeature
-            .observeGoal()
-            .onEach { goal -> update { state -> state.copy(hasGoal = goal != null) } }
+        goalFeature.observeGoal()
+            .onEach(::provideGoalPresence)
             .safeLaunch()
 
         localSettingsFeature.observeRange()
+            .combine(currentDateFlow()) { range, _ -> range }
             .onEach(::provideRange)
             .safeLaunch()
 
@@ -136,27 +144,53 @@ internal class HomeViewModel(
             }
         }
 
-        state
+        val selectedPeriods = state
             .map { it.range.value }
             .filterNotNull()
             .distinctUntilChanged()
+
+        val metricPeriods = selectedPeriods
+            .combine(currentDateFlow()) { period, _ -> period }
+
+        metricPeriods
             .flatMapLatest { period ->
                 trainingFeature
                     .observeTrainings(start = period.from, end = period.to)
-                    .onEach(::provideTrainings)
+                    .flatMapLatest { trainings ->
+                        val ids = trainings.flatMap { it.exercises }.map { it.exerciseExample.id }.distinct()
+                        exerciseExampleFeature
+                            .observeExerciseExamples(ids)
+                            .onEach { examples ->
+                                provideTrainings(list = trainings, period = period, examples = examples)
+                            }
+                    }
             }.safeLaunch()
 
-        state
-            .map { it.range.value }
-            .filterNotNull()
-            .distinctUntilChanged()
-            .mapLatest { period ->
-                withLoader(HomeLoader.Trainings) {
-                    analytics.trackOperation(HomeOperation.RefreshTrainings) {
-                        trainingFeature.getTrainings(start = period.from, end = period.to).getOrThrow()
-                    }
-                }
+        metricPeriods
+            .flatMapLatest { period ->
+                trainingFeature
+                    .observeTrainings(start = period.from, end = period.to)
+                    .flatMapLatest(muscleLoadingSummaryUseCase::observeFromTrainings)
             }
+            .onEach(::provideMuscleLoad)
+            .safeLaunch()
+
+        metricPeriods
+            .flatMapLatest { period ->
+                combine(
+                    trainingFeature.observeTrainings(start = period.from, end = period.to),
+                    goalFeature.observeGoal(),
+                ) { trainings, goal -> Triple(period, trainings, goal) }
+                    .flatMapLatest { source ->
+                        val ids = source.second.flatMap { it.exercises }.map { it.exerciseExample.id }.distinct()
+                        exerciseExampleFeature.observeExerciseExamples(ids).map { source }
+                    }
+            }
+            .mapLatest(::provideGoalProgress)
+            .safeLaunch()
+
+        selectedPeriods
+            .mapLatest(::refreshTrainings)
             .safeLaunch()
 
         safeLaunch {
@@ -175,17 +209,61 @@ internal class HomeViewModel(
         }
     }
 
+    private suspend fun refreshTrainings(period: DateRange) {
+        withLoader(HomeLoader.Trainings) {
+            val refresh = safeLaunch {
+                analytics.trackOperation(HomeOperation.RefreshTrainings) {
+                    trainingFeature.getTrainings(start = period.from, end = period.to).getOrThrow()
+                }
+            }
+
+            try {
+                refresh.join()
+            } finally {
+                // A handled request failure must leave this period subscription alive.
+                withContext(NonCancellable) {
+                    refresh.cancelAndJoin()
+                }
+            }
+        }
+    }
+
     private fun provideUser(value: User?) {
         val user = value?.toState() ?: return
+
         update { it.copy(user = user) }
+    }
+
+    private fun provideExcludedMuscles(value: List<Muscle>) {
+        val count = value.size
+
+        update { it.copy(excludedMusclesCount = count) }
+    }
+
+    private fun provideExcludedEquipments(value: List<Equipment>) {
+        val count = value.size
+
+        update { it.copy(missingEquipmentCount = count) }
+    }
+
+    private fun provideGoalPresence(value: Goal?) {
+        val hasGoal = value != null
+
+        update { it.copy(hasGoal = hasGoal) }
     }
 
     private fun provideRange(value: Range?) {
         val kind = value?.toState() ?: DateRangeKind.Last30Days
-        update { it.copy(range = DateRangeFormatState.of(kind)) }
+        val range = DateRangeFormatState.of(kind)
+
+        update { it.copy(range = range) }
     }
 
-    private suspend fun provideTrainings(list: List<Training>) {
+    private fun provideTrainings(
+        list: List<Training>,
+        period: DateRange,
+        examples: List<ExerciseExample>,
+    ) {
         // Always run the performance use case — it returns 5 metrics regardless
         // of input size (Empty status when sparse), so the dashboard preserves a
         // stable card layout when the user is past the unlock thresholds.
@@ -193,50 +271,53 @@ internal class HomeViewModel(
             .fromTrainings(list)
             .toState()
 
-        if (list.isEmpty()) {
-            update {
-                it.copy(
-                    spotlights = persistentListOf(),
-                    muscleLoad = null,
-                    streak = null,
-                    performance = performance,
-                    lastTraining = null,
-                    goalProgress = null,
-                )
-            }
-            return
+        val last = list.maxByOrNull { it.createdAt }?.toState()
+
+        val streak = list.takeIf { it.isNotEmpty() }?.let { trainings ->
+            trainingStreakUseCase
+                .fromTrainings(trainings = trainings, range = period)
+                .toState()
         }
 
-        val sortedTrainingsDesc = list.sortedByDescending { it.createdAt }
-        val trainings = sortedTrainingsDesc.toState()
-        val last = trainings.firstOrNull() ?: return
-
-        val streak = trainingStreakUseCase
-            .fromTrainings(list)
-            .toState()
-
         val spotlights = exerciseSpotlightUseCase
-            .buildSpotlights(list)
+            .buildSpotlights(
+                trainings = list,
+                examples = examples,
+                evaluatedAt = minOf(DateTimeUtils.now(), period.to),
+                historyStart = period.from.date,
+            )
             .toState()
-
-        val muscleLoadSummary = muscleLoadingSummaryUseCase
-            .fromTrainings(list)
-            .toState()
-
-        val goalProgress = goalFollowingUseCase
-            .fromTrainingsByPrimary(list)
-            ?.toState(now = DateTimeUtils.now())
 
         update {
             it.copy(
                 spotlights = spotlights,
-                muscleLoad = muscleLoadSummary,
                 streak = streak,
                 performance = performance,
                 lastTraining = last,
-                goalProgress = goalProgress,
             )
         }
+    }
+
+    private suspend fun provideGoalProgress(value: Triple<DateRange, List<Training>, Goal?>) {
+        val (period, trainings, goal) = value
+        val now = DateTimeUtils.now()
+        val adherence = goal?.let {
+            goalFollowingUseCase.fromTrainingsByPrimary(
+                trainings = trainings,
+                goal = it,
+                range = period,
+                now = now,
+            )
+        }
+        val goalProgress = adherence?.toState(now = now)
+
+        update { it.copy(goalProgress = goalProgress) }
+    }
+
+    private fun provideMuscleLoad(value: MuscleLoadSummary) {
+        val muscleLoad = value.takeIf { it.meta.trainingsCount > 0 }?.toState()
+
+        update { it.copy(muscleLoad = muscleLoad) }
     }
 
     override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {

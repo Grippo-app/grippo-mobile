@@ -338,10 +338,10 @@ public fun Sparkline(
             val idx = selectedIndex
             if (l != null && idx != null && idx in l.currentPoints.indices) {
                 val mp = l.currentPoints[idx]
-                val valueText = formatValue(mp.raw.y, peek.decimals)
+                val valueText = peek.valueFormatter?.invoke(mp.raw.y) ?: formatValue(mp.raw.y, peek.decimals)
                 val labelText = if (peek.showLabel) mp.raw.label else null
 
-                val tooltipSize = remember(mp.raw.y, mp.raw.label, peek, density) {
+                val tooltipSize = remember(valueText, labelText, peek, density) {
                     measureTooltipSize(
                         textMeasurer = textMeasurer,
                         density = density,
@@ -431,18 +431,18 @@ private fun buildLayout(
     val spanX = if (flatX) 1f else spanXRaw
     val spanY = if (flatY) 1f else spanYRaw
 
-    fun mx(x: Float): Float {
-        return if (flatX) chart.left + chart.width / 2f
+    val mapX: (Float) -> Float = { x ->
+        if (flatX) chart.left + chart.width / 2f
         else chart.left + (x - minX) / spanX * chart.width
     }
 
-    fun my(y: Float): Float {
-        return if (flatY) chart.top + chart.height / 2f
+    val mapY: (Float) -> Float = { y ->
+        if (flatY) chart.top + chart.height / 2f
         else chart.bottom - (y - minY) / spanY * chart.height
     }
 
     val currentSorted = data.points.sortedBy { it.x }
-    val currentMapped = currentSorted.map { MappedPoint(it, Offset(mx(it.x), my(it.y))) }
+    val currentMapped = currentSorted.map { MappedPoint(it, Offset(x = mapX(it.x), y = mapY(it.y))) }
 
     return SparklineLayout(
         chart = chart,
@@ -451,8 +451,8 @@ private fun buildLayout(
         maxX = maxX,
         minY = minY,
         maxY = maxY,
-        mx = ::mx,
-        my = ::my,
+        mx = mapX,
+        my = mapY,
     )
 }
 
@@ -628,11 +628,11 @@ private fun SparklineTooltip(
     val ax = anchor.x.roundToInt()
     val ay = anchor.y.roundToInt()
 
-    fun clampX(x: Int): Int = x.coerceIn(0, max(0, canvasSize.width - w))
-    fun clampY(y: Int): Int = y.coerceIn(0, max(0, canvasSize.height - h))
+    val clampX: (Int) -> Int = { x -> x.coerceIn(0, max(0, canvasSize.width - w)) }
+    val clampY: (Int) -> Int = { y -> y.coerceIn(0, max(0, canvasSize.height - h)) }
 
-    fun fits(x: Int, y: Int): Boolean {
-        return x >= 0 && y >= 0 && x + w <= canvasSize.width && y + h <= canvasSize.height
+    val fits: (Int, Int) -> Boolean = { x, y ->
+        x >= 0 && y >= 0 && x + w <= canvasSize.width && y + h <= canvasSize.height
     }
 
     data class Candidate(val x: Int, val y: Int)

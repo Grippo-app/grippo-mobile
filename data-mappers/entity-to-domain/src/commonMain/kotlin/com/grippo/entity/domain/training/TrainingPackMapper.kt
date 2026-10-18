@@ -10,13 +10,15 @@ public fun List<TrainingPack>.toDomain(): List<Training> {
 }
 
 public fun TrainingPack.toDomain(): Training {
+    val mappedExercises = exercises.toDomain()
+
     return Training(
         id = training.id,
-        exercises = exercises.toDomain(),
+        exercises = mappedExercises,
         volume = training.volume,
         repetitions = training.repetitions,
         intensity = training.intensity,
         duration = training.duration.minutes,
-        createdAt = DateTimeUtils.toLocalDateTime(training.createdAt)
+        createdAt = DateTimeUtils.toLocalDateTime(training.createdAt),
     )
 }

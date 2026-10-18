@@ -24,6 +24,7 @@ import com.grippo.design.components.metrics.MetricCardPresentation
 import com.grippo.design.components.metrics.distribution.muscle.loading.internal.ColoredEntry
 import com.grippo.design.components.metrics.distribution.muscle.loading.internal.colorizeEntries
 import com.grippo.design.components.metrics.distribution.muscle.loading.internal.rememberMuscleLoadIndicatorColors
+import com.grippo.design.components.metrics.distribution.muscle.loading.internal.muscleLoadPercentage
 import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
@@ -36,12 +37,10 @@ import com.grippo.design.resources.provider.metric_overview_muscle_context
 import com.grippo.design.resources.provider.metric_overview_muscle_details
 import com.grippo.design.resources.provider.metric_overview_muscle_distribution
 import com.grippo.design.resources.provider.metric_overview_muscle_primary
-import com.grippo.design.resources.provider.metric_overview_muscle_shares
+import com.grippo.design.resources.provider.muscle_load_set_share_note
 import com.grippo.design.resources.provider.muscle_load_no_data
-import com.grippo.design.resources.provider.percent
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlin.math.roundToInt
 
 @Composable
 public fun MuscleLoadingCard(
@@ -68,23 +67,8 @@ public fun MuscleLoadingCard(
                 overflow = TextOverflow.Ellipsis,
             )
 
-            val clippedData: MuscleLoadSummaryState = remember(summary) {
-                summary.copy(
-                    perMuscle = summary.perMuscle.copy(
-                        entries = summary.perMuscle.entries
-                            .take(4)
-                            .toPersistentList()
-                    ),
-                    perGroup = summary.perGroup.copy(
-                        entries = summary.perGroup.entries
-                            .take(4)
-                            .toPersistentList()
-                    ),
-                )
-            }
-
             MuscleLoading(
-                summary = clippedData,
+                summary = summary,
                 mode = MuscleLoadingMode.PerGroup,
             )
         }
@@ -100,10 +84,9 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
             palette = palette,
         ).sortedByDescending { it.entry.value }.take(3)
     }
-    val percent = AppTokens.strings.res(Res.string.percent)
     val emptyLabel = AppTokens.strings.res(Res.string.muscle_load_no_data)
     val imageDescription = summary.perGroup.entries.map { entry ->
-        "${entry.group.title().text()} ${entry.value.roundToInt()}$percent"
+        "${entry.group.title().text()} ${muscleLoadPercentage(entry.value)}"
     }.joinToString(separator = ", ").ifEmpty { emptyLabel }
     val singleGroup = summary.perGroup.entries.singleOrNull()?.group
     val primaryMuscle = if (singleGroup != null) {
@@ -132,7 +115,7 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
     }
 
     Text(
-        text = AppTokens.strings.res(Res.string.metric_overview_muscle_shares),
+        text = AppTokens.strings.res(Res.string.muscle_load_set_share_note),
         style = AppTokens.typography.b12Med(),
         color = AppTokens.colors.text.secondary,
     )
@@ -183,6 +166,8 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
         }
     }
 
+    MuscleLoadingDataNotice(summary = summary)
+
     Text(
         text = AppTokens.strings.res(Res.string.metric_overview_muscle_details),
         style = AppTokens.typography.b12Med(),
@@ -193,7 +178,6 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
 @Composable
 private fun MuscleLoadingOverviewRow(colored: ColoredEntry) {
     val indicatorColors = rememberMuscleLoadIndicatorColors(colored.color)
-    val percent = AppTokens.strings.res(Res.string.percent)
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -211,7 +195,7 @@ private fun MuscleLoadingOverviewRow(colored: ColoredEntry) {
                 color = AppTokens.colors.text.primary,
             )
             Text(
-                text = "${colored.entry.value.roundToInt()}$percent",
+                text = muscleLoadPercentage(colored.entry.value),
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,
             )
@@ -230,6 +214,24 @@ private fun MuscleLoadingCardPreview() {
     PreviewContainer {
         MuscleLoadingCard(
             summary = muscleLoadingCardPreviewSummary(),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingCardOverviewIncompletePreview() {
+    PreviewContainer {
+        val summary = muscleLoadingCardPreviewSummary()
+        MuscleLoadingCard(
+            summary = summary.copy(
+                meta = summary.meta.copy(
+                    excludedSets = 2,
+                    unassignedSets = 3,
+                    unmeasuredVolumeSets = 4,
+                ),
+            ),
+            presentation = MetricCardPresentation.Overview,
         )
     }
 }

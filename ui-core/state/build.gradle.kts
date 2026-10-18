@@ -12,6 +12,7 @@ kotlin {
 
     sourceSets.commonMain.dependencies {
         implementation(projects.toolkit.dateUtils)
+        implementation(projects.toolkit.numberUtils)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)
 

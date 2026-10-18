@@ -1,7 +1,11 @@
 package com.grippo.data.features.api.metrics.performance
 
+import com.grippo.data.features.api.exercise.example.models.ExerciseExample
+import com.grippo.data.features.api.exercise.example.models.ExerciseExampleComponents
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleValue
 import com.grippo.data.features.api.metrics.performance.models.ExerciseSpotlight
+import com.grippo.data.features.api.training.models.Exercise
+import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.Training
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -10,478 +14,482 @@ import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
 import kotlin.math.abs
 import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 public class ExerciseSpotlightUseCase {
 
     private companion object {
-        private const val EPS: Float = 1e-3f
-        private const val MAX_INSIGHTS: Int = 3
-        private const val MIN_CONFIDENCE: Float = 0.60f
+        private const val MAX_INSIGHTS = 3
+        private const val MIN_CONFIDENCE = 0.60f
+        private const val COMPARISON_WINDOW_DAYS = 90
+        private const val PERFORMANCE_MAX_RECENCY_DAYS = 21
 
-        private const val PROGRESS_MIN_APPEARANCES: Int = 4
-        private const val PROGRESS_FULL_CONFIDENCE_APPEARANCES: Int = 6
-        private const val PROGRESS_MAX_RECENCY_DAYS: Int = 21
-        private const val PROGRESS_TRIGGER_RATIO: Float = 1.10f
+        private const val PROGRESS_MIN_BASELINE_DAYS = 3
+        private const val PROGRESS_MAX_BASELINE_DAYS = 5
+        private const val PROGRESS_MAX_BASELINE_DEVIATION = 0.25
+        private const val PROGRESS_TRIGGER_RATIO = 1.10
 
-        private const val ATTENTION_MIN_APPEARANCES: Int = 3
+        private const val ATTENTION_MIN_DAYS = 4
+        private const val ATTENTION_MAX_DAYS = 8
+        private const val ATTENTION_MAX_TYPICAL_GAP = 21
+        private const val ATTENTION_MAX_GAP_DEVIATION = 0.50
+        private const val ATTENTION_MAX_ELAPSED_DAYS = 42
 
-        private const val FREQUENCY_WINDOW_DAYS: Int = 28
-        private const val FREQUENCY_BUCKET_COUNT: Int = 4
-        private const val FREQUENCY_MIN_ACTIVE_WEEKS: Int = 3
-        private const val FREQUENCY_MIN_APPEARANCES: Int = 4
-        private const val FREQUENCY_MIN_WEEKLY_AVG: Float = 1f
-        private const val FREQUENCY_MAX_RECENCY_DAYS: Int = 10
+        private const val FREQUENCY_WINDOW_DAYS = 28
+        private const val FREQUENCY_BUCKET_COUNT = 4
+        private const val FREQUENCY_MIN_ACTIVE_WEEKS = 3
+        private const val FREQUENCY_MIN_DAYS = 4
+        private const val FREQUENCY_MAX_RECENCY_DAYS = 10
 
-        private const val NEAR_BEST_MIN_APPEARANCES: Int = 3
-        private const val NEAR_BEST_MAX_RECENCY_DAYS: Int = 21
-        private const val NEAR_BEST_TRIGGER_RATIO: Float = 0.95f
+        private const val NEAR_BEST_MIN_PRIOR_DAYS = 2
+        private const val NEAR_BEST_TRIGGER_RATIO = 0.95
     }
 
-    public fun buildCandidates(trainings: List<Training>): List<ExerciseSpotlight> {
-        val orderedTrainings = trainings.sortedBy { it.createdAt }
-        if (orderedTrainings.isEmpty()) return emptyList()
+    /** [historyStart] is the earliest queried date; insights describe the available recorded sessions. */
+    public fun buildCandidates(
+        trainings: List<Training>,
+        examples: List<ExerciseExample>,
+        evaluatedAt: LocalDateTime,
+        historyStart: LocalDate,
+    ): List<ExerciseSpotlight> {
+        require(historyStart <= evaluatedAt.date)
 
-        val stats = collectStats(orderedTrainings)
-        if (stats.isEmpty()) return emptyList()
+        val comparisonStart = maxOf(
+            historyStart,
+            evaluatedAt.date.minus(DatePeriod(days = COMPARISON_WINDOW_DAYS - 1)),
+        )
+        val comparisonWindowDays = comparisonStart.daysUntil(evaluatedAt.date) + 1
+        val orderedTrainings = trainings
+            .filter {
+                it.id.isNotBlank() && it.createdAt.date >= comparisonStart && it.createdAt <= evaluatedAt
+            }
+            .groupBy { it.id }
+            .mapNotNull { (_, copies) -> copies.distinct().singleOrNull() }
+            .sortedWith(compareBy<Training> { it.createdAt }.thenBy { it.id })
 
-        val freshestTrainingAt = orderedTrainings.last().createdAt
-
+        val componentsBySubject = examples.groupBy { it.value.id }
+            .mapValues { (_, copies) -> copies.map { it.components }.distinct().singleOrNull() }
+        val stats = collectStats(trainings = orderedTrainings, componentsBySubject = componentsBySubject)
         return buildList {
-            addAll(buildProgressWins(stats.values, freshestTrainingAt))
-            addAll(buildNeedsAttention(stats.values, freshestTrainingAt))
-            addAll(buildGoodFrequency(stats.values, freshestTrainingAt))
-            addAll(buildNearBest(stats.values, freshestTrainingAt))
+            for (stat in stats) {
+                buildProgressWin(
+                    stat = stat,
+                    evaluatedAt = evaluatedAt,
+                    comparisonWindowDays = comparisonWindowDays,
+                )?.let(::add)
+                buildNeedsAttention(stat = stat, evaluatedAt = evaluatedAt)?.let(::add)
+                buildGoodFrequency(
+                    stat = stat,
+                    evaluatedAt = evaluatedAt,
+                    historyStart = historyStart,
+                )?.let(::add)
+                buildNearBest(
+                    stat = stat,
+                    evaluatedAt = evaluatedAt,
+                    comparisonWindowDays = comparisonWindowDays,
+                )?.let(::add)
+            }
         }.sortedWith(spotlightOrder)
     }
 
     public fun buildSpotlights(
         trainings: List<Training>,
+        examples: List<ExerciseExample>,
+        evaluatedAt: LocalDateTime,
+        historyStart: LocalDate,
         maxInsights: Int = MAX_INSIGHTS,
     ): List<ExerciseSpotlight> {
-        if (maxInsights <= 0) return emptyList()
+        require(maxInsights >= 0)
+        if (maxInsights == 0) {
+            return emptyList()
+        }
 
-        val filtered = buildCandidates(trainings)
+        val candidates = buildCandidates(
+            trainings = trainings,
+            examples = examples,
+            evaluatedAt = evaluatedAt,
+            historyStart = historyStart,
+        )
             .filter { it.confidence >= MIN_CONFIDENCE }
+        val selected = ArrayList<ExerciseSpotlight>()
 
-        if (filtered.isEmpty()) return emptyList()
-
-        val deduplicatedBySubject = filtered
-            .groupBy { it.subjectId }
-            .mapNotNull { (_, items) -> items.sortedWith(spotlightOrder).firstOrNull() }
-
-        if (deduplicatedBySubject.isEmpty()) return emptyList()
-
-        val selected = LinkedHashMap<String, ExerciseSpotlight>(maxInsights)
-
-        deduplicatedBySubject
-            .filter { it.severity == ExerciseSpotlight.Severity.Warning }
-            .sortedWith(spotlightOrder)
-            .firstOrNull()
-            ?.let { selected[it.subjectId] = it }
-
-        deduplicatedBySubject
-            .filter { it.severity == ExerciseSpotlight.Severity.Positive }
-            .sortedWith(spotlightOrder)
-            .firstOrNull()
-            ?.let { candidate ->
-                if (selected.containsKey(candidate.subjectId).not()) {
-                    selected[candidate.subjectId] = candidate
-                }
+        for (candidate in candidates) {
+            if (selected.size == maxInsights) {
+                break
             }
-
-        deduplicatedBySubject
-            .asSequence()
-            .sortedWith(spotlightOrder)
-            .filter { candidate ->
-                selected.containsKey(candidate.subjectId).not() &&
-                        candidate.severity != ExerciseSpotlight.Severity.Warning
+            if (selected.any { it.example.id == candidate.example.id }) {
+                continue
             }
-            .take(max(0, maxInsights - selected.size))
-            .forEach { selected[it.subjectId] = it }
-
-        return selected.values
-            .sortedWith(spotlightOrder)
-            .take(maxInsights)
+            if (candidate.severity == ExerciseSpotlight.Severity.Warning &&
+                selected.any { it.severity == ExerciseSpotlight.Severity.Warning }
+            ) {
+                continue
+            }
+            selected += candidate
+        }
+        return selected
     }
 
-    private fun buildProgressWins(
-        stats: Collection<SubjectStats>,
-        freshestTrainingAt: LocalDateTime,
-    ): List<ExerciseSpotlight.ProgressWin> {
-        return stats.mapNotNull { stat ->
-            val sessions = stat.sessions
-            if (sessions.size < PROGRESS_MIN_APPEARANCES) return@mapNotNull null
-
-            val latest = sessions.last()
-            val baselineSessions = sessions
-                .dropLast(1)
-                .takeLast(min(5, sessions.size - 1))
-
-            if (baselineSessions.size < 3) return@mapNotNull null
-
-            val baselineMedian = medianFloat(baselineSessions.map { it.volume })
-            if (baselineMedian <= EPS) return@mapNotNull null
-
-            val ratio = latest.volume / baselineMedian
-            if (ratio < PROGRESS_TRIGGER_RATIO) return@mapNotNull null
-
-            val recencyDays = daysBetween(latest.at.date, freshestTrainingAt.date)
-            if (recencyDays > PROGRESS_MAX_RECENCY_DAYS) return@mapNotNull null
-
-            val sampleFactor = sampleFactor(
-                count = sessions.size,
-                fullAt = PROGRESS_FULL_CONFIDENCE_APPEARANCES,
-            )
-            val recencyFactor = recencyFactor(recencyDays, PROGRESS_MAX_RECENCY_DAYS)
-            val baselineSupport = (baselineSessions.size.toFloat() / 5f).coerceIn(0f, 1f)
-            val progressSignal = ((ratio - 1f) / 0.35f).coerceIn(0f, 1f)
-
-            val confidence = weighted(
-                sampleFactor to 0.45f,
-                recencyFactor to 0.35f,
-                baselineSupport to 0.20f,
-            )
-
-            val score = weighted(
-                progressSignal to 0.55f,
-                sampleFactor to 0.25f,
-                recencyFactor to 0.20f,
-            )
-
-            ExerciseSpotlight.ProgressWin(
-                subjectId = stat.subjectId,
-                subjectLabel = stat.subjectLabel,
-                example = stat.example,
-                confidence = confidence,
-                score = score,
-                sampleSize = sessions.size,
-                lastSeenAt = latest.at,
-                baselineVolumeMedian = baselineMedian,
-                latestSessionVolume = latest.volume,
-                improvementPercent = ((ratio - 1f) * 100f).roundToInt(),
-            )
+    private fun buildProgressWin(
+        stat: SubjectStats,
+        evaluatedAt: LocalDateTime,
+        comparisonWindowDays: Int,
+    ): ExerciseSpotlight.ProgressWin? {
+        val latest = stat.sessions.last()
+        val latestVolume = latest.workload ?: return null
+        val recencyDays = latest.at.date.daysUntil(evaluatedAt.date)
+        if (recencyDays > PERFORMANCE_MAX_RECENCY_DAYS) {
+            return null
         }
+
+        val baselineSessions = stat.sessions
+            .filter { it.at.date < latest.at.date }
+            .groupBy { it.at.date }
+            .values
+            .map { it.last() }
+            .filter { it.workload != null }
+            .takeLast(PROGRESS_MAX_BASELINE_DAYS)
+        if (baselineSessions.size < PROGRESS_MIN_BASELINE_DAYS) {
+            return null
+        }
+
+        val baselineVolumes = baselineSessions.mapNotNull { it.workload }
+        val baselineMedian = median(baselineVolumes)
+        val maxDeviation = baselineVolumes.maxOf { abs(it - baselineMedian) / baselineMedian }
+        if (maxDeviation > PROGRESS_MAX_BASELINE_DEVIATION) {
+            return null
+        }
+
+        val ratio = latestVolume / baselineMedian
+        if (!ratio.isFinite() || ratio < PROGRESS_TRIGGER_RATIO) {
+            return null
+        }
+        val improvement = (ratio - 1.0) * 100.0
+        if (improvement > Int.MAX_VALUE.toDouble()) {
+            return null
+        }
+
+        val support = sampleFactor(count = baselineSessions.size, fullAt = PROGRESS_MAX_BASELINE_DAYS)
+        val recency = recencyFactor(days = recencyDays, maxDays = PERFORMANCE_MAX_RECENCY_DAYS)
+        val stability = (1.0 - maxDeviation).toFloat()
+        val progressSignal = ((ratio - 1.0) / 0.35).toFloat().coerceIn(0f, 1f)
+        return ExerciseSpotlight.ProgressWin(
+            example = stat.example,
+            confidence = (support * 0.50f + stability * 0.30f + recency * 0.20f).coerceIn(0f, 1f),
+            score = (progressSignal * 0.55f + support * 0.25f + recency * 0.20f).coerceIn(0f, 1f),
+            lastSeenAt = latest.at,
+            baselineVolumeMedian = baselineMedian.toFloat(),
+            latestSessionVolume = latestVolume.toFloat(),
+            improvementPercent = improvement.roundToInt(),
+            comparedSessions = baselineSessions.size,
+            comparisonWindowDays = comparisonWindowDays,
+        )
     }
 
     private fun buildNeedsAttention(
-        stats: Collection<SubjectStats>,
-        freshestTrainingAt: LocalDateTime,
-    ): List<ExerciseSpotlight.NeedsAttention> {
-        return stats.mapNotNull { stat ->
-            val appearanceDates = stat.appearanceDates()
-            if (appearanceDates.size < ATTENTION_MIN_APPEARANCES) return@mapNotNull null
-
-            val gaps = buildDayGaps(appearanceDates)
-            if (gaps.isEmpty()) return@mapNotNull null
-
-            val typicalGap = medianFloat(gaps.map(Int::toFloat))
-            if (typicalGap <= EPS) return@mapNotNull null
-
-            val roundedTypicalGap = typicalGap.roundToInt().coerceAtLeast(1)
-            val triggerGapDays = max(
-                max(ceil((typicalGap * 1.5f).toDouble()).toInt(), roundedTypicalGap + 3),
-                7,
-            )
-
-            val lastSeenAt = stat.sessions.last().at
-            val currentGapDays = daysBetween(lastSeenAt.date, freshestTrainingAt.date)
-            if (currentGapDays <= 0 || currentGapDays < triggerGapDays) return@mapNotNull null
-
-            val sampleFactor = sampleFactor(appearanceDates.size, fullAt = 7)
-            val cadenceStability = gapStabilityFactor(gaps, typicalGap)
-            val recencyFactor = overdueRecencyFactor(
-                currentGapDays = currentGapDays,
-                triggerGapDays = triggerGapDays,
-            )
-            val overdueSignal = ((currentGapDays.toFloat() / triggerGapDays.toFloat()) / 2f)
-                .coerceIn(0f, 1f)
-
-            val confidence = weighted(
-                sampleFactor to 0.35f,
-                cadenceStability to 0.40f,
-                recencyFactor to 0.25f,
-            )
-
-            val score = weighted(
-                overdueSignal to 0.55f,
-                sampleFactor to 0.20f,
-                recencyFactor to 0.25f,
-            )
-
-            ExerciseSpotlight.NeedsAttention(
-                subjectId = stat.subjectId,
-                subjectLabel = stat.subjectLabel,
-                example = stat.example,
-                confidence = confidence,
-                score = score,
-                sampleSize = appearanceDates.size,
-                lastSeenAt = lastSeenAt,
-                typicalGapDays = roundedTypicalGap,
-                currentGapDays = currentGapDays,
-                triggerGapDays = triggerGapDays,
-            )
+        stat: SubjectStats,
+        evaluatedAt: LocalDateTime,
+    ): ExerciseSpotlight.NeedsAttention? {
+        val completed = stat.sessions.filter { it.hasCompletedSets }
+        val dates = completed.map { it.at.date }.distinct().takeLast(ATTENTION_MAX_DAYS)
+        if (dates.size < ATTENTION_MIN_DAYS) {
+            return null
         }
+
+        val gaps = dates.zipWithNext { previous, next -> previous.daysUntil(next).toDouble() }
+        val typicalGap = median(gaps)
+        if (typicalGap > ATTENTION_MAX_TYPICAL_GAP) {
+            return null
+        }
+        val maxDeviation = gaps.maxOf { abs(it - typicalGap) / typicalGap }
+        if (maxDeviation > ATTENTION_MAX_GAP_DEVIATION) {
+            return null
+        }
+
+        val roundedTypicalGap = typicalGap.roundToInt()
+        val triggerGap = maxOf(ceil(typicalGap * 1.5).toInt(), roundedTypicalGap + 3, 7)
+        val expiryGap = minOf(
+            ATTENTION_MAX_ELAPSED_DAYS,
+            maxOf(triggerGap + 7, ceil(typicalGap * 3.0).toInt()),
+        )
+        val lastSeenAt = completed.last().at
+        val currentGap = lastSeenAt.date.daysUntil(evaluatedAt.date)
+        if (currentGap < triggerGap || currentGap > expiryGap) {
+            return null
+        }
+
+        val support = sampleFactor(count = dates.size, fullAt = ATTENTION_MAX_DAYS)
+        val stability = (1.0 - maxDeviation).toFloat()
+        val freshness = (expiryGap - currentGap).toFloat() / (expiryGap - triggerGap).toFloat()
+        val overdue = currentGap.toFloat() / expiryGap.toFloat()
+        return ExerciseSpotlight.NeedsAttention(
+            example = stat.example,
+            confidence = (support * 0.35f + stability * 0.40f + freshness * 0.25f).coerceIn(0f, 1f),
+            score = (overdue * 0.45f + support * 0.20f + freshness * 0.35f).coerceIn(0f, 1f),
+            sampleSize = dates.size,
+            lastSeenAt = lastSeenAt,
+            typicalGapDays = roundedTypicalGap,
+            currentGapDays = currentGap,
+            triggerGapDays = triggerGap,
+        )
     }
 
     private fun buildGoodFrequency(
-        stats: Collection<SubjectStats>,
-        freshestTrainingAt: LocalDateTime,
-    ): List<ExerciseSpotlight.GoodFrequency> {
-        val freshestDate = freshestTrainingAt.date
-        val windowStart = freshestDate.minus(DatePeriod(days = FREQUENCY_WINDOW_DAYS - 1))
-
-        return stats.mapNotNull { stat ->
-            val windowDates = stat.appearanceDates()
-                .filter { date -> date >= windowStart && date <= freshestDate }
-
-            if (windowDates.isEmpty()) return@mapNotNull null
-
-            val weeklyCounts = IntArray(FREQUENCY_BUCKET_COUNT)
-            for (date in windowDates) {
-                val distance = daysBetween(date, freshestDate)
-                if (distance !in 0 until FREQUENCY_WINDOW_DAYS) continue
-                val bucket = (FREQUENCY_BUCKET_COUNT - 1) - (distance / 7)
-                if (bucket in weeklyCounts.indices) {
-                    weeklyCounts[bucket] += 1
-                }
-            }
-
-            val appearancesInWindow = weeklyCounts.sum()
-            val activeWeeks = weeklyCounts.count { it > 0 }
-            val avgWeeklyFrequency =
-                appearancesInWindow.toFloat() / FREQUENCY_BUCKET_COUNT.toFloat()
-            val recencyDays = daysBetween(stat.sessions.last().at.date, freshestDate)
-
-            if (activeWeeks < FREQUENCY_MIN_ACTIVE_WEEKS &&
-                appearancesInWindow < FREQUENCY_MIN_APPEARANCES
-            ) {
-                return@mapNotNull null
-            }
-
-            if (avgWeeklyFrequency < FREQUENCY_MIN_WEEKLY_AVG) return@mapNotNull null
-            if (recencyDays > FREQUENCY_MAX_RECENCY_DAYS) return@mapNotNull null
-            if (weeklyCounts.count { it == 0 } > 1) return@mapNotNull null
-
-            val sampleFactor = sampleFactor(appearancesInWindow, fullAt = 8)
-            val recencyFactor = recencyFactor(recencyDays, FREQUENCY_MAX_RECENCY_DAYS)
-            val stability = frequencyStabilityFactor(weeklyCounts)
-            val coverageFactor = activeWeeks.toFloat() / FREQUENCY_BUCKET_COUNT.toFloat()
-            val frequencySignal = (avgWeeklyFrequency / 2f).coerceIn(0f, 1f)
-
-            val confidence = weighted(
-                coverageFactor to 0.40f,
-                stability to 0.30f,
-                recencyFactor to 0.20f,
-                sampleFactor to 0.10f,
-            )
-
-            val score = weighted(
-                frequencySignal to 0.45f,
-                coverageFactor to 0.30f,
-                recencyFactor to 0.15f,
-                sampleFactor to 0.10f,
-            )
-
-            ExerciseSpotlight.GoodFrequency(
-                subjectId = stat.subjectId,
-                subjectLabel = stat.subjectLabel,
-                example = stat.example,
-                confidence = confidence,
-                score = score,
-                sampleSize = appearancesInWindow,
-                lastSeenAt = stat.sessions.last().at,
-                appearancesInWindow = appearancesInWindow,
-                activeWeeks = activeWeeks,
-                avgWeeklyFrequency = avgWeeklyFrequency,
-                recentWindowDays = FREQUENCY_WINDOW_DAYS,
-            )
+        stat: SubjectStats,
+        evaluatedAt: LocalDateTime,
+        historyStart: LocalDate,
+    ): ExerciseSpotlight.GoodFrequency? {
+        val windowStart = evaluatedAt.date.minus(DatePeriod(days = FREQUENCY_WINDOW_DAYS - 1))
+        if (historyStart > windowStart) {
+            return null
         }
+
+        val completed = stat.sessions.filter { it.hasCompletedSets && it.at.date >= windowStart }
+        val dates = completed.map { it.at.date }.distinct()
+        if (dates.size < FREQUENCY_MIN_DAYS) {
+            return null
+        }
+        val lastSeenAt = completed.last().at
+        val recencyDays = lastSeenAt.date.daysUntil(evaluatedAt.date)
+        if (recencyDays > FREQUENCY_MAX_RECENCY_DAYS) {
+            return null
+        }
+
+        val weeklyCounts = IntArray(FREQUENCY_BUCKET_COUNT)
+        for (date in dates) {
+            weeklyCounts[date.daysUntil(evaluatedAt.date) / 7] += 1
+        }
+        val activeWeeks = weeklyCounts.count { it > 0 }
+        if (activeWeeks < FREQUENCY_MIN_ACTIVE_WEEKS) {
+            return null
+        }
+
+        val average = dates.size.toFloat() / FREQUENCY_BUCKET_COUNT
+        val coverage = activeWeeks.toFloat() / FREQUENCY_BUCKET_COUNT
+        val support = sampleFactor(count = dates.size, fullAt = 8)
+        val recency = recencyFactor(days = recencyDays, maxDays = FREQUENCY_MAX_RECENCY_DAYS)
+        val frequencySignal = (average / 2f).coerceIn(0f, 1f)
+        return ExerciseSpotlight.GoodFrequency(
+            example = stat.example,
+            confidence = (coverage * 0.50f + support * 0.30f + recency * 0.20f).coerceIn(0f, 1f),
+            score = (frequencySignal * 0.40f + coverage * 0.35f + recency * 0.25f).coerceIn(0f, 1f),
+            lastSeenAt = lastSeenAt,
+            appearancesInWindow = dates.size,
+            activeWeeks = activeWeeks,
+            avgWeeklyFrequency = average,
+            recentWindowDays = FREQUENCY_WINDOW_DAYS,
+        )
     }
 
     private fun buildNearBest(
-        stats: Collection<SubjectStats>,
-        freshestTrainingAt: LocalDateTime,
-    ): List<ExerciseSpotlight.NearBest> {
-        return stats.mapNotNull { stat ->
-            val sessions = stat.sessions
-            if (sessions.size < NEAR_BEST_MIN_APPEARANCES) return@mapNotNull null
-
-            val latest = sessions.last()
-            val best = sessions.maxOfOrNull { it.volume } ?: return@mapNotNull null
-            if (best <= EPS) return@mapNotNull null
-
-            val closeness = latest.volume / best
-            if (closeness < NEAR_BEST_TRIGGER_RATIO) return@mapNotNull null
-
-            val recencyDays = daysBetween(latest.at.date, freshestTrainingAt.date)
-            if (recencyDays > NEAR_BEST_MAX_RECENCY_DAYS) return@mapNotNull null
-
-            val sampleFactor = sampleFactor(sessions.size, fullAt = 8)
-            val recencyFactor = recencyFactor(recencyDays, NEAR_BEST_MAX_RECENCY_DAYS)
-            val closenessSignal = ((closeness - 0.90f) / 0.10f).coerceIn(0f, 1f)
-
-            val confidence = weighted(
-                sampleFactor to 0.50f,
-                recencyFactor to 0.50f,
-            )
-
-            val score = weighted(
-                closenessSignal to 0.55f,
-                sampleFactor to 0.20f,
-                recencyFactor to 0.25f,
-            )
-
-            ExerciseSpotlight.NearBest(
-                subjectId = stat.subjectId,
-                subjectLabel = stat.subjectLabel,
-                example = stat.example,
-                confidence = confidence,
-                score = score,
-                sampleSize = sessions.size,
-                lastSeenAt = latest.at,
-                bestSessionVolume = best,
-                latestSessionVolume = latest.volume,
-                gapPercent = ((1f - closeness) * 100f).roundToInt().coerceAtLeast(0),
-            )
+        stat: SubjectStats,
+        evaluatedAt: LocalDateTime,
+        comparisonWindowDays: Int,
+    ): ExerciseSpotlight.NearBest? {
+        val latest = stat.sessions.last()
+        val latestVolume = latest.workload ?: return null
+        val recencyDays = latest.at.date.daysUntil(evaluatedAt.date)
+        if (recencyDays > PERFORMANCE_MAX_RECENCY_DAYS) {
+            return null
         }
+
+        val prior = stat.sessions.dropLast(1).filter { it.workload != null }
+        val priorDayCount = prior.map { it.at.date }.distinct().size
+        if (priorDayCount < NEAR_BEST_MIN_PRIOR_DAYS) {
+            return null
+        }
+        val best = prior.mapNotNull { it.workload }.max()
+        val closeness = latestVolume / best
+        if (closeness < NEAR_BEST_TRIGGER_RATIO || closeness > 1.0) {
+            return null
+        }
+
+        val support = sampleFactor(count = priorDayCount, fullAt = 5)
+        val recency = recencyFactor(days = recencyDays, maxDays = PERFORMANCE_MAX_RECENCY_DAYS)
+        val closenessSignal = ((closeness - NEAR_BEST_TRIGGER_RATIO) / (1.0 - NEAR_BEST_TRIGGER_RATIO))
+            .toFloat()
+        return ExerciseSpotlight.NearBest(
+            example = stat.example,
+            confidence = (support * 0.60f + recency * 0.40f).coerceIn(0f, 1f),
+            score = (closenessSignal * 0.55f + support * 0.20f + recency * 0.25f).coerceIn(0f, 1f),
+            lastSeenAt = latest.at,
+            bestSessionVolume = best.toFloat(),
+            latestSessionVolume = latestVolume.toFloat(),
+            gapPercent = ((1.0 - closeness) * 100.0).roundToInt(),
+            comparedSessions = prior.size,
+            comparisonWindowDays = comparisonWindowDays,
+        )
     }
 
-    private fun collectStats(trainings: List<Training>): Map<String, SubjectStats> {
-        val acc = LinkedHashMap<String, SubjectStatsBuilder>()
+    private fun collectStats(
+        trainings: List<Training>,
+        componentsBySubject: Map<String, ExerciseExampleComponents?>,
+    ): List<SubjectStats> {
+        val bySubject = LinkedHashMap<String, MutableList<SubjectSession>>()
+        val examples = LinkedHashMap<String, ExerciseExampleValue>()
 
         for (training in trainings) {
-            val perTraining = LinkedHashMap<String, PerTrainingAgg>()
-
-            for (exercise in training.exercises) {
-                val volume = exercise.volume
-                if (volume <= EPS || exercise.repetitions <= 0) continue
-
-                val example = exercise.exerciseExample
-                val subjectId = example.id
-
-                val current = perTraining[subjectId]
-                if (current == null) {
-                    perTraining[subjectId] = PerTrainingAgg(
-                        subjectId = subjectId,
-                        subjectLabel = example.name,
-                        example = example,
-                        volume = volume,
-                    )
-                } else {
-                    perTraining[subjectId] = current.copy(
-                        volume = current.volume + volume,
-                    )
+            val subjects = training.exercises.groupBy { it.exerciseExample.id }
+            for ((subjectId, exercises) in subjects) {
+                if (subjectId.isBlank()) {
+                    continue
                 }
-            }
-
-            for (aggregate in perTraining.values) {
-                val builder = acc.getOrPut(aggregate.subjectId) {
-                    SubjectStatsBuilder(
-                        subjectId = aggregate.subjectId,
-                        subjectLabel = aggregate.subjectLabel,
-                        example = aggregate.example,
-                    )
-                }
-
-                builder.sessions += SubjectSession(
+                val example = exercises.last().exerciseExample
+                examples[subjectId] = example
+                val session = collectSession(
                     at = training.createdAt,
-                    volume = aggregate.volume,
+                    exercises = exercises,
+                    components = componentsBySubject[subjectId],
                 )
+                bySubject.getOrPut(subjectId) { ArrayList() } += session
             }
         }
-
-        return acc.mapValues { (_, builder) -> builder.build() }
+        return bySubject.map { (subjectId, sessions) ->
+            SubjectStats(example = examples.getValue(subjectId), sessions = sessions)
+        }
     }
 
-    private fun daysBetween(from: LocalDate, to: LocalDate): Int {
-        return from.daysUntil(to).coerceAtLeast(0)
+    private fun collectSession(
+        at: LocalDateTime,
+        exercises: List<Exercise>,
+        components: ExerciseExampleComponents?,
+    ): SubjectSession {
+        var completeWorkload = components != null
+        val hasCompletedSets = exercises.any { exercise ->
+            exercise.iterations.any(::hasCompletedRepetitions)
+        }
+        var workload = 0.0
+        val seenExercises = HashSet<String>()
+        val seenIterations = HashSet<String>()
+
+        for (exercise in exercises) {
+            if (exercise.id.isBlank() || !seenExercises.add(exercise.id) || exercise.iterations.isEmpty()) {
+                completeWorkload = false
+                continue
+            }
+            for (iteration in exercise.iterations) {
+                if (iteration.id.isBlank() || !seenIterations.add(iteration.id)) {
+                    completeWorkload = false
+                    continue
+                }
+                val load = components?.let { recordedLoad(iteration = iteration, components = it) }
+                if (load == null) {
+                    completeWorkload = false
+                    continue
+                }
+                if (load <= 0.0) {
+                    completeWorkload = false
+                    continue
+                }
+                workload += load * iteration.repetitions.toDouble()
+            }
+        }
+        val measuredWorkload = workload.takeIf {
+            completeWorkload && hasCompletedSets && it.isFinite() && it > 0.0 &&
+                it <= Float.MAX_VALUE.toDouble() && it.toFloat() > 0f
+        }
+        return SubjectSession(at = at, hasCompletedSets = hasCompletedSets, workload = measuredWorkload)
     }
 
-    private fun medianFloat(values: List<Float>): Float {
-        if (values.isEmpty()) return 0f
+    private fun hasCompletedRepetitions(iteration: Iteration): Boolean {
+        return iteration.repetitions > 0
+    }
 
+    private fun recordedLoad(iteration: Iteration, components: ExerciseExampleComponents): Double? {
+        if (!hasCompletedRepetitions(iteration)) {
+            return null
+        }
+        val recordedComponents = listOf(
+            iteration.externalWeight,
+            iteration.extraWeight,
+            iteration.assistWeight,
+            iteration.bodyWeight,
+            iteration.bodyMultiplier,
+        )
+        if (recordedComponents.any { it != null && (!it.isFinite() || it < 0f) }) {
+            return null
+        }
+
+        return when (components) {
+            is ExerciseExampleComponents.External -> {
+                if (iteration.bodyWeight != null || iteration.bodyMultiplier != null ||
+                    iteration.extraWeight != null || iteration.assistWeight != null
+                ) {
+                    return null
+                }
+                val external = iteration.externalWeight?.toDouble()
+                if (components.required && (external == null || external <= 0.0)) {
+                    return null
+                }
+                external
+            }
+
+            is ExerciseExampleComponents.BodyOnly -> {
+                if (iteration.externalWeight != null || iteration.extraWeight != null ||
+                    iteration.assistWeight != null
+                ) {
+                    return null
+                }
+                recordedBodyLoad(iteration)
+            }
+
+            is ExerciseExampleComponents.BodyAndExtra -> {
+                if (iteration.externalWeight != null || iteration.assistWeight != null) {
+                    return null
+                }
+                val body = recordedBodyLoad(iteration) ?: return null
+                if (components.extraRequired && iteration.extraWeight == null) {
+                    return null
+                }
+                val extra = iteration.extraWeight?.toDouble() ?: 0.0
+                body + extra
+            }
+
+            is ExerciseExampleComponents.BodyAndAssist -> {
+                if (iteration.externalWeight != null || iteration.extraWeight != null) {
+                    return null
+                }
+                val body = recordedBodyLoad(iteration) ?: return null
+                if (components.assistRequired && iteration.assistWeight == null) {
+                    return null
+                }
+                val assist = iteration.assistWeight?.toDouble() ?: 0.0
+                body - assist
+            }
+        }
+    }
+
+    private fun recordedBodyLoad(iteration: Iteration): Double? {
+        // Optional entry fields do not establish a measured zero body contribution.
+        val body = iteration.bodyWeight ?: return null
+        val multiplier = iteration.bodyMultiplier ?: return null
+        if (body <= 0f || multiplier <= 0f) {
+            return null
+        }
+        // Preserve the recorded Float product so full assistance cancels exactly.
+        val bodyLoad = body * multiplier
+        if (!bodyLoad.isFinite() || bodyLoad <= 0f) {
+            return null
+        }
+        return bodyLoad.toDouble()
+    }
+
+    private fun median(values: List<Double>): Double {
         val sorted = values.sorted()
-        val mid = sorted.size / 2
-
+        val middle = sorted.size / 2
         return if (sorted.size % 2 == 1) {
-            sorted[mid]
+            sorted[middle]
         } else {
-            (sorted[mid - 1] + sorted[mid]) / 2f
+            sorted[middle - 1] / 2.0 + sorted[middle] / 2.0
         }
-    }
-
-    private fun buildDayGaps(dates: List<LocalDate>): List<Int> {
-        if (dates.size < 2) return emptyList()
-
-        val gaps = ArrayList<Int>(dates.size - 1)
-        for (index in 1 until dates.size) {
-            val gap = daysBetween(dates[index - 1], dates[index])
-            if (gap > 0) {
-                gaps += gap
-            }
-        }
-        return gaps
     }
 
     private fun sampleFactor(count: Int, fullAt: Int): Float {
-        return (count.toFloat() / fullAt.toFloat()).coerceIn(0f, 1f)
+        return (count.toFloat() / fullAt).coerceIn(0f, 1f)
     }
 
     private fun recencyFactor(days: Int, maxDays: Int): Float {
-        return (1f - (days.toFloat() / maxDays.toFloat())).coerceIn(0f, 1f)
-    }
-
-    private fun overdueRecencyFactor(
-        currentGapDays: Int,
-        triggerGapDays: Int,
-    ): Float {
-        val extraGapDays = max(0, currentGapDays - triggerGapDays)
-        val fadeWindow = triggerGapDays + 28
-        return (1f - (extraGapDays.toFloat() / fadeWindow.toFloat())).coerceIn(0f, 1f)
-    }
-
-    private fun gapStabilityFactor(
-        gaps: List<Int>,
-        typicalGap: Float,
-    ): Float {
-        if (gaps.isEmpty() || typicalGap <= EPS) return 0f
-
-        val averageDeviation = gaps
-            .map { gap -> abs(gap.toFloat() - typicalGap) }
-            .average()
-            .toFloat()
-
-        return (1f - (averageDeviation / typicalGap)).coerceIn(0f, 1f)
-    }
-
-    private fun frequencyStabilityFactor(weeklyCounts: IntArray): Float {
-        val activeCounts = weeklyCounts.filter { it > 0 }
-        if (activeCounts.isEmpty()) return 0f
-
-        val minActive = activeCounts.minOrNull() ?: 0
-        val maxCount = weeklyCounts.maxOrNull() ?: 0
-        val spreadPenalty = ((maxCount - minActive).toFloat() / 3f).coerceIn(0f, 1f)
-        val zeroPenalty = if (weeklyCounts.count { it == 0 } == 0) 1f else 0.85f
-
-        return ((1f - spreadPenalty) * zeroPenalty).coerceIn(0f, 1f)
-    }
-
-    private fun weighted(vararg parts: Pair<Float, Float>): Float {
-        if (parts.isEmpty()) return 0f
-
-        var weightedSum = 0f
-        var weightSum = 0f
-
-        for ((value, weight) in parts) {
-            weightedSum += value.coerceIn(0f, 1f) * weight
-            weightSum += weight
-        }
-
-        if (weightSum <= EPS) return 0f
-        return (weightedSum / weightSum).coerceIn(0f, 1f)
+        return (1f - days.toFloat() / maxDays).coerceIn(0f, 1f)
     }
 
     private fun businessPriority(kind: ExerciseSpotlight.Kind): Int {
@@ -498,44 +506,17 @@ public class ExerciseSpotlightUseCase {
             .thenByDescending { it.score }
             .thenByDescending { it.confidence }
             .thenByDescending { it.sampleSize }
-            .thenBy { it.subjectLabel }
-
-    private data class PerTrainingAgg(
-        val subjectId: String,
-        val subjectLabel: String,
-        val example: ExerciseExampleValue,
-        val volume: Float,
-    )
+            .thenBy { it.example.name }
+            .thenBy { it.example.id }
 
     private data class SubjectSession(
         val at: LocalDateTime,
-        val volume: Float,
+        val hasCompletedSets: Boolean,
+        val workload: Double?,
     )
 
     private data class SubjectStats(
-        val subjectId: String,
-        val subjectLabel: String,
         val example: ExerciseExampleValue,
         val sessions: List<SubjectSession>,
-    ) {
-        fun appearanceDates(): List<LocalDate> {
-            return sessions
-                .map { it.at.date }
-                .distinct()
-        }
-    }
-
-    private data class SubjectStatsBuilder(
-        val subjectId: String,
-        val subjectLabel: String,
-        val example: ExerciseExampleValue,
-        val sessions: MutableList<SubjectSession> = mutableListOf(),
-    ) {
-        fun build(): SubjectStats = SubjectStats(
-            subjectId = subjectId,
-            subjectLabel = subjectLabel,
-            example = example,
-            sessions = sessions.toList(),
-        )
-    }
+    )
 }

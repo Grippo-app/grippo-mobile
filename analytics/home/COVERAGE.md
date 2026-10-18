@@ -42,28 +42,50 @@ primary style and decorative top-right chevron, with their existing parent click
 as the sole detail action; Calendar and Update retain their explicit callbacks.
 Performance metrics retain their order, individual click owners and null-item
 omission; each pair shares a natural-height row to align card boundaries.
-Goal Overview adds the existing analyzed-session count for the selected period
-and actual goal target date beside its unchanged fit ring/status; the count covers
-only sessions with eligible analysis statistics, not lifetime or goal-date totals.
-Detailed goal rendering and remaining/Update conditions stay unchanged.
-The full-width muscle summary shows
-existing estimated-load shares for up to three groups, selected-period workouts
-and sets, and the most-loaded muscle when only one group is represented. Missing
-groups are not displayed as zero or assigned a training recommendation. The
-Home map opts into a compact centered image layout in the same 144×140 slot;
-muscle details retain their original image spacing and selectors. The
-separate rhythm summary places the existing streak/cadence beside the active-day
-counter, followed by unchanged progress; its chevron adds no separate control.
-TrainingStreakDetails retains its existing Detailed layout and history, while
-performance includes prior average and latest-vs-average percentage only with a
-valid baseline. Duration shows only the neutral percentage comparison, avoiding a
-misleading numeric baseline truncated to whole minutes. The last-training recap
-identifies the selected-period scope and shows date, duration, volume and exercise
-count; its existing Calendar action opens the training history with the exercise
-details. Spotlight cards retain their complete insight text and exercise
-action in a horizontally scrollable gallery. Its cards share a content-driven
-height; the full-screen-width viewport keeps start/end gutters inside the scroll
-content. Gallery changes add no callback or domain/persistence state.
+Goal Overview uses the current goal and selected analysis window. An unavailable
+score stays neutral; an empty period preserves an existing goal, and removing the
+goal clears its card. Details show the same grouped findings that produce the
+score (100/50/0 for assessable criteria); unknown criteria are omitted. Evidence
+includes analyzed days, sessions/sets, excluded observations and missing metadata.
+A deadline is a goal date, never evidence of achieving the outcome.
+The full-width muscle summary shows recorded-set distribution and selected-period
+workouts/sets. Accepted performed sets retain their shares when required load
+measurements are incomplete; `unmeasuredVolumeSets` discloses sets omitted from
+physical volume, which is calculated only from measured sets. Missing groups are
+not displayed as zero or assigned a training recommendation. The Home map uses
+its compact centered 144×140 slot; muscle
+details retain the full distribution and PerGroup/PerMuscle selector.
+The rhythm summary counts distinct local dates with saved positive training
+repetitions in the selected inclusive range, capped at the current time; exercise
+catalog availability does not remove a performed day. Its target is an observed
+rhythm from at least three fully observed completed weeks (including zero weeks),
+not a profile/experience prescription. Supported cycles require at least three
+repeats. Labels describe training days and observed rhythm, without probability
+claims. Details retain the full dated periods and mark partial periods.
+Performance compares the latest session with available positive finite values
+from preceding sessions in the selected period. Missing current/baseline values
+remain unavailable; the displayed percentage and status share that comparison,
+with a 5% minimum widened by historical variability. A period record requires a
+strict increase over the preceding maximum. Duration remains neutral and retains
+fractional minutes; its compact Home view deliberately shows the percentage
+without a second average value. The five metrics retain their order and click
+owners. These pure calculations add no telemetry or persisted fields.
+The last-training recap labels its mapped exercise count as Available exercises,
+preserves saved duration/volume, identifies the selected-period scope and shows date,
+duration, volume and exercise count; its existing Calendar action opens history.
+Spotlights combine selected-period trainings with their observed exercise
+catalog. The caller caps evaluatedAt at min(now, period.to) and supplies
+period.from.date as the earliest queried history date. Progress and near-best
+compare reliable set-derived workload (effective load × repetitions) within up to
+90 days, carrying actual comparison counts/window days to UI. Missing catalog or
+required load components suppress workload conclusions; recorded completed
+repetitions can still support cadence. Frequency requires query bounds covering
+28 days and reports recorded training days. Cache-first results and the existing
+refresh/error path do not prove full server hydration. Sparse evidence omits the
+corresponding card. The horizontal gallery retains complete localized insight,
+context and explanatory text plus the existing exercise-details action. Cards
+share a content-driven height and preserve scroll gutters; no callback or
+persistence owner is added.
 The spotlight's colored edge stripe is omitted; its localized semantic chip still
 identifies the insight kind. Header chevrons add no callback or telemetry.
 Welcome groups identity and artwork in one hero, then setup progress,
@@ -92,7 +114,7 @@ it explains the existing card action and adds no control or observation.
 | PeriodPicker `onResult` closure | PeriodConfirmed → `home_period_confirmed`, then SavePeriod | Accepted result delivered after the sheet finishes; the picker emits on every card tap, including the already selected kind; the complete `setRange(result).getOrThrow()` block is decorated |
 | onAddGoal (GoalCard update action and the HomeUnlockBanner "Set goal" call to action) and the TrainingGoalDetails `onAddGoal` closure | AddGoalClicked → `home_add_goal_clicked` | Three controls share one event; existing navigation at the callback owner; no reporting context propagated and no control attribution |
 | onBack (BackCallback registered by HomeComponent) | DismissRequested → `home_dismiss_requested` | Existing Back callback |
-| Range-driven `mapLatest` under the Trainings loader | RefreshTrainings → `home_task_*` {home_operation = refresh_trainings} | Complete `getTrainings(start, end).getOrThrow()` block; waits for the resolved persisted range; a range change cancels the in-flight refresh (interrupted); `Processing.WhileActive` re-runs it after a resume beyond the one-second disconnect grace |
+| Range-driven `mapLatest` → `refreshTrainings`, per-request `safeLaunch` under the Trainings loader | RefreshTrainings → `home_task_*` {home_operation = refresh_trainings} | Complete `getTrainings(start, end).getOrThrow()` block; waits for the resolved persisted range. A failed request reaches the standard error pipeline without terminating later range refreshes; no automatic retry. Range/lifecycle cancellation cancels and joins the request before replacing the loader. Clock-only local metric recomputation does not refresh the server, while changed rolling date bounds do; `Processing.WhileActive` re-runs it after a resume beyond the one-second disconnect grace |
 | Startup safeLaunch | RefreshExerciseExamples → `home_task_*` {refresh_exercise_examples} | Complete `getExerciseExamples().getOrThrow()` block; once per fresh VM, outside any loader; the exercise-example first load lives here, not in auth/profile creation |
 | onWelcomeConfettiShown | Deliberate omission | Rendering callback from the confetti parade, not a user click |
 
@@ -114,6 +136,24 @@ schemas; `shared/.../Koin.kt` lists it once, and the module depends only on
 `analytics-api`. Admin consumers of `home_operation` (the `Grippo Home operation`
 dimension and diagnostic report selector) are reconciled in the root GA4 review.
 
+Named rolling presets Last7/14/30/60/365Days include exactly N local calendar
+dates: the start is N−1 dates before the anchor and both endpoints are inclusive.
+The existing durable range kind is unchanged; date bounds rebuild through the
+same range owner. `DateTimeUtils.trailingYear()` limitations retain their
+anniversary bounds.
+This correction changes queried bounds, without changing events, operation
+decorators, tracking placement, schemas, consent or transport; admin synchronization
+is not triggered.
+
+Per-request RefreshTrainings error isolation moves its `trackOperation` call into
+`refreshTrainings` and requires scoped live admin reconciliation. The Home
+operation dimension, duration metric, mobile diagnostics and dependent consumers
+were read back and retained without writes; the current mapping and SDK delivery
+limits are in the root [Home admin row](../COVERAGE.md#live-ga4-setup-review--2026-10-14).
+The complete request block and operation codes remain unchanged. Later period
+changes after a failure create new refresh operations; no automatic retry,
+success-rate claim or historical backfill is introduced.
+
 ## Omissions and privacy
 
 Dialog presentation/close/cancellation for the six overlays, metric type and
@@ -133,14 +173,18 @@ DismissRequested.
 | HomeRootComponent | Child navigation | Preserve | `HomeRouter.serializer()`, key `HomeRootComponent` | Payload-free `HomeRouter.Home` only; depth always one; no route inputs or drafts |
 | HomeRootViewModel | HomeRootState | Runtime only | Data object | Stateless container; no supplier |
 | HomeViewModel | Accepted range kind | Preserve in the existing durable owner (no StateKeeper copy) | `LocalSettingsFeature.setRange/observeRange` → DataStore `range`; Range ↔ DateRangeKind mappers | Initial `DateRangeFormatState.Empty(kind = Last30Days)` with a null value until the store emits; an absent preference resolves to Last30Days only after that emission; `clearUserSettings` (logout/delete) removes `range`; the picker offers Last7/14/30/60, and `Infinity` is a resolvable persisted kind that yields Invalid with nonnull bounds |
-| HomeViewModel | Range date bounds / formatter state | Rebuild | `DateRangeFormatState.of(kind)` through DateRangePresets | Recomputed per range emission; the Home period selector renders the localized kind label rather than the stored date span |
+| HomeViewModel | Range date bounds / formatter state | Rebuild | combine(LocalSettingsFeature.observeRange, currentDateFlow) → provideRange → DateRangeFormatState.of(kind) | Recomputed after the persisted kind emits and at each local midnight; selectedPeriods deduplicates date bounds for server refresh, metricPeriods adds date invalidation after distinct so local metrics also rebuild inside unchanged calendar bounds. Both retain the existing WhileActive lifecycle |
 | HomeViewModel | `user` | Rebuild | `observeUser()` | Null emissions are ignored, so the user never clears once set |
-| HomeViewModel | `lastTraining`, `muscleLoad`, `streak`, `performance`, `goalProgress`, `spotlights` | Rebuild | `observeTrainings(range)` under flatMapLatest → metric use cases with the caller-provided current time; Room relation query over training/exercise/iteration/exercise_example tables | An empty list resets to defaults; refreshed by RefreshTrainings |
+| HomeViewModel | `lastTraining`, `performance` | Rebuild | Selected-period training observation → existing mappers / PerformanceTrendUseCase.fromTrainings | Empty period clears the last training and produces five unavailable metrics; fractional means remain read-only output |
+| HomeViewModel | `streak` | Rebuild | `provideTrainings(list, period)` → TrainingStreakUseCase.fromTrainings(trainings = list, range = period) → mapper | Same observed period; now captured once and range capped before day/week/cycle calculation; empty period clears summary |
+| HomeViewModel | `spotlights` | Rebuild | Selected-period trainings + observed relevant ExerciseExample catalog → ExerciseSpotlightUseCase.buildSpotlights(evaluatedAt = min(now, period.to), historyStart = period.from.date) → mapper | Rebuilds from the restored durable range and date invalidation/resume; empty period clears list; no draft or edit state |
+| HomeViewModel | `goalProgress` (goal, optional score, evidence: GoalAnalysisEvidenceState(range, setCount, excludedSetCount, missingMetadataSetCount), derived analyzed days, findings, timeline) | Rebuild | metricPeriods (selected range + currentDateFlow) → combine(TrainingFeature.observeTrainings, GoalFeature.observeGoal), relevant exercise-catalog invalidation → GoalFollowingUseCase(range, goal, now) → mapper | Empty period preserves goal with unavailable score; removed goal clears card; latest source/range cancels prior calculation; no draft, secret or shadow cache |
 | LastTrainingCard / GoalCard | Read-only workout creation and goal date labels | Rebuild in composition | `DateCompose` with the existing typed date and `DateTimeFormatState.format` | Current locale is resolved when rendering; absent typed values keep their existing display. No business dates or VM snapshots are changed |
+| HomeViewModel | `muscleLoad`, including excluded/unassigned set counts and `unmeasuredVolumeSets` | Rebuild | Resolved range → observeTrainings(range) → flatMapLatest(MuscleLoadingSummaryUseCase.observeFromTrainings) → mapper | Training and referenced-anatomy changes recalculate the distribution; an empty training period publishes null. Calculations use available mapped exercise details; the map and goal card state that scope explicitly, without a completeness flag or inferred missing reps/weights. Accepted performed-set shares survive incomplete load measurements; the derived unmeasured count explains omitted physical volume. No editable or archived metric snapshot |
 | HomeViewModel | `excludedMusclesCount`, `missingEquipmentCount`, `hasGoal` | Rebuild | Excluded-muscle/equipment and goal observations | Defaults 0/0/false |
 | HomeViewModel | `showWelcomeConfetti` | Runtime only | `observeHomeWelcomeStatus().first()` then `setHomeWelcomeStatus(Celebrated)`; DataStore `home_welcome_status`, default Idle | True once per fresh VM only when PendingCelebration; consumed inside WelcomeHomeContent and reset at animation start; no celebration on retained recreation; an unfinished animation is not a draft |
 | HomeViewModel / HomeScreen | Loading presentation | Runtime only | Existing range/user readiness, initial empty performance list, and Trainings loader without period content (or lifetime count <1) | Home skeleton until initial readiness; a real empty period has five Empty metrics and resolves after the loader. Populated cached content remains visible during refresh; the existing picker stays available for returning users after range restoration, even during loading. Shared error feedback remains the failure owner; no new loading flag/draft/timer |
-| HomeViewModel | Jobs, whileActive subscriptions, notification permission/schedule, dialog sessions, analytics provenance | Runtime only | `Flow.safeLaunch` default WhileActive (one-second disconnect grace); live DialogConfig callbacks; host serializers null | Resume beyond the grace re-emits the current range and repeats RefreshTrainings; a range change cancels the in-flight refresh; no restoration flags, previous-source caches or shadow copies |
+| HomeViewModel | Jobs, whileActive subscriptions, notification permission/schedule, dialog sessions, analytics provenance | Runtime only | `Flow.safeLaunch` default WhileActive (one-second disconnect grace); each range refresh uses a local VM-owned command Job; live DialogConfig callbacks; host serializers null | Resume beyond the grace re-emits the current range and repeats RefreshTrainings. A request failure leaves the range observation alive; range/lifecycle cancellation cancels and joins the request before starting the next refresh. NonCancellable is confined to cancellation cleanup; requests remain cancellable. No persisted Job, restoration flag, previous-source cache or shadow copy |
 | Home dialogs | Unaccepted picker selection; `onResult`/`onAddGoal` closures | Runtime only | Dialog slot/step stacks unserialized; the picker value lives only in the dialog VM | The accepted period goes straight to DataStore through SavePeriod; a result still queued at process death has no durability |
 | Home composables | Dashboard and spotlight-gallery scroll positions | Presentation only | Existing anchored grid state; gallery's standard `rememberScrollState` pixel offset | No business selection, draft field, restoration flag or ViewModel owner added; swipe scrolling has no feature analytics event |
 

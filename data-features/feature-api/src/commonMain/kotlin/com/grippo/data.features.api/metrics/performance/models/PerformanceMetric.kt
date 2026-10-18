@@ -4,67 +4,55 @@ import kotlin.time.Duration
 
 public sealed interface PerformanceMetric {
     public val type: PerformanceMetricType
-    public val deltaPercentage: Int
-    public val currentVsAveragePercentage: Int
+    public val currentVsAveragePercentage: Double?
     public val status: PerformanceTrendStatus
 
     public data class DurationMetric(
-        override val deltaPercentage: Int,
-        override val currentVsAveragePercentage: Int,
-        val current: Duration,
-        val average: Duration,
-        val best: Duration,
+        override val currentVsAveragePercentage: Double?,
+        val current: Duration?,
+        val average: Duration?,
+        val best: Duration?,
         override val status: PerformanceTrendStatus,
     ) : PerformanceMetric {
         override val type: PerformanceMetricType = PerformanceMetricType.Duration
     }
 
     public data class VolumeMetric(
-        override val deltaPercentage: Int,
-        override val currentVsAveragePercentage: Int,
-        val current: Float,
-        val average: Float,
-        val best: Float,
+        override val currentVsAveragePercentage: Double?,
+        val current: Float?,
+        val average: Float?,
+        val best: Float?,
         override val status: PerformanceTrendStatus,
     ) : PerformanceMetric {
         override val type: PerformanceMetricType = PerformanceMetricType.Volume
     }
 
-    /**
-     * Volume per minute.
-     *
-     * Rationale:
-     * - Duration itself is neutral (longer != better)
-     * - Density is a better “efficiency / effort” proxy for highlights.
-     */
+    /** Training volume per minute; it describes workout density, not exercise quality. */
     public data class DensityMetric(
-        override val deltaPercentage: Int,
-        override val currentVsAveragePercentage: Int,
-        val current: Float,
-        val average: Float,
-        val best: Float,
+        override val currentVsAveragePercentage: Double?,
+        val current: Float?,
+        val average: Float?,
+        val best: Float?,
         override val status: PerformanceTrendStatus,
     ) : PerformanceMetric {
         override val type: PerformanceMetricType = PerformanceMetricType.Density
     }
 
     public data class RepetitionsMetric(
-        override val deltaPercentage: Int,
-        override val currentVsAveragePercentage: Int,
-        val current: Int,
-        val average: Int,
-        val best: Int,
+        override val currentVsAveragePercentage: Double?,
+        val current: Int?,
+        val average: Double?,
+        val best: Int?,
         override val status: PerformanceTrendStatus,
     ) : PerformanceMetric {
         override val type: PerformanceMetricType = PerformanceMetricType.Repetitions
     }
 
     public data class IntensityMetric(
-        override val deltaPercentage: Int,
-        override val currentVsAveragePercentage: Int,
-        val current: Float,
-        val average: Float,
-        val best: Float,
+        override val currentVsAveragePercentage: Double?,
+        val current: Float?,
+        val average: Float?,
+        val best: Float?,
         override val status: PerformanceTrendStatus,
     ) : PerformanceMetric {
         override val type: PerformanceMetricType = PerformanceMetricType.Intensity

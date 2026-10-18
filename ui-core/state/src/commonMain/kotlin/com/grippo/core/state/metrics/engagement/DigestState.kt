@@ -41,9 +41,9 @@ public fun stubDigest(): DigestState {
     return DigestState.Content(
         range = DateRangeFormatState.of(range),
         trainingsCount = 5,
-        duration = DurationFormatState.of(Duration.parse("7h")),
-        total = VolumeFormatState.of(540F),
-        avgVolume = VolumeFormatState.of(108F),
+        duration = DurationFormatState.ofTotal(Duration.parse("7h")),
+        total = VolumeFormatState.ofTotal(540F),
+        avgVolume = VolumeFormatState.ofTotal(108F),
         totalSets = 32,
         activeDays = 4,
     )

@@ -12,16 +12,14 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.highlight_active_days
-import com.grippo.design.resources.provider.training_streak_confidence_value
-import kotlin.math.roundToInt
+import com.grippo.design.resources.provider.training_streak_history_value
+import com.grippo.design.resources.provider.training_streak_calculation_description
 
 @Composable
 public fun TrainingStreakInsightsCard(
     modifier: Modifier = Modifier,
     value: TrainingStreakState,
 ) {
-    val confidencePercent = (value.featured.confidence * 100).roundToInt()
-
     MetricSectionPanel(
         modifier = modifier,
         style = MetricSectionPanelStyle.Small,
@@ -34,11 +32,17 @@ public fun TrainingStreakInsightsCard(
 
         Text(
             text = AppTokens.strings.res(
-                Res.string.training_streak_confidence_value,
-                confidencePercent
+                Res.string.training_streak_history_value,
+                value.historyDays,
             ),
             style = AppTokens.typography.b13Med(),
             color = AppTokens.colors.text.secondary
+        )
+
+        Text(
+            text = AppTokens.strings.res(Res.string.training_streak_calculation_description),
+            style = AppTokens.typography.b13Med(),
+            color = AppTokens.colors.text.secondary,
         )
     }
 }

@@ -95,6 +95,23 @@ with `getOrThrow()` inside `safeLaunch` before treating the operation as complet
 Foundation's loader cleanup via `try/finally` and service/domain error boundaries
 remain valid.
 
+## Requests driven by a long-lived source
+
+An exception in `mapLatest` terminates its collection; the shared error dialog
+does not restart that subscription. When a period/filter observation must accept
+later user choices after one request fails, keep the request in its own existing
+`safeLaunch` error boundary and await it from the latest-value handler. If that
+VM-owned job outlives a replaced value, cancel and join it in `finally` before
+releasing the loader; noncancellable context is limited to that cleanup. Keep
+the Job local to this operation, without a member, retry loop, stage flag or
+new coroutine scope. This is failure isolation, not a recovery wrapper.
+
+Before adding this boundary, trace the actual source and failure contract;
+ordinary suspend helpers still propagate to their caller's `safeLaunch`.
+Before removing it, check first failure -> next selection -> new request, rapid
+replacement/cancellation and loader cleanup. Do not simplify a live subscription
+into a pipeline that stops permanently after its first handled request error.
+
 ## Splash profile loading
 
 Splash has one `safeLaunch` with `AppContent`, started through class-level
@@ -137,7 +154,7 @@ before dismissal or an analytics retry policy.
 
 ## Anti-patterns (MUST avoid)
 
-- **Local catches that hide or present failures** — use `getOrThrow()` and the shared pipeline, including private suspend helpers; no suppression or extra launch.
+- **Local catches that hide or present failures** — use `getOrThrow()` and the shared pipeline, including private suspend helpers; request isolation follows the source contract above.
 - **`Result.getOrNull()` in ViewModel** without handling `null` — silently drops failures.
 - **Adding Flow<Result<T>> for ordinary cached observations** instead of preserving Flow<Domain>. Observation failures still propagate through Flow.safeLaunch; cached data does not guarantee a successful stream.
 - **Showing custom error dialogs** — use `DialogConfig.ErrorDisplay` via the pipeline.

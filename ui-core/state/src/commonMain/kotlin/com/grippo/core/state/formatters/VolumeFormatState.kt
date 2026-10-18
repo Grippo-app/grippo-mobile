@@ -8,11 +8,13 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.decimal_separator
 import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.weight_input_hint
-import kotlinx.serialization.Serializable
+import com.grippo.toolkit.number.utils.formatDecimal
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlinx.serialization.Serializable
 
 @Immutable
 @Serializable
@@ -40,6 +42,23 @@ public sealed class VolumeFormatState : FormatState<Float> {
     ) : VolumeFormatState(), FormatState.Empty<Float>
 
     public companion object {
+        @Composable
+        public fun shortTotal(value: Float?): String {
+            if (value == null || !value.isFinite()) return "—"
+            val number = formatDecimal(
+                value = value.toDouble(),
+                decimalSeparator = AppTokens.strings.res(Res.string.decimal_separator),
+            )
+            return "$number ${AppTokens.strings.res(Res.string.kg)}"
+        }
+
+        /** Read-only tonnage accepts recorded zero and totals beyond a single set's load. */
+        public fun ofTotal(value: Float?): VolumeFormatState = when {
+            value == null -> Empty()
+            !value.isFinite() || value < 0f -> Invalid(display = value.toString(), value = null)
+            else -> Valid(display = formatVolume(value = value, decimalSeparator = ","), value = value)
+        }
+
         private fun tenths(value: Float): Int = (value * 10f).roundToInt()
 
         private fun normalize1dp(value: Float): Float {
@@ -104,14 +123,17 @@ public sealed class VolumeFormatState : FormatState<Float> {
     @Composable
     public fun short(): String {
         val kg = AppTokens.strings.res(Res.string.kg)
-        return "${value?.short() ?: "-"}$kg"
+        val separator = AppTokens.strings.res(Res.string.decimal_separator)
+        val number = value?.let { formatVolume(value = it, decimalSeparator = separator) }
+        return "${number ?: "-"}$kg"
     }
 
     @Composable
     public fun shortAnnotated(): AnnotatedString {
         val kg = AppTokens.strings.res(Res.string.kg)
         val tertiary = AppTokens.colors.text.tertiary
-        val display = value?.short()
+        val separator = AppTokens.strings.res(Res.string.decimal_separator)
+        val display = value?.let { formatVolume(value = it, decimalSeparator = separator) }
         return buildAnnotatedString {
             if (display != null) {
                 append(display)
@@ -125,33 +147,6 @@ public sealed class VolumeFormatState : FormatState<Float> {
         }
     }
 
-    private fun Float.short(): String {
-        val normalized = ((this * 10).roundToInt() / 10.0f)
-        if (normalized == 0f) return "0"
-
-        val t = tenths(normalized)
-        val absT = abs(t)
-        val intPart = absT / 10
-        val frac = absT % 10
-        val sign = if (t < 0) "-" else ""
-        val digits = intPart.toString()
-        val grouped = if (intPart >= 1000) {
-            digits
-                .reversed()
-                .chunked(3)
-                .joinToString(" ")
-                .reversed()
-        } else {
-            digits
-        }
-
-        return if (frac == 0) {
-            "$sign$grouped"
-        } else {
-            "$sign$grouped,$frac"
-        }
-    }
-
     private object VolumeValidator {
         fun isValid(value: Float): Boolean {
             return value in 0f..1000f
@@ -162,4 +157,9 @@ public sealed class VolumeFormatState : FormatState<Float> {
     public fun hint(): String {
         return AppTokens.strings.res(Res.string.weight_input_hint)
     }
+}
+
+private fun formatVolume(value: Float, decimalSeparator: String): String {
+    if (!value.isFinite()) return "—"
+    return formatDecimal(value = value.toDouble(), decimalSeparator = decimalSeparator)
 }

@@ -89,8 +89,6 @@ internal sealed interface TrainingsTimelinePeriod {
         @Transient val digest: DigestState = DigestState.Empty(
             range = DateRangeFormatState.of(DateRangePresets.monthly()),
         ),
-        @Transient val weekDayLabels: ImmutableList<String> = DateTimeUtils.weekDayShortLabels()
-            .toPersistentList(),
         @Transient val weeks: ImmutableList<ImmutableList<MonthlyCalendarDayState>> = persistentListOf(),
     ) : TrainingsTimelinePeriod {
         @Transient override val id: String = ID

@@ -1,6 +1,5 @@
 package com.grippo.start.training
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -159,7 +158,6 @@ private fun StartTrainingContent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(AppTokens.colors.background.dialog)
                     .navigationBarsPadding()
                     .padding(
                         start = AppTokens.dp.dialog.horizontalPadding,
@@ -267,23 +265,11 @@ private fun StartTrainingRecentPreview() {
 @Composable
 private fun StartTrainingLongPlanPreview() {
     PreviewContainer {
-        val exercises = startTrainingPreviewExercises()
-        val longName = "Жим гантелей лежачи на похилій лаві нейтральним хватом"
-        val longPlan = List(8) { index ->
-            val exercise = exercises[index % exercises.size]
-            exercise.copy(
-                id = "long-exercise-$index",
-                name = longName,
-                exerciseExample = exercise.exerciseExample.copy(name = longName),
-                iterations = if (index == 0) persistentListOf() else exercise.iterations,
-            )
-        }.toPersistentList()
-
         StartTrainingContent(
             state = StartTrainingState(
                 options = persistentListOf(
                     StartTrainingOption.Empty,
-                    StartTrainingOption.Preset(exercises = longPlan),
+                    StartTrainingOption.Preset(exercises = startTrainingPreviewLongExercises()),
                 ),
             ),
             loaders = persistentSetOf(),
@@ -296,9 +282,25 @@ private fun StartTrainingLongPlanPreview() {
     }
 }
 
-private fun startTrainingPreviewState(): StartTrainingState {
-    val exercises = startTrainingPreviewExercises()
+@AppPreview
+@Composable
+private fun StartTrainingLongRecentPreview() {
+    PreviewContainer {
+        StartTrainingContent(
+            state = startTrainingPreviewState(exercises = startTrainingPreviewLongExercises()),
+            loaders = persistentSetOf(),
+            selectedChoice = StartTrainingChoice.Recent,
+            selectedRecentKey = "recent:evening",
+            onSelectChoice = {},
+            onSelectRecent = {},
+            contract = StartTrainingContract.Empty,
+        )
+    }
+}
 
+private fun startTrainingPreviewState(
+    exercises: ImmutableList<ExerciseState> = startTrainingPreviewExercises(),
+): StartTrainingState {
     return StartTrainingState(
         options = persistentListOf(
             StartTrainingOption.Preset(exercises = exercises),
@@ -320,6 +322,21 @@ private fun startTrainingPreviewState(): StartTrainingState {
             ),
         ),
     )
+}
+
+private fun startTrainingPreviewLongExercises(): ImmutableList<ExerciseState> {
+    val exercises = startTrainingPreviewExercises()
+    val longName = "Жим гантелей лежачи на похилій лаві нейтральним хватом"
+
+    return List(8) { index ->
+        val exercise = exercises[index % exercises.size]
+        exercise.copy(
+            id = "long-exercise-$index",
+            name = longName,
+            exerciseExample = exercise.exerciseExample.copy(name = longName),
+            iterations = if (index == 0) persistentListOf() else exercise.iterations,
+        )
+    }.toPersistentList()
 }
 
 private fun startTrainingPreviewExercises(): ImmutableList<ExerciseState> {

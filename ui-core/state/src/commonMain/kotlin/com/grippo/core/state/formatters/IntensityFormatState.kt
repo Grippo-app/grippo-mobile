@@ -8,10 +8,12 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.decimal_separator
 import com.grippo.design.resources.provider.kg
-import kotlinx.serialization.Serializable
+import com.grippo.toolkit.number.utils.formatDecimal
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlinx.serialization.Serializable
 
 @Immutable
 @Serializable
@@ -39,6 +41,15 @@ public sealed class IntensityFormatState : FormatState<Float> {
     ) : IntensityFormatState(), FormatState.Empty<Float>
 
     public companion object {
+        @Composable
+        public fun shortAverage(value: Float?): String {
+            if (value == null || !value.isFinite()) return "—"
+            val number = formatDecimal(
+                value = value.toDouble(),
+                decimalSeparator = AppTokens.strings.res(Res.string.decimal_separator),
+            )
+            return "$number ${AppTokens.strings.res(Res.string.kg)}"
+        }
 
         private fun tenths(value: Float): Int = (value * 10f).roundToInt()
 

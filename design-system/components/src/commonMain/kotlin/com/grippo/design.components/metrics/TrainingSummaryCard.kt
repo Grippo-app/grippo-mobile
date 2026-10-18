@@ -30,9 +30,8 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.reps
-import com.grippo.design.resources.provider.sets
+import com.grippo.design.resources.provider.available_sets_label
 import com.grippo.design.resources.provider.tonnage
-import com.grippo.design.resources.provider.training_completed_muscle_load_caption
 import com.grippo.design.resources.provider.training_completed_session_title
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -58,19 +57,13 @@ public fun TrainingSummaryCard(
             modifier = Modifier.fillMaxWidth(),
             training = training,
         )
-        if (muscleLoad != null && muscleLoad.perGroup.entries.isNotEmpty()) {
+        if (muscleLoad != null) {
             ContentDivider()
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
             ) {
-                Text(
-                    text = AppTokens.strings.res(Res.string.training_completed_muscle_load_caption),
-                    style = AppTokens.typography.b12Med(),
-                    color = AppTokens.colors.text.secondary,
-                )
-
                 MuscleLoading(
                     modifier = Modifier.fillMaxWidth(),
                     summary = muscleLoad,
@@ -87,7 +80,7 @@ private fun SummaryBreakdown(
     training: TrainingState,
 ) {
     val durationLabel = AppTokens.strings.res(Res.string.duration)
-    val setsLabel = AppTokens.strings.res(Res.string.sets)
+    val setsLabel = AppTokens.strings.res(Res.string.available_sets_label)
     val tonnageLabel = AppTokens.strings.res(Res.string.tonnage)
     val repsLabel = AppTokens.strings.res(Res.string.reps)
     val duration = training.duration.short()

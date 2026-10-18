@@ -16,6 +16,28 @@ Feature interfaces and UseCases live in `data-features/feature-api/`.
 Use `data-features/trainings/` and `data-features/user/` as source examples, inspecting their
 actual operation semantics rather than copying every dependency or failure policy.
 
+## Minimal domain models
+
+Constructor fields represent independent domain facts. MUST NOT store a count
+beside its complete collection, a value beside the source that determines it, or
+a discriminator already expressed by a sealed subtype. Derive needed values at
+the operation or with a computed getter; constructor defaults still duplicate
+state and `copy` can make them inconsistent. Do not introduce completeness or
+availability flags merely to support a metric branch.
+
+Before keeping an apparent duplicate, inspect the real DTO/entity/mapper graph:
+a server-provided summary can be independent of an unloaded detail collection,
+but that distinction needs an actual contract. Keep mapping omissions and
+unavailable data honest at their existing boundary; do not infer completeness
+from redundant copied counts. Review constructor, mapper, `copy` and preview
+callers together when removing a field.
+
+When the accepted product contract calculates only from available mapped details,
+state that scope beside the affected UI totals, including zero, and in the
+coverage record. Lossy mapping MUST NOT turn that sample into a claim about the
+complete history. Preserve independently recorded aggregates at their existing
+owner; do not label them as detail-derived or add a guessed completeness flag.
+
 ## UseCase shapes (verified)
 
 The 25 public UseCases live in `data-features/feature-api/.../<area>/*UseCase.kt` and are all

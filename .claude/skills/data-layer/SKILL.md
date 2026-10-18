@@ -44,6 +44,9 @@ implementations MUST remain internal. MUST NOT add analytics dependencies to the
 - Before completion MUST review ownership, required outcomes, cache reconciliation, UTC conversion,
   privacy and cancellation in the source/diff, run the permitted checks under the
   [verification policy](../../../CLAUDE.md#verification-policy) and report unverified runtime behavior.
+- Review every added or changed model constructor field against
+  [minimal domain models](references/repositories.md#minimal-domain-models), including
+  the actual source graph and mapper/copy callers.
 
 Read the relevant reference only:
 [repositories](references/repositories.md), [operation outcomes](references/operation-outcomes.md),

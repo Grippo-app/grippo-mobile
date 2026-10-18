@@ -3,7 +3,6 @@ package com.grippo.domain.state.metrics.performance
 import com.grippo.domain.state.exercise.example.toState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
-import kotlin.math.min
 import com.grippo.core.state.metrics.performance.ExerciseSpotlightState as StateExerciseSpotlight
 import com.grippo.data.features.api.metrics.performance.models.ExerciseSpotlight as DomainExerciseSpotlight
 
@@ -14,12 +13,11 @@ public fun List<DomainExerciseSpotlight>.toState(): ImmutableList<StateExerciseS
 public fun DomainExerciseSpotlight.toState(): StateExerciseSpotlight {
     return when (this) {
         is DomainExerciseSpotlight.ProgressWin -> StateExerciseSpotlight(
-            kind = StateExerciseSpotlight.Kind.ProgressWin,
-            severity = StateExerciseSpotlight.Severity.Positive,
             example = example.toState(),
             details = StateExerciseSpotlight.Details.ProgressWin(
                 improvementPercent = improvementPercent,
-                comparedSessions = min(5, sampleSize - 1),
+                comparedSessions = comparedSessions,
+                comparisonWindowDays = comparisonWindowDays,
                 latestSessionVolume = latestSessionVolume,
                 baselineVolumeMedian = baselineVolumeMedian,
             ),
@@ -28,8 +26,6 @@ public fun DomainExerciseSpotlight.toState(): StateExerciseSpotlight {
         )
 
         is DomainExerciseSpotlight.NeedsAttention -> StateExerciseSpotlight(
-            kind = StateExerciseSpotlight.Kind.NeedsAttention,
-            severity = StateExerciseSpotlight.Severity.Warning,
             example = example.toState(),
             details = StateExerciseSpotlight.Details.NeedsAttention(
                 currentGapDays = currentGapDays,
@@ -41,8 +37,6 @@ public fun DomainExerciseSpotlight.toState(): StateExerciseSpotlight {
         )
 
         is DomainExerciseSpotlight.GoodFrequency -> StateExerciseSpotlight(
-            kind = StateExerciseSpotlight.Kind.GoodFrequency,
-            severity = StateExerciseSpotlight.Severity.Positive,
             example = example.toState(),
             details = StateExerciseSpotlight.Details.GoodFrequency(
                 avgWeeklyFrequency = avgWeeklyFrequency,
@@ -55,11 +49,10 @@ public fun DomainExerciseSpotlight.toState(): StateExerciseSpotlight {
         )
 
         is DomainExerciseSpotlight.NearBest -> StateExerciseSpotlight(
-            kind = StateExerciseSpotlight.Kind.NearBest,
-            severity = StateExerciseSpotlight.Severity.Positive,
             example = example.toState(),
             details = StateExerciseSpotlight.Details.NearBest(
                 gapPercent = gapPercent,
+                comparisonWindowDays = comparisonWindowDays,
                 latestSessionVolume = latestSessionVolume,
                 bestSessionVolume = bestSessionVolume,
             ),

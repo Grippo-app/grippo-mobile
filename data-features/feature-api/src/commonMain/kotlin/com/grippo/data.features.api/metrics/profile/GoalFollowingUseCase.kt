@@ -3,1424 +3,524 @@ package com.grippo.data.features.api.metrics.profile
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.CategoryEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
-import com.grippo.data.features.api.exercise.example.models.ForceTypeEnum
+import com.grippo.data.features.api.exercise.example.models.ExerciseExampleComponents
 import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
-import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.goal.models.Goal
 import com.grippo.data.features.api.goal.models.GoalPrimaryGoalEnum
-import com.grippo.data.features.api.metrics.internal.MuscleBundleMath
-import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.ACCESSORY_SETS_PASS_MIN
-import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.AGONIST_GROUP_THRESHOLD
-import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.MINUTES_PER_SET_ESTIMATE
-import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.MIN_RECORDED_MINUTES
-import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.PRIMARY_SETS_PASS_MIN
-import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.SET_CREDIT_BAND_WIDTH
-import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.SYNERGIST_GROUP_THRESHOLD
-import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.WORKING_MIN_SETS
-import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase.Companion.WORKING_MIN_WEIGHT_FRACTION
-import com.grippo.data.features.api.metrics.profile.models.CompoundLiftKind
+import com.grippo.data.features.api.goal.models.PersonalizationKeyEnum
 import com.grippo.data.features.api.metrics.profile.models.GoalAdherence
 import com.grippo.data.features.api.metrics.profile.models.GoalFitFinding
 import com.grippo.data.features.api.metrics.profile.models.GoalFitRule
 import com.grippo.data.features.api.metrics.profile.models.GoalFitSeverity
-import com.grippo.data.features.api.metrics.profile.models.TopExerciseContribution
-import com.grippo.data.features.api.metrics.profile.models.TopMuscleGroupContribution
-import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.data.features.api.muscle.models.MuscleGroupEnum
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.Training
+import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.daysUntil
-import kotlin.math.ceil
-import kotlin.math.ln
-import kotlin.math.min
+import kotlinx.datetime.plus
+import kotlin.math.floor
 import kotlin.math.roundToInt
-import kotlin.math.sqrt
 
 public class GoalFollowingUseCase(
     private val exerciseExampleFeature: ExerciseExampleFeature,
-    private val goalFeature: GoalFeature,
 ) {
 
-    public suspend fun fromTrainingsByPrimary(trainings: List<Training>): GoalAdherence? {
-        val goal = goalFeature.observeGoal().firstOrNull() ?: return null
-        val analysis = analyze(trainings, goal.primaryGoal)
-        val score = scoreForPrimary(goal.primaryGoal, analysis)
-        return analysis.toAdherence(goal = goal, score = score)
-    }
-
-    // -------------------------------------------------------------------------
-    // Orchestration
-    // -------------------------------------------------------------------------
-
-    private suspend fun analyze(
+    public suspend fun fromTrainingsByPrimary(
         trainings: List<Training>,
-        primaryGoal: GoalPrimaryGoalEnum,
-    ): Analysis {
-        if (trainings.isEmpty()) return Analysis.EMPTY
-
-        val ids = trainings.flatMap { it.exercises }.map { it.exerciseExample.id }.toSet()
-        val examples = loadExamples(ids)
-
-        val perSession: List<SessionStats> = trainings.map { training ->
-            SessionStats(training, buildExerciseStats(training.exercises))
+        goal: Goal,
+        range: DateRange,
+        now: LocalDateTime,
+    ): GoalAdherence {
+        val analysisRange = analysisRange(goal = goal, range = range, now = now)
+        val scopedTrainings = trainings
+            .filter {
+                analysisRange != null && it.createdAt >= analysisRange.from && it.createdAt <= analysisRange.to
+            }
+        val sessions = scopedTrainings.filter { it.id.isNotBlank() }.distinctBy { it.id }
+        val sets = sessions.flatMap { training ->
+            training.exercises.filter { it.id.isNotBlank() }.distinctBy { it.id }.flatMap { exercise ->
+                exercise.iterations.distinctBy { it.id }.mapNotNull { iteration ->
+                    loggedSet(training = training, exercise = exercise, iteration = iteration)
+                }
+            }
         }
-        val sessionCount = perSession.count { it.stats.isNotEmpty() }
-
-        val raws = perSession.mapNotNull { (training, stats) ->
-            buildRawFromStats(training, stats, examples)
+        val totalSetCount = scopedTrainings.sumOf { training -> training.exercises.sumOf { it.iterations.size } }
+        val ids = sets.map { it.exampleId }.distinct()
+        val examples = if (ids.isEmpty()) {
+            emptyMap()
+        } else {
+            exerciseExampleFeature.observeExerciseExamples(ids).first().associateBy { it.value.id }
         }
-        if (raws.isEmpty()) return Analysis.EMPTY.copy(sessionCount = sessionCount)
+        val groupCredits = examples.mapValues { groupCredits(it.value) }
+        val missingMetadataCount = sets.count { groupCredits[it.exampleId] == null }
+        val days = analysisRange?.let { it.from.date.daysUntil(it.to.date) + 1 } ?: 0
+        val shares = repShares(sets)
+        val findings = if (analysisRange != null && days >= GoalAdherence.MIN_ANALYSIS_DAYS && sets.isNotEmpty()) {
+            evaluate(
+                goal = goal,
+                sets = sets,
+                range = analysisRange,
+                days = days,
+                groupCredits = groupCredits,
+                examples = examples,
+                hasCompleteMetadata = missingMetadataCount == 0,
+            )
+        } else {
+            emptyList()
+        }
 
-        val pool = aggregateRaw(raws)
-        val strengthShare = (pool.strengthShare * 100f).roundToInt().coerceIn(0, 100)
-        val hypertrophyShare = (pool.hypertrophyShare * 100f).roundToInt().coerceIn(0, 100)
-        val enduranceShare = (pool.enduranceShare * 100f).roundToInt().coerceIn(0, 100)
-
-        val allStats = perSession.flatMap { it.stats }
-        val totalStimulus = allStats.sumOf { it.stimulus.toDouble() }.toFloat()
-
-        val muscleTotals = computeMuscleStimulusTotals(allStats, examples)
-        val totalMuscle = muscleTotals.values.sumOf { it.toDouble() }.toFloat()
-        val topMuscleGroups = buildTopMuscleGroups(muscleTotals, totalMuscle)
-        val topExercises = buildTopExercises(allStats, totalStimulus)
-
-        val findings = computeGoalFitFindings(
-            primary = primaryGoal,
-            perSession = perSession,
-            examples = examples,
-            topMuscleGroups = topMuscleGroups,
-            topExerciseExampleIds = topExercises.take(LOAD_PROGRESSION_TOP_N).map { it.exampleId },
-            strengthShare = strengthShare,
-            hypertrophyShare = hypertrophyShare,
-            enduranceShare = enduranceShare,
-        )
-
-        return Analysis(
-            raw = pool,
-            sessionCount = sessionCount,
-            strengthShare = strengthShare,
-            hypertrophyShare = hypertrophyShare,
-            enduranceShare = enduranceShare,
+        return GoalAdherence(
+            goal = goal,
+            strengthShare = shares[0],
+            hypertrophyShare = shares[1],
+            enduranceShare = shares[2],
+            sessionCount = sets.map { it.trainingId }.distinct().size,
             findings = findings,
+            analysisRange = analysisRange,
+            setCount = sets.size,
+            excludedSetCount = totalSetCount - sets.size,
+            missingMetadataSetCount = missingMetadataCount,
         )
     }
 
-    private fun Analysis.toAdherence(goal: Goal, score: Int): GoalAdherence = GoalAdherence(
-        goal = goal,
-        score = score,
-        strengthShare = strengthShare,
-        hypertrophyShare = hypertrophyShare,
-        enduranceShare = enduranceShare,
-        sessionCount = sessionCount,
-        findings = findings,
-    )
-
-    // -------------------------------------------------------------------------
-    // Per-goal scoring
-    // -------------------------------------------------------------------------
-
-    private fun scoreForPrimary(primary: GoalPrimaryGoalEnum, analysis: Analysis): Int =
-        when (primary) {
-            GoalPrimaryGoalEnum.GET_STRONGER -> scoreStrengthFocus(analysis)
-            GoalPrimaryGoalEnum.BUILD_MUSCLE -> scoreHypertrophyFocus(analysis)
-            GoalPrimaryGoalEnum.LOSE_FAT -> scoreEnduranceFocus(analysis)
-            GoalPrimaryGoalEnum.MAINTAIN -> scorePowerbuilding(analysis)
-            GoalPrimaryGoalEnum.GENERAL_FITNESS -> scoreConcurrent(analysis)
-            GoalPrimaryGoalEnum.RETURN_TO_TRAINING -> scoreReturnToTraining(analysis)
+    private fun analysisRange(goal: Goal, range: DateRange, now: LocalDateTime): DateRange? {
+        if (!range.isWellFormed()) {
+            return null
         }
-
-    private fun scoreStrengthFocus(a: Analysis): Int {
-        if (a.isSilent) return 0
-        val core = a.raw.strengthShare
-        val quality = 0.5f * a.raw.compoundRatio + 0.5f * a.raw.freeWeightRatio
-        return toScore(core * (SPEC_CORE_WEIGHT + SPEC_QUALITY_WEIGHT * quality))
-    }
-
-    private fun scoreHypertrophyFocus(a: Analysis): Int {
-        if (a.isSilent) return 0
-        val core = a.raw.hypertrophyShare
-        val quality = (a.raw.specializationTop2Percent / SPECIALIZATION_SATURATION_PERCENT)
-            .coerceIn(0f, 1f)
-        return toScore(core * (SPEC_CORE_WEIGHT + SPEC_QUALITY_WEIGHT * quality))
-    }
-
-    private fun scoreEnduranceFocus(a: Analysis): Int {
-        if (a.isSilent) return 0
-        val core = a.raw.enduranceShare
-        val quality = (a.raw.activity / ACTIVITY_QUALITY_SATURATION).coerceIn(0f, 1f)
-        return toScore(core * (SPEC_CORE_WEIGHT + SPEC_QUALITY_WEIGHT * quality))
-    }
-
-    private fun scorePowerbuilding(a: Analysis): Int {
-        if (a.isSilent) return 0
-        val balance = 2f * min(a.raw.strengthShare, a.raw.hypertrophyShare)
-        val penalty = suppressedAxisPenalty(a.raw.enduranceShare)
-        return toScore(balance * penalty)
-    }
-
-    private fun scoreConcurrent(a: Analysis): Int {
-        if (a.isSilent) return 0
-        val balance = 2f * min(a.raw.strengthShare, a.raw.enduranceShare)
-        val penalty = suppressedAxisPenalty(a.raw.hypertrophyShare)
-        return toScore(balance * penalty)
-    }
-
-    private fun scoreReturnToTraining(a: Analysis): Int {
-        val work = a.raw.totalWork
-        val activityFloor = (work / RTT_WORK_FLOOR).coerceIn(0f, 1f)
-        val overdoRange = RTT_WORK_CEILING - RTT_WORK_PEAK
-        val overdoPenalty = if (overdoRange <= EPS) 1f
-        else (1f - (work - RTT_WORK_PEAK) / overdoRange).coerceIn(0f, 1f)
-        return toScore(activityFloor * overdoPenalty)
-    }
-
-    private fun suppressedAxisPenalty(suppressedShare: Float): Float {
-        val t = (suppressedShare / SUPPRESSED_AXIS_PENALTY_FULL).coerceIn(0f, 1f)
-        return 1f - t
-    }
-
-    private fun toScore(x: Float): Int {
-        val v = if (x.isFinite()) x else 0f
-        return (v * 100f).roundToInt().coerceIn(0, 100)
-    }
-
-    // -------------------------------------------------------------------------
-    // Per-session Raw + pooled aggregation
-    // -------------------------------------------------------------------------
-
-    private suspend fun loadExamples(ids: Set<String>): Map<String, ExerciseExample> {
-        if (ids.isEmpty()) return emptyMap()
-        return exerciseExampleFeature.observeExerciseExamples(ids.toList())
-            .first()
-            .associateBy { it.value.id }
-    }
-
-    private fun buildRawFromStats(
-        training: Training,
-        stats: List<ExerciseStats>,
-        exampleMap: Map<String, ExerciseExample>,
-    ): Raw? {
-        if (stats.isEmpty()) return null
-
-        val totalSets = stats.sumOf { it.sets.size }
-        val minutes = resolveMinutes(training.duration.inWholeSeconds.toFloat() / 60f, totalSets)
-            ?: return null
-
-        val dimWork = computeDimensionWork(stats)
-        val totalDimWork = dimWork.strength + dimWork.hypertrophy + dimWork.endurance
-
-        val (strengthShare, hypertrophyShare, enduranceShare) = if (totalDimWork > EPS) {
-            Triple(
-                (dimWork.strength / totalDimWork).coerceIn(0f, 1f),
-                (dimWork.hypertrophy / totalDimWork).coerceIn(0f, 1f),
-                (dimWork.endurance / totalDimWork).coerceIn(0f, 1f),
-            )
-        } else {
-            Triple(0f, 0f, 0f)
+        val from = maxOf(range.from, goal.createdAt)
+        val to = minOf(range.to, now)
+        if (from > to) {
+            return null
         }
+        return DateRange(from = from, to = to)
+    }
 
-        val stimulus = safe(stats.sumOf { it.stimulus.toDouble() }.toFloat())
-        val stimulusPerMin = if (stimulus > EPS) stimulus / minutes else 0f
-
-        val reps = training.repetitions.coerceAtLeast(0)
-        val repsPerMin = if (reps > 0) reps.toFloat() / minutes else 0f
-
-        val compoundRatio = weightedCategoryRatioByStimulus(stats, CategoryEnum.COMPOUND)
-        val freeWeightRatio = weightedWeightTypeRatioByStimulus(stats, WeightTypeEnum.FREE)
-        val specializationTop2Percent = computeSpecializationTop2Percent(stats, exampleMap)
-
-        val activity = safe(
-            log1pSafe(stimulusPerMin) +
-                    log1pSafe(repsPerMin) +
-                    log1pSafe(totalDimWork / minutes)
+    private fun loggedSet(training: Training, exercise: Exercise, iteration: Iteration): LoggedSet? {
+        if (iteration.id.isBlank() || iteration.repetitions <= 0 || exercise.exerciseExample.id.isBlank()) {
+            return null
+        }
+        val values = listOf(
+            iteration.externalWeight,
+            iteration.extraWeight,
+            iteration.assistWeight,
+            iteration.bodyWeight,
+            iteration.bodyMultiplier,
         )
+        if (values.any { it != null && (!it.isFinite() || it < 0f) }) {
+            return null
+        }
 
-        return Raw(
-            strengthShare = strengthShare,
-            hypertrophyShare = hypertrophyShare,
-            enduranceShare = enduranceShare,
-            compoundRatio = clamp01(compoundRatio),
-            freeWeightRatio = clamp01(freeWeightRatio),
-            specializationTop2Percent = specializationTop2Percent.coerceIn(0f, 100f),
-            activity = activity,
-            totalWork = safe(totalDimWork),
+        val weightType = exercise.exerciseExample.weightType
+        val externalLoad = iteration.externalWeight?.takeIf { it > 0f }
+
+        return LoggedSet(
+            trainingId = training.id,
+            date = training.createdAt.date,
+            exampleId = exercise.exerciseExample.id,
+            category = exercise.exerciseExample.category,
+            weightType = weightType,
+            reps = iteration.repetitions,
+            externalLoad = externalLoad,
         )
     }
 
-    /**
-     * Returns the session length in minutes. Uses the recorded duration when it
-     * is at least [MIN_RECORDED_MINUTES]; otherwise estimates from set count
-     * (≈[MINUTES_PER_SET_ESTIMATE] min/set, clamped). Returns null when the
-     * session has no sets.
-     */
-    private fun resolveMinutes(recordedMinutes: Float, totalSets: Int): Float? {
-        if (recordedMinutes.isFinite() && recordedMinutes >= MIN_RECORDED_MINUTES) return recordedMinutes
-        if (totalSets <= 0) return null
-        return (totalSets.toFloat() * MINUTES_PER_SET_ESTIMATE).coerceIn(
-            MIN_ESTIMATED_MINUTES,
-            MAX_ESTIMATED_MINUTES
+    /** Rep buckets describe logged sets; they do not estimate effort or physiological stimulus. */
+    private fun repShares(sets: List<LoggedSet>): List<Int> {
+        if (sets.isEmpty()) {
+            return listOf(0, 0, 0)
+        }
+        val counts = listOf(
+            sets.count { it.reps <= 5 },
+            sets.count { it.reps in 6..15 },
+            sets.count { it.reps >= 16 },
         )
-    }
-
-    private fun buildExerciseStats(exercises: List<Exercise>): List<ExerciseStats> {
-        return exercises.mapNotNull { exercise ->
-            val exampleId = exercise.exerciseExample.id
-            if (exampleId.isBlank()) return@mapNotNull null
-
-            val liftSets = exercise.iterations.mapNotNull { it.toLiftSetOrNull() }
-            if (liftSets.isEmpty()) return@mapNotNull null
-
-            val oneRm = estimateExerciseOneRm(liftSets)
-            val setStats = liftSets.mapNotNull { set ->
-                val pct = if (oneRm > EPS) (set.weight / oneRm).coerceIn(0f, 1.2f) else Float.NaN
-                val base = setStimulus(set.weight, set.reps, pct)
-                if (!base.isFinite() || base <= EPS) return@mapNotNull null
-                SetStats(weight = set.weight, reps = set.reps, pct = pct, stimulus = base)
-            }
-            if (setStats.isEmpty()) return@mapNotNull null
-
-            val stimulus = setStats.sumOf { it.stimulus.toDouble() }.toFloat()
-            if (!stimulus.isFinite() || stimulus <= EPS) return@mapNotNull null
-
-            ExerciseStats(
-                exercise = exercise,
-                exampleId = exampleId,
-                sets = setStats,
-                stimulus = stimulus,
-            )
+        val exact = counts.map { it.toDouble() * 100.0 / sets.size.toDouble() }
+        val shares = exact.map { floor(it).toInt() }.toMutableList()
+        val remainder = 100 - shares.sum()
+        exact.indices.sortedByDescending { exact[it] - shares[it] }.take(remainder).forEach { index ->
+            shares[index] += 1
         }
+        return shares
     }
 
-    private fun aggregateRaw(raws: List<Raw>): Raw {
-        if (raws.isEmpty()) return Raw.ZERO
-
-        var sumW = 0f
-        var strength = 0f
-        var hypertrophy = 0f
-        var endurance = 0f
-        var compound = 0f
-        var free = 0f
-        var spec = 0f
-        var activity = 0f
-        var totalWork = 0f
-
-        raws.forEach { r ->
-            val w = sessionWeight(r) ?: return@forEach
-            sumW += w
-            strength += w * r.strengthShare
-            hypertrophy += w * r.hypertrophyShare
-            endurance += w * r.enduranceShare
-            compound += w * r.compoundRatio
-            free += w * r.freeWeightRatio
-            spec += w * r.specializationTop2Percent
-            activity += w * r.activity
-            totalWork += w * r.totalWork
-        }
-
-        if (sumW <= EPS) return Raw.ZERO
-
-        return Raw(
-            strengthShare = clamp01(strength / sumW),
-            hypertrophyShare = clamp01(hypertrophy / sumW),
-            enduranceShare = clamp01(endurance / sumW),
-            compoundRatio = clamp01(compound / sumW),
-            freeWeightRatio = clamp01(free / sumW),
-            specializationTop2Percent = (spec / sumW).coerceIn(0f, 100f),
-            activity = safe(activity / sumW),
-            totalWork = safe(totalWork / sumW),
-        )
-    }
-
-    /** Pool weight a session contributes — null for degenerate sessions (no work). */
-    private fun sessionWeight(raw: Raw): Float? {
-        val w = SESSION_WEIGHT_FLOOR + raw.activity
-        return if (w.isFinite() && w > EPS) w else null
-    }
-
-    private fun computeDimensionWork(stats: List<ExerciseStats>): DimensionWork {
-        var strength = 0f
-        var hypertrophy = 0f
-        var endurance = 0f
-
-        stats.forEach { ex ->
-            ex.sets.forEach { set ->
-                val base = set.stimulus
-                if (!base.isFinite() || base <= EPS) return@forEach
-
-                val ms = strengthMembership(set.reps, set.pct)
-                val mh = hypertrophyMembership(set.reps, set.pct)
-                val me = enduranceMembership(set.reps, set.pct)
-
-                val mSum = ms + mh + me
-                if (!mSum.isFinite() || mSum <= EPS) return@forEach
-
-                val inv = 1f / mSum
-                strength += base * (ms * inv)
-                hypertrophy += base * (mh * inv)
-                endurance += base * (me * inv)
-            }
-        }
-
-        return DimensionWork(
-            strength = safe(strength),
-            hypertrophy = safe(hypertrophy),
-            endurance = safe(endurance),
-        )
-    }
-
-    private fun strengthMembership(reps: Int, pct: Float): Float {
-        val r = reps.coerceAtLeast(0)
-        val repFactor = when {
-            r <= 3 -> 1.00f
-            r <= 5 -> 0.85f
-            r <= 8 -> 0.45f
-            r <= 10 -> 0.20f
-            else -> 0.05f
-        }
-        val pctFactor = if (!pct.isFinite()) {
-            if (r <= 5) 1.0f else 0.6f
-        } else {
-            smoothStep((pct - 0.75f) / 0.17f)
-        }
-        return (repFactor * pctFactor).coerceIn(0f, 1f)
-    }
-
-    private fun hypertrophyMembership(reps: Int, pct: Float): Float {
-        val r = reps.coerceAtLeast(0)
-        val repFactor = when {
-            r <= 4 -> 0.10f
-            r == 5 -> 0.35f
-            r in 6..8 -> 0.75f
-            r in 9..12 -> 1.00f
-            r in 13..15 -> 0.60f
-            else -> 0.30f
-        }
-        val pctFactor = if (!pct.isFinite()) {
-            if (r in 6..12) 1.0f else 0.7f
-        } else when {
-            pct < 0.50f -> 0.20f
-            pct < 0.60f -> 0.70f
-            pct < 0.76f -> 1.00f
-            pct < 0.86f -> 0.65f
-            else -> 0.25f
-        }
-        return (repFactor * pctFactor).coerceIn(0f, 1f)
-    }
-
-    private fun enduranceMembership(reps: Int, pct: Float): Float {
-        val r = reps.coerceAtLeast(0)
-        val repFactor = when {
-            r <= 8 -> 0.05f
-            r in 9..12 -> 0.25f
-            r in 13..15 -> 0.75f
-            else -> 1.00f
-        }
-        val pctFactor = if (!pct.isFinite()) {
-            if (r >= 12) 1.0f else 0.6f
-        } else when {
-            pct <= 0.55f -> 1.00f
-            pct <= 0.65f -> 0.75f
-            pct <= 0.75f -> 0.45f
-            else -> 0.20f
-        }
-        return (repFactor * pctFactor).coerceIn(0f, 1f)
-    }
-
-    private fun Iteration.toLiftSetOrNull(): LiftSet? {
-        val w = volume
-        val r = repetitions
-        if (!w.isFinite() || w <= EPS || r <= 0) return null
-        return LiftSet(weight = w, reps = r)
-    }
-
-    private fun computeSpecializationTop2Percent(
-        stats: List<ExerciseStats>,
-        exampleMap: Map<String, ExerciseExample>,
-    ): Float {
-        val totals = computeMuscleStimulusTotals(stats, exampleMap)
-        val values = totals.values.filter { it.isFinite() && it > EPS }.sortedDescending()
-        if (values.isEmpty()) return 0f
-
-        val sum = values.sum()
-        if (!sum.isFinite() || sum <= EPS) return 0f
-
-        val top2 = values.take(2).sum()
-        val percent = (top2 / sum) * 100f
-        return if (percent.isFinite()) percent.coerceIn(0f, 100f) else 0f
-    }
-
-    /**
-     * Per-muscle stimulus totals over the period. Bundle shares are normalized
-     * and then **damped** via the shared power-law (`ratio^α`, α=1.6) helper
-     * in [MuscleBundleMath] — primary movers gain a non-linear edge over
-     * incidental synergists, matching what `MuscleLoadingSummaryUseCase` does
-     * for muscle-load distribution. Without damping, a 30%/15%/15% bundle
-     * would split stimulus 2:1:1; with α=1.6 it splits closer to 3:1:1, which
-     * lines up with the agonist/synergist set-credit thresholds downstream.
-     *
-     * On top of damping, the PUSH-tiny-share penalty is applied per bundle
-     * — same rule and constants as `MuscleLoadingSummaryUseCase` and
-     * [exampleGroupContributions] — so a 4% chest sub-bundle on a triceps
-     * extension cannot bleed into top-N muscles or specialization Top2%.
-     * Total stimulus per exercise is no longer strictly conserved (the
-     * penalty suppresses a small slice), but downstream consumers normalize
-     * by the muscle pool's own sum, so shares remain internally consistent.
-     *
-     * Note: this distribution is intentionally simpler than the full
-     * `MuscleLoadingSummaryUseCase` model — the fatigue (size/sensitivity),
-     * complexity, and category/weight-type factors live there because they
-     * shape stimulus *load*; they would distort relative stimulus ranking
-     * here without altering the goal-fit signals we actually consume
-     * (top-N muscles, top-N groups, specialization Top2%).
-     */
-    private fun computeMuscleStimulusTotals(
-        stats: List<ExerciseStats>,
-        exampleMap: Map<String, ExerciseExample>,
-    ): Map<MuscleEnum, Float> {
-        val totals = mutableMapOf<MuscleEnum, Float>()
-
-        stats.forEach { ex ->
-            val example = exampleMap[ex.exampleId] ?: return@forEach
-            val bundles = example.bundles
-            if (bundles.isEmpty()) return@forEach
-
-            val base = ex.stimulus
-            if (!base.isFinite() || base <= EPS) return@forEach
-
-            val dampedRatios = MuscleBundleMath.dampedBundleRatios(bundles) ?: return@forEach
-
-            // Pre-compute the bundle pool sum once — used to normalize each
-            // bundle's share to a percent of the pool before the PUSH-penalty
-            // check (the cutoff is calibrated against normalized share, see
-            // `MuscleBundleMath.pushTinySharePenalty` KDoc).
-            val totalShareF = bundles.sumOf { it.percentage.coerceAtLeast(0) }.toFloat()
-            val forceType = example.value.forceType
-
-            bundles.forEachIndexed { index, bundle ->
-                val ratio = dampedRatios[index]
-                if (!ratio.isFinite() || ratio <= 0f) return@forEachIndexed
-
-                val raw = bundle.percentage.coerceAtLeast(0).toFloat()
-                val normalizedSharePercent =
-                    if (totalShareF > 0f) (raw / totalShareF) * 100f else 0f
-                val penalty = MuscleBundleMath.pushTinySharePenalty(
-                    forceType = forceType,
-                    sharePercent = normalizedSharePercent,
-                )
-
-                val add = base * ratio * penalty
-                if (!add.isFinite() || add <= EPS) return@forEachIndexed
-                totals[bundle.muscle.type] = (totals[bundle.muscle.type] ?: 0f) + add
-            }
-        }
-        return totals
-    }
-
-    private fun weightedCategoryRatioByStimulus(
-        stats: List<ExerciseStats>,
-        category: CategoryEnum,
-    ): Float {
-        var sum = 0f
-        var matched = 0f
-        stats.forEach { ex ->
-            val w = ex.stimulus
-            if (!w.isFinite() || w <= EPS) return@forEach
-            sum += w
-            if (ex.exercise.exerciseExample.category == category) matched += w
-        }
-        if (!sum.isFinite() || sum <= EPS) return 0f
-        val r = matched / sum
-        return if (r.isFinite()) r.coerceIn(0f, 1f) else 0f
-    }
-
-    private fun weightedWeightTypeRatioByStimulus(
-        stats: List<ExerciseStats>,
-        type: WeightTypeEnum,
-    ): Float {
-        var sum = 0f
-        var matched = 0f
-        stats.forEach { ex ->
-            val w = ex.stimulus
-            if (!w.isFinite() || w <= EPS) return@forEach
-            sum += w
-            if (ex.exercise.exerciseExample.weightType == type) matched += w
-        }
-        if (!sum.isFinite() || sum <= EPS) return 0f
-        val r = matched / sum
-        return if (r.isFinite()) r.coerceIn(0f, 1f) else 0f
-    }
-
-    // -------------------------------------------------------------------------
-    // Top contributors
-    // -------------------------------------------------------------------------
-
-    private fun buildTopMuscleGroups(
-        muscleTotals: Map<MuscleEnum, Float>,
-        totalMuscle: Float,
-    ): List<TopMuscleGroupContribution> {
-        val groupTotals: Map<MuscleGroupEnum, Float> = muscleTotals.entries
-            .filter { it.value.isFinite() && it.value > EPS }
-            .groupingBy { it.key.group() }
-            .fold(0f) { acc, entry -> acc + entry.value }
-        return groupTotals.entries
-            .sortedByDescending { it.value }
-            .map { (group, v) ->
-                TopMuscleGroupContribution(
-                    group = group,
-                    share = if (totalMuscle > EPS) ((v / totalMuscle) * 100f).roundToInt()
-                        .coerceIn(0, 100) else 0,
-                )
-            }
-    }
-
-    private fun buildTopExercises(
-        allStats: List<ExerciseStats>,
-        totalStimulus: Float,
-    ): List<TopExerciseContribution> {
-        if (allStats.isEmpty()) return emptyList()
-        return allStats.groupBy { it.exampleId }.map { (exampleId, list) ->
-            val stimulusSum = list.sumOf { it.stimulus.toDouble() }.toFloat()
-            val setsCount = list.sumOf { it.sets.size }
-            val heaviest = list.flatMap { it.sets }.maxOfOrNull { it.weight } ?: 0f
-            val combinedLiftSets = list.flatMap { stats ->
-                stats.sets.map { LiftSet(weight = it.weight, reps = it.reps) }
-            }
-            val e1rm = estimateExerciseOneRm(combinedLiftSets)
-            val first = list.first()
-            TopExerciseContribution(
-                exampleId = exampleId,
-                name = first.exercise.name,
-                totalSets = setsCount,
-                stimulusShare = if (totalStimulus > EPS) {
-                    ((stimulusSum / totalStimulus) * 100f).roundToInt().coerceIn(0, 100)
-                } else 0,
-                heaviestWeight = if (heaviest.isFinite() && heaviest > 0f) heaviest else 0f,
-                estimatedOneRepMax = if (e1rm.isFinite() && e1rm > 0f) e1rm else 0f,
-                category = first.exercise.exerciseExample.category,
-            )
-        }.sortedByDescending { it.stimulusShare }.take(TOP_EXERCISES_LIMIT)
-    }
-
-    // -------------------------------------------------------------------------
-    // Goal-fit diagnostic — input rollups
-    //
-    // Walks the same per-session pool the score uses, computes the per-week /
-    // per-group / per-exercise rollups that the rule evaluators consume.
-    // -------------------------------------------------------------------------
-
-    private fun computeGoalFitFindings(
-        primary: GoalPrimaryGoalEnum,
-        perSession: List<SessionStats>,
+    private fun evaluate(
+        goal: Goal,
+        sets: List<LoggedSet>,
+        range: DateRange,
+        days: Int,
+        groupCredits: Map<String, Map<MuscleGroupEnum, Float>?>,
         examples: Map<String, ExerciseExample>,
-        topMuscleGroups: List<TopMuscleGroupContribution>,
-        topExerciseExampleIds: List<String>,
-        strengthShare: Int,
-        hypertrophyShare: Int,
-        enduranceShare: Int,
+        hasCompleteMetadata: Boolean,
     ): List<GoalFitFinding> {
-        val context = buildGoalFitContext(
-            perSession = perSession,
-            examples = examples,
-            topMuscleGroups = topMuscleGroups,
-            topExerciseExampleIds = topExerciseExampleIds,
-            strengthShare = strengthShare,
-            hypertrophyShare = hypertrophyShare,
-            enduranceShare = enduranceShare,
-        )
-        if (context.workingSetCount <= 0) return emptyList()
-        return when (primary) {
-            GoalPrimaryGoalEnum.BUILD_MUSCLE -> evaluateBuildMuscle(context)
-            GoalPrimaryGoalEnum.GET_STRONGER -> evaluateGetStronger(context)
-            GoalPrimaryGoalEnum.MAINTAIN -> evaluateMaintain(context)
-            GoalPrimaryGoalEnum.GENERAL_FITNESS -> evaluateGeneralFitness(context)
-            GoalPrimaryGoalEnum.LOSE_FAT -> evaluateLoseFat(context)
-            GoalPrimaryGoalEnum.RETURN_TO_TRAINING -> evaluateReturnToTraining(context)
-        }
-    }
+        val findings = mutableListOf<GoalFitFinding>()
+        val weeks = days.toFloat() / 7f
+        val frequency = sets.map { it.date }.distinct().size.toFloat() / weeks
+        val schedule = schedule(goal)
+        val weeklySets = completeWeeklySets(sets = sets, range = range)
+        val deload = PersonalizationKeyEnum.PHASE_DELOAD in goal.personalizations
 
-    private fun buildGoalFitContext(
-        perSession: List<SessionStats>,
-        examples: Map<String, ExerciseExample>,
-        topMuscleGroups: List<TopMuscleGroupContribution>,
-        topExerciseExampleIds: List<String>,
-        strengthShare: Int,
-        hypertrophyShare: Int,
-        enduranceShare: Int,
-    ): GoalFitContext {
-        val weeksInPeriod = computeWeeksInPeriod(perSession.map { it.training })
-        val sessionCount = perSession.count { it.stats.isNotEmpty() }
-        val sessionsPerWeek = sessionCount.toFloat() / weeksInPeriod.toFloat()
-
-        val workingSets = extractWorkingSets(perSession)
-        val setsPerWeekPerGroup = computeSetsPerWeekPerGroup(workingSets, examples, weeksInPeriod)
-        val sessionsPerWeekPerGroup =
-            computeSessionsPerWeekPerGroup(workingSets, examples, weeksInPeriod)
-        val repRangeBuckets = workingSets.groupingBy { it.repBucket() }.eachCount()
-        val topSets = pickTopSets(workingSets)
-
-        val e1RMByExercise: Map<String, Float> = workingSets
-            .groupBy { it.exampleId }
-            .mapValues { (_, sets) ->
-                estimateExerciseOneRm(sets.map {
-                    LiftSet(
-                        it.weight,
-                        it.reps
-                    )
-                })
-            }
-            .filterValues { it > EPS }
-
-        val workingSetsWithStimulus = populateStimulus(workingSets, e1RMByExercise)
-
-        val topSetIntensityShares = computeTopSetIntensityShares(topSets, e1RMByExercise)
-        val topSetHeavyShareAt85 =
-            computeIntensityShareAt(topSets, e1RMByExercise, RTT_INTENSITY_FLOOR_FRACTION)
-
-        val e1RMTrendByExercise = computeE1RMTrendByExercise(workingSetsWithStimulus)
-        val weeklyVolumeSeries = computeWeeklyVolumeSeries(workingSetsWithStimulus)
-
-        val compoundLiftPresence = computeCompoundLiftPresence(workingSets, examples)
-
-        val resistanceSets = workingSets.count { it.externalLoad >= BODYWEIGHT_FLOOR_KG }
-        val resistanceSetsPerWeek = resistanceSets.toFloat() / weeksInPeriod.toFloat()
-
-        val compoundCount = workingSets.count { it.category == CategoryEnum.COMPOUND }
-        val isolationCount = workingSets.count { it.category == CategoryEnum.ISOLATION }
-
-        return GoalFitContext(
-            sessionsPerWeek = sessionsPerWeek,
-            workingSetCount = workingSets.size,
-            setsPerWeekPerGroup = setsPerWeekPerGroup,
-            sessionsPerWeekPerGroup = sessionsPerWeekPerGroup,
-            repRangeBuckets = repRangeBuckets,
-            topSetReps = topSets.map { it.reps },
-            topSetIntensityShares = topSetIntensityShares,
-            topSetHeavyShareAt85 = topSetHeavyShareAt85,
-            e1RMTrendByExercise = e1RMTrendByExercise,
-            weeklyVolumeSeries = weeklyVolumeSeries,
-            compoundLiftPresence = compoundLiftPresence,
-            resistanceSetsPerWeek = resistanceSetsPerWeek,
-            compoundWorkingSetCount = compoundCount,
-            isolationWorkingSetCount = isolationCount,
-            topMuscleGroups = topMuscleGroups,
-            topExerciseExampleIds = topExerciseExampleIds,
-            strengthShare = strengthShare,
-            hypertrophyShare = hypertrophyShare,
-            enduranceShare = enduranceShare,
-        )
-    }
-
-    private fun extractWorkingSets(perSession: List<SessionStats>): List<WorkingSet> =
-        perSession.flatMap { (training, statsList) ->
-            statsList.flatMap { stats ->
-                stats.exercise.iterations.mapNotNull { iter ->
-                    val w = iter.volume
-                    val r = iter.repetitions
-                    if (!w.isFinite() || w <= 0f || r <= 0) return@mapNotNull null
-                    val external = (iter.externalWeight ?: 0f) +
-                            (iter.extraWeight ?: 0f) -
-                            (iter.assistWeight ?: 0f)
-                    WorkingSet(
-                        trainingId = training.id,
-                        trainingDate = training.createdAt.date,
-                        exampleId = stats.exampleId,
-                        category = stats.exercise.exerciseExample.category,
-                        weight = w,
-                        reps = r,
-                        externalLoad = external,
+        when (goal.primaryGoal) {
+            GoalPrimaryGoalEnum.BUILD_MUSCLE -> {
+                schedule?.let {
+                    findings += frequencyFinding(
+                        rule = GoalFitRule.BUILD_MUSCLE_WEEKLY_FREQUENCY,
+                        actual = frequency,
+                        schedule = it,
                     )
                 }
-            }
-        }
-
-    /** One top set per (training, exercise) — strictly the heaviest heavy-attempt set. */
-    private fun pickTopSets(workingSets: List<WorkingSet>): List<WorkingSet> = workingSets
-        .groupBy { it.trainingId to it.exampleId }
-        .values
-        .mapNotNull { sets ->
-            sets.filter { it.reps in 1..TOP_SET_HEAVY_REPS_MAX }
-                .maxByOrNull { it.weight }
-        }
-
-    private fun computeWeeksInPeriod(trainings: List<Training>): Int {
-        if (trainings.isEmpty()) return 1
-        val dates = trainings.map { it.createdAt.date }
-        val min = dates.minOrNull() ?: return 1
-        val max = dates.maxOrNull() ?: return 1
-        val days = min.daysUntil(max) + 1
-        return ceil(days.toFloat() / 7f).toInt().coerceAtLeast(1)
-    }
-
-    private fun computeSetsPerWeekPerGroup(
-        workingSets: List<WorkingSet>,
-        examples: Map<String, ExerciseExample>,
-        weeks: Int,
-    ): Map<MuscleGroupEnum, Float> {
-        if (weeks <= 0) return emptyMap()
-        val totals = mutableMapOf<MuscleGroupEnum, Float>()
-        workingSets.forEach { set ->
-            val groupShares = exampleGroupContributions(examples[set.exampleId]) ?: return@forEach
-            groupShares.forEach { (group, share) ->
-                if (share <= 0f) return@forEach
-                totals[group] = (totals[group] ?: 0f) + share
-            }
-        }
-        return totals.mapValues { (_, sets) -> sets / weeks.toFloat() }
-    }
-
-    private fun computeSessionsPerWeekPerGroup(
-        workingSets: List<WorkingSet>,
-        examples: Map<String, ExerciseExample>,
-        weeks: Int,
-    ): Map<MuscleGroupEnum, Float> {
-        if (weeks <= 0) return emptyMap()
-        val groupSessions = mutableMapOf<MuscleGroupEnum, MutableSet<String>>()
-        workingSets.forEach { set ->
-            val groupShares = exampleGroupContributions(examples[set.exampleId]) ?: return@forEach
-            groupShares.forEach { (group, _) ->
-                groupSessions.getOrPut(group) { mutableSetOf() }.add(set.trainingId)
-            }
-        }
-        return groupSessions.mapValues { (_, sessions) ->
-            sessions.size.toFloat() / weeks.toFloat()
-        }
-    }
-
-    /**
-     * Per-group set credit — bundle shares are aggregated to the group level
-     * first; group share is then mapped to a set-credit through
-     * [groupShareToCredit] (synergist tier at ≥[SYNERGIST_GROUP_THRESHOLD] →
-     * 0.5 set, agonist tier at ≥[AGONIST_GROUP_THRESHOLD] → 1.0 set), with
-     * `smoothStep` ramps below each tier so that a bundle landing inside the
-     * tier's transition band picks up partial credit instead of being silently
-     * dropped (the original binary cliff).
-     *
-     * For PUSH-type exercises the per-bundle [MuscleBundleMath.pushTinySharePenalty]
-     * is applied before group aggregation — suppresses spurious cross-credit
-     * (e.g. a 4% chest bundle on a triceps extension claiming a chest
-     * synergist set). Constants live in [MuscleBundleMath] as the shared
-     * source of truth with `MuscleLoadingSummaryUseCase`.
-     */
-    private fun exampleGroupContributions(
-        example: ExerciseExample?,
-    ): Map<MuscleGroupEnum, Float>? {
-        if (example == null) return null
-        val bundles = example.bundles
-        if (bundles.isEmpty()) return null
-        val totalShare = bundles.sumOf { it.percentage.coerceAtLeast(0) }
-        if (totalShare <= 0) return null
-
-        val forceType = example.value.forceType
-        val totalShareF = totalShare.toFloat()
-        val groupShare = mutableMapOf<MuscleGroupEnum, Float>()
-        bundles.forEach { bundle ->
-            val raw = bundle.percentage.coerceAtLeast(0).toFloat()
-            if (raw <= 0f) return@forEach
-            // Normalize the share to a percent of the bundle pool *first*, then
-            // pass that to the PUSH-tiny-share check — `MuscleLoadingSummaryUseCase`
-            // does the same, so the 4% cutoff behaves identically when the
-            // raw bundle percentages don't sum to exactly 100 (data drift).
-            val normalizedPercent = (raw / totalShareF) * 100f
-            val penalty = MuscleBundleMath.pushTinySharePenalty(forceType, normalizedPercent)
-            val group = bundle.muscle.type.group()
-            groupShare[group] = (groupShare[group] ?: 0f) + (normalizedPercent * penalty) / 100f
-        }
-
-        val out = mutableMapOf<MuscleGroupEnum, Float>()
-        groupShare.forEach { (group, share) ->
-            val credit = groupShareToCredit(share)
-            if (credit > 0f) out[group] = credit
-        }
-        return out.takeIf { it.isNotEmpty() }
-    }
-
-    /**
-     * Maps an aggregated group-share fraction (0..1) to a set-credit value
-     * using a soft tier function. Replaces the previous binary cliff to
-     * remove the "31% chest gets 0.5 set, 35% chest gets 1.0 set" UX edge —
-     * a bundle landing inside a tier's transition band picks up partial
-     * credit instead of being silently dropped or jumped.
-     *
-     * Design constraints (preserved from the original cliff so downstream
-     * thresholds [PRIMARY_SETS_PASS_MIN], [ACCESSORY_SETS_PASS_MIN], etc.
-     * stay calibrated):
-     *  - At each tier threshold the credit equals the tier value (cliff
-     *    parity): `f(SYNERGIST_GROUP_THRESHOLD) = SYNERGIST_SET_WEIGHT`,
-     *    `f(AGONIST_GROUP_THRESHOLD) = AGONIST_SET_WEIGHT`.
-     *  - Above each threshold the credit plateaus at the tier value (until
-     *    the next tier's ramp begins).
-     *  - Below each threshold the credit ramps smoothly down to zero over
-     *    [SET_CREDIT_BAND_WIDTH] of share — incidental shares just shy of a
-     *    tier still pick up something instead of being a cliff drop.
-     *
-     * The aggregate set-volume estimate per bundle changes by at most
-     * `SET_CREDIT_BAND_WIDTH × tier_step ≈ 0.025` set vs. the binary cliff
-     * (a clear win on the boundary, negligible elsewhere) — verified by
-     * inspection at share = 0.10 / 0.125 / 0.15 / 0.30 / 0.325 / 0.35.
-     */
-    private fun groupShareToCredit(share: Float): Float {
-        if (!share.isFinite() || share <= 0f) return 0f
-
-        // Synergist tier: smoothly ramps from 0 at (threshold − band) to the
-        // synergist weight at the threshold itself, then plateaus.
-        val synergistRamp = smoothStep(
-            (share - (SYNERGIST_GROUP_THRESHOLD - SET_CREDIT_BAND_WIDTH)) / SET_CREDIT_BAND_WIDTH
-        )
-        val synergist = SYNERGIST_SET_WEIGHT * synergistRamp
-
-        // Agonist tier: same shape, anchored at the agonist threshold; only
-        // the *step up* over the synergist weight is added so we hit
-        // exactly AGONIST_SET_WEIGHT at the agonist threshold.
-        val agonistRamp = smoothStep(
-            (share - (AGONIST_GROUP_THRESHOLD - SET_CREDIT_BAND_WIDTH)) / SET_CREDIT_BAND_WIDTH
-        )
-        val agonistStep = (AGONIST_SET_WEIGHT - SYNERGIST_SET_WEIGHT) * agonistRamp
-
-        val credit = synergist + agonistStep
-        return if (credit.isFinite()) credit.coerceIn(0f, AGONIST_SET_WEIGHT) else 0f
-    }
-
-    private fun computeTopSetIntensityShares(
-        topSets: List<WorkingSet>,
-        e1RMByExercise: Map<String, Float>,
-    ): Map<IntensityBand, Float> {
-        if (topSets.isEmpty()) return emptyMap()
-        var heavy = 0
-        var moderate = 0
-        var light = 0
-        var counted = 0
-        topSets.forEach { ts ->
-            val e1rm = e1RMByExercise[ts.exampleId] ?: return@forEach
-            if (e1rm <= EPS) return@forEach
-            val frac = ts.weight / e1rm
-            counted += 1
-            when {
-                frac >= HEAVY_FRACTION -> heavy += 1
-                frac >= MODERATE_FRACTION -> moderate += 1
-                else -> light += 1
-            }
-        }
-        if (counted == 0) return emptyMap()
-        val denom = counted.toFloat()
-        return mapOf(
-            IntensityBand.HEAVY_80_PLUS to (heavy / denom) * 100f,
-            IntensityBand.MODERATE_60_79 to (moderate / denom) * 100f,
-            IntensityBand.LIGHT_BELOW_60 to (light / denom) * 100f,
-        )
-    }
-
-    /** % of top sets at or above [threshold] (fraction of e1RM). Null when nothing was counted. */
-    private fun computeIntensityShareAt(
-        topSets: List<WorkingSet>,
-        e1RMByExercise: Map<String, Float>,
-        threshold: Float,
-    ): Float? {
-        if (topSets.isEmpty()) return null
-        var matched = 0
-        var counted = 0
-        topSets.forEach { ts ->
-            val e1rm = e1RMByExercise[ts.exampleId] ?: return@forEach
-            if (e1rm <= EPS) return@forEach
-            counted += 1
-            if (ts.weight / e1rm >= threshold) matched += 1
-        }
-        if (counted == 0) return null
-        return (matched.toFloat() / counted.toFloat()) * 100f
-    }
-
-    private fun computeE1RMTrendByExercise(workingSets: List<WorkingSet>): Map<String, Float> {
-        if (workingSets.isEmpty()) return emptyMap()
-        val out = mutableMapOf<String, Float>()
-
-        workingSets.groupBy { it.exampleId }.forEach { (exampleId, sets) ->
-            val byDate = sets.groupBy { it.trainingDate }
-            if (byDate.size < E1RM_TREND_MIN_SESSIONS) return@forEach
-
-            val firstDate = byDate.keys.min()
-            val points: List<Pair<Float, Float>> = byDate.entries
-                .sortedBy { it.key }
-                .map { (date, sessionSets) ->
-                    val days = firstDate.daysUntil(date).toFloat()
-                    val e1rm =
-                        estimateExerciseOneRm(sessionSets.map { LiftSet(it.weight, it.reps) })
-                    days to e1rm
+                if (hasCompleteMetadata) {
+                    val groups = PRIMARY_GROUPS + focusedGroups(goal)
+                    groups.forEach { group ->
+                        val credit = sets.sumOf {
+                            (groupCredits[it.exampleId]?.get(group) ?: 0f).toDouble()
+                        }.toFloat()
+                        val target = if (group in PRIMARY_GROUPS) 10f else 6f
+                        if (!avoidsVolumeTargets(goal)) {
+                            findings += atLeast(
+                                rule = GoalFitRule.BUILD_MUSCLE_WEEKLY_SETS_PER_PRIMARY_GROUP,
+                                actual = credit / weeks,
+                                passMin = target,
+                                warnMin = target / 2f,
+                                context = listOf(group),
+                            )
+                        }
+                        val trainingDays = sets.filter {
+                            (groupCredits[it.exampleId]?.get(group) ?: 0f) >= 0.5f
+                        }.map { it.date }.distinct().size
+                        findings += atLeast(
+                            rule = GoalFitRule.BUILD_MUSCLE_WEEKLY_FREQUENCY_PER_PRIMARY_GROUP,
+                            actual = trainingDays.toFloat() / weeks,
+                            passMin = 1f,
+                            warnMin = 0.5f,
+                            context = listOf(group),
+                        )
+                    }
                 }
-                .filter { it.second > EPS }
-
-            if (points.size < E1RM_TREND_MIN_SESSIONS) return@forEach
-
-            val slope = theilSenSlope(points) ?: return@forEach
-            val firstY = points.first().second
-            val totalDays = points.last().first - points.first().first
-            if (totalDays <= EPS || firstY <= EPS) return@forEach
-
-            val trend = (slope * totalDays) / firstY
-            if (trend.isFinite()) out[exampleId] = trend
-        }
-        return out
-    }
-
-    /** Median of pairwise slopes — null when no pair has a non-zero x-delta. */
-    private fun theilSenSlope(points: List<Pair<Float, Float>>): Float? {
-        if (points.size < 2) return null
-        val slopes = mutableListOf<Float>()
-        for (i in points.indices) {
-            for (j in i + 1 until points.size) {
-                val (xi, yi) = points[i]
-                val (xj, yj) = points[j]
-                val dx = xj - xi
-                if (dx > EPS) slopes.add((yj - yi) / dx)
-            }
-        }
-        if (slopes.isEmpty()) return null
-        slopes.sort()
-        val n = slopes.size
-        return if (n % 2 == 1) slopes[n / 2]
-        else (slopes[n / 2 - 1] + slopes[n / 2]) / 2f
-    }
-
-    /**
-     * Sliding 7-day stimulus series anchored on the user's first training day.
-     * Includes zero gap weeks — a missed week is real signal for stability rules.
-     */
-    private fun computeWeeklyVolumeSeries(workingSets: List<WorkingSet>): List<Float> {
-        if (workingSets.isEmpty()) return emptyList()
-        val firstDate = workingSets.minOf { it.trainingDate }
-        val perWeek = mutableMapOf<Int, Float>()
-        var maxWeekIndex = 0
-        workingSets.forEach { set ->
-            val daysFromStart = firstDate.daysUntil(set.trainingDate).coerceAtLeast(0)
-            val weekIndex = daysFromStart / 7
-            val s = set.stimulus
-            if (!s.isFinite() || s <= 0f) return@forEach
-            perWeek[weekIndex] = (perWeek[weekIndex] ?: 0f) + s
-            if (weekIndex > maxWeekIndex) maxWeekIndex = weekIndex
-        }
-        return (0..maxWeekIndex).map { perWeek[it] ?: 0f }
-    }
-
-    private fun computeCompoundLiftPresence(
-        workingSets: List<WorkingSet>,
-        examples: Map<String, ExerciseExample>,
-    ): Map<CompoundLiftKind, String> {
-        if (workingSets.isEmpty()) return emptyMap()
-        val out = mutableMapOf<CompoundLiftKind, String>()
-        workingSets.distinctBy { it.exampleId }.forEach { set ->
-            val example = examples[set.exampleId] ?: return@forEach
-            val kind = resolveCompoundLiftKind(example) ?: return@forEach
-            if (kind !in out) out[kind] = set.exampleId
-        }
-        return out
-    }
-
-    /**
-     * Structural compound-lift resolver — uses [ForceTypeEnum] + [CategoryEnum]
-     * + dominant muscle group, locale-independent across custom exercises.
-     */
-    private fun resolveCompoundLiftKind(example: ExerciseExample?): CompoundLiftKind? {
-        if (example == null) return null
-        val value = example.value
-
-        if (value.category != CategoryEnum.COMPOUND) return null
-
-        val dominantGroup = example.bundles
-            .filter { it.percentage > 0 }
-            .maxByOrNull { it.percentage }
-            ?.muscle?.type?.group()
-            ?: return null
-
-        return when (value.forceType) {
-            ForceTypeEnum.HINGE -> {
-                val hasBackWork = example.bundles.any {
-                    it.percentage > 0 && it.muscle.type.group() == MuscleGroupEnum.BACK_MUSCLES
+                if (!deload && !avoidsLoadTargets(goal)) {
+                    progression(sets = sets, examples = examples)?.let { trend ->
+                        findings += progressionFinding(
+                            rule = GoalFitRule.BUILD_MUSCLE_LOAD_PROGRESSION,
+                            trend = trend,
+                        )
+                    }
                 }
-                if (hasBackWork) CompoundLiftKind.DEADLIFT else null
             }
 
-            ForceTypeEnum.PULL ->
-                if (dominantGroup == MuscleGroupEnum.BACK_MUSCLES) CompoundLiftKind.ROW else null
-
-            ForceTypeEnum.PUSH -> when (dominantGroup) {
-                MuscleGroupEnum.LEGS -> CompoundLiftKind.SQUAT
-                MuscleGroupEnum.CHEST_MUSCLES -> CompoundLiftKind.BENCH_PRESS
-                MuscleGroupEnum.SHOULDER_MUSCLES -> CompoundLiftKind.OVERHEAD_PRESS
-                else -> null
+            GoalPrimaryGoalEnum.GET_STRONGER -> {
+                schedule?.let {
+                    findings += frequencyFinding(
+                        rule = GoalFitRule.GET_STRONGER_WEEKLY_FREQUENCY,
+                        actual = frequency,
+                        schedule = it,
+                    )
+                }
+                if (!deload && !avoidsLoadTargets(goal)) {
+                    val lowRepShare = sets.count { it.reps <= 5 }.toFloat() * 100f / sets.size.toFloat()
+                    findings += atLeast(
+                        rule = GoalFitRule.GET_STRONGER_STRENGTH_REP_RANGE_SHARE,
+                        actual = lowRepShare,
+                        passMin = 40f,
+                        warnMin = 20f,
+                    )
+                    val compoundShare = sets.count {
+                        it.category == CategoryEnum.COMPOUND
+                    }.toFloat() * 100f / sets.size.toFloat()
+                    findings += atLeast(
+                        rule = GoalFitRule.GET_STRONGER_COMPOUND_SET_SHARE,
+                        actual = compoundShare,
+                        passMin = 60f,
+                        warnMin = 40f,
+                    )
+                    progression(sets = sets, examples = examples)?.let { trend ->
+                        findings += progressionFinding(
+                            rule = GoalFitRule.GET_STRONGER_STRENGTH_PROGRESSION,
+                            trend = trend,
+                        )
+                    }
+                }
             }
-        }
-    }
 
-    private fun populateStimulus(
-        workingSets: List<WorkingSet>,
-        e1RMByExercise: Map<String, Float>,
-    ): List<WorkingSet> = workingSets.map { set ->
-        val e1rm = e1RMByExercise[set.exampleId] ?: 0f
-        val pct = if (e1rm > EPS) (set.weight / e1rm).coerceIn(0f, 1.2f) else Float.NaN
-        val s = setStimulus(set.weight, set.reps, pct)
-        set.copy(stimulus = if (s.isFinite() && s > 0f) s else 0f)
-    }
+            GoalPrimaryGoalEnum.MAINTAIN -> {
+                schedule?.let {
+                    findings += frequencyFinding(
+                        rule = GoalFitRule.MAINTAIN_WEEKLY_FREQUENCY,
+                        actual = frequency,
+                        schedule = it,
+                    )
+                }
+                if (hasCompleteMetadata) {
+                    findings += coverageFinding(
+                        rule = GoalFitRule.MAINTAIN_GROUP_COVERAGE,
+                        sets = sets,
+                        credits = groupCredits,
+                        weeks = weeks,
+                    )
+                }
+                if (!deload) {
+                    stability(weeklySets)?.let { actual ->
+                        findings += atMost(
+                            rule = GoalFitRule.MAINTAIN_WEEKLY_VOLUME_STABILITY,
+                            actual = actual,
+                            passMax = 0.3f,
+                            warnMax = 0.6f,
+                        )
+                    }
+                }
+            }
 
-    // -------------------------------------------------------------------------
-    // Goal-fit diagnostic — per-goal rule matrix
-    //
-    // Each evaluator emits one finding per evaluable rule. Rules with
-    // insufficient data are omitted (no synthetic PASS/FAIL).
-    // -------------------------------------------------------------------------
+            GoalPrimaryGoalEnum.GENERAL_FITNESS -> {
+                schedule?.let {
+                    findings += frequencyFinding(
+                        rule = GoalFitRule.GENERAL_FITNESS_WEEKLY_FREQUENCY,
+                        actual = frequency,
+                        schedule = it,
+                    )
+                }
+                if (hasCompleteMetadata) {
+                    findings += coverageFinding(
+                        rule = GoalFitRule.GENERAL_FITNESS_GROUP_COVERAGE,
+                        sets = sets,
+                        credits = groupCredits,
+                        weeks = weeks,
+                    )
+                }
+            }
 
-    private fun evaluateBuildMuscle(ctx: GoalFitContext): List<GoalFitFinding> {
-        val findings = mutableListOf<GoalFitFinding>()
-
-        findings += atLeastFinding(
-            rule = GoalFitRule.BUILD_MUSCLE_HYPERTROPHY_REP_RANGE_SHARE,
-            actual = repBucketSharePercent(ctx, RepBucket.HYPERTROPHY_6_15),
-            passMin = HYPERTROPHY_REP_RANGE_PASS_MIN,
-            warnMin = HYPERTROPHY_REP_RANGE_WARN_MIN,
-        )
-
-        MuscleGroupEnum.entries.forEach { group ->
-            val sets = ctx.setsPerWeekPerGroup[group] ?: 0f
-            findings += weeklySetsFinding(group = group, actual = sets)
-        }
-
-        MuscleGroupEnum.entries.forEach { group ->
-            val freq = ctx.sessionsPerWeekPerGroup[group] ?: 0f
-            findings += weeklyFrequencyFinding(group = group, actual = freq)
-        }
-
-        accessoryInversionFinding(ctx)?.let(findings::add)
-
-        val trendPool = ctx.topExerciseExampleIds.mapNotNull { ctx.e1RMTrendByExercise[it] }
-        if (trendPool.isNotEmpty()) {
-            findings += atLeastFinding(
-                rule = GoalFitRule.BUILD_MUSCLE_LOAD_PROGRESSION,
-                actual = medianFloat(trendPool),
-                passMin = LOAD_PROGRESSION_PASS_MIN,
-                warnMin = LOAD_PROGRESSION_WARN_MIN,
-            )
-        }
-
-        return findings
-    }
-
-    /**
-     * Per-group weekly-sets finding. Primary anatomical groups (chest / back /
-     * legs) use the literature-supported 10..20 band; accessory groups
-     * (arms / shoulders / abs) use a relaxed 6..16 band because they
-     * accumulate substantial *incidental* set credit through synergist
-     * recruitment on compound work — reusing the primary thresholds verbatim
-     * would FAIL most compound-driven BUILD_MUSCLE programs even when the
-     * accessory volume is physiologically adequate.
-     *
-     * Targets are emitted per finding so the UI mapper renders the band
-     * correct for the group it's describing.
-     */
-    private fun weeklySetsFinding(group: MuscleGroupEnum, actual: Float): GoalFitFinding {
-        val isAccessory = group in ACCESSORY_GROUPS
-        val passMin = if (isAccessory) ACCESSORY_SETS_PASS_MIN else PRIMARY_SETS_PASS_MIN
-        val passMax = if (isAccessory) ACCESSORY_SETS_PASS_MAX else PRIMARY_SETS_PASS_MAX
-        val warnLow = if (isAccessory) ACCESSORY_SETS_WARN_LOW_MIN else PRIMARY_SETS_WARN_LOW_MIN
-        val warnHigh = if (isAccessory) ACCESSORY_SETS_WARN_HIGH_MAX else PRIMARY_SETS_WARN_HIGH_MAX
-
-        val severity = when {
-            actual in passMin..passMax -> GoalFitSeverity.PASS
-            actual in warnLow..warnHigh -> GoalFitSeverity.WARN
-            else -> GoalFitSeverity.FAIL
-        }
-        return GoalFitFinding(
-            rule = GoalFitRule.BUILD_MUSCLE_WEEKLY_SETS_PER_PRIMARY_GROUP,
-            severity = severity,
-            actualValue = actual,
-            targetMin = passMin,
-            targetMax = passMax,
-            context = listOf(group.name),
-        )
-    }
-
-    /**
-     * Per-group weekly-frequency finding. Mirrors [weeklySetsFinding]: primary
-     * groups target ≥1.5 dedicated sessions/week, accessories ≥1.0 (the lower
-     * floor reflects that arms / shoulders / abs typically accumulate
-     * frequency through synergist recruitment on compounds, so the rule
-     * should not penalise compound-driven programmes).
-     */
-    private fun weeklyFrequencyFinding(group: MuscleGroupEnum, actual: Float): GoalFitFinding {
-        val isAccessory = group in ACCESSORY_GROUPS
-        return atLeastFinding(
-            rule = GoalFitRule.BUILD_MUSCLE_WEEKLY_FREQUENCY_PER_PRIMARY_GROUP,
-            actual = actual,
-            passMin = if (isAccessory) ACCESSORY_FREQUENCY_PASS_MIN else PRIMARY_FREQUENCY_PASS_MIN,
-            warnMin = if (isAccessory) ACCESSORY_FREQUENCY_WARN_MIN else PRIMARY_FREQUENCY_WARN_MIN,
-            context = listOf(group.name),
-        )
-    }
-
-    /**
-     * Returns null when no muscle-group share data is available — emitting a
-     * synthetic PASS in that case would mislead the user.
-     */
-    private fun accessoryInversionFinding(ctx: GoalFitContext): GoalFitFinding? {
-        val byGroup: Map<MuscleGroupEnum, Int> = ctx.topMuscleGroups
-            .associate { it.group to it.share.coerceAtLeast(0) }
-        if (byGroup.isEmpty()) return null
-
-        val maxPrimary = PRIMARY_GROUPS.maxOf { byGroup[it] ?: 0 }
-        val invertedAccessories = ACCESSORY_GROUPS
-            .filter { (byGroup[it] ?: 0) > maxPrimary }
-            .map { it.name }
-
-        val severity =
-            if (invertedAccessories.isEmpty()) GoalFitSeverity.PASS else GoalFitSeverity.FAIL
-        return GoalFitFinding(
-            rule = GoalFitRule.BUILD_MUSCLE_ACCESSORY_INVERSION,
-            severity = severity,
-            actualValue = invertedAccessories.size.toFloat(),
-            targetMin = null,
-            targetMax = 0f,
-            context = invertedAccessories,
-        )
-    }
-
-    private fun evaluateGetStronger(ctx: GoalFitContext): List<GoalFitFinding> {
-        val findings = mutableListOf<GoalFitFinding>()
-
-        val presentCount = ctx.compoundLiftPresence.size.toFloat()
-        findings += GoalFitFinding(
-            rule = GoalFitRule.GET_STRONGER_COMPOUND_PRESENCE,
-            severity = when {
-                presentCount >= COMPOUND_PRESENCE_PASS_MIN -> GoalFitSeverity.PASS
-                presentCount >= COMPOUND_PRESENCE_WARN_MIN -> GoalFitSeverity.WARN
-                else -> GoalFitSeverity.FAIL
-            },
-            actualValue = presentCount,
-            targetMin = COMPOUND_PRESENCE_PASS_MIN,
-            targetMax = CompoundLiftKind.entries.size.toFloat(),
-        )
-
-        findings += atLeastFinding(
-            rule = GoalFitRule.GET_STRONGER_HEAVY_INTENSITY_SHARE,
-            actual = ctx.topSetIntensityShares[IntensityBand.HEAVY_80_PLUS] ?: 0f,
-            passMin = HEAVY_INTENSITY_PASS_MIN,
-            warnMin = HEAVY_INTENSITY_WARN_MIN,
-        )
-
-        if (ctx.topSetReps.isNotEmpty()) {
-            val lowRepCount = ctx.topSetReps.count { it in 1..5 }
-            val pct = (lowRepCount.toFloat() / ctx.topSetReps.size.toFloat()) * 100f
-            findings += atLeastFinding(
-                rule = GoalFitRule.GET_STRONGER_STRENGTH_REP_RANGE_SHARE,
-                actual = pct,
-                passMin = STRENGTH_REP_RANGE_PASS_MIN,
-                warnMin = STRENGTH_REP_RANGE_WARN_MIN,
-            )
-        }
-
-        // Strict: skip the rule when the user did no isolation work — there is
-        // no meaningful ratio to score and an "infinite" placeholder distorts
-        // the breakdown card.
-        val compound = ctx.compoundWorkingSetCount
-        val isolation = ctx.isolationWorkingSetCount
-        if (compound > 0 && isolation > 0) {
-            findings += atLeastFinding(
-                rule = GoalFitRule.GET_STRONGER_COMPOUND_TO_ISOLATION_RATIO,
-                actual = compound.toFloat() / isolation.toFloat(),
-                passMin = COMPOUND_TO_ISOLATION_PASS_MIN,
-                warnMin = COMPOUND_TO_ISOLATION_WARN_MIN,
-            )
-        }
-
-        val trendPool = ctx.compoundLiftPresence.values.mapNotNull { ctx.e1RMTrendByExercise[it] }
-        if (trendPool.isNotEmpty()) {
-            findings += atLeastFinding(
-                rule = GoalFitRule.GET_STRONGER_STRENGTH_PROGRESSION,
-                actual = medianFloat(trendPool),
-                passMin = STRENGTH_PROGRESSION_PASS_MIN,
-                warnMin = STRENGTH_PROGRESSION_WARN_MIN,
-            )
-        }
-
-        return findings
-    }
-
-    private fun evaluateMaintain(ctx: GoalFitContext): List<GoalFitFinding> {
-        val findings = mutableListOf<GoalFitFinding>()
-
-        val sH = ctx.strengthShare
-        val hH = ctx.hypertrophyShare
-        if (sH + hH > 0) {
-            val skew = maxOf(sH, hH).toFloat() / (sH + hH).toFloat()
-            findings += atMostFinding(
-                rule = GoalFitRule.MAINTAIN_WORK_BALANCE_SKEW,
-                actual = skew,
-                passMax = WORK_BALANCE_SKEW_PASS_MAX,
-                warnMax = WORK_BALANCE_SKEW_WARN_MAX,
-            )
-        }
-
-        findings += groupCoverageFinding(ctx, GoalFitRule.MAINTAIN_GROUP_COVERAGE)
-
-        findings += atLeastFinding(
-            rule = GoalFitRule.MAINTAIN_WEEKLY_FREQUENCY,
-            actual = ctx.sessionsPerWeek,
-            passMin = WEEKLY_FREQUENCY_PASS_MIN,
-            warnMin = WEEKLY_FREQUENCY_WARN_MIN,
-        )
-
-        if (ctx.weeklyVolumeSeries.size >= 2) {
-            volumeStabilityRatio(ctx.weeklyVolumeSeries)?.let { stability ->
-                findings += atMostFinding(
-                    rule = GoalFitRule.MAINTAIN_WEEKLY_VOLUME_STABILITY,
-                    actual = stability,
-                    passMax = WEEKLY_VOLUME_STABILITY_PASS_MAX,
-                    warnMax = WEEKLY_VOLUME_STABILITY_WARN_MAX,
+            GoalPrimaryGoalEnum.LOSE_FAT -> {
+                schedule?.let {
+                    findings += frequencyFinding(
+                        rule = GoalFitRule.LOSE_FAT_SESSION_ADHERENCE,
+                        actual = frequency,
+                        schedule = it,
+                    )
+                }
+                findings += atLeast(
+                    rule = GoalFitRule.LOSE_FAT_RESISTANCE_PRESENCE,
+                    actual = sets.size.toFloat() / weeks,
+                    passMin = 6f,
+                    warnMin = 2f,
                 )
+                val previousWeek = weeklySets.getOrNull(weeklySets.lastIndex - 1)
+                if (!deload && previousWeek != null && previousWeek > 0f) {
+                    findings += atLeast(
+                        rule = GoalFitRule.LOSE_FAT_WEEKLY_VOLUME_TREND,
+                        actual = weeklySets.last() / previousWeek,
+                        passMin = 0.85f,
+                        warnMin = 0.7f,
+                    )
+                }
+            }
+
+            GoalPrimaryGoalEnum.RETURN_TO_TRAINING -> {
+                schedule?.let {
+                    findings += frequencyFinding(
+                        rule = GoalFitRule.RETURN_TO_TRAINING_WEEKLY_FREQUENCY,
+                        actual = frequency,
+                        schedule = it,
+                    )
+                }
+                if (!deload) {
+                    val maximumIncrease = weeklySets.zipWithNext()
+                        .filter { (before, _) -> before > 0f }
+                        .maxOfOrNull { (before, after) -> after / before }
+                    if (maximumIncrease != null) {
+                        findings += atMost(
+                            rule = GoalFitRule.RETURN_TO_TRAINING_LOAD_RAMP_GENTLE,
+                            actual = maximumIncrease,
+                            passMax = 1.5f,
+                            warnMax = 2f,
+                        )
+                    }
+                }
             }
         }
-
         return findings
     }
 
-    private fun evaluateGeneralFitness(ctx: GoalFitContext): List<GoalFitFinding> {
-        val findings = mutableListOf<GoalFitFinding>()
-
-        val present = listOf(ctx.strengthShare, ctx.hypertrophyShare, ctx.enduranceShare)
-            .count { it >= QUALITY_VARIETY_THRESHOLD_PERCENT }
-            .toFloat()
-        findings += GoalFitFinding(
-            rule = GoalFitRule.GENERAL_FITNESS_QUALITY_VARIETY,
-            severity = when {
-                present >= QUALITY_VARIETY_PASS_MIN -> GoalFitSeverity.PASS
-                present >= QUALITY_VARIETY_WARN_MIN -> GoalFitSeverity.WARN
-                else -> GoalFitSeverity.FAIL
-            },
-            actualValue = present,
-            targetMin = QUALITY_VARIETY_PASS_MIN,
-            targetMax = 3f,
-        )
-
-        findings += groupCoverageFinding(ctx, GoalFitRule.GENERAL_FITNESS_GROUP_COVERAGE)
-
-        findings += atLeastFinding(
-            rule = GoalFitRule.GENERAL_FITNESS_WEEKLY_FREQUENCY,
-            actual = ctx.sessionsPerWeek,
-            passMin = WEEKLY_FREQUENCY_PASS_MIN,
-            warnMin = WEEKLY_FREQUENCY_WARN_MIN,
-        )
-
-        val sH = ctx.strengthShare
-        val eH = ctx.enduranceShare
-        if (sH + eH > 0) {
-            val skew = maxOf(sH, eH).toFloat() / (sH + eH).toFloat()
-            findings += atMostFinding(
-                rule = GoalFitRule.GENERAL_FITNESS_WORK_BALANCE_SKEW,
-                actual = skew,
-                passMax = WORK_BALANCE_SKEW_PASS_MAX,
-                warnMax = WORK_BALANCE_SKEW_WARN_MAX,
-            )
+    /** Product heuristic: normalized group shares earn partial set credit, never measured effort. */
+    private fun groupCredits(example: ExerciseExample): Map<MuscleGroupEnum, Float>? {
+        if (example.bundles.isEmpty() || example.bundles.any { it.percentage < 0 }) {
+            return null
         }
-
-        return findings
+        val total = example.bundles.sumOf { it.percentage.toDouble() }
+        if (total <= 0.0) {
+            return null
+        }
+        val shares = mutableMapOf<MuscleGroupEnum, Float>()
+        example.bundles.forEach { bundle ->
+            val percent = (bundle.percentage.toDouble() * 100.0 / total).toFloat()
+            val group = bundle.muscle.type.group()
+            shares[group] = (shares[group] ?: 0f) + percent / 100f
+        }
+        return shares.mapValues { (_, share) ->
+            val synergist = 0.5f * smoothStep((share - 0.1f) / 0.05f)
+            val agonist = 0.5f * smoothStep((share - 0.3f) / 0.05f)
+            synergist + agonist
+        }.filterValues { it > 0f }.takeIf { it.isNotEmpty() }
     }
 
-    private fun groupCoverageFinding(ctx: GoalFitContext, rule: GoalFitRule): GoalFitFinding {
-        val coverageCount = ctx.topMuscleGroups.count { it.share > 0 }.toFloat()
+    private fun focusedGroups(goal: Goal): Set<MuscleGroupEnum> {
+        val keys = goal.personalizations
+        return buildSet {
+            if (keys.any { it in ARM_FOCUS }) {
+                add(MuscleGroupEnum.ARMS_AND_FOREARMS)
+            }
+            if (keys.any { it in SHOULDER_FOCUS }) {
+                add(MuscleGroupEnum.SHOULDER_MUSCLES)
+            }
+            if (PersonalizationKeyEnum.FOCUS_ABS_AND_CORE in keys) {
+                add(MuscleGroupEnum.ABDOMINAL_MUSCLES)
+            }
+        }
+    }
+
+    private fun schedule(goal: Goal): Schedule? {
+        val explicit = goal.personalizations.filter { it in SCHEDULE_KEYS }.distinct()
+        if (explicit.size > 1) {
+            return null
+        }
+        return when (explicit.firstOrNull()) {
+            PersonalizationKeyEnum.LOW_FREQUENCY -> Schedule(min = 1f, max = 2f)
+            PersonalizationKeyEnum.MODERATE_FREQUENCY -> Schedule(min = 3f, max = 4f)
+            PersonalizationKeyEnum.HIGH_FREQUENCY -> Schedule(min = 5f, max = null)
+            else -> if (goal.primaryGoal == GoalPrimaryGoalEnum.RETURN_TO_TRAINING) {
+                Schedule(min = 1f, max = 3f)
+            } else {
+                Schedule(min = 2f, max = null)
+            }
+        }
+    }
+
+    private fun avoidsLoadTargets(goal: Goal): Boolean {
+        return goal.personalizations.any { it in LOAD_TARGET_RESTRICTIONS }
+    }
+
+    private fun avoidsVolumeTargets(goal: Goal): Boolean {
+        return goal.personalizations.any { it in VOLUME_TARGET_RESTRICTIONS }
+    }
+
+    private fun coverageFinding(
+        rule: GoalFitRule,
+        sets: List<LoggedSet>,
+        credits: Map<String, Map<MuscleGroupEnum, Float>?>,
+        weeks: Float,
+    ): GoalFitFinding {
+        val coverage = PRIMARY_GROUPS.count { group ->
+            sets.sumOf { (credits[it.exampleId]?.get(group) ?: 0f).toDouble() } / weeks.toDouble() >= 1.0
+        }
+        return atLeast(rule = rule, actual = coverage.toFloat(), passMin = 3f, warnMin = 2f)
+    }
+
+    /** Only completed seven-day blocks are comparable; partial days at either edge are excluded. */
+    private fun completeWeeklySets(sets: List<LoggedSet>, range: DateRange): List<Float> {
+        val firstDate = if (range.from == DateTimeUtils.startOfDay(range.from)) {
+            range.from.date
+        } else {
+            range.from.date.plus(DatePeriod(days = 1))
+        }
+        val lastDate = if (range.to >= DateTimeUtils.endOfDay(range.to)) {
+            range.to.date
+        } else {
+            range.to.date.plus(DatePeriod(days = -1))
+        }
+        val completeWeeks = ((firstDate.daysUntil(lastDate) + 1) / 7).coerceAtLeast(0)
+        val counts = IntArray(completeWeeks)
+        sets.forEach { set ->
+            val offset = firstDate.daysUntil(set.date)
+            if (offset >= 0 && offset / 7 < completeWeeks) {
+                counts[offset / 7] += 1
+            }
+        }
+        return counts.map { it.toFloat() }
+    }
+
+    private fun stability(weeks: List<Float>): Float? {
+        if (weeks.size < 2) {
+            return null
+        }
+        val average = weeks.average().toFloat()
+        if (average <= 0f) {
+            return null
+        }
+        return (weeks.max() - weeks.min()) / average
+    }
+
+    private fun progression(sets: List<LoggedSet>, examples: Map<String, ExerciseExample>): Float? {
+        val trends = sets
+            .filter {
+                it.weightType != WeightTypeEnum.BODY_WEIGHT && it.externalLoad != null && it.reps <= 10 &&
+                    examples[it.exampleId]?.components is ExerciseExampleComponents.External
+            }
+            .groupBy { it.exampleId }
+            .values
+            .mapNotNull { exerciseSets ->
+                val byDate = exerciseSets.groupBy { it.date }.entries.sortedBy { it.key }
+                if (byDate.size < 3 || byDate.first().key.daysUntil(byDate.last().key) < 14) {
+                    return@mapNotNull null
+                }
+                val estimates = byDate.mapNotNull { (_, daySets) ->
+                    daySets.mapNotNull { set ->
+                        val load = set.externalLoad
+                        if (load == null) {
+                            null
+                        } else {
+                            val estimate = if (set.reps == 1) {
+                                load
+                            } else {
+                                load * (1f + set.reps.toFloat() / 30f)
+                            }
+                            estimate.takeIf { it.isFinite() && it > 0f }
+                        }
+                    }.maxOrNull()
+                }
+                if (estimates.size != byDate.size) {
+                    return@mapNotNull null
+                }
+                val half = estimates.size / 2
+                val before = median(estimates.take(half))
+                val after = median(estimates.takeLast(half))
+                val trend = (after - before) / before
+                trend.takeIf { it.isFinite() }
+            }
+        return if (trends.isEmpty()) {
+            null
+        } else {
+            median(trends)
+        }
+    }
+
+    private fun progressionFinding(rule: GoalFitRule, trend: Float): GoalFitFinding {
+        return atLeast(rule = rule, actual = trend, passMin = 0f, warnMin = -0.05f)
+    }
+
+    private fun frequencyFinding(rule: GoalFitRule, actual: Float, schedule: Schedule): GoalFitFinding {
+        val maximum = schedule.max
         val severity = when {
-            coverageCount >= GROUP_COVERAGE_PASS_MIN -> GoalFitSeverity.PASS
-            coverageCount >= GROUP_COVERAGE_WARN_MIN -> GoalFitSeverity.WARN
+            actual >= schedule.min && (maximum == null || actual <= maximum) -> GoalFitSeverity.PASS
+            actual >= schedule.min * 0.5f && (maximum == null || actual <= maximum + 1f) -> GoalFitSeverity.WARN
             else -> GoalFitSeverity.FAIL
         }
         return GoalFitFinding(
             rule = rule,
             severity = severity,
-            actualValue = coverageCount,
-            targetMin = GROUP_COVERAGE_PASS_MIN,
-            targetMax = MuscleGroupEnum.entries.size.toFloat(),
+            actualValue = actual,
+            targetMin = schedule.min,
+            targetMax = maximum,
         )
     }
 
-    private fun evaluateLoseFat(ctx: GoalFitContext): List<GoalFitFinding> {
-        val findings = mutableListOf<GoalFitFinding>()
-
-        findings += atLeastFinding(
-            rule = GoalFitRule.LOSE_FAT_SESSION_ADHERENCE,
-            actual = ctx.sessionsPerWeek,
-            passMin = LOSE_FAT_SESSION_PASS_MIN,
-            warnMin = LOSE_FAT_SESSION_WARN_MIN,
-        )
-
-        findings += atLeastFinding(
-            rule = GoalFitRule.LOSE_FAT_RESISTANCE_PRESENCE,
-            actual = ctx.resistanceSetsPerWeek,
-            passMin = LOSE_FAT_RESISTANCE_PASS_MIN,
-            warnMin = LOSE_FAT_RESISTANCE_WARN_MIN,
-        )
-
-        if (ctx.weeklyVolumeSeries.size >= 2) {
-            val first = ctx.weeklyVolumeSeries.firstOrNull { it > 0f }
-            val last = ctx.weeklyVolumeSeries.lastOrNull { it > 0f }
-            if (first != null && last != null && first > 0f) {
-                findings += atLeastFinding(
-                    rule = GoalFitRule.LOSE_FAT_WEEKLY_VOLUME_TREND,
-                    actual = last / first,
-                    passMin = LOSE_FAT_VOLUME_TREND_PASS_MIN,
-                    warnMin = LOSE_FAT_VOLUME_TREND_WARN_MIN,
-                )
-            }
-        }
-
-        return findings
-    }
-
-    private fun evaluateReturnToTraining(ctx: GoalFitContext): List<GoalFitFinding> {
-        val findings = mutableListOf<GoalFitFinding>()
-
-        val freq = ctx.sessionsPerWeek
-        findings += GoalFitFinding(
-            rule = GoalFitRule.RETURN_TO_TRAINING_WEEKLY_FREQUENCY,
-            severity = if (freq in RTT_FREQUENCY_PASS_MIN..RTT_FREQUENCY_PASS_MAX) {
-                GoalFitSeverity.PASS
-            } else {
-                GoalFitSeverity.WARN
-            },
-            actualValue = freq,
-            targetMin = RTT_FREQUENCY_PASS_MIN,
-            targetMax = RTT_FREQUENCY_PASS_MAX,
-        )
-
-        if (ctx.weeklyVolumeSeries.size >= 2) {
-            val median = medianFloat(ctx.weeklyVolumeSeries)
-            val maxWeekly = ctx.weeklyVolumeSeries.maxOrNull()
-            if (median > 0f && maxWeekly != null) {
-                findings += atMostFinding(
-                    rule = GoalFitRule.RETURN_TO_TRAINING_LOAD_RAMP_GENTLE,
-                    actual = maxWeekly / median,
-                    passMax = RTT_LOAD_RAMP_PASS_MAX,
-                    warnMax = RTT_LOAD_RAMP_WARN_MAX,
-                )
-            }
-        }
-
-        // Strict ≥85% e1RM share — skip when no top set could be evaluated.
-        ctx.topSetHeavyShareAt85?.let { share ->
-            findings += atMostFinding(
-                rule = GoalFitRule.RETURN_TO_TRAINING_INTENSITY_FLOOR,
-                actual = share,
-                passMax = RTT_INTENSITY_FLOOR_PASS_MAX,
-                warnMax = RTT_INTENSITY_FLOOR_WARN_MAX,
-            )
-        }
-
-        return findings
-    }
-
-    private fun atLeastFinding(
+    private fun atLeast(
         rule: GoalFitRule,
         actual: Float,
         passMin: Float,
         warnMin: Float,
-        context: List<String> = emptyList(),
+        context: List<MuscleGroupEnum> = emptyList(),
     ): GoalFitFinding {
         val severity = when {
             actual >= passMin -> GoalFitSeverity.PASS
@@ -1437,13 +537,7 @@ public class GoalFollowingUseCase(
         )
     }
 
-    private fun atMostFinding(
-        rule: GoalFitRule,
-        actual: Float,
-        passMax: Float,
-        warnMax: Float,
-        context: List<String> = emptyList(),
-    ): GoalFitFinding {
+    private fun atMost(rule: GoalFitRule, actual: Float, passMax: Float, warnMax: Float): GoalFitFinding {
         val severity = when {
             actual <= passMax -> GoalFitSeverity.PASS
             actual <= warnMax -> GoalFitSeverity.WARN
@@ -1455,433 +549,69 @@ public class GoalFollowingUseCase(
             actualValue = actual,
             targetMin = null,
             targetMax = passMax,
-            context = context,
         )
     }
 
-    private fun repBucketSharePercent(ctx: GoalFitContext, bucket: RepBucket): Float {
-        val total = ctx.workingSetCount
-        if (total <= 0) return 0f
-        val n = ctx.repRangeBuckets[bucket] ?: 0
-        return (n.toFloat() / total.toFloat()) * 100f
+    private fun smoothStep(value: Float): Float {
+        val fraction = value.coerceIn(0f, 1f)
+        return fraction * fraction * (3f - 2f * fraction)
     }
 
-    /**
-     * (max − min) / mean of [series] — null when the series has fewer than two
-     * non-zero weeks (the "did the user even train?" question belongs to the
-     * adherence rule, not the stability rule).
-     */
-    private fun volumeStabilityRatio(series: List<Float>): Float? {
-        if (series.size < 2) return null
-        if (series.count { it > 0f } < 2) return null
-        val max = series.maxOrNull() ?: return null
-        val min = series.minOrNull() ?: return null
-        val mean = series.average().toFloat()
-        if (mean <= 0f || !mean.isFinite()) return null
-        val r = (max - min) / mean
-        return if (r.isFinite()) r else null
-    }
-
-    // -------------------------------------------------------------------------
-    // Math helpers
-    // -------------------------------------------------------------------------
-
-    private fun setStimulus(weight: Float, reps: Int, pct: Float): Float {
-        val base = baseSetStimulus(weight, reps)
-        if (base <= EPS) return 0f
-        if (!pct.isFinite()) return base
-
-        val p = pct.coerceIn(0f, 1.2f)
-        val t = (p - PCT_BOOST_CENTER) / PCT_BOOST_HALFWIDTH
-        val boost = PCT_BOOST_MIN + PCT_BOOST_RANGE * smoothStep(t)
-
-        val v = base * boost
-        return if (v.isFinite() && v > EPS) v else 0f
-    }
-
-    private fun baseSetStimulus(weight: Float, reps: Int): Float {
-        val r = reps.coerceAtLeast(0)
-        if (r == 0) return 0f
-        val w = weight.coerceAtLeast(0f)
-
-        val repsTerm = sqrt(r.toFloat())
-        val weightTerm = ln(1.0 + w.toDouble()).toFloat()
-        val intensity = 1f + (weightTerm / (STIMULUS_LN_WEIGHT_SCALE * STIMULUS_LN_WEIGHT_FRACTION))
-
-        val v = repsTerm * intensity
-        return if (v.isFinite() && v > EPS) v else 0f
-    }
-
-    private fun estimateExerciseOneRm(sets: List<LiftSet>): Float {
-        val working = pickWorkingSets(sets)
-        val e1rms = working
-            .map { epleyE1rm(it.weight, it.reps) }
-            .filter { it.isFinite() && it > EPS }
-            .sorted()
-        if (e1rms.isEmpty()) return 0f
-        val p = percentileSorted(e1rms, HEAVY_E1RM_PERCENTILE)
-        return if (p.isFinite() && p > EPS) p else 0f
-    }
-
-    /**
-     * Strict working-set picker — returns sets at or above
-     * [WORKING_MIN_WEIGHT_FRACTION] of the heaviest weight in the list.
-     * When the user did not perform [WORKING_MIN_SETS] qualifying sets this
-     * returns an empty list — callers must omit the metric rather than
-     * infer a 1RM from warm-ups.
-     *
-     * Reference is the **max** weight rather than the previous median of
-     * the top-3 — when the user did 5×100 warm-up + 1×200 working, the
-     * top-3 was `[200, 100, 100]` and its median was `100`, dragging the
-     * threshold to 75 and letting every warm-up slip in. Anchoring on max
-     * (`200 → threshold 150`) cleanly excludes warm-ups; the trade-off is
-     * that a single freak-max attempt with no companion working sets
-     * (e.g. `1×300 + 3×200`) now falls below [WORKING_MIN_SETS] and
-     * returns empty — preferable to inferring an e1RM from a mix of one
-     * PR-attempt and warm-ups.
-     */
-    private fun pickWorkingSets(sets: List<LiftSet>): List<LiftSet> {
-        if (sets.isEmpty()) return emptyList()
-        val weights = sets.asSequence()
-            .map { it.weight }
-            .filter { it.isFinite() && it > EPS }
-            .toList()
-        if (weights.isEmpty()) return emptyList()
-
-        val ref = weights.max()
-        if (!ref.isFinite() || ref <= EPS) return emptyList()
-
-        val threshold = ref * WORKING_MIN_WEIGHT_FRACTION
-        val picked = sets.filter { it.weight.isFinite() && it.weight >= threshold }
-        return if (picked.size >= WORKING_MIN_SETS) picked else emptyList()
-    }
-
-    private fun epleyE1rm(weight: Float, reps: Int): Float {
-        val r = reps.coerceIn(1, ONE_RM_REPS_CAP)
-        val mult = 1f + ((r - 1).toFloat() / 30f)
-        val v = weight * mult
-        return if (v.isFinite() && v > 0f) v else 0f
-    }
-
-    private fun medianFloat(values: List<Float>): Float {
-        if (values.isEmpty()) return 0f
+    private fun median(values: List<Float>): Float {
         val sorted = values.sorted()
-        val n = sorted.size
-        val mid = n / 2
-        return if (n % 2 == 1) sorted[mid] else (sorted[mid - 1] + sorted[mid]) / 2f
-    }
-
-    private fun percentileSorted(sorted: List<Float>, q: Float): Float {
-        val n = sorted.size
-        if (n == 0) return 0f
-        if (n == 1) return sorted[0]
-
-        val qq = q.coerceIn(0f, 1f)
-        val idx = (qq * (n - 1)).toDouble()
-        val i0 = idx.toInt().coerceIn(0, n - 1)
-        val i1 = (i0 + 1).coerceIn(0, n - 1)
-        val t = (idx - i0.toDouble()).toFloat()
-
-        val a = sorted[i0]
-        val b = sorted[i1]
-        val v = a + (b - a) * t
-        return if (v.isFinite()) v else a
-    }
-
-    private fun smoothStep(x01: Float): Float {
-        val x = x01.coerceIn(0f, 1f)
-        return x * x * (3f - 2f * x)
-    }
-
-    private fun clamp01(v: Float): Float = if (v.isFinite()) v.coerceIn(0f, 1f) else 0f
-
-    private fun safe(v: Float): Float = if (v.isFinite() && v > 0f) v else 0f
-
-    private fun log1pSafe(v: Float): Float {
-        if (!v.isFinite() || v <= 0f) return 0f
-        return ln(1.0 + v.toDouble()).toFloat()
-    }
-
-    // -------------------------------------------------------------------------
-    // Internal types
-    // -------------------------------------------------------------------------
-
-    private data class Analysis(
-        val raw: Raw,
-        val sessionCount: Int,
-        val strengthShare: Int,
-        val hypertrophyShare: Int,
-        val enduranceShare: Int,
-        val findings: List<GoalFitFinding>,
-    ) {
-        val isSilent: Boolean
-            get() = raw.totalWork <= EPS ||
-                    (strengthShare + hypertrophyShare + enduranceShare) == 0
-
-        companion object {
-            val EMPTY = Analysis(
-                raw = Raw.ZERO,
-                sessionCount = 0,
-                strengthShare = 0,
-                hypertrophyShare = 0,
-                enduranceShare = 0,
-                findings = emptyList(),
-            )
+        val middle = sorted.size / 2
+        return if (sorted.size % 2 == 1) {
+            sorted[middle]
+        } else {
+            ((sorted[middle - 1].toDouble() + sorted[middle].toDouble()) / 2.0).toFloat()
         }
     }
 
-    private data class Raw(
-        val strengthShare: Float,
-        val hypertrophyShare: Float,
-        val enduranceShare: Float,
-        val compoundRatio: Float,
-        val freeWeightRatio: Float,
-        val specializationTop2Percent: Float,
-        val activity: Float,
-        val totalWork: Float,
-    ) {
-        companion object {
-            val ZERO = Raw(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
-        }
-    }
-
-    private data class DimensionWork(
-        val strength: Float,
-        val hypertrophy: Float,
-        val endurance: Float,
-    )
-
-    private data class SessionStats(
-        val training: Training,
-        val stats: List<ExerciseStats>,
-    )
-
-    private data class ExerciseStats(
-        val exercise: Exercise,
-        val exampleId: String,
-        val sets: List<SetStats>,
-        val stimulus: Float,
-    )
-
-    private data class SetStats(
-        val weight: Float,
-        val reps: Int,
-        val pct: Float,
-        val stimulus: Float,
-    )
-
-    private data class LiftSet(
-        val weight: Float,
-        val reps: Int,
-    )
-
-    private data class WorkingSet(
+    private data class LoggedSet(
         val trainingId: String,
-        val trainingDate: LocalDate,
+        val date: LocalDate,
         val exampleId: String,
-        val category: CategoryEnum?,
-        val weight: Float,
+        val category: CategoryEnum,
+        val weightType: WeightTypeEnum,
         val reps: Int,
-        val externalLoad: Float,
-        val stimulus: Float = 0f,
-    ) {
-        fun repBucket(): RepBucket = when {
-            reps <= 5 -> RepBucket.STRENGTH_1_5
-            reps <= 15 -> RepBucket.HYPERTROPHY_6_15
-            else -> RepBucket.ENDURANCE_16_PLUS
-        }
-    }
-
-    private data class GoalFitContext(
-        val sessionsPerWeek: Float,
-        val workingSetCount: Int,
-        val setsPerWeekPerGroup: Map<MuscleGroupEnum, Float>,
-        val sessionsPerWeekPerGroup: Map<MuscleGroupEnum, Float>,
-        val repRangeBuckets: Map<RepBucket, Int>,
-        val topSetReps: List<Int>,
-        val topSetIntensityShares: Map<IntensityBand, Float>,
-        /** % of top sets at ≥85% e1RM. Null when no top set could be evaluated. */
-        val topSetHeavyShareAt85: Float?,
-        val e1RMTrendByExercise: Map<String, Float>,
-        val weeklyVolumeSeries: List<Float>,
-        val compoundLiftPresence: Map<CompoundLiftKind, String>,
-        val resistanceSetsPerWeek: Float,
-        val compoundWorkingSetCount: Int,
-        val isolationWorkingSetCount: Int,
-        val topMuscleGroups: List<TopMuscleGroupContribution>,
-        val topExerciseExampleIds: List<String>,
-        val strengthShare: Int,
-        val hypertrophyShare: Int,
-        val enduranceShare: Int,
+        val externalLoad: Float?,
     )
 
-    private enum class RepBucket { STRENGTH_1_5, HYPERTROPHY_6_15, ENDURANCE_16_PLUS }
-
-    private enum class IntensityBand { HEAVY_80_PLUS, MODERATE_60_79, LIGHT_BELOW_60 }
-
-    // -------------------------------------------------------------------------
-    // Constants
-    // -------------------------------------------------------------------------
+    private data class Schedule(val min: Float, val max: Float?)
 
     private companion object {
-        private const val EPS: Float = 1e-3f
-
-        // Score weighting
-        private const val SPEC_CORE_WEIGHT = 0.70f
-        private const val SPEC_QUALITY_WEIGHT = 0.30f
-        private const val ACTIVITY_QUALITY_SATURATION = 3f
-        private const val SPECIALIZATION_SATURATION_PERCENT = 80f
-        private const val SUPPRESSED_AXIS_PENALTY_FULL = 0.50f
-
-        // RTT scoring band
-        private const val RTT_WORK_FLOOR = 20f
-        private const val RTT_WORK_PEAK = 30f
-        private const val RTT_WORK_CEILING = 90f
-
-        // Top-N caps for the contribution lists
-        private const val TOP_EXERCISES_LIMIT = 5
-        private const val LOAD_PROGRESSION_TOP_N = 5
-
-        // Session-length resolution
-        private const val MIN_RECORDED_MINUTES = 5f
-        private const val MIN_ESTIMATED_MINUTES = 10f
-        private const val MAX_ESTIMATED_MINUTES = 180f
-        private const val MINUTES_PER_SET_ESTIMATE = 1.4f
-
-        /** Sessions with zero activity get omitted; activity > 0 sessions carry at least this weight. */
-        private const val SESSION_WEIGHT_FLOOR = 0.25f
-
-        // Stimulus formula
-        private const val STIMULUS_LN_WEIGHT_SCALE = 8f
-        private const val STIMULUS_LN_WEIGHT_FRACTION = 0.55f
-        private const val PCT_BOOST_MIN = 0.75f
-        private const val PCT_BOOST_RANGE = 0.50f
-        private const val PCT_BOOST_CENTER = 0.65f
-        private const val PCT_BOOST_HALFWIDTH = 0.25f
-
-        // 1RM estimation
-        private const val WORKING_MIN_WEIGHT_FRACTION = 0.75f
-        private const val WORKING_MIN_SETS = 2
-        private const val ONE_RM_REPS_CAP = 12
-        private const val HEAVY_E1RM_PERCENTILE = 0.90f
-
-        // Goal-fit input — non-rule constants
-        private const val BODYWEIGHT_FLOOR_KG = 5f
-        private const val E1RM_TREND_MIN_SESSIONS = 3
-        private const val HEAVY_FRACTION = 0.80f
-        private const val MODERATE_FRACTION = 0.60f
-        private const val RTT_INTENSITY_FLOOR_FRACTION = 0.85f
-        private const val AGONIST_GROUP_THRESHOLD = 0.35f
-        private const val SYNERGIST_GROUP_THRESHOLD = 0.15f
-        private const val AGONIST_SET_WEIGHT = 1.0f
-        private const val SYNERGIST_SET_WEIGHT = 0.5f
-
-        /**
-         * Width of the smooth ramp leading up to each set-credit tier.
-         * `groupShareToCredit` uses a `smoothStep` that climbs from 0 over
-         * `[threshold − BAND, threshold]` so bundles just shy of a cliff
-         * pick up partial credit; at and above each threshold the function
-         * still produces exactly the original tier value.
-         */
-        private const val SET_CREDIT_BAND_WIDTH = 0.05f
-        private const val TOP_SET_HEAVY_REPS_MAX = 8
-
-        // Muscle-bundle distribution constants live in [MuscleBundleMath] —
-        // shared source of truth with `MuscleLoadingSummaryUseCase`.
-
-        // Goal-fit rule thresholds — PASS / WARN / FAIL boundaries (PASS-side inclusive)
-        private const val HYPERTROPHY_REP_RANGE_PASS_MIN = 60f
-        private const val HYPERTROPHY_REP_RANGE_WARN_MIN = 40f
-
-        // BUILD_MUSCLE weekly sets / frequency.
-        //
-        // Primary anatomical groups (chest, back, legs) target the
-        // hypertrophy MV–MAV band that the meta-analytic literature
-        // (Schoenfeld 2017; 2019) consolidates around: ≥10 weekly direct
-        // sets to clear the minimum effective volume, with diminishing
-        // returns past ~20. WARN edges relax that band by half a tier on
-        // either side so an off-week (5..9) and over-shooting weeks
-        // (21..25) do not collapse to FAIL.
-        private const val PRIMARY_SETS_PASS_MIN = 10f
-        private const val PRIMARY_SETS_PASS_MAX = 20f
-        private const val PRIMARY_SETS_WARN_LOW_MIN = 5f
-        private const val PRIMARY_SETS_WARN_HIGH_MAX = 25f
-        private const val PRIMARY_FREQUENCY_PASS_MIN = 1.5f
-        private const val PRIMARY_FREQUENCY_WARN_MIN = 1.0f
-
-        // Accessory groups (arms, shoulders, abs) shift both bounds down
-        // because synergist recruitment on compound work already covers a
-        // chunk of weekly volume — `exampleGroupContributions` credits
-        // bench-press-style triceps activation (~15% bundle share) as 0.5
-        // synergist set, so a programme with 8 weekly compound sets
-        // accumulates ~4 incidental ARM sets before any direct work.
-        // The PASS band (6..16) is therefore tuned for *direct* work only,
-        // and is intended to keep the combined direct + incidental volume
-        // inside the same MV–MAV envelope as primaries.
-        //
-        // Ratios chosen against the primary band: floor 60% (10 → 6), top
-        // 80% (20 → 16). WARN edges scale proportionally so the tier
-        // shapes stay symmetric between the two group classes.
-        private const val ACCESSORY_SETS_PASS_MIN = 6f
-        private const val ACCESSORY_SETS_PASS_MAX = 16f
-        private const val ACCESSORY_SETS_WARN_LOW_MIN = 3f
-        private const val ACCESSORY_SETS_WARN_HIGH_MAX = 22f
-        private const val ACCESSORY_FREQUENCY_PASS_MIN = 1.0f
-        private const val ACCESSORY_FREQUENCY_WARN_MIN = 0.5f
-
-        private const val LOAD_PROGRESSION_PASS_MIN = 0.01f
-        private const val LOAD_PROGRESSION_WARN_MIN = -0.01f
-
-        private const val COMPOUND_PRESENCE_PASS_MIN = 3f
-        private const val COMPOUND_PRESENCE_WARN_MIN = 2f
-        private const val HEAVY_INTENSITY_PASS_MIN = 40f
-        private const val HEAVY_INTENSITY_WARN_MIN = 20f
-        private const val STRENGTH_REP_RANGE_PASS_MIN = 50f
-        private const val STRENGTH_REP_RANGE_WARN_MIN = 30f
-        private const val COMPOUND_TO_ISOLATION_PASS_MIN = 2.0f
-        private const val COMPOUND_TO_ISOLATION_WARN_MIN = 1.0f
-        private const val STRENGTH_PROGRESSION_PASS_MIN = 0.03f
-        private const val STRENGTH_PROGRESSION_WARN_MIN = 0.0f
-
-        private const val WORK_BALANCE_SKEW_PASS_MAX = 0.70f
-        private const val WORK_BALANCE_SKEW_WARN_MAX = 0.85f
-        private const val GROUP_COVERAGE_PASS_MIN = 5f
-        private const val GROUP_COVERAGE_WARN_MIN = 4f
-        private const val WEEKLY_FREQUENCY_PASS_MIN = 2.0f
-        private const val WEEKLY_FREQUENCY_WARN_MIN = 1.5f
-        private const val WEEKLY_VOLUME_STABILITY_PASS_MAX = 0.30f
-        private const val WEEKLY_VOLUME_STABILITY_WARN_MAX = 0.60f
-
-        private const val QUALITY_VARIETY_THRESHOLD_PERCENT = 15
-        private const val QUALITY_VARIETY_PASS_MIN = 3f
-        private const val QUALITY_VARIETY_WARN_MIN = 2f
-
-        private const val LOSE_FAT_SESSION_PASS_MIN = 3.0f
-        private const val LOSE_FAT_SESSION_WARN_MIN = 2.0f
-        private const val LOSE_FAT_RESISTANCE_PASS_MIN = 6f
-        private const val LOSE_FAT_RESISTANCE_WARN_MIN = 1f
-        private const val LOSE_FAT_VOLUME_TREND_PASS_MIN = 0.85f
-        private const val LOSE_FAT_VOLUME_TREND_WARN_MIN = 0.70f
-
-        private const val RTT_FREQUENCY_PASS_MIN = 1.0f
-        private const val RTT_FREQUENCY_PASS_MAX = 3.0f
-        private const val RTT_LOAD_RAMP_PASS_MAX = 1.5f
-        private const val RTT_LOAD_RAMP_WARN_MAX = 2.0f
-        private const val RTT_INTENSITY_FLOOR_PASS_MAX = 10f
-        private const val RTT_INTENSITY_FLOOR_WARN_MAX = 25f
-
-        /** Primary anatomical groups for hypertrophy programming. */
-        private val PRIMARY_GROUPS: Set<MuscleGroupEnum> = setOf(
+        private val PRIMARY_GROUPS = setOf(
             MuscleGroupEnum.CHEST_MUSCLES,
             MuscleGroupEnum.BACK_MUSCLES,
             MuscleGroupEnum.LEGS,
         )
-
-        /** Accessory groups — small movers that piggy-back on primary work. */
-        private val ACCESSORY_GROUPS: Set<MuscleGroupEnum> = setOf(
-            MuscleGroupEnum.ARMS_AND_FOREARMS,
-            MuscleGroupEnum.SHOULDER_MUSCLES,
-            MuscleGroupEnum.ABDOMINAL_MUSCLES,
+        private val SCHEDULE_KEYS = setOf(
+            PersonalizationKeyEnum.LOW_FREQUENCY,
+            PersonalizationKeyEnum.MODERATE_FREQUENCY,
+            PersonalizationKeyEnum.HIGH_FREQUENCY,
+        )
+        private val ARM_FOCUS = setOf(
+            PersonalizationKeyEnum.FOCUS_ARMS,
+            PersonalizationKeyEnum.FOCUS_FOREARMS_AND_GRIP,
+        )
+        private val SHOULDER_FOCUS = setOf(
+            PersonalizationKeyEnum.FOCUS_SHOULDERS,
+            PersonalizationKeyEnum.FOCUS_REAR_DELTS,
+        )
+        private val LOAD_TARGET_RESTRICTIONS = setOf(
+            PersonalizationKeyEnum.AVOID_HEAVY_LOADING,
+            PersonalizationKeyEnum.AVOID_HIGH_INTENSITY,
+            PersonalizationKeyEnum.NEEDS_SUPPORTED_MOVEMENTS,
+            PersonalizationKeyEnum.PREFER_MACHINES,
+            PersonalizationKeyEnum.RECOVERING_FROM_INJURY,
+            PersonalizationKeyEnum.RECOVERY_FOCUS,
+        )
+        private val VOLUME_TARGET_RESTRICTIONS = setOf(
+            PersonalizationKeyEnum.LOWER_VOLUME,
+            PersonalizationKeyEnum.RECOVERING_FROM_INJURY,
+            PersonalizationKeyEnum.RECOVERY_FOCUS,
+            PersonalizationKeyEnum.FATIGUE_MANAGEMENT,
+            PersonalizationKeyEnum.PHASE_DELOAD,
         )
     }
 }

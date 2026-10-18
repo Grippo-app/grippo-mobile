@@ -1,6 +1,7 @@
 package com.grippo.data.features.api.training
 
 import com.grippo.data.features.api.metrics.engagement.models.TrainingDigestResult
+import com.grippo.data.features.api.metrics.engagement.selectTrainingsInRange
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.api.training.models.TrainingTimeline
 import com.grippo.data.features.api.training.models.TrainingTimelinePosition
@@ -17,24 +18,29 @@ public class TrainingTimelineUseCase {
         range: DateRange,
         digest: TrainingDigestResult? = null,
     ): TrainingTimeline {
-        val nonEmpty = trainings.filter { it.exercises.isNotEmpty() }
-        if (nonEmpty.isEmpty()) return TrainingTimeline(emptyList())
+        val selected = selectTrainingsInRange(trainings = trainings, range = range)
+            .sortedWith(compareByDescending<Training> { it.createdAt }.thenBy { it.id })
+        if (selected.isEmpty()) {
+            return TrainingTimeline(emptyList())
+        }
 
         val days = range.from.date.daysUntil(range.to.date) + 1
-        val values = when {
-            days <= 1 -> nonEmpty.toDailyTimeline()
-            days <= 7 -> nonEmpty.toWeeklyTimeline(
-                summary = requireNotNull(digest) {
-                    "Digest is required for weekly timeline range."
-                }
-            )
+        val values = if (days == 1) {
+            selected.toDailyTimeline()
+        } else {
+            val summary = requireNotNull(digest) {
+                "Digest is required for a timeline spanning multiple days."
+            }
+            require(summary.range == range) { "Digest range must match the timeline range." }
 
-            else -> nonEmpty.toMonthlyTimeline(
-                digest = requireNotNull(digest) {
-                    "Digest is required for monthly timeline range."
-                },
-                month = LocalDate(range.from.date.year, range.from.date.month, 1),
-            )
+            if (days <= 7) {
+                selected.toWeeklyTimeline(summary)
+            } else {
+                selected.toMonthlyTimeline(
+                    digest = summary,
+                    month = LocalDate(range.from.date.year, range.from.date.month, 1),
+                )
+            }
         }
 
         return TrainingTimeline(values)
@@ -55,6 +61,7 @@ public class TrainingTimelineUseCase {
             sortedDates.forEach { date ->
                 val trainingsForDate = groupedByDate.getValue(date)
                 trainingsForDate.forEachIndexed { index, training ->
+                    val duration = training.duration.takeIf { it.isFinite() && !it.isNegative() }
                     val position = when {
                         trainingsForDate.size == 1 -> TrainingTimelinePosition.SINGLE
                         index == 0 -> TrainingTimelinePosition.FIRST
@@ -65,7 +72,7 @@ public class TrainingTimelineUseCase {
                     add(
                         TrainingTimelineValue.DateTime(
                             createdAt = training.createdAt,
-                            duration = training.duration,
+                            duration = duration,
                             trainingId = training.id,
                             position = position,
                             key = "date-${training.id}",
@@ -81,13 +88,13 @@ public class TrainingTimelineUseCase {
     private fun List<Training>.toWeeklyTimeline(
         summary: TrainingDigestResult,
     ): List<TrainingTimelineValue> {
-        val groupedByDate = sortedByDescending { it.createdAt }.groupBy { it.createdAt.date }
+        val groupedByDate = groupBy { it.createdAt.date }
         val sortedDates = groupedByDate.keys.sortedDescending()
 
         val values = mutableListOf<TrainingTimelineValue>()
         values += TrainingTimelineValue.WeeklySummary(
             summary = summary,
-            key = "weekly-summary-${summary.start}",
+            key = "weekly-summary-${summary.range.from}-${summary.range.to}",
         )
 
         sortedDates.forEachIndexed { index, date ->
@@ -101,7 +108,7 @@ public class TrainingTimelineUseCase {
 
             values += TrainingTimelineValue.WeeklyTrainingsDay(
                 date = date,
-                trainings = trainingsForDate.sortedByDescending { it.createdAt },
+                trainings = trainingsForDate,
                 position = position,
                 key = "weekly-day-$date",
             )
@@ -125,7 +132,7 @@ public class TrainingTimelineUseCase {
         )
 
         sortedDates.forEachIndexed { index, date ->
-            val trainingsForDate = groupedByDate.getValue(date).sortedBy { it.createdAt }
+            val trainingsForDate = groupedByDate.getValue(date)
             val position = when {
                 sortedDates.size == 1 -> TrainingTimelinePosition.SINGLE
                 index == 0 -> TrainingTimelinePosition.FIRST
@@ -149,7 +156,9 @@ public class TrainingTimelineUseCase {
     private fun Training.toTrainingTimelineValues(
         position: TrainingTimelinePosition,
     ): List<TrainingTimelineValue> {
-        if (exercises.isEmpty()) return emptyList()
+        if (exercises.isEmpty()) {
+            return emptyList()
+        }
 
         val result = mutableListOf<TrainingTimelineValue>()
         when (exercises.size) {

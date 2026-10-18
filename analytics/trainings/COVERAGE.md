@@ -33,14 +33,14 @@ Root and main containers keep their null hooks.
 | onTrainingMenuClick(id) | TrainingMenuClicked / `trainings_training_menu_clicked` | No guard; entity ID not encoded |
 | Menu `onResult` | DeleteSelected / EditSelected / DetailsSelected (`trainings_delete_selected`, `trainings_edit_selected`, `trainings_details_selected`) | Accepted menu result before the existing delete command, edit navigation or overview |
 | onExerciseClick(id) | ExerciseClicked / `trainings_exercise_clicked` | No exercise ID |
-| onDailyDigestViewStats | DigestClicked / `trainings_digest_clicked` | Opens statistics with the existing business range; range not encoded |
+| onDailyDigestViewStats | DigestClicked / `trainings_digest_clicked` | Opens statistics with `period.effectiveRange(date.from, limitations)`, matching refresh, observation, calendar and digest; range not encoded |
 | onSelectPeriod(id) | DailyPeriodSelected / MonthlyPeriodSelected | Only after the same-period and unknown-ID rejections |
 | onOpenDateSelector | DatePickerClicked / MonthPickerClicked | The current mode selects the picker |
 | Date/MonthPicker `onResult` | DateConfirmed / MonthConfirmed | Accepted result, including an unchanged value (observed accepted result; an unchanged anchor leaves state untouched and triggers no new request); no date encoded |
 | Next/Previous arrows → shiftDate(±1) | NextDateSelected / PreviousDateSelected | After coercion into the limitations, rejected only when the shifted range equals the current one; a clipped range that still differs does emit |
 | onOpenDaily(date) | DailySelected / `trainings_daily_selected` | No VM guard; the UI permits only current-month days with training records; switches to Daily directly |
 | onBack | DismissRequested / `trainings_dismiss_requested` | Leaf callback only; the container forwards navigation without a synthetic event |
-| rangeFlow (`period.effectiveRange(date.from, limitations)`, distinctUntilChanged) → `mapLatest` under the Trainings loader | RefreshTrainings / `trainings_task_*` {trainings_operation = refresh_trainings} | Entire `getTrainings(range).getOrThrow()` block (Result<Unit>); an unchanged effective range does not retrigger from presentation rebuilds |
+| rangeFlow (`period.effectiveRange(date.from, limitations)`, distinctUntilChanged) → `mapLatest` → refreshTrainings, per-request safeLaunch under the Trainings loader | RefreshTrainings / `trainings_task_*` {trainings_operation = refresh_trainings} | Entire `getTrainings(range).getOrThrow()` block (Result<Unit>); an unchanged effective range does not retrigger from presentation rebuilds. A failed request reaches the standard error pipeline without terminating later range refreshes; no automatic retry. Range/lifecycle cancellation cancels and joins the request before replacing the loader |
 | deleteTraining(id) safeLaunch | DeleteTraining / `trainings_task_*` {delete_training} | Entire `DeleteTrainingUseCase.execute(id).getOrThrow()` block |
 
 All 16 interaction schemas are parameterless (`trainings_training_menu_clicked`,
@@ -68,11 +68,33 @@ navigation, so changed ranges never show stale items until the DAO emits.
 ## Omissions and privacy
 
 Dedicated dialog views/closes and dismissal reasons, DAO observation operations,
-local digest/timeline formatting, referrers/flow attribution, transition events
-and programmatic restore clicks are not tracked. No raw dates, inputs, lengths,
+local digest/timeline calculations and formatting, referrers/flow attribution,
+transition events and programmatic restore clicks are not tracked. Digest selection
+is inclusive by `createdAt`; every selected saved session counts, even when its
+exercise relations are unavailable. Saved duration and volume supply the totals;
+invalid negative/nonfinite source values make that metric unavailable instead of
+producing a partial sum. Sets count only available mapped exercise details and are labelled Available sets, including zero; no raw relation count or completeness flag is retained; active days count distinct creation dates. Average volume is the
+Double-precision sum divided by session count and is absent for an empty selection.
+The exact `DateRange` survives mapping; read-only total formatters preserve recorded
+zero and multi-day durations. No raw dates, inputs, lengths,
 entity IDs, measurements, secrets, exception messages or request bodies are sent.
 Monthly's effective range ignores the limitations while Daily coerces its request
 range; this is business behavior, not telemetry.
+
+The digest change leaves Trainings events, operations, models, parameters, schemas,
+encoders, screen identities/hooks, tracking arguments and placement, consent and
+transport unchanged. Live admin synchronization is therefore not triggered.
+
+The refresh error-boundary change moves `trackOperation(RefreshTrainings)` into
+the per-request `safeLaunch`; this placement change triggers live admin
+reconciliation for `trainings_task_*` and their consumers, despite unchanged
+operation codes and schemas. Scoped live reconciliation retained the existing
+mobile event-family diagnostics and terminal-duration metric without admin writes.
+Plural `trainings_operation` remains deliberately unregistered, so the saved report
+cannot separate refresh_trainings from delete_training; singular training_operation
+and home_operation are different contracts. No retry, refresh-only success rate or
+current-APK SDK receipt is claimed. The root [admin synchronization record](../COVERAGE.md#live-ga4-setup-review--2026-10-14)
+owns the verified consumer mapping and delivery limits.
 
 ## Preservation inventory
 
@@ -82,9 +104,10 @@ range; this is business behavior, not telemetry.
 | Same | `date` (DateRange) incl. accepted picker results, arrow and day selection | Preserve | Same key; serializable DateRange; no default, cannot be elided | The dynamic current-month `Monthly().defaultRange()` applies only without a saved draft; picker results (`applyAnchor`), arrows and day taps all write this field |
 | Same | `limitations` | Rebuild | `@Transient`; `DateTimeUtils.trailingYear()` | Recomputed per construction |
 | Same | Daily `items` | Rebuild | `@Transient`; `observeTrainings` plus digest/timeline use cases | Cleared by `selectRange` |
-| Same | Monthly `monthReference`, `digest`, `weekDayLabels`, `weeks` | Rebuild | `@Transient`; `Monthly.from(range, timeline)` | `selectRange` builds the saved-month grid before DAO data arrives |
+| Same | Monthly `monthReference`, `digest`, `weeks` | Rebuild | `@Transient`; `Monthly.from(range, timeline)` | `selectRange` builds the saved-month grid before DAO data arrives; the observed effective range rebuilds matching digest and calendar counts, including saved sessions without attached exercises; none of these values is archived |
+| Monthly calendar / DigestCard | Weekday and digest range labels | Rebuild in composition | `DateCompose.rememberWeekDayShortLabels()` and `DateRangeFormatState.short()` from existing typed dates | Current locale updates retained content without rebuilding the VM; weekday labels are no longer stored in Monthly state. Date bounds, archived fields and callback owners are unchanged |
 | Same | Period `id`, `text` (localized) | Rebuild | `@Transient` | Rebuilt from the current locale |
-| Same | Trainings loader, Flow jobs, dialog sessions/callbacks | Runtime only | `withLoader`, `safeLaunch`, DialogController | Live pickers are unsaved; the accepted date/month lands in `state.date` |
+| Same | Trainings loader, Flow jobs, dialog sessions/callbacks | Runtime only | Outer `withLoader`, range-driven `mapLatest`, per-request `safeLaunch`, DialogController | A failed refresh leaves the range subscription available for later selections. Range replacement, lifecycle suspension or VM destruction cancels and joins its request before releasing the loader; jobs are never archived. Live pickers are unsaved; the accepted date/month lands in `state.date` |
 | TrainingsRootComponent | Child stack | Preserve (navigation) | `TrainingsRouter.serializer()`, key `TrainingsRootComponent` | Data-object root state: no root draft and nothing to seed a re-entered child; fresh entry without an archive uses the current-month Monthly default |
 
 The local supplier saves the latest VM state lazily on StateKeeper.save; no second

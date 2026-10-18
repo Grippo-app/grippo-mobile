@@ -15,6 +15,8 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
+import com.grippo.core.state.metrics.engagement.TrainingStreakFeaturedState
+import com.grippo.core.state.metrics.engagement.TrainingStreakMood
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakInsightsCard
@@ -25,8 +27,9 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.training_streak_confidence_title
+import com.grippo.design.resources.provider.training_streak_insights_title
 import com.grippo.design.resources.provider.training_streak_timeline_title
+import kotlinx.collections.immutable.persistentListOf
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -45,7 +48,7 @@ internal fun TrainingStreakDetailsScreen(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        text = state.range.display,
+        text = state.range.short(),
         style = AppTokens.typography.b14Semi(),
         color = AppTokens.colors.text.secondary,
         textAlign = TextAlign.Center
@@ -85,7 +88,7 @@ internal fun TrainingStreakDetailsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = AppTokens.dp.contentPadding.block),
-                    text = AppTokens.strings.res(Res.string.training_streak_confidence_title),
+                    text = AppTokens.strings.res(Res.string.training_streak_insights_title),
                     style = AppTokens.typography.h4(),
                     color = AppTokens.colors.text.primary,
                 )
@@ -100,24 +103,26 @@ internal fun TrainingStreakDetailsScreen(
                 )
             }
 
-            item(key = "timeline_header") {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = AppTokens.dp.contentPadding.block),
-                    text = AppTokens.strings.res(Res.string.training_streak_timeline_title),
-                    style = AppTokens.typography.h4(),
-                    color = AppTokens.colors.text.primary,
-                )
-            }
+            if (streak.timeline.isNotEmpty()) {
+                item(key = "timeline_header") {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = AppTokens.dp.contentPadding.block),
+                        text = AppTokens.strings.res(Res.string.training_streak_timeline_title),
+                        style = AppTokens.typography.h4(),
+                        color = AppTokens.colors.text.primary,
+                    )
+                }
 
-            item(key = "timeline") {
-                TrainingStreakTimelineCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = AppTokens.dp.contentPadding.content),
-                    entries = streak.timeline
-                )
+                item(key = "timeline") {
+                    TrainingStreakTimelineCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = AppTokens.dp.contentPadding.content),
+                        entries = streak.timeline
+                    )
+                }
             }
         }
 
@@ -135,6 +140,33 @@ private fun ScreenPreview() {
             ),
             loaders = persistentSetOf(),
             contract = TrainingStreakDetailsContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun NoActiveDaysPreview() {
+    val streak = stubTrainingStreaks().first().copy(
+        totalActiveDays = 0,
+        featured = TrainingStreakFeaturedState.Daily(
+            length = 0,
+            mood = TrainingStreakMood.Restart,
+            progressPercent = 0,
+            confidence = 0f,
+        ),
+        timeline = persistentListOf(),
+        historyDays = 0,
+        lastTrainingGapDays = -1,
+    )
+    PreviewContainer {
+        TrainingStreakDetailsScreen(
+            state = TrainingStreakDetailsDialogState(
+                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
+                streak = streak,
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingStreakDetailsContract.Empty,
         )
     }
 }
