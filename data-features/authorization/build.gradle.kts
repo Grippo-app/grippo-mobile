@@ -11,10 +11,10 @@ kotlin {
 
     sourceSets.commonMain.dependencies {
         implementation(projects.dataFeatures.featureApi)
+        implementation(projects.uiCore.error.errorProvider)
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.backend)
         implementation(projects.toolkit.messaging.api)
-        implementation(projects.toolkit.crashReporting.api)
         implementation(projects.dataMappers.domainToDto)
         implementation(projects.dataMappers.entityToDomain)
         implementation(projects.dataMappers.dtoToEntity)

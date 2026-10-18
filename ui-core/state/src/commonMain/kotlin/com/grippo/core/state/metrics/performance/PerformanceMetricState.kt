@@ -2,20 +2,17 @@ package com.grippo.core.state.metrics.performance
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.DensityFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlin.time.Duration as KotlinDuration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.datetime.LocalDateTime
+import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
 public sealed interface PerformanceMetricState {
@@ -35,7 +32,7 @@ public sealed interface PerformanceMetricState {
             is Repetitions -> current?.toFloat()
             is Intensity -> current
         }
-        return value?.takeIf { it.isFinite() && it > 0f }
+        return value?.takeIf { it.isFinite() && it >= 0f }
     }
 
     @Composable
@@ -121,40 +118,6 @@ public sealed interface PerformanceMetricState {
     }
 }
 
-public fun stubPerformanceTrendHistory(): ImmutableList<PerformanceTrendHistoryEntry> {
-    val date = LocalDateTime(2026, 10, 15, 10, 0)
-    val anyRange = DateRangePresets.infinity()
-    return persistentListOf(
-        PerformanceTrendHistoryEntry(
-            trainingId = "preview-performance-1",
-            endDate = DateTimeFormatState.of(
-                value = date,
-                range = anyRange,
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
-            ),
-            metric = stubPerformanceMetrics().first()
-        ),
-        PerformanceTrendHistoryEntry(
-            trainingId = "preview-performance-2",
-            endDate = DateTimeFormatState.of(
-                value = date,
-                range = anyRange,
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
-            ),
-            metric = stubPerformanceMetrics().first()
-        ),
-        PerformanceTrendHistoryEntry(
-            trainingId = "preview-performance-3",
-            endDate = DateTimeFormatState.of(
-                value = date,
-                range = anyRange,
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
-            ),
-            metric = stubPerformanceMetrics().first()
-        ),
-    )
-}
-
 public fun stubPerformanceMetrics(): ImmutableList<PerformanceMetricState> {
     return persistentListOf(
         PerformanceMetricState.Volume(
@@ -224,3 +187,48 @@ public fun stubEmptyPerformanceMetric(): PerformanceMetricState =
         best = null,
         status = PerformanceTrendStatusState.Empty,
     )
+
+public fun stubEmptyPerformanceMetrics(): ImmutableList<PerformanceMetricState> =
+    stubPerformanceMetrics().distinctBy { it.type }.map { metric ->
+        when (metric) {
+            is PerformanceMetricState.Duration -> metric.copy(
+                currentVsAveragePercentage = null,
+                current = null,
+                average = null,
+                best = null,
+                status = PerformanceTrendStatusState.Empty,
+            )
+
+            is PerformanceMetricState.Volume -> metric.copy(
+                currentVsAveragePercentage = null,
+                current = null,
+                average = null,
+                best = null,
+                status = PerformanceTrendStatusState.Empty,
+            )
+
+            is PerformanceMetricState.Density -> metric.copy(
+                currentVsAveragePercentage = null,
+                current = null,
+                average = null,
+                best = null,
+                status = PerformanceTrendStatusState.Empty,
+            )
+
+            is PerformanceMetricState.Repetitions -> metric.copy(
+                currentVsAveragePercentage = null,
+                current = null,
+                average = null,
+                best = null,
+                status = PerformanceTrendStatusState.Empty,
+            )
+
+            is PerformanceMetricState.Intensity -> metric.copy(
+                currentVsAveragePercentage = null,
+                current = null,
+                average = null,
+                best = null,
+                status = PerformanceTrendStatusState.Empty,
+            )
+        }
+    }.toPersistentList()

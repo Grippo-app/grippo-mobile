@@ -1,6 +1,6 @@
 ---
 name: design-system
-description: Create and change Grippo AppTokens, shared Compose components, localized resources, icons, fonts and previews. Map actual usage contexts and states before visual changes; inspect affected consumers and token producers before changing contracts.
+description: Create and change Grippo AppTokens, shared Compose components, localized resources, icons, fonts and previews using domain entity visual semantics. Map actual usage contexts and states before visual changes; inspect affected consumers and token producers before changing contracts.
 ---
 
 # Grippo design system
@@ -17,6 +17,9 @@ For new or visually changed product UI and visual reviews, MUST apply
 This skill owns implementation; [CONSISTENCY.md](../../../design-system/CONSISTENCY.md)
 owns concrete role-to-token choices. Changes without visual impact require only
 an impact assessment and relevant source/caller review.
+
+Domain entity visual semantics follow brand-design's
+[semantic recognition](../brand-design/references/design-language.md#semantic-recognition).
 
 Compose implementation and source review apply
 [compose-components](../compose-components/SKILL.md).
@@ -37,6 +40,8 @@ ordinary UI icons and existing logos do not trigger artwork generation.
 - Shared widgets accept neutral callbacks and remain domain-independent unless
   their existing contract deliberately accepts reusable UI state. Feature business
   logic, implementation dependencies and analytics types stay outside widgets.
+- UI-model presentation mappings follow
+  [UI-state ownership](../ui-feature/references/state.md#state-owned-presentation-mappings).
 - Changed public contracts MUST migrate all necessary callers together. Remove
   obsolete in-scope overloads/aliases rather than retaining a broken migration.
   [Component rules](references/components.md) own contract and placement checks.
@@ -59,6 +64,8 @@ ordinary UI icons and existing logos do not trigger artwork generation.
 
 MUST reconcile final consumers, variants and state branches against the usage/state
 inventory and pass each affected token, component, resource and preview source gate.
+For visual changes, apply brand-design's
+[semantic recognition acceptance](../brand-design/references/workflow-and-review.md#design-acceptance).
 Inspect enclosing compositions and downstream input/focus behavior where affected.
 Fix findings through the [execution loop](../task-orchestrator/SKILL.md#execution-loop)
 and report evidence as [visual evidence](references/visual-consistency.md#evidence)

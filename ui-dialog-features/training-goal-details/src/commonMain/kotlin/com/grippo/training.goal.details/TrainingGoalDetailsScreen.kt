@@ -17,9 +17,8 @@ import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.core.state.formatters.DateTimeFormatState
+import com.grippo.core.state.metrics.profile.GoalAnalysisEvidenceState
 import com.grippo.core.state.metrics.profile.GoalFitSeverityState
-import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.core.state.metrics.profile.stubGoalProgress
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.design.components.divider.ContentDivider
@@ -45,7 +44,6 @@ import com.grippo.design.resources.provider.goal_fit_diagnostic_drifting_title
 import com.grippo.design.resources.provider.goal_fit_diagnostic_on_track_title
 import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -113,75 +111,37 @@ internal fun TrainingGoalDetailsScreen(
                     color = AppTokens.colors.text.secondary,
                 )
             }
+        }
 
-            item(key = "evidence") {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = AppTokens.dp.contentPadding.content),
-                ) {
-                    val analysisRange = progress.evidence.range.value
-                    val periodText = if (analysisRange != null) {
-                        val from = DateCompose.rememberFormat(
-                            value = analysisRange.from,
-                            format = DateFormat.DateOnly.DateMmmDdYyyy,
-                        )
-                        val to = DateCompose.rememberFormat(
-                            value = analysisRange.to,
-                            format = DateFormat.DateOnly.DateMmmDdYyyy,
-                        )
-                        AppTokens.strings.res(Res.string.goal_details_analysis_period, from, to)
-                    } else {
-                        AppTokens.strings.res(Res.string.goal_details_analysis_unavailable)
-                    }
+        item(key = "insights_header") {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = if (progress != null) AppTokens.dp.contentPadding.block else 0.dp),
+                text = AppTokens.strings.res(Res.string.goal_details_insights_title),
+                style = AppTokens.typography.h4(),
+                color = AppTokens.colors.text.primary,
+            )
+        }
 
-                    Text(
-                        text = periodText,
-                        style = AppTokens.typography.b13Med(),
-                        color = AppTokens.colors.text.primary,
-                    )
+        items(
+            items = insights,
+            key = { it.reason },
+        ) { item ->
+            val (headline, detail) = item.reason.reasonText()
+            val action = item.action?.tipText()
+            GoalInsightCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = AppTokens.dp.contentPadding.content),
+                severity = item.severity.goalInsightSeverity(),
+                headline = headline,
+                detail = detail,
+                action = action,
+            )
+        }
 
-                    Text(
-                        text = AppTokens.strings.res(
-                            Res.string.goal_details_analysis_evidence,
-                            progress.evidence.days,
-                            progress.evidence.setCount,
-                        ),
-                        style = AppTokens.typography.b13Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-
-                    if (progress.evidence.excludedSetCount > 0) {
-                        Text(
-                            text = AppTokens.strings.res(
-                                Res.string.goal_details_analysis_excluded,
-                                progress.evidence.excludedSetCount,
-                            ),
-                            style = AppTokens.typography.b13Med(),
-                            color = AppTokens.colors.text.secondary,
-                        )
-                    }
-
-                    if (progress.evidence.missingMetadataSetCount > 0) {
-                        Text(
-                            text = AppTokens.strings.res(
-                                Res.string.goal_details_analysis_missing_metadata,
-                                progress.evidence.missingMetadataSetCount,
-                            ),
-                            style = AppTokens.typography.b13Med(),
-                            color = AppTokens.colors.text.secondary,
-                        )
-                    }
-
-                    Text(
-                        modifier = Modifier.padding(top = AppTokens.dp.contentPadding.content),
-                        text = AppTokens.strings.res(Res.string.goal_details_analysis_method),
-                        style = AppTokens.typography.b13Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-                }
-            }
-
+        if (progress != null) {
             if (progress.findings.any { it.severity != GoalFitSeverityState.PASS }) {
                 item(key = "drifting_header") {
                     Text(
@@ -225,36 +185,82 @@ internal fun TrainingGoalDetailsScreen(
                     )
                 }
             }
-        }
 
-        item(key = "insights_header") {
+            item(key = "evidence") {
+                GoalEvidenceSection(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = AppTokens.dp.contentPadding.block),
+                    value = progress.evidence,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun GoalEvidenceSection(
+    modifier: Modifier = Modifier,
+    value: GoalAnalysisEvidenceState,
+) {
+    val analysisRange = value.range.value
+    val periodText = if (analysisRange != null) {
+        val from = DateCompose.rememberFormat(
+            value = analysisRange.from,
+            format = DateFormat.DateOnly.DateMmmDdYyyy,
+        )
+        val to = DateCompose.rememberFormat(
+            value = analysisRange.to,
+            format = DateFormat.DateOnly.DateMmmDdYyyy,
+        )
+        AppTokens.strings.res(Res.string.goal_details_analysis_period, from, to)
+    } else {
+        AppTokens.strings.res(Res.string.goal_details_analysis_unavailable)
+    }
+
+    Column(modifier = modifier) {
+        ContentDivider()
+        Text(
+            modifier = Modifier.padding(top = AppTokens.dp.contentPadding.content),
+            text = periodText,
+            style = AppTokens.typography.b13Med(),
+            color = AppTokens.colors.text.primary,
+        )
+        Text(
+            text = AppTokens.strings.res(
+                Res.string.goal_details_analysis_evidence,
+                value.days,
+                value.setCount,
+            ),
+            style = AppTokens.typography.b13Med(),
+            color = AppTokens.colors.text.secondary,
+        )
+        if (value.excludedSetCount > 0) {
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = if (progress != null) AppTokens.dp.contentPadding.block else 0.dp),
-                text = AppTokens.strings.res(Res.string.goal_details_insights_title),
-                style = AppTokens.typography.h4(),
-                color = AppTokens.colors.text.primary,
+                text = AppTokens.strings.res(
+                    Res.string.goal_details_analysis_excluded,
+                    value.excludedSetCount,
+                ),
+                style = AppTokens.typography.b13Med(),
+                color = AppTokens.colors.text.secondary,
             )
         }
-
-        items(
-            items = insights,
-            key = { it.reason },
-        ) { item ->
-            val (headline, detail) = item.reason.reasonText()
-            val action = item.action?.tipText()
-            GoalInsightCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = AppTokens.dp.contentPadding.content),
-                severity = item.severity.goalInsightSeverity(),
-                headline = headline,
-                detail = detail,
-                action = action,
+        if (value.missingMetadataSetCount > 0) {
+            Text(
+                text = AppTokens.strings.res(
+                    Res.string.goal_details_analysis_missing_metadata,
+                    value.missingMetadataSetCount,
+                ),
+                style = AppTokens.typography.b13Med(),
+                color = AppTokens.colors.text.secondary,
             )
         }
-
+        Text(
+            modifier = Modifier.padding(top = AppTokens.dp.contentPadding.content),
+            text = AppTokens.strings.res(Res.string.goal_details_analysis_method),
+            style = AppTokens.typography.b13Med(),
+            color = AppTokens.colors.text.secondary,
+        )
     }
 }
 
@@ -264,7 +270,7 @@ private fun TrainingGoalDetailsScreenPreview() {
     PreviewContainer {
         TrainingGoalDetailsScreen(
             state = TrainingGoalDetailsDialogState(
-                progress = previewGoalProgress(score = 54),
+                progress = stubGoalProgress(score = 54),
             ),
             loaders = persistentSetOf(),
             contract = TrainingGoalDetailsContract.Empty,
@@ -290,7 +296,7 @@ private fun TrainingGoalDetailsScreenOnTrackPreview() {
     PreviewContainer {
         TrainingGoalDetailsScreen(
             state = TrainingGoalDetailsDialogState(
-                progress = previewGoalProgress(score = 82),
+                progress = stubGoalProgress(score = 82),
             ),
             loaders = persistentSetOf(),
             contract = TrainingGoalDetailsContract.Empty,
@@ -301,7 +307,7 @@ private fun TrainingGoalDetailsScreenOnTrackPreview() {
 @AppPreview
 @Composable
 private fun TrainingGoalDetailsScreenTooEarlyPreview() {
-    val base = previewGoalProgress(score = null)
+    val base = stubGoalProgress(score = null)
     val progress = base.copy(
         evidence = base.evidence.copy(
             range = DateRangeFormatState.of(
@@ -326,7 +332,7 @@ private fun TrainingGoalDetailsScreenTooEarlyPreview() {
 @AppPreview
 @Composable
 private fun TrainingGoalDetailsScreenEmptyPeriodPreview() {
-    val base = previewGoalProgress(score = null)
+    val base = stubGoalProgress(score = null)
     val progress = base.copy(
         sessionCount = 0,
         findings = persistentListOf(),
@@ -346,7 +352,7 @@ private fun TrainingGoalDetailsScreenEmptyPeriodPreview() {
 @AppPreview
 @Composable
 private fun TrainingGoalDetailsScreenPartialEvidencePreview() {
-    val base = previewGoalProgress(primary = GoalPrimaryGoalEnumState.BUILD_MUSCLE, score = 50)
+    val base = stubGoalProgress(primary = GoalPrimaryGoalEnumState.BUILD_MUSCLE, score = 50)
     val progress = base.copy(
         evidence = base.evidence.copy(
             setCount = 24,
@@ -369,7 +375,7 @@ private fun TrainingGoalDetailsScreenPartialEvidencePreview() {
 @AppPreview
 @Composable
 private fun TrainingGoalDetailsScreenNoOverlapPreview() {
-    val base = previewGoalProgress(score = null)
+    val base = stubGoalProgress(score = null)
     val progress = base.copy(
         evidence = base.evidence.copy(
             range = DateRangeFormatState.Empty(),
@@ -389,38 +395,44 @@ private fun TrainingGoalDetailsScreenNoOverlapPreview() {
     }
 }
 
-private fun previewGoalProgress(
-    score: Int?,
-    primary: GoalPrimaryGoalEnumState = GoalPrimaryGoalEnumState.GET_STRONGER,
-): GoalProgressState {
-    val progress = stubGoalProgress(primary = primary, score = score)
-    val now = DateTimeFormatState.of(
-        value = LocalDateTime(2026, 10, 18, 12, 0),
-        range = DateTimeUtils.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
-    )
-    val createdAt = DateTimeFormatState.of(
-        value = LocalDateTime(2026, 9, 30, 12, 0),
-        range = DateTimeUtils.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
-    )
-    val target = DateTimeFormatState.of(
-        value = LocalDateTime(2026, 12, 29, 12, 0),
-        range = DateTimeUtils.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
-    )
-    return progress.copy(
-        goal = progress.goal.copy(
-            createdAt = createdAt,
-            target = target,
-            personalizations = persistentListOf(),
-        ),
-        now = now,
-        evidence = progress.evidence.copy(range = previewAnalysisRange()),
-    )
+@AppPreview
+@Composable
+private fun TrainingGoalDetailsScreenOffTrackPreview() {
+    PreviewContainer {
+        TrainingGoalDetailsScreen(
+            state = TrainingGoalDetailsDialogState(
+                progress = stubGoalProgress(score = 28),
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingGoalDetailsContract.Empty,
+        )
+    }
 }
 
-private fun previewAnalysisRange(): DateRangeFormatState = DateRangeFormatState.of(
-    from = LocalDateTime(2026, 10, 11, 0, 0),
-    to = LocalDateTime(2026, 10, 17, 23, 59),
-)
+@AppPreview
+@Composable
+private fun TrainingGoalDetailsScreenNearTargetPreview() {
+    PreviewContainer {
+        TrainingGoalDetailsScreen(
+            state = TrainingGoalDetailsDialogState(
+                progress = stubGoalProgress(daysTotal = 30, daysElapsed = 28),
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingGoalDetailsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingGoalDetailsScreenFinishedPreview() {
+    PreviewContainer {
+        TrainingGoalDetailsScreen(
+            state = TrainingGoalDetailsDialogState(
+                progress = stubGoalProgress(daysTotal = 30, daysElapsed = 34),
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingGoalDetailsContract.Empty,
+        )
+    }
+}

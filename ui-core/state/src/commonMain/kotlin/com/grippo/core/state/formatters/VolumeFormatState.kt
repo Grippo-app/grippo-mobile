@@ -168,4 +168,3 @@ public sealed class VolumeFormatState : FormatState<Float> {
         return AppTokens.strings.res(Res.string.weight_input_hint)
     }
 }
-

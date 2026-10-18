@@ -26,27 +26,27 @@ internal class TrainingFeatureImpl(
         return repository.observeTrainings(start, end)
     }
 
-    override suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit> {
+    override suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Unit {
         return repository.getTrainings(start, end)
     }
 
-    override suspend fun setTraining(training: SetTraining): Result<String?> {
+    override suspend fun setTraining(training: SetTraining): String {
         return repository.setTraining(training)
     }
 
-    override suspend fun updateTraining(id: String, training: SetTraining): Result<String?> {
+    override suspend fun updateTraining(id: String, training: SetTraining): String {
         return repository.updateTraining(id, training)
     }
 
-    override suspend fun deleteTraining(id: String): Result<Unit> {
+    override suspend fun deleteTraining(id: String): Unit {
         return repository.deleteTraining(id)
     }
 
-    override suspend fun setDraftTraining(draft: DraftTraining): Result<Unit> {
+    override suspend fun setDraftTraining(draft: DraftTraining): Unit {
         return repository.setDraftTraining(draft)
     }
 
-    override suspend fun deleteDraftTraining(): Result<Unit> {
+    override suspend fun deleteDraftTraining(): Unit {
         return repository.deleteDraftTraining()
     }
 

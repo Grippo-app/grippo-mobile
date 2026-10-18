@@ -32,6 +32,20 @@ public class MuscleLoadingSummaryUseCase(
 
         // Summing equal shares in different orders must not manufacture a single leader.
         private const val LEADER_RELATIVE_TOLERANCE = 1e-12
+
+        private fun checkedCount(value: Long): Long {
+            check(value in 0..Int.MAX_VALUE.toLong()) {
+                "Muscle load count exceeds the supported Int range"
+            }
+            return value
+        }
+
+        private fun checkedFloat(value: Double): Float {
+            check(value.isFinite() && value in 0.0..Float.MAX_VALUE.toDouble()) {
+                "Muscle load quantity exceeds the supported finite Float range"
+            }
+            return value.toFloat()
+        }
     }
 
     public suspend fun fromTrainings(trainings: List<Training>): MuscleLoadSummary {
@@ -132,15 +146,15 @@ public class MuscleLoadingSummaryUseCase(
                 val components = examples[exampleId]?.components
                 for (iteration in exercise.iterations) {
                     if (!hasValidRecordedValues(iteration = iteration, components = components)) {
-                        excludedSets = (excludedSets + 1).checkedCount()
+                        excludedSets = checkedCount(excludedSets + 1)
                         continue
                     }
 
                     val resistance = measuredResistance(iteration = iteration, components = components)
                     acceptedSets += 1
-                    totalRepetitions = (totalRepetitions + iteration.repetitions).checkedCount()
+                    totalRepetitions = checkedCount(totalRepetitions + iteration.repetitions)
                     if (resistance == null) {
-                        unmeasuredVolumeSets = (unmeasuredVolumeSets + 1).checkedCount()
+                        unmeasuredVolumeSets = checkedCount(unmeasuredVolumeSets + 1)
                     } else {
                         hasMeasuredVolume = true
                         exerciseVolume += resistance * iteration.repetitions
@@ -148,13 +162,13 @@ public class MuscleLoadingSummaryUseCase(
                 }
 
                 if (acceptedSets > 0) {
-                    totalExercises = (totalExercises + 1).checkedCount()
-                    totalSets = (totalSets + acceptedSets).checkedCount()
+                    totalExercises = checkedCount(totalExercises + 1)
+                    totalSets = checkedCount(totalSets + acceptedSets)
                     totalVolume += exerciseVolume
 
                     val shares = sharesByExample[exampleId].orEmpty()
                     if (shares.isEmpty()) {
-                        unassignedSets = (unassignedSets + acceptedSets).checkedCount()
+                        unassignedSets = checkedCount(unassignedSets + acceptedSets)
                     }
                     shares.forEach { (muscle, ratio) ->
                         sessionMuscles.getOrPut(muscle) { Load() }.add(
@@ -184,7 +198,7 @@ public class MuscleLoadingSummaryUseCase(
                 totalExercises = totalExercises.toInt(),
                 totalSets = totalSets.toInt(),
                 totalRepetitions = totalRepetitions.toInt(),
-                totalVolume = totalVolume.checkedFloat(),
+                totalVolume = checkedFloat(totalVolume),
                 dominantGroup = null,
                 excludedSets = excludedSets.toInt(),
                 unassignedSets = unassignedSets.toInt(),
@@ -196,6 +210,9 @@ public class MuscleLoadingSummaryUseCase(
     }
 
     private fun normalizedShares(example: ExerciseExample): Map<MuscleEnum, Double> {
+        if (example.bundles.any { it.percentage < 0 }) {
+            return emptyMap()
+        }
         val shares = mutableMapOf<MuscleEnum, Double>()
         example.bundles.forEach { bundle ->
             if (bundle.percentage > 0) {
@@ -321,7 +338,7 @@ public class MuscleLoadingSummaryUseCase(
         val sorted = muscles.entries
             .filter { it.value.total.quantity(volume) > 0.0 }
             .sortedWith(compareByDescending<Map.Entry<MuscleEnum, EntryStats>> {
-                it.value.total.quantity(volume).checkedFloat()
+                it.value.total.quantity(volume)
             }.thenBy { it.key.name })
         val total = sorted.sumOf { it.value.total.quantity(volume) }
         return sorted.map { (muscle, stats) ->
@@ -341,7 +358,7 @@ public class MuscleLoadingSummaryUseCase(
         val sorted = groups.entries
             .filter { it.value.total.quantity(volume) > 0.0 }
             .sortedWith(compareByDescending<Map.Entry<MuscleGroupEnum, EntryStats>> {
-                it.value.total.quantity(volume).checkedFloat()
+                it.value.total.quantity(volume)
             }.thenBy { it.key.name })
         val total = sorted.sumOf { it.value.total.quantity(volume) }
         return sorted.map { (group, stats) ->
@@ -362,8 +379,8 @@ public class MuscleLoadingSummaryUseCase(
             return MuscleLoadDominance(top1SharePercent = 0f, top2SharePercent = 0f)
         }
         return MuscleLoadDominance(
-            top1SharePercent = (sorted.first() / total * 100.0).checkedFloat(),
-            top2SharePercent = (sorted.take(2).sum() / total * 100.0).checkedFloat(),
+            top1SharePercent = checkedFloat(sorted.first() / total * 100.0),
+            top2SharePercent = checkedFloat(sorted.take(2).sum() / total * 100.0),
         )
     }
 
@@ -441,25 +458,25 @@ public class MuscleLoadingSummaryUseCase(
         ): MuscleLoadEntry {
             return MuscleLoadEntry(
                 group = group,
-                percentage = percentage.checkedFloat(),
+                percentage = checkedFloat(percentage),
                 muscles = muscles,
                 hitTrainingsCount = hitTrainingsCount,
                 primaryTrainingsCount = primaryTrainingsCount,
                 avgWeightedSetsPerSession = if (hitTrainingsCount > 0) {
-                    (total.weightedSets / hitTrainingsCount).checkedFloat()
+                    checkedFloat(total.weightedSets / hitTrainingsCount)
                 } else {
                     0f
                 },
-                maxWeightedSetsInOneSession = maxWeightedSets.checkedFloat(),
+                maxWeightedSetsInOneSession = checkedFloat(maxWeightedSets),
                 avgVolumePerHitSession = if (measuredVolumeSessions > 0) {
-                    (total.volume / measuredVolumeSessions).checkedFloat()
+                    checkedFloat(total.volume / measuredVolumeSessions)
                 } else {
                     0f
                 },
-                maxVolumeInOneSession = maxVolume.checkedFloat(),
+                maxVolumeInOneSession = checkedFloat(maxVolume),
                 topExampleIds = total.examples.entries
                     .sortedWith(compareByDescending<Map.Entry<String, Double>> {
-                        it.value.checkedFloat()
+                        it.value
                     }.thenBy { it.key })
                     .take(TOP_EXAMPLES_LIMIT)
                     .map { it.key },
@@ -477,18 +494,4 @@ public class MuscleLoadingSummaryUseCase(
             dominantGroup = null,
         )
     }
-}
-
-private fun Long.checkedCount(): Long {
-    check(this in 0..Int.MAX_VALUE.toLong()) {
-        "Muscle load count exceeds the supported Int range"
-    }
-    return this
-}
-
-private fun Double.checkedFloat(): Float {
-    check(isFinite() && this in 0.0..Float.MAX_VALUE.toDouble()) {
-        "Muscle load quantity exceeds the supported finite Float range"
-    }
-    return toFloat()
 }

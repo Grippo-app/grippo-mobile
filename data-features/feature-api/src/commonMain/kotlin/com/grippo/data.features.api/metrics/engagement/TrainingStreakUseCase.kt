@@ -351,9 +351,10 @@ public class TrainingStreakUseCase {
     )
 
     private fun periodProgress(observation: Observation, schedule: Schedule): PeriodProgress {
-        val counts = observation.activeDates.groupingBy { date ->
-            schedule.anchor.daysUntil(date) / schedule.periodDays
-        }.eachCount()
+        val counts = observation.activeDates
+            .filter { isTrainingDate(date = it, schedule = schedule) }
+            .groupingBy { date -> schedule.anchor.daysUntil(date) / schedule.periodDays }
+            .eachCount()
         val currentIndex = schedule.anchor.daysUntil(observation.date) / schedule.periodDays
         val currentStart = schedule.anchor.plus(DatePeriod(days = currentIndex * schedule.periodDays))
         val currentEnd = currentStart.plus(DatePeriod(days = schedule.periodDays - 1))
@@ -372,14 +373,11 @@ public class TrainingStreakUseCase {
             pointer--
         }
 
-        val todayAvailable = if (
-            observation.isCurrentDayOpen && observation.date !in observation.activeDates
-        ) {
-            1
-        } else {
-            0
+        val availableDays = (0..observation.date.daysUntil(currentEnd)).count { offset ->
+            val date = observation.date.plus(DatePeriod(days = offset))
+            (offset > 0 || observation.isCurrentDayOpen) && date !in observation.activeDates &&
+                isTrainingDate(date = date, schedule = schedule)
         }
-        val availableDays = observation.date.daysUntil(currentEnd) + todayAvailable
         val canComplete = achieved + availableDays >= schedule.target
         val hasRecentActivity = length > 0 || achieved > 0 ||
                 observation.lastTrainingGapDays <= schedule.periodDays
@@ -430,6 +428,14 @@ public class TrainingStreakUseCase {
 
     private fun progressPercent(achieved: Int, target: Int): Int {
         return ((achieved.toFloat() / target).coerceIn(0f, 1f) * 100).roundToInt()
+    }
+
+    private fun isTrainingDate(date: LocalDate, schedule: Schedule): Boolean {
+        if (schedule.mask.isEmpty()) {
+            return true
+        }
+        val offset = schedule.anchor.daysUntil(date) % schedule.periodDays
+        return schedule.mask[offset]
     }
 
     private fun weekStart(date: LocalDate): LocalDate {

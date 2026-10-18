@@ -22,7 +22,7 @@ on a detail below.
   is no sanitation and no request marker. Do not widen logging or add bodies
   ([secrets and configuration](../../platform-build-toolkit/references/secrets-and-config.md)).
 - `GrippoApi` is `@Single public class GrippoApi internal constructor(client: BackendClient)` with
-  32 public `suspend fun ...: Result<T>` endpoints and one private `request` helper; its sections,
+  32 public throwing suspend endpoints and one private `request` helper; its sections,
   helper semantics and quirks are described in [DTO/API](dtos-and-api.md).
 - `BackendModule` is `@Module(includes = [HttpModule, DatabaseModule, SerializationModule]) @ComponentScan`
   (`TokenProvider` reads the token DAOs).
@@ -39,14 +39,14 @@ on a detail below.
   and anything else to `AppError.Network.Unexpected`.
 - The validator runs in Ktor's send hook and is registered before the Auth plugin, so a validated
   failure surfaces from the request call itself, after any refresh/retry the Auth plugin performed;
-  `GrippoApi.request` stores it as `Result.failure`. `AppError.Network.IncompleteResponse` is
+  `GrippoApi.request` propagates it unchanged. `AppError.Network.IncompleteResponse` is
   raised by repositories, not by transport ([operation outcomes](operation-outcomes.md)).
 
 ## Rules
 
 - Keep the engines, validator, serializer, locale header, timeouts and request shape. Do not invent
   hosts or a second authenticated client for a feature.
-- Business layers receive transport failures unchanged and keep their declared Result or throwing
+- Business layers receive transport exceptions unchanged under the throwing suspend
   contract; translation to UI belongs to `ErrorProvider`
   ([UI error pipeline](../../ui-feature/references/error-pipeline.md)).
 - Refresh synchronization, retry and circuit-breaker behavior is owned by [auth session](auth-session.md).

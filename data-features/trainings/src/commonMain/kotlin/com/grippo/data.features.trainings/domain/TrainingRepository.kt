@@ -15,17 +15,17 @@ internal interface TrainingRepository {
 
     fun observeExercise(id: String): Flow<Exercise?>
 
-    suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit>
+    suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Unit
 
-    suspend fun setTraining(training: SetTraining): Result<String?>
+    suspend fun setTraining(training: SetTraining): String
 
-    suspend fun updateTraining(id: String, training: SetTraining): Result<String?>
+    suspend fun updateTraining(id: String, training: SetTraining): String
 
-    suspend fun deleteTraining(id: String): Result<Unit>
+    suspend fun deleteTraining(id: String): Unit
 
     fun getDraftTraining(): Flow<DraftTraining?>
 
-    suspend fun setDraftTraining(draft: DraftTraining): Result<Unit>
+    suspend fun setDraftTraining(draft: DraftTraining): Unit
 
-    suspend fun deleteDraftTraining(): Result<Unit>
+    suspend fun deleteDraftTraining(): Unit
 }

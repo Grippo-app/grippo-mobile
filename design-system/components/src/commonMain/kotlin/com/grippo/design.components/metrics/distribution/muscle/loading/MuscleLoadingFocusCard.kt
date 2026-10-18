@@ -14,7 +14,7 @@ import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.design.components.chart.internal.RingChart
-import com.grippo.design.components.metrics.distribution.muscle.loading.internal.muscleLoadPercentage
+import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
@@ -97,7 +97,7 @@ private fun ShareRing(
             colors = AppTokens.colors.charts.ring.info,
         )
         Text(
-            text = muscleLoadPercentage(share),
+            text = PercentageFormatState.shortShare(share),
             style = AppTokens.typography.h3(),
             color = AppTokens.colors.text.primary,
         )

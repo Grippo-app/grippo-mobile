@@ -8,21 +8,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.design.components.banner.BannerCard
-import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.goal.GoalMark
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.goal_course_title
 import com.grippo.design.resources.provider.goal_setup_suggestion_primary_btn
 import com.grippo.design.resources.provider.goal_setup_suggestion_secondary_btn
 import com.grippo.design.resources.provider.goal_setup_suggestion_subtitle
@@ -40,15 +41,30 @@ internal fun GoalSetupSuggestionScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-    Text(
+    Row(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.goal_setup_suggestion_subtitle),
-        style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.secondary,
-        textAlign = TextAlign.Center,
-    )
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        GoalMark()
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+        ) {
+            Text(
+                text = AppTokens.strings.res(Res.string.goal_course_title),
+                style = AppTokens.typography.h4(),
+                color = AppTokens.colors.text.primary,
+            )
+            Text(
+                text = AppTokens.strings.res(Res.string.goal_setup_suggestion_subtitle),
+                style = AppTokens.typography.b14Med(),
+                color = AppTokens.colors.text.secondary,
+            )
+        }
+    }
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
@@ -60,16 +76,33 @@ internal fun GoalSetupSuggestionScreen(
     ) {
         state.benefits.forEach { code ->
             val (title, description) = code.text()
-            BannerCard(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                style = BannerCardStyle.Custom(
-                    tint = AppTokens.colors.illustration.accent,
-                    surface = AppTokens.colors.bannerCard.illustrationBackground,
-                ),
-                icon = code.icon(),
-                title = title,
-                description = description,
-            )
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                verticalAlignment = Alignment.Top,
+            ) {
+                Icon(
+                    modifier = Modifier.size(AppTokens.dp.goal.iconSize),
+                    imageVector = code.icon(),
+                    tint = AppTokens.colors.icon.secondary,
+                    contentDescription = null,
+                )
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+                ) {
+                    Text(
+                        text = title,
+                        style = AppTokens.typography.b14Semi(),
+                        color = AppTokens.colors.text.primary,
+                    )
+                    Text(
+                        text = description,
+                        style = AppTokens.typography.b13Med(),
+                        color = AppTokens.colors.text.secondary,
+                    )
+                }
+            }
         }
     }
 

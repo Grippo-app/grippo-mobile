@@ -207,6 +207,28 @@ This does not permit copying a field already present in another UI sub-state.
 Draft seeding, edit detection and synchronization also follow the
 [canonical draft policy](../../state-preservation/SKILL.md#data-backed-form-synchronization).
 
+### State-owned presentation mappings
+
+Presentation metadata determined by a UI model's own identity or values MUST live
+as ordinary members of that `*State` type. Before adding such a mapping, inspect
+comparable models: [ExperienceEnumState](../../../../ui-core/state/src/commonMain/kotlin/com/grippo/core/state/profile/ExperienceEnumState.kt)
+owns `title()`, `description()`, `icon()` and `color()`;
+[ForceTypeEnumState](../../../../ui-core/state/src/commonMain/kotlin/com/grippo/core/state/examples/ForceTypeEnumState.kt)
+owns its title and semantic color. Follow the existing accessor names and shape.
+
+Keep an enum-to-icon, label or semantic-color mapping at the model instead of a
+separate `*Visuals` file, receiver extension or repeated `when` in Screens/widgets.
+Resolve theme/resource-dependent values through value-returning `@Composable`
+members at rendering; resource references may remain `UiText`. These methods do
+not emit UI or hold composable content lambdas. Derived metadata follows
+[minimal runtime state](#minimal-runtime-state), without stored copies of resolved
+icons, colors or localized strings in State fields, drafts or ViewModels.
+
+Layout, size, container treatment and contextual selection/disabled styling remain
+with the component and its token/style owner. A widget may choose a local fallback
+for absent data; this does not duplicate the model's identity mapping. Keep these
+UI resource mappings out of domain models and domain-to-state mappers.
+
 ### Immutable collections (MUST)
 
 `ImmutableList<T>` for read-only; `PersistentList<T>` to build incrementally (`.add`/`.remove` returning new lists). Both Compose-stable. `List<T>` / `MutableList<T>` are **forbidden** in state.
@@ -264,7 +286,9 @@ public fun stubNotes(): ImmutableList<NoteState> = persistentListOf(
 ```
 
 - **Where**: shared model stubs live next to the class in `:ui-core:state`. Private builders assembling a feature-owned screen/dialog MVI State may live beside that feature's preview and reuse shared model stubs. MUST NOT move feature State into ui-core or expose a public fixture API solely for a local preview.
-- **Visibility**: shared model stubs are `public`; local feature-State fixture builders are `private`.
+- **Visibility**: shared model stubs are `public`. A feature-State fixture is
+  `private` when consumed in one file; use `internal` only when previews in
+  several files of that feature reuse it. Feature-owned fixtures are never public.
 - **Naming**: shared stubs use `stubX()` for a single instance, `stubXs()` / `stubXList()` for collections; local builders use a descriptive preview name.
 - **Reuse**: assemble shared preview models through the matching `stubX()` and
   `copy` for distinguishing facts. Keep a nested model's stub beside that model;

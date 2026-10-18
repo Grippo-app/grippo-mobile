@@ -28,7 +28,6 @@ import com.grippo.services.backend.dto.user.UserResponse
 import com.grippo.services.backend.dto.user.WeightHistoryResponse
 import io.ktor.client.call.body
 import io.ktor.http.HttpMethod
-import kotlin.coroutines.cancellation.CancellationException
 import org.koin.core.annotation.Single
 
 @Single
@@ -38,7 +37,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
      * Auth service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun login(body: EmailAuthBody): Result<TokenResponse> {
+    public suspend fun login(body: EmailAuthBody): TokenResponse {
         return request(
             method = HttpMethod.Post,
             path = "/auth/login",
@@ -46,7 +45,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    public suspend fun google(body: GoogleBody): Result<TokenResponse> {
+    public suspend fun google(body: GoogleBody): TokenResponse {
         return request(
             method = HttpMethod.Post,
             path = "/auth/google",
@@ -54,7 +53,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    public suspend fun apple(body: AppleBody): Result<TokenResponse> {
+    public suspend fun apple(body: AppleBody): TokenResponse {
         return request(
             method = HttpMethod.Post,
             path = "/auth/apple",
@@ -62,7 +61,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    public suspend fun register(body: RegisterBody): Result<TokenResponse> {
+    public suspend fun register(body: RegisterBody): TokenResponse {
         return request(
             method = HttpMethod.Post,
             path = "/auth/register",
@@ -70,7 +69,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    public suspend fun refresh(body: RefreshBody): Result<TokenResponse> {
+    public suspend fun refresh(body: RefreshBody): TokenResponse {
         return request(
             method = HttpMethod.Post,
             path = "/auth/refresh",
@@ -82,7 +81,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
      * Push token service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun sendPushToken(body: PushTokenBody): Result<Unit> {
+    public suspend fun sendPushToken(body: PushTokenBody): Unit {
         return request(
             method = HttpMethod.Post,
             path = "/push-tokens",
@@ -90,7 +89,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    public suspend fun deletePushToken(): Result<Unit> {
+    public suspend fun deletePushToken(): Unit {
         return request(
             method = HttpMethod.Delete,
             path = "/push-tokens",
@@ -101,21 +100,21 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
      * User service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getUser(): Result<UserResponse> {
+    public suspend fun getUser(): UserResponse {
         return request(
             method = HttpMethod.Get,
             path = "/users"
         )
     }
 
-    public suspend fun deleteUser(): Result<Unit> {
+    public suspend fun deleteUser(): Unit {
         return request(
             method = HttpMethod.Delete,
             path = "/users"
         )
     }
 
-    public suspend fun createProfile(body: CreateProfileBody): Result<UserResponse> {
+    public suspend fun createProfile(body: CreateProfileBody): UserResponse {
         return request(
             method = HttpMethod.Post,
             path = "/users",
@@ -123,7 +122,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    public suspend fun updateExperience(body: ExperienceBody): Result<UserResponse> {
+    public suspend fun updateExperience(body: ExperienceBody): UserResponse {
         return request(
             method = HttpMethod.Post,
             path = "/users/experience",
@@ -131,7 +130,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    public suspend fun updateHeight(body: HeightBody): Result<UserResponse> {
+    public suspend fun updateHeight(body: HeightBody): UserResponse {
         return request(
             method = HttpMethod.Post,
             path = "/users/height",
@@ -139,14 +138,14 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    public suspend fun getExcludedEquipments(): Result<List<EquipmentResponse>> {
+    public suspend fun getExcludedEquipments(): List<EquipmentResponse> {
         return request(
             method = HttpMethod.Get,
             path = "/users/excluded-equipments"
         )
     }
 
-    public suspend fun postExcludedEquipments(body: IdsBody): Result<Unit> {
+    public suspend fun postExcludedEquipments(body: IdsBody): Unit {
         return request(
             method = HttpMethod.Post,
             path = "/users/excluded-equipments",
@@ -154,14 +153,14 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    public suspend fun getExcludedMuscles(): Result<List<MuscleResponse>> {
+    public suspend fun getExcludedMuscles(): List<MuscleResponse> {
         return request(
             method = HttpMethod.Get,
             path = "/users/excluded-muscles"
         )
     }
 
-    public suspend fun postExcludedMuscles(body: IdsBody): Result<Unit> {
+    public suspend fun postExcludedMuscles(body: IdsBody): Unit {
         return request(
             method = HttpMethod.Post,
             path = "/users/excluded-muscles",
@@ -173,7 +172,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
      * Muscle service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getMuscles(): Result<List<MuscleGroupResponse>> {
+    public suspend fun getMuscles(): List<MuscleGroupResponse> {
         return request(
             method = HttpMethod.Get,
             path = "/muscles"
@@ -184,7 +183,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
      * Equipment service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getEquipments(): Result<List<EquipmentGroupResponse>> {
+    public suspend fun getEquipments(): List<EquipmentGroupResponse> {
         return request(
             method = HttpMethod.Get,
             path = "/equipments"
@@ -195,7 +194,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
      * Weight history service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun updateWeightHistory(value: Float): Result<WeightHistoryResponse> {
+    public suspend fun updateWeightHistory(value: Float): WeightHistoryResponse {
         return request(
             method = HttpMethod.Post,
             path = "/weight-history",
@@ -205,14 +204,14 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    public suspend fun deleteWeight(id: String): Result<Unit> {
+    public suspend fun deleteWeight(id: String): Unit {
         return request(
             method = HttpMethod.Delete,
             path = "/weight-history/${id}",
         )
     }
 
-    public suspend fun getWeightHistory(): Result<List<WeightHistoryResponse>> {
+    public suspend fun getWeightHistory(): List<WeightHistoryResponse> {
         return request(
             method = HttpMethod.Get,
             path = "/weight-history"
@@ -223,14 +222,14 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
      * Goal service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getGoal(): Result<GoalResponse?> {
+    public suspend fun getGoal(): GoalResponse? {
         return request(
             method = HttpMethod.Get,
             path = "/users/goal"
         )
     }
 
-    public suspend fun setGoal(body: SetGoalBody): Result<GoalResponse> {
+    public suspend fun setGoal(body: SetGoalBody): GoalResponse {
         return request(
             method = HttpMethod.Post,
             path = "/users/goal",
@@ -245,7 +244,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
     public suspend fun getTrainings(
         start: String,
         end: String
-    ): Result<List<TrainingResponse>> {
+    ): List<TrainingResponse> {
         return request(
             method = HttpMethod.Get,
             path = "/trainings",
@@ -253,7 +252,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    public suspend fun setTraining(body: TrainingBody): Result<IdResponse> {
+    public suspend fun setTraining(body: TrainingBody): IdResponse {
         return request(
             method = HttpMethod.Post,
             path = "/trainings",
@@ -261,7 +260,7 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    public suspend fun updateTraining(id: String, body: TrainingBody): Result<Unit> {
+    public suspend fun updateTraining(id: String, body: TrainingBody): Unit {
         return request(
             method = HttpMethod.Put,
             path = "/trainings",
@@ -270,14 +269,14 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    public suspend fun deleteTraining(id: String): Result<Unit> {
+    public suspend fun deleteTraining(id: String): Unit {
         return request(
             method = HttpMethod.Delete,
             path = "/trainings/$id"
         )
     }
 
-    public suspend fun getTraining(id: String): Result<TrainingResponse> {
+    public suspend fun getTraining(id: String): TrainingResponse {
         return request(
             method = HttpMethod.Get,
             path = "/trainings/$id"
@@ -288,28 +287,28 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
      * Exercise examples
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getExerciseExamples(): Result<List<GetExerciseExampleResponse>> {
+    public suspend fun getExerciseExamples(): List<GetExerciseExampleResponse> {
         return request(
             method = HttpMethod.Get,
             path = "/exercise-examples",
         )
     }
 
-    public suspend fun getExerciseExample(id: String): Result<GetExerciseExampleResponse> {
+    public suspend fun getExerciseExample(id: String): GetExerciseExampleResponse {
         return request(
             method = HttpMethod.Get,
             path = "/exercise-examples/$id"
         )
     }
 
-    public suspend fun getRecentExercisesByExampleId(id: String): Result<List<ExerciseResponse>> {
+    public suspend fun getRecentExercisesByExampleId(id: String): List<ExerciseResponse> {
         return request(
             method = HttpMethod.Get,
             path = "exercise-metrics/exercise-example/${id}/recent"
         )
     }
 
-    public suspend fun getAchievementsByExampleId(id: String): Result<AchievementResponse> {
+    public suspend fun getAchievementsByExampleId(id: String): AchievementResponse {
         return request(
             method = HttpMethod.Get,
             path = "exercise-metrics/exercise-example/${id}/achievements"
@@ -325,19 +324,13 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         path: String,
         body: Any? = null,
         queryParams: Map<String, String>? = null
-    ): Result<T> {
-        return try {
-            val response = client.invoke(
-                method = method,
-                path = path,
-                body = body,
-                queryParams = queryParams
-            )
-            Result.success(response.body<T>())
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Exception) {
-            Result.failure(error)
-        }
+    ): T {
+        val response = client.invoke(
+            method = method,
+            path = path,
+            body = body,
+            queryParams = queryParams
+        )
+        return response.body<T>()
     }
 }

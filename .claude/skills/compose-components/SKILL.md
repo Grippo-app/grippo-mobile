@@ -18,7 +18,8 @@ Apply this skill when writing, refactoring or reviewing Compose UI or its helper
   owns visual intent, composition and acceptance. Read their gates for visual work.
 - [UI feature composition](../ui-feature/references/compose-rules.md) owns Screen,
   MVI, navigation and keyboard integration; [UI state](../ui-feature/references/state.md)
-  owns feature models. Behavior changes apply [analytics](../feature-analytics/SKILL.md)
+  owns feature models and their [presentation mappings](../ui-feature/references/state.md#state-owned-presentation-mappings).
+  Behavior changes apply [analytics](../feature-analytics/SKILL.md)
   and [preservation](../state-preservation/SKILL.md).
 
 ## Component implementation

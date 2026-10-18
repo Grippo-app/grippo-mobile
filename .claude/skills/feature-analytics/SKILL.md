@@ -117,23 +117,21 @@ behavior and reports to the owning ViewModel, which decides what to observe.
   caller's `T`, the original business exceptions and cancellation. Business alone
   decides requests, validation, retries, fallback, navigation and results. Never
   branch on telemetry.
-- Preserve the existing return/error contract. For a Result-returning call, place
-  its existing `getOrThrow()` inside the tracked business block so that failure
-  reaches the decorator. Verified example from
+- Invoke the complete throwing command inside the tracked business block so its
+  original failure reaches the decorator. Verified example from
   `ui-screen-features/trainings/.../TrainingsViewModel.kt`:
 
   ```kotlin
   safeLaunch {
-      analytics.trackOperation(TrainingsOperation.DeleteTraining) {
-          deleteTrainingUseCase.execute(id).getOrThrow()
+      analytics.trackOperation(operation = TrainingsOperation.DeleteTraining) {
+          deleteTrainingUseCase.execute(id)
       }
   }
   ```
 
-  With `getOrThrow()` moved after the block, a failed delete would be reported as
-  completed. Direct-value throwing use cases remain direct. Never reshape a use
-  case to fit telemetry, and never treat a returned `Result.failure` as business
-  completion.
+  All required work belongs inside that block. Never reshape a use case to fit
+  telemetry. Platform credential adapters still return Result; their existing
+  `getOrThrow()` stays inside the decorated credential operation.
 - Keep whole use cases. Do not expose preparation steps or stages for timing. Do
   not add a coroutine, job, dispatcher or retry solely for analytics. Submit intent
   (the user asked) and operation start (the business block began) are different
@@ -146,7 +144,7 @@ behavior and reports to the owning ViewModel, which decides what to observe.
   fatal. Foundation `ScreenAnalytics` isolates screen present/close `Exception`s.
   Feature `presentScreen` passes the typed navigation reason and the original
   presentation through, without duplicate catches, no-op fallbacks or wrappers.
-- ViewModels unwrap `Result` with `getOrThrow()` inside the existing `safeLaunch`.
+- ViewModels call commands directly inside the existing `safeLaunch`.
   Follow the [error pipeline](../ui-feature/references/error-pipeline.md): no local
   recovery catch or wrapper. A pure `mapError` changes dialog presentation only,
   and `onError` runs after dismissal. Both `safeLaunch` overloads keep the same

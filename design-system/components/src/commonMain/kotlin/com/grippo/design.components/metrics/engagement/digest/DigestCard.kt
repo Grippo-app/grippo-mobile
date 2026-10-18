@@ -2,10 +2,10 @@ package com.grippo.design.components.metrics.engagement.digest
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.engagement.DigestState
+import com.grippo.core.state.metrics.engagement.stubDigest
 import com.grippo.design.components.metrics.engagement.digest.internal.DigestHeader
 import com.grippo.design.components.metrics.engagement.digest.internal.DigestVolume
 import com.grippo.design.components.metrics.internal.MetricBreakdownItem
@@ -26,9 +26,7 @@ import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.available_sets_label
 import com.grippo.design.resources.provider.trainings
-import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.datetime.LocalDateTime
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -137,7 +135,7 @@ private fun ContentDigestBody(
 private fun DigestCardPreview() {
     PreviewContainer {
         DigestCard(
-            value = digestPreviewValue(),
+            value = stubDigest(),
         )
     }
 }
@@ -148,7 +146,7 @@ private fun DigestCardEmptyPreview() {
     PreviewContainer {
         DigestCard(
             value = DigestState.Empty(
-                range = digestPreviewValue().range,
+                range = stubDigest().range,
             ),
         )
     }
@@ -159,7 +157,7 @@ private fun DigestCardEmptyPreview() {
 private fun DigestCardMissingDurationPreview() {
     PreviewContainer {
         DigestCard(
-            value = digestPreviewValue().copy(duration = DurationFormatState.Empty()),
+            value = stubDigest().copy(duration = DurationFormatState.Empty()),
         )
     }
 }
@@ -169,7 +167,7 @@ private fun DigestCardMissingDurationPreview() {
 private fun DigestCardZeroLoadPreview() {
     PreviewContainer {
         DigestCard(
-            value = digestPreviewValue().copy(
+            value = stubDigest().copy(
                 duration = DurationFormatState.ofTotal(Duration.ZERO),
                 total = VolumeFormatState.ofTotal(0f),
                 avgVolume = VolumeFormatState.ofTotal(0f),
@@ -183,7 +181,7 @@ private fun DigestCardZeroLoadPreview() {
 private fun DigestCardLongValuesPreview() {
     PreviewContainer {
         DigestCard(
-            value = digestPreviewValue().copy(
+            value = stubDigest().copy(
                 duration = DurationFormatState.ofTotal(123.hours + 59.minutes),
                 total = VolumeFormatState.ofTotal(184_829.5f),
                 avgVolume = VolumeFormatState.ofTotal(1_502.7f),
@@ -193,21 +191,4 @@ private fun DigestCardLongValuesPreview() {
             ),
         )
     }
-}
-
-private fun digestPreviewValue(): DigestState.Content {
-    val range = DateRange(
-        from = LocalDateTime(2026, 10, 1, 0, 0),
-        to = LocalDateTime(2026, 10, 31, 23, 59, 59),
-    )
-
-    return DigestState.Content(
-        range = DateRangeFormatState.of(range = range),
-        trainingsCount = 5,
-        duration = DurationFormatState.ofTotal(7.hours),
-        total = VolumeFormatState.ofTotal(540f),
-        avgVolume = VolumeFormatState.ofTotal(108f),
-        totalSets = 32,
-        activeDays = 4,
-    )
 }

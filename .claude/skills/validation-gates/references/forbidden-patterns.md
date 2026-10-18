@@ -45,8 +45,8 @@ An existing deviation in the code never authorizes copying it.
 - **`runBlocking { ... }`** anywhere in production.
 - **Manual `CoroutineExceptionHandler`** inside a VM. The pipeline handles errors.
 - **Local exception handling that hides, replaces or presents unhandled failures
-  in a ViewModel** (`try/catch`, `runCatching`, result failure branches). Unwrap
-  with `getOrThrow()` inside `safeLaunch`, including private suspend helpers.
+  in a ViewModel** (`try/catch`, `runCatching`, result failure branches). Call throwing
+  commands inside `safeLaunch`, including private suspend helpers.
   Request isolation, recovery wrappers and stage flags follow
   [the error pipeline](../../ui-feature/references/error-pipeline.md).
 - **`async { }.await()`** to start a single piece of async work. Use `safeLaunch { ... }`. `async` is for parallel forks.
@@ -66,7 +66,7 @@ A ViewModel never calls composables; follow [base-class boundaries](../../ui-fea
 
 ## Data layer
 
-- **`Flow<Result<T>>`** introduced for ordinary observation. Preserve existing Flow contracts; upstream exceptions follow the shared error pipeline. Result-returning commands must propagate cancellation.
+- **`Flow<Result<T>>`** introduced for ordinary observation. Preserve existing Flow contracts; upstream exceptions follow the shared error pipeline. Command contracts follow [operation outcomes](../../data-layer/references/operation-outcomes.md#throwing-suspend-contracts-canonical).
 - **Returning DTOs from a Repository.** Map to domain.
 - **Inline mappers in Repository / ViewModel.** Use `:data-mappers:*`.
 - **`!!` on a DTO field.** Forbidden; use `?: return null` (via `AppLogger.Mapping.log`).
@@ -76,7 +76,7 @@ A ViewModel never calls composables; follow [base-class boundaries](../../ui-fea
   [target null semantics](../../mappers/references/null-safety-and-logging.md).
 - **Raw `String` for a closed-set field in a *domain* model.** A field from a backend dictionary (type, status, kind, category, …) is a domain `<X>Enum` (pure labels — `key` + `companion object of(key)`) or a `sealed interface <X>` (variants carry payload — base `val key` + per-variant `data class`), not a bare `String`. The raw `String` stays only in the DTO / Entity replica; the `…→domain` mapper promotes it via `<X>Enum.of(value)`. Same stance for timestamps (`LocalDateTime`, not `String`) and durations (`Duration`, not `Long`). See [DTO/API contracts](../../data-layer/references/dtos-and-api.md) and [mappers](../../mappers/SKILL.md).
 - **Auto-generated numeric entity IDs replacing established identity.** Preserve server-provided IDs for synced records and business-owned local IDs for drafts; mappers do not generate identity.
-- **Swallowing repository exceptions or cancellation.** Preserve existing Result/throwing contracts; at a suspend Result boundary rethrow CancellationException rather than wrapping it as failure.
+- **Swallowing repository exceptions or cancellation.** Apply [throwing suspend contracts](../../data-layer/references/operation-outcomes.md#throwing-suspend-contracts-canonical); local catches, Result commands and generic recovery wrappers in this chain are forbidden.
 - **Mutating an API-backed cache before the request succeeds.** Local authoritative drafts/preferences write through their own repository contract; they do not require an unrelated network response.
 - **Skipping range reconciliation** (`deleteByCreatedAtRangeExceptIds`). "Deleted on another device" rows linger.
 - **Bypassing BackendClient for Grippo backend requests.** Use GrippoApi → BackendClient. Existing platform credential-provider OAuth exchange retains its approved transport boundary; it does not authorize a second backend client.
@@ -133,7 +133,7 @@ Screen-result rules are defined in the ui-feature skill,
   including private helpers and extensions. Use `safeLaunch` → `ErrorProvider`.
   Private suspend helpers propagate original errors through the same pipeline;
   request isolation follows the [error pipeline](../../ui-feature/references/error-pipeline.md#requests-driven-by-a-long-lived-source), with no new scopes, recovery wrappers or stage flags.
-  `Result.onSuccess` alone does not propagate failure. The required Result MUST
+  Business commands throw directly. A required platform credential Result MUST
   be unwrapped with `getOrThrow()` inside the owned error pipeline or propagated
   to a caller that handles it; failure MUST NOT be silently discarded.
 - **Impure `safeLaunch.mapError`** or replacing original errors before analytics,
@@ -143,7 +143,9 @@ Screen-result rules are defined in the ui-feature skill,
   dialog is dismissed, not when the exception is thrown, and does not suppress the dialog.
 - **Custom error dialogs** outside `DialogConfig.ErrorDisplay`.
 - **Recording exceptions to Firebase manually.** Pipeline does it.
-- **`Result.getOrNull()` without handling `null`.** Silently drops failures.
+- **Required credential Result converted to fallback success** through `getOrNull()`,
+  `getOrElse` or an early return, even when the fallback value is handled. Apply the
+  [error pipeline](../../ui-feature/references/error-pipeline.md); preserve the original failure.
 - **Consuming `CancellationException`.** Must propagate; shared error dispatch excludes it.
 - **Throwing raw `Throwable` from `validateResponse`.** Throw `AppError` subtypes. *(Reviewer-only.)*
 
@@ -244,7 +246,7 @@ unfinished `TODO`/`NotImplementedError` path as done. The positive rule is in
   leaf/container tracking, a screen enum entry without an owning ViewModel, a
   missing or wrong `screenPresentation` on an independent screen.
 - **Telemetry altering business outcomes**: a reporting error replacing a business
-  result, `getOrThrow()` moved outside the decorated block, a throwing use case
+  result, required work moved outside the decorated block, a throwing use case
   reshaped to fit the decorator, or host/config plumbing inferring dialog outcomes.
   The owning rules are in [feature analytics](../../feature-analytics/SKILL.md).
 - **`:data-features:feature-api` imports `:data-services:*`.** Pure contracts.

@@ -42,7 +42,7 @@ when reached) emits this event; there is no claim of complete Back/close coverag
 No shared host/config reporting context or wiring is added. Scrolling,
 chart gestures and automatic dialog view/close telemetry are omitted. No synthetic
 callback events occur during initialization/recreation. The complete existing
-getTrainings(...).getOrThrow() stays inside the decorator, in its existing coroutine
+getTrainings(...) stays inside the decorator, in its existing coroutine
 and loader. It preserves results, business errors and cancellation through the
 existing safeLaunch pipeline. Reporting Exceptions are isolated by the service
 and canonical toolkit operation helper; fatal Errors remain fatal.

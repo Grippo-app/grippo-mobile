@@ -49,6 +49,7 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.goal.GoalMark
 import com.grippo.design.components.menu.MenuValueRow
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.toolbar.Leading
@@ -58,10 +59,10 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.goal_course_title
 import com.grippo.design.resources.provider.goal_optional
 import com.grippo.design.resources.provider.goal_options_collapsed
 import com.grippo.design.resources.provider.goal_options_expanded
-import com.grippo.design.resources.provider.goal_picker_primary_title
 import com.grippo.design.resources.provider.goal_picker_secondary_title
 import com.grippo.design.resources.provider.goal_recovery_section
 import com.grippo.design.resources.provider.goal_routine_section
@@ -281,12 +282,13 @@ private fun MainGoalSection(
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            GoalMark(goal = state.selectedPrimary)
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
             ) {
                 Text(
-                    text = AppTokens.strings.res(Res.string.goal_picker_primary_title),
+                    text = AppTokens.strings.res(Res.string.goal_course_title),
                     style = AppTokens.typography.b13Med(),
                     color = AppTokens.colors.text.secondary,
                 )
@@ -309,6 +311,8 @@ private fun MainGoalSection(
             modifier = Modifier.fillMaxWidth(),
             title = AppTokens.strings.res(Res.string.goal_picker_secondary_title),
             value = state.selectedSecondary?.label() ?: AppTokens.strings.res(Res.string.goal_optional),
+            icon = state.selectedSecondary?.icon(),
+            iconColor = AppTokens.colors.goal.accent,
             onClick = onSecondaryClick,
         )
         MenuValueRow(
@@ -327,6 +331,12 @@ private fun MainGoalSection(
             },
             title = targetTitle,
             value = targetLabel,
+            icon = AppTokens.icons.Calendar,
+            iconColor = if (dateError != null) {
+                AppTokens.colors.semantic.error
+            } else {
+                AppTokens.colors.icon.secondary
+            },
             showDivider = false,
             titleColor = if (dateError != null) {
                 AppTokens.colors.semantic.error

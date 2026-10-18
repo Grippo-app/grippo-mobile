@@ -41,7 +41,7 @@ public class ExerciseValidatorUseCase(
     ): Flow<ExerciseValidationContext> {
         val start = performedAt.date.minus(DatePeriod(days = VALIDATION_HISTORY_DAYS)).atTime(0, 0)
         val recent: Flow<List<Exercise>> = flow {
-            emit(exerciseMetricsFeature.getRecentExercisesByExampleId(exampleId).getOrThrow())
+            emit(exerciseMetricsFeature.getRecentExercisesByExampleId(exampleId))
         }
         return combine(
             trainingFeature.observeTrainings(start, performedAt),

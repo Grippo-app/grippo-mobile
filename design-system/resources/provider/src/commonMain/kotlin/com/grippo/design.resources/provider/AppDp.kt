@@ -92,6 +92,7 @@ public data object AppDp {
     val check: Check = Check
     val calendar: Calendar = Calendar
     val metrics: Metrics = Metrics
+    public val goal: Goal = Goal
     val brandHeader: BrandHeader = BrandHeader
     val brandSplash: BrandSplash = BrandSplash
     val userCard: UserCard = UserCard
@@ -111,6 +112,12 @@ public data object AppDp {
 
     public data object Divider {
         public val thickness: Dp = 1.dp
+    }
+
+    public data object Goal {
+        public val markSize: Dp = 40.dp
+        public val iconSize: Dp = icon.large
+        public val radius: Dp = AppDp.radius.medium
     }
 
     public data object Swipe {
@@ -365,7 +372,6 @@ public data object AppDp {
             public data object Goal {
                 val timelineMarker: Dp = 10.dp
                 val statusMarker: Dp = 6.dp
-                val chart: Dp = 100.dp
                 val breakdown: Breakdown = Breakdown
                 val insight: Insight = Insight
 

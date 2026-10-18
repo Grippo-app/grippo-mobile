@@ -19,7 +19,7 @@ public data class MuscleLoadMeta(
     val dominantGroup: MuscleGroupEnum?,
     /** Sets excluded for nonpositive repetitions or invalid supplied component values. */
     val excludedSets: Int = 0,
-    /** Accepted sets whose exercise anatomy is missing or has no positive muscle shares. */
+    /** Accepted sets whose exercise anatomy is missing, invalid or has no positive muscle shares. */
     val unassignedSets: Int = 0,
     /**
      * Accepted sets omitted entirely from volume because their load requirements are unknown,

@@ -71,6 +71,9 @@ public sealed class DensityFormatState : FormatState<Float> {
         }
 
         public fun of(value: Float?): DensityFormatState {
+            if (value != null && !value.isFinite()) {
+                return Invalid(display = value.toString(), value = null)
+            }
             val normalized = value?.let(::normalize1dp)
 
             return when {
@@ -94,7 +97,9 @@ public sealed class DensityFormatState : FormatState<Float> {
     public fun short(): String {
         val kg = AppTokens.strings.res(Res.string.kg)
         val minutes = AppTokens.strings.res(Res.string.minutes_short)
-        return "${value?.short() ?: "-"}$kg/$minutes"
+        val separator = AppTokens.strings.res(Res.string.decimal_separator)
+        val number = value?.let { formatDecimal(value = it.toDouble(), decimalSeparator = separator) }
+        return "${number ?: "-"}$kg/$minutes"
     }
 
     @Composable
@@ -102,7 +107,8 @@ public sealed class DensityFormatState : FormatState<Float> {
         val kg = AppTokens.strings.res(Res.string.kg)
         val minutes = AppTokens.strings.res(Res.string.minutes_short)
         val tertiary = AppTokens.colors.text.tertiary
-        val display = value?.short()
+        val separator = AppTokens.strings.res(Res.string.decimal_separator)
+        val display = value?.let { formatDecimal(value = it.toDouble(), decimalSeparator = separator) }
         return buildAnnotatedString {
             if (display != null) {
                 append(display)
@@ -117,33 +123,6 @@ public sealed class DensityFormatState : FormatState<Float> {
                     append(minutes)
                 }
             }
-        }
-    }
-
-    private fun Float.short(): String {
-        val normalized = ((this * 10).roundToInt() / 10.0f)
-        if (normalized == 0f) return "0"
-
-        val t = (normalized * 10f).roundToInt()
-        val absT = abs(t)
-        val intPart = absT / 10
-        val frac = absT % 10
-        val sign = if (t < 0) "-" else ""
-        val digits = intPart.toString()
-        val grouped = if (intPart >= 1000) {
-            digits
-                .reversed()
-                .chunked(3)
-                .joinToString(" ")
-                .reversed()
-        } else {
-            digits
-        }
-
-        return if (frac == 0) {
-            "$sign$grouped"
-        } else {
-            "$sign$grouped,$frac"
         }
     }
 

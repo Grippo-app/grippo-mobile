@@ -37,7 +37,7 @@ internal class ProfileEquipmentsViewModel(
 
         safeLaunch {
             analytics.trackOperation(ProfileOperation.RefreshEquipments) {
-                excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
+                excludedEquipmentsFeature.getExcludedEquipments()
             }
         }
     }
@@ -113,7 +113,7 @@ internal class ProfileEquipmentsViewModel(
         analytics.trackEvent(ProfileEvent.Equipments.Apply)
         safeLaunch(loader = ProfileEquipmentsLoader.ApplyButton) {
             analytics.trackOperation(ProfileOperation.SaveEquipments) {
-                excludedEquipmentsFeature.setExcludedEquipments(excludedEquipmentIds).getOrThrow()
+                excludedEquipmentsFeature.setExcludedEquipments(excludedEquipmentIds)
             }
             navigateTo(ProfileEquipmentsDirection.Back)
         }

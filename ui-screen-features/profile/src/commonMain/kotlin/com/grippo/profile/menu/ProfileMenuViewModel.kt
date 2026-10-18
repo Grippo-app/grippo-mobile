@@ -36,7 +36,7 @@ internal class ProfileMenuViewModel(
     init {
         safeLaunch(loader = ProfileMenuLoader.User) {
             analytics.trackOperation(ProfileOperation.RefreshUser) {
-                userFeature.getUser().getOrThrow()
+                userFeature.getUser()
             }
         }
 
@@ -58,19 +58,19 @@ internal class ProfileMenuViewModel(
 
         safeLaunch(loader = ProfileMenuLoader.Goal) {
             analytics.trackOperation(ProfileOperation.RefreshGoal) {
-                goalFeature.getGoal().getOrThrow()
+                goalFeature.getGoal()
             }
         }
 
         safeLaunch(loader = ProfileMenuLoader.Muscles) {
             analytics.trackOperation(ProfileOperation.RefreshMuscles) {
-                excludedMusclesFeature.getExcludedMuscles().getOrThrow()
+                excludedMusclesFeature.getExcludedMuscles()
             }
         }
 
         safeLaunch(loader = ProfileMenuLoader.Equipments) {
             analytics.trackOperation(ProfileOperation.RefreshEquipments) {
-                excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
+                excludedEquipmentsFeature.getExcludedEquipments()
             }
         }
     }

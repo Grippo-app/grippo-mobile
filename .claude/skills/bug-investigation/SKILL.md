@@ -31,7 +31,7 @@ Trace the surface to its code, layer by layer, and check the usual suspects:
 | Layer | Inspect | Usual suspects |
 |---|---|---|
 | Screen / Contract | `*Screen.kt`, `components/` | wrong state branch rendered, callback not wired, loader never shown |
-| ViewModel | `*ViewModel.kt` | `update` lost by capturing `state.value` before a suspend; `Flow.safeLaunch` paused off-screen (1 s grace); result not unwrapped with `getOrThrow()`; navigation collapsed by the conflated channel |
+| ViewModel | `*ViewModel.kt` | `update` lost by capturing `state.value` before a suspend; `Flow.safeLaunch` paused off-screen (1 s grace); failure hidden outside the shared error boundary; navigation collapsed by the conflated channel |
 | Component / navigation | `*Component.kt`, `screen-api` routers, `RootComponent` | Direction branch missing; callback not threaded through `createChild`; result key mismatch; non-serializable route payload |
 | Dialogs | `DialogConfig`, `DialogContentComponent`, `DialogViewModel` | `hasSameContentAs` rejecting a legitimate re-open; `onResult` on a stale step; session closed by a second `open` |
 | Drafts / restoration | `DRAFT` `PersistenceKey`, `@Transient` fields, `ApplicationStateStore.swift` | field not serialized, default recomputed on restore, archive format mismatch, data-backed observer overwriting the draft |

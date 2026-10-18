@@ -58,8 +58,8 @@ public fun PerformanceMetricCard(
 ) {
     val empty = metric.isEmpty()
     val comparisonPercentage = metric.currentVsAveragePercentage
-    val showStatus = !empty && comparisonPercentage != null &&
-            metric.type != PerformanceMetricTypeState.Duration
+    val showStatus = !empty && metric.type != PerformanceMetricTypeState.Duration &&
+            (comparisonPercentage != null || metric.status == PerformanceTrendStatusState.Record)
 
     val (accentColor, accentBackground) = performanceStatusColors(
         status = if (showStatus && presentation == MetricCardPresentation.Detailed) {
@@ -381,6 +381,21 @@ private fun PerformanceMetricCardWithoutComparisonPreview() {
             presentation = MetricCardPresentation.Overview,
         )
         PerformanceMetricCard(metric = metric)
+    }
+}
+
+@AppPreview
+@Composable
+private fun PerformanceMetricCardRecordAfterZeroBaselinePreview() {
+    PreviewContainer {
+        val metric = stubPerformanceMetrics().filterIsInstance<PerformanceMetricState.Volume>().first()
+        PerformanceMetricCard(
+            metric = metric.copy(
+                average = 0f,
+                currentVsAveragePercentage = null,
+                status = PerformanceTrendStatusState.Record,
+            ),
+        )
     }
 }
 

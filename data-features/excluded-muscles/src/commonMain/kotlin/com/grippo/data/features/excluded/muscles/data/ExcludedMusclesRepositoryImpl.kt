@@ -1,5 +1,6 @@
 package com.grippo.data.features.excluded.muscles.data
 
+import com.grippo.core.error.provider.AppError
 import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.excluded.muscles.domain.ExcludedMusclesRepository
 import com.grippo.entity.domain.muscles.toDomain
@@ -29,29 +30,34 @@ internal class ExcludedMusclesRepositoryImpl(
             }
     }
 
-    override suspend fun getExcludedMuscles(): Result<Unit> {
+    override suspend fun getExcludedMuscles(): Unit {
+        val profileId = getActiveProfileId()
+            ?: throw AppError.Expected(
+                message = "An active profile is required to load excluded muscles",
+                description = null,
+            )
         val response = api.getExcludedMuscles()
-
-        response.onSuccess {
-            val profileId = getActiveProfileId() ?: return@onSuccess
-            val ids = it.mapNotNull { m -> m.id }
-            userDao.insertOrReplaceExcludedMuscles(profileId, ids)
+        val ids = response.mapNotNull { it.id }
+        if (ids.size != response.size) {
+            throw AppError.Network.IncompleteResponse()
         }
-
-        return response.map { }
+        userDao.insertOrReplaceExcludedMuscles(profileId, ids)
     }
 
-    override suspend fun setExcludedMuscles(ids: List<String>): Result<Unit> {
-        val response = api.postExcludedMuscles(IdsBody(ids))
+    override suspend fun setExcludedMuscles(ids: List<String>): Unit {
+        val profileId = getActiveProfileId()
+            ?: throw AppError.Expected(
+                message = "An active profile is required to save excluded muscles",
+                description = null,
+            )
+        api.postExcludedMuscles(IdsBody(ids))
 
-        response.onSuccess {
-            val profileId = getActiveProfileId() ?: return@onSuccess
-            val muscles = api.getExcludedMuscles().getOrNull() ?: return@onSuccess
-            val ids = muscles.mapNotNull { it.id }
-            userDao.insertOrReplaceExcludedMuscles(profileId, ids)
+        val muscles = api.getExcludedMuscles()
+        val savedIds = muscles.mapNotNull { it.id }
+        if (savedIds.size != muscles.size) {
+            throw AppError.Network.IncompleteResponse()
         }
-
-        return response.map { }
+        userDao.insertOrReplaceExcludedMuscles(profileId, savedIds)
     }
 
     private fun observeActiveProfileId(): Flow<String?> {

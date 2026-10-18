@@ -33,9 +33,12 @@ relying on a detail below.
   `Database` and each of the ten DAOs through `@Single` provider methods.
 - Range reconciliation in `TrainingRepositoryImpl` uses `TrainingDao.deleteByCreatedAtRangeExceptIds(from, to, ids)`
   when server IDs exist and `deleteByCreatedAtRange(from, to)` when the confirmed set is empty,
-  then returns `Result.failure(AppError.Network.IncompleteResponse())` when the saved count differs
+  then throws `AppError.Network.IncompleteResponse()` when the saved count differs
   from the received count; the policy is owned by [operation outcomes](operation-outcomes.md).
 - Timestamps are persisted through `DateTimeUtils.toUtcIso(...)`.
+- `WeightHistoryDao.replaceByUserId` transactionally replaces the requested user's
+  snapshot after repository validation; inspect it alongside the
+  [operation outcome/cache rules](operation-outcomes.md).
 
 ## Rules
 

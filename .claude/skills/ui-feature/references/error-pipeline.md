@@ -1,5 +1,7 @@
 # Error Pipeline
 
+The `MyLoader`/`MyDirection`/`feature` examples are schematic; linked source files own real APIs.
+
 Unhandled errors flow through a **single path**. Analytics observes the original
 operation error without classifying it or changing recovery. Reporting respects core collection policy; ErrorProvider
 translates failures into UI-friendly dialogs.
@@ -21,7 +23,7 @@ Every unhandled failure follows this path automatically. The ViewModel author wr
 
 ```kotlin
 safeLaunch(loader = MyLoader.Fetch) {
-    feature.fetch().getOrThrow()        // .getOrThrow() converts Result.Failure into a throw
+    feature.fetch()
 }
 ```
 
@@ -69,7 +71,7 @@ safeLaunch(
     },
 ) {
     val body = state.value.form.toDomain()
-    feature.save(body).getOrThrow()
+    feature.save(body)
     navigateTo(MyDirection.Close)
 }
 ```
@@ -78,7 +80,7 @@ safeLaunch(
 // BAD — manual catch bypasses the shared error path
 safeLaunch {
     try {
-        feature.save(...).getOrThrow()
+        feature.save(...)
         navigateTo(...)
     } catch (e: Throwable) {
         update { it.copy(error = e.message) }    // forbidden
@@ -88,12 +90,13 @@ safeLaunch {
 
 Do not hide, replace or present unhandled failures through local catches,
 `runCatching`, `Result.onFailure`, `recover`, `fold` or `getOrElse` in a ViewModel
-or its helpers. Unwrap failed results with `getOrThrow()` inside `safeLaunch`.
-`Result.onSuccess` alone does not propagate failures. Unwrap the returned Result
-with `getOrThrow()` inside `safeLaunch` before treating the operation as complete. Use pure
+or its helpers. Call throwing Feature/UseCase commands directly inside `safeLaunch`.
+Keep all required work inside the decorated business block. Credential adapters that return
+`Result` still need `getOrThrow()` inside that block; ignoring a failed Result loses its error. Use pure
 `mapError` only for dialog presentation and `onError` only after dismissal.
-Foundation's loader cleanup via `try/finally` and service/domain error boundaries
-remain valid.
+Foundation's loader cleanup via `try/finally` and documented infrastructure boundaries
+remain valid. Business contracts follow
+[throwing suspend operations](../../data-layer/references/operation-outcomes.md#throwing-suspend-contracts-canonical).
 
 ## Requests driven by a long-lived source
 
@@ -114,32 +117,17 @@ into a pipeline that stops permanently after its first handled request error.
 
 ## Splash profile loading
 
-Splash has one `safeLaunch` with `AppContent`, started through class-level
-`loadContent()` from `init` and reused by `onError = ::loadContent`. Token,
-reference and profile failures all use the standard log/crash/dialog pipeline.
-Closing the dialog retries the complete sequence; Splash itself does not turn
-lookup failures into authorization or Home navigation. Root independently owns
-navigation after token loss. With a token, `loadProfile()` runs in that same coroutine:
+Inspect `ui-screen-features/authorization/.../splash/SplashViewModel.kt`.
+`loadContent()` starts one `safeLaunch` with `AppContent`, reused by
+`onError = ::loadContent`. It loads the reference catalogs and calls
+`resolveDirection()` in that same coroutine. Onboarding and token presence select
+Onboarding/AuthProcess first; only an existing session reaches `hasProfile()`.
 
-```kotlin
-private suspend fun loadProfile() {
-    val hasProfile = analytics.trackOperation(AuthOperation.SessionCheck) {
-        hasProfile()
-    }
-
-    val destination = if (hasProfile) {
-        SplashDirection.Home
-    } else {
-        SplashDirection.CreateProfile
-    }
-    navigateTo(destination)
-}
-```
-
-`hasProfile` is a business Boolean: `true` leads to Home, `false` to CreateProfile.
-Analytics decorates only the lookup
-and preserves its result/error. Cancellation propagates naturally; there is no
-local catch, second launch, extra loader or recovery wrapper.
+`hasProfile()` decorates its cached-user read and required remote `getUser()` with
+SessionCheck. Its Boolean selects Home or ProfileCreation. Lookup failures use the
+shared log/crash/dialog pipeline and do not become an absent profile. Closing the
+error dialog retries the complete startup sequence; Root independently owns
+navigation after token loss. No recovery wrapper or second launch is needed.
 
 ## Only emits, not retries
 
@@ -154,8 +142,10 @@ before dismissal or an analytics retry policy.
 
 ## Anti-patterns (MUST avoid)
 
-- **Local catches that hide or present failures** — use `getOrThrow()` and the shared pipeline, including private suspend helpers; request isolation follows the source contract above.
-- **`Result.getOrNull()` in ViewModel** without handling `null` — silently drops failures.
+- **Local catches that hide or present failures** — call throwing commands inside the shared pipeline, including private suspend helpers; request isolation follows the source contract above.
+- **Discarding a required credential Result failure through `getOrNull()`, `getOrElse`
+  or an early-success return.** Unwrap it with `getOrThrow()` inside the existing owned
+  error/analytics block; handling the fallback value does not preserve the failure.
 - **Adding Flow<Result<T>> for ordinary cached observations** instead of preserving Flow<Domain>. Observation failures still propagate through Flow.safeLaunch; cached data does not guarantee a successful stream.
 - **Showing custom error dialogs** — use `DialogConfig.ErrorDisplay` via the pipeline.
 - **Consuming `CancellationException`** — it must propagate; the shared dispatcher excludes it.

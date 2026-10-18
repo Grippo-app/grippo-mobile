@@ -51,7 +51,7 @@ internal class ProfileGoalViewModel(
 
         safeLaunch {
             analytics.trackOperation(ProfileOperation.RefreshGoal) {
-                goalFeature.getGoal().getOrThrow()
+                goalFeature.getGoal()
             }
         }
     }
@@ -104,7 +104,7 @@ internal class ProfileGoalViewModel(
 
             analytics.trackEvent(ProfileEvent.Goal.Save)
             analytics.trackOperation(ProfileOperation.SaveGoal) {
-                goalFeature.setGoal(request).getOrThrow()
+                goalFeature.setGoal(request)
             }
 
             navigateTo(ProfileGoalDirection.Back)

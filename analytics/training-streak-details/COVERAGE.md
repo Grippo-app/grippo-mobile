@@ -65,6 +65,9 @@ The UI describes inferred recent rhythm rather than a prescribed goal; internal
 fit scores are not shown as a probability. Timeline rows retain complete calendar
 week/cycle bounds and identify partially observed periods, without treating an
 unfinished period as a failure. Empty timelines have no section title.
+Detected cycles count only their expected training positions toward completion
+and remaining capacity; activity on rest positions does not replace them. Weekly
+targets continue to accept any distinct training date in the week.
 
 No event, operation, schema, encoder, screen hook, consent or transport symbol
 changes with this calculation update; the live admin synchronization trigger does

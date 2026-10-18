@@ -18,7 +18,7 @@ Apply [mvi-contract.md](mvi-contract.md) instead of copying a complete scaffold.
 The ViewModel owns State/update, validated inputs, loaders, business operations
 and Directions; the Component resolves dependencies inside retainedInstance,
 collects state/loaders and translates every Direction through ordinary callbacks.
-Required Result calls unwrap inside safeLaunch; errors/cancellation follow the
+Required commands run directly inside safeLaunch; errors/cancellation follow the
 [shared pipeline](error-pipeline.md). Apply the canonical multiline business style.
 
 For lists, rebuild presentation through existing Feature Flows and directional

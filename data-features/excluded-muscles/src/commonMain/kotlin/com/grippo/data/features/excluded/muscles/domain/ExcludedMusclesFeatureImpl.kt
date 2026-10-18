@@ -14,11 +14,11 @@ internal class ExcludedMusclesFeatureImpl(
         return repository.observeExcludedMuscles()
     }
 
-    override suspend fun getExcludedMuscles(): Result<Unit> {
+    override suspend fun getExcludedMuscles(): Unit {
         return repository.getExcludedMuscles()
     }
 
-    override suspend fun setExcludedMuscles(ids: List<String>): Result<Unit> {
+    override suspend fun setExcludedMuscles(ids: List<String>): Unit {
         return repository.setExcludedMuscles(ids)
     }
 }

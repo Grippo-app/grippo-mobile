@@ -30,7 +30,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.training_streak_insights_title
 import com.grippo.design.resources.provider.training_streak_timeline_title
 import kotlinx.collections.immutable.persistentListOf
-import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.datetime.LocalDateTime
@@ -135,7 +134,10 @@ private fun ScreenPreview() {
     PreviewContainer {
         TrainingStreakDetailsScreen(
             state = TrainingStreakDetailsDialogState(
-                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(2026, 10, 11, 0, 0),
+                    to = LocalDateTime(2026, 10, 17, 23, 59),
+                ),
                 streak = stubTrainingStreaks().first()
             ),
             loaders = persistentSetOf(),
@@ -162,7 +164,10 @@ private fun NoActiveDaysPreview() {
     PreviewContainer {
         TrainingStreakDetailsScreen(
             state = TrainingStreakDetailsDialogState(
-                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(2026, 10, 11, 0, 0),
+                    to = LocalDateTime(2026, 10, 17, 23, 59),
+                ),
                 streak = streak,
             ),
             loaders = persistentSetOf(),

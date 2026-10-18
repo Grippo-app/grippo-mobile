@@ -18,15 +18,15 @@ internal class WeightHistoryFeatureImpl(
         return repository.observeLastWeight()
     }
 
-    override suspend fun getWeightHistory(): Result<Unit> {
+    override suspend fun getWeightHistory(): Unit {
         return repository.getWeightHistory()
     }
 
-    override suspend fun updateWeight(value: Float): Result<Unit> {
+    override suspend fun updateWeight(value: Float): Unit {
         return repository.updateWeight(value)
     }
 
-    override suspend fun deleteWeight(id: String): Result<Unit> {
+    override suspend fun deleteWeight(id: String): Unit {
         return repository.deleteWeight(id)
     }
 }

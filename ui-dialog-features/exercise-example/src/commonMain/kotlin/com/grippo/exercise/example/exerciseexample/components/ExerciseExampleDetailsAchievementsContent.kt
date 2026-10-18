@@ -82,19 +82,23 @@ internal fun ExerciseExampleDetailsAchievementsContent(
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-            state.volumeWithSessionDates()
-                ?.takeIf { it.entries.isNotEmpty() }
-                ?.let { data ->
-                    VolumeMetricChart(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                        value = data,
-                        xAxisLabels = BarChartXAxisLabels.WithoutLabels
-                    )
+            state.exerciseVolume?.let { series ->
+                val chronological = state.recent.asReversed()
+                val entries = series.entries.mapIndexed { index, entry ->
+                    entry.copy(label = chronological[index].createdAt.short())
+                }.toPersistentList()
+                val data = series.copy(entries = entries)
 
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-                }
+                VolumeMetricChart(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                    value = data,
+                    xAxisLabels = BarChartXAxisLabels.WithoutLabels
+                )
+
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            }
 
             state.recent.forEachIndexed { index, item ->
                 key(item.id) {
@@ -115,32 +119,19 @@ internal fun ExerciseExampleDetailsAchievementsContent(
     }
 }
 
-@Composable
-private fun ExerciseExampleDetailsState.volumeWithSessionDates(): VolumeSeriesState? {
-    val series = exerciseVolume ?: return null
-    val chronological = recent.asReversed()
-    if (series.entries.size != chronological.size) {
-        return series
-    }
-
-    val entries = series.entries.mapIndexed { index, entry ->
-        val date = chronological[index].createdAt.short()
-        if (date.isNotBlank()) entry.copy(label = date) else entry
-    }.toPersistentList()
-    return series.copy(entries = entries)
-}
-
 @AppPreview
 @Composable
 private fun ExerciseExampleDetailsAchievementsContentPreview() {
     PreviewContainer {
+        val recent = stubExercises()
+        val volume = stubVolumeSeries()
         ExerciseExampleDetailsAchievementsContent(
             modifier = Modifier.fillMaxWidth(),
             state = ExerciseExampleDetailsState(
-                recent = stubExercises(),
+                recent = recent,
                 estimatedOneRepMax = stubEstimatedOneRepMax(),
                 achievements = stubAchievements(),
-                exerciseVolume = stubVolumeSeries(),
+                exerciseVolume = volume.copy(entries = volume.entries.take(recent.size).toPersistentList()),
             ),
             loaders = persistentSetOf(),
         )

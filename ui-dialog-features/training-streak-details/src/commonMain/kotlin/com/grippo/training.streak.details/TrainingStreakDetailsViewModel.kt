@@ -23,8 +23,7 @@ public class TrainingStreakDetailsViewModel(
 ), TrainingStreakDetailsContract {
 
     init {
-        trainingFeature
-            .observeTrainings(start = range.from, end = range.to)
+        trainingFeature.observeTrainings(start = range.from, end = range.to)
             .combine(currentDateFlow()) { trainings, _ -> trainings }
             .onEach(::provideTrainingStreak)
             .safeLaunch()

@@ -5,10 +5,10 @@ Feature interfaces and UseCases live in `data-features/feature-api/`.
 
 - Repository owns service access, mapping, cache writes and reconciliation. FeatureImpl exposes
   the public contract; a composing UseCase owns complete domain operations spanning Features.
-- Observation returns domain Flow from the authoritative local owner. One-shot methods preserve
-  their actual Result/throwing shape; do not mechanically convert all methods into one pattern.
+- Observation returns domain Flow from the authoritative local owner. One-shot commands follow
+  [throwing suspend contracts](operation-outcomes.md#throwing-suspend-contracts-canonical).
 - MUST apply the canonical [operation outcome/cache rules](operation-outcomes.md) before API-backed
-  cache writes, range reconciliation or deciding that optional readback failure is nonblocking.
+  cache writes, range reconciliation or required follow-up reads.
   Local drafts/preferences follow their owner contract; they do not require server confirmation.
 - Repository never leaks DTO/Entity through Feature contracts. Compose directional mapper calls
   here rather than making mapper modules depend on each other.
@@ -40,23 +40,17 @@ owner; do not label them as detail-derived or add a guessed completeness flag.
 
 ## UseCase shapes (verified)
 
-The 25 public UseCases live in `data-features/feature-api/.../<area>/*UseCase.kt` and are all
-registered as `single { }` entries of the hand-written `FeatureApiModule`
-(`@Module public class FeatureApiModule { @get:JvmName("module") public val module: ModuleObject = module { ... } }`,
-listed in `Koin.init` as `FeatureApiModule().module`; see [DI](../../di-modules/SKILL.md)).
-Their shapes differ and each is preserved:
+Public UseCases live in `data-features/feature-api/.../<area>/*UseCase.kt` and are
+registered in the existing hand-written `FeatureApiModule` (see
+[DI](../../di-modules/SKILL.md)). Inspect the actual source before changing a contract.
 
-- Result-returning commands (4): `SetTrainingUseCase.execute(training): Result<String?>`,
-  `UpdateTrainingUseCase.execute(id, training): Result<String?>`,
-  `DeleteTrainingUseCase.execute(id): Result<Unit>`, `UpdateWeightUseCase.execute(value): Result<Unit>`.
-- Throwing commands: `LoginUseCase.loginEmail/loginGoogle/loginApple(...): Boolean`,
-  `RegisterUseCase.createAccount(email, password): Boolean`, `LogoutUseCase.execute()`,
-  `CreateProfileUseCase.execute(profile)`, `DeleteProfileUseCase.execute()`; they unwrap Feature
-  results with `getOrThrow()` and a `false` return is a domain outcome, not an error.
-- Flow or pure calculators: `UserExerciseExamplesUseCase.execute(params): Flow<...>`,
-  `ExerciseValidatorUseCase.observeContext(...)`/`execute(...)` and the metrics use cases
-  (`fromTrainings`, `fromExercises`, `digest`, `trainingTimeline`, ...).
+- `SetTrainingUseCase` and `UpdateTrainingUseCase` return the saved training's non-null ID
+  after required hydration and user refresh. `DeleteTrainingUseCase` and `UpdateWeightUseCase`
+  complete their required mutation and refresh before returning `Unit`.
+- Login/Register commands return the existing profile-presence Boolean. Logout, profile creation
+  and account deletion complete their required cleanup/preparation before returning.
+- `UserExerciseExamplesUseCase` and validator context observations retain their Flow contracts.
+  Metrics and validators keep their pure calculator return types.
 
-A new command use case is `public suspend fun execute(...): Result<T>`; existing ones keep their
-shape. ViewModels unwrap a required Result with `getOrThrow()` inside `safeLaunch`
-([operation outcomes](operation-outcomes.md)).
+Return/error semantics are owned by
+[operation outcomes](operation-outcomes.md#throwing-suspend-contracts-canonical).

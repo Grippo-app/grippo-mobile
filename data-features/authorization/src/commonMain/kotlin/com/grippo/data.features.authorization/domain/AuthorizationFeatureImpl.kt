@@ -9,19 +9,19 @@ internal class AuthorizationFeatureImpl(
     private val repository: AuthorizationRepository
 ) : AuthorizationFeature {
 
-    override suspend fun login(email: String, password: String): Result<Unit> {
+    override suspend fun login(email: String, password: String): Unit {
         return repository.login(email, password)
     }
 
-    override suspend fun google(token: String): Result<Unit> {
+    override suspend fun google(token: String): Unit {
         return repository.google(token)
     }
 
-    override suspend fun apple(code: String): Result<Unit> {
+    override suspend fun apple(code: String): Unit {
         return repository.apple(code)
     }
 
-    override suspend fun register(email: String, password: String): Result<Unit> {
+    override suspend fun register(email: String, password: String): Unit {
         return repository.register(email, password)
     }
 
@@ -33,11 +33,11 @@ internal class AuthorizationFeatureImpl(
         return repository.logout()
     }
 
-    override suspend fun updatePushToken(token: String): Result<Unit> {
+    override suspend fun updatePushToken(token: String): Unit {
         return repository.updatePushToken(token)
     }
 
-    override suspend fun deletePushToken(): Result<Unit> {
+    override suspend fun deletePushToken(): Unit {
         return repository.deletePushToken()
     }
 

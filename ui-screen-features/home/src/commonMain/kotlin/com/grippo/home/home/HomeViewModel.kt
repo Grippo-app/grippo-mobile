@@ -86,9 +86,9 @@ internal class HomeViewModel(
     private val exerciseSpotlightUseCase: ExerciseSpotlightUseCase,
     private val trainingStreakUseCase: TrainingStreakUseCase,
     private val performanceTrendUseCase: PerformanceTrendUseCase,
-    private val exerciseExampleFeature: ExerciseExampleFeature,
+    exerciseExampleFeature: ExerciseExampleFeature,
     private val stringProvider: StringProvider,
-    private val permissionManager: PermissionManager,
+    permissionManager: PermissionManager,
     private val notificationManager: NotificationManager,
     private val goalFollowingUseCase: GoalFollowingUseCase,
     userFeature: UserFeature,
@@ -131,17 +131,7 @@ internal class HomeViewModel(
         }
 
         safeLaunch {
-            val weightNotificationKey = NotificationKey.ChangeWeight
-
-            if (notificationManager.isPending(weightNotificationKey).not()) {
-                val notification = AppNotification(
-                    id = weightNotificationKey,
-                    title = stringProvider.get(Res.string.notification_weight_title),
-                    body = stringProvider.get(Res.string.notification_weight_description),
-                    deeplink = Deeplink.WeightHistory.key
-                )
-                notificationManager.show(notification, 7.days)
-            }
+            scheduleWeightReminder()
         }
 
         val selectedPeriods = state
@@ -154,22 +144,21 @@ internal class HomeViewModel(
 
         metricPeriods
             .flatMapLatest { period ->
-                trainingFeature
-                    .observeTrainings(start = period.from, end = period.to)
+                trainingFeature.observeTrainings(start = period.from, end = period.to)
                     .flatMapLatest { trainings ->
                         val ids = trainings.flatMap { it.exercises }.map { it.exerciseExample.id }.distinct()
-                        exerciseExampleFeature
-                            .observeExerciseExamples(ids)
-                            .onEach { examples ->
-                                provideTrainings(list = trainings, period = period, examples = examples)
+                        exerciseExampleFeature.observeExerciseExamples(ids)
+                            .map { examples ->
+                                Triple(first = period, second = trainings, third = examples)
                             }
                     }
-            }.safeLaunch()
+            }
+            .onEach(::provideTrainings)
+            .safeLaunch()
 
         metricPeriods
             .flatMapLatest { period ->
-                trainingFeature
-                    .observeTrainings(start = period.from, end = period.to)
+                trainingFeature.observeTrainings(start = period.from, end = period.to)
                     .flatMapLatest(muscleLoadingSummaryUseCase::observeFromTrainings)
             }
             .onEach(::provideMuscleLoad)
@@ -180,7 +169,7 @@ internal class HomeViewModel(
                 combine(
                     trainingFeature.observeTrainings(start = period.from, end = period.to),
                     goalFeature.observeGoal(),
-                ) { trainings, goal -> Triple(period, trainings, goal) }
+                ) { trainings, goal -> Triple(first = period, second = trainings, third = goal) }
                     .flatMapLatest { source ->
                         val ids = source.second.flatMap { it.exercises }.map { it.exerciseExample.id }.distinct()
                         exerciseExampleFeature.observeExerciseExamples(ids).map { source }
@@ -194,26 +183,48 @@ internal class HomeViewModel(
             .safeLaunch()
 
         safeLaunch {
-            analytics.trackOperation(HomeOperation.RefreshExerciseExamples) {
-                exerciseExampleFeature.getExerciseExamples().getOrThrow()
+            analytics.trackOperation(operation = HomeOperation.RefreshExerciseExamples) {
+                exerciseExampleFeature.getExerciseExamples()
             }
         }
 
         safeLaunch {
             val status = localSettingsFeature.observeHomeWelcomeStatus().first()
-            if (status != HomeWelcomeStatus.PendingCelebration) return@safeLaunch
-
-            update { it.copy(showWelcomeConfetti = true) }
-
-            localSettingsFeature.setHomeWelcomeStatus(HomeWelcomeStatus.Celebrated)
+            provideWelcomeStatus(status)
         }
+    }
+
+    private suspend fun scheduleWeightReminder() {
+        val key = NotificationKey.ChangeWeight
+        if (notificationManager.isPending(key)) {
+            return
+        }
+
+        val notification = AppNotification(
+            id = key,
+            title = stringProvider.get(Res.string.notification_weight_title),
+            body = stringProvider.get(Res.string.notification_weight_description),
+            deeplink = Deeplink.WeightHistory.key,
+        )
+
+        notificationManager.show(notification = notification, delay = 7.days)
+    }
+
+    private suspend fun provideWelcomeStatus(value: HomeWelcomeStatus) {
+        if (value != HomeWelcomeStatus.PendingCelebration) {
+            return
+        }
+
+        localSettingsFeature.setHomeWelcomeStatus(HomeWelcomeStatus.Celebrated)
+
+        update { it.copy(showWelcomeConfetti = true) }
     }
 
     private suspend fun refreshTrainings(period: DateRange) {
         withLoader(HomeLoader.Trainings) {
             val refresh = safeLaunch {
-                analytics.trackOperation(HomeOperation.RefreshTrainings) {
-                    trainingFeature.getTrainings(start = period.from, end = period.to).getOrThrow()
+                analytics.trackOperation(operation = HomeOperation.RefreshTrainings) {
+                    trainingFeature.getTrainings(start = period.from, end = period.to)
                 }
             }
 
@@ -259,11 +270,8 @@ internal class HomeViewModel(
         update { it.copy(range = range) }
     }
 
-    private fun provideTrainings(
-        list: List<Training>,
-        period: DateRange,
-        examples: List<ExerciseExample>,
-    ) {
+    private fun provideTrainings(value: Triple<DateRange, List<Training>, List<ExerciseExample>>) {
+        val (period, list, examples) = value
         // Always run the performance use case — it returns 5 metrics regardless
         // of input size (Empty status when sparse), so the dashboard preserves a
         // stable card layout when the user is past the unlock thresholds.
@@ -327,8 +335,8 @@ internal class HomeViewModel(
         val rangeLabel = state.value.range.label()
         val metricLabel = type.labelText()
         val title = rangeLabel?.let {
-            UiText.Res(Res.string.value_performance_trend, persistentListOf(it, metricLabel))
-        } ?: UiText.Res(Res.string.performance_trend, persistentListOf(metricLabel))
+            UiText.Res(value = Res.string.value_performance_trend, formatArgs = persistentListOf(it, metricLabel))
+        } ?: UiText.Res(value = Res.string.performance_trend, formatArgs = persistentListOf(metricLabel))
         val dialog = DialogConfig.PerformanceTrendDetails(
             title = title,
             range = range,
@@ -344,7 +352,7 @@ internal class HomeViewModel(
 
         val rangeLabel = state.value.range.label()
         val title = rangeLabel?.let {
-            UiText.Res(Res.string.value_muscle_loading, persistentListOf(it))
+            UiText.Res(value = Res.string.value_muscle_loading, formatArgs = persistentListOf(it))
         } ?: UiText.Res(Res.string.muscle_loading)
         val dialog = DialogConfig.MuscleLoadingDetails(
             title = title,
@@ -364,10 +372,11 @@ internal class HomeViewModel(
             title = UiText.Res(Res.string.period_picker_title),
             initial = state.value.range.kind,
             onResult = { result ->
-                analytics.trackEvent(HomeEvent.PeriodConfirmed)
+                analytics.trackEvent(event = HomeEvent.PeriodConfirmed)
                 safeLaunch {
-                    analytics.trackOperation(HomeOperation.SavePeriod) {
-                        localSettingsFeature.setRange(result.toDomain()).getOrThrow()
+                    analytics.trackOperation(operation = HomeOperation.SavePeriod) {
+                        val range = result.toDomain()
+                        localSettingsFeature.setRange(range)
                     }
                 }
             }
@@ -392,7 +401,7 @@ internal class HomeViewModel(
 
         val rangeLabel = state.value.range.label()
         val title = rangeLabel?.let {
-            UiText.Res(Res.string.value_training_streak, persistentListOf(it))
+            UiText.Res(value = Res.string.value_training_streak, formatArgs = persistentListOf(it))
         } ?: UiText.Res(Res.string.training_streak)
         val dialog = DialogConfig.TrainingStreakDetails(
             title = title,

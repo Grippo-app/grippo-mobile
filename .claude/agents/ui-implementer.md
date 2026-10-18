@@ -57,7 +57,7 @@ build is authorized. Missing prerequisites are reported, not invented.
    serializable routes/payloads, `createChild` branches, constructor-threaded
    callbacks, receiver-owned result keys, `DialogConfig` + `hasSameContentAs`
    where applicable.
-3. Apply at authoring time: `safeLaunch` + `getOrThrow()` only, no local catches;
+3. Apply at authoring time: direct throwing calls inside `safeLaunch`, no local catches;
    immutable State with `UiText`/`*FormatState`; `AppTokens` only; previews with
    `Contract.Empty`; `screenPresentation` on every independent screen; `DRAFT`
    `PersistenceKey` for nonsecret drafts with `@Transient` rebuilt fields; the

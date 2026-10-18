@@ -62,14 +62,16 @@ rhythm from at least three fully observed completed weeks (including zero weeks)
 not a profile/experience prescription. Supported cycles require at least three
 repeats. Labels describe training days and observed rhythm, without probability
 claims. Details retain the full dated periods and mark partial periods.
-Performance compares the latest session with available positive finite values
+Performance compares the latest session with available nonnegative finite values
 from preceding sessions in the selected period. Missing current/baseline values
 remain unavailable; the displayed percentage and status share that comparison,
 with a 5% minimum widened by historical variability. A period record requires a
 strict increase over the preceding maximum. Duration remains neutral and retains
 fractional minutes; its compact Home view deliberately shows the percentage
 without a second average value. The five metrics retain their order and click
-owners. These pure calculations add no telemetry or persisted fields.
+owners. Recorded zero remains available; a zero baseline has no percentage
+comparison, and density requires a positive duration denominator. These pure
+calculations add no telemetry or persisted fields.
 The last-training recap labels its mapped exercise count as Available exercises,
 preserves saved duration/volume, identifies the selected-period scope and shows date,
 duration, volume and exercise count; its existing Calendar action opens history.
@@ -111,11 +113,11 @@ it explains the existing card action and adds no control or observation.
 | onOpenMuscleLoading / onOpenTrainingStreak / onOpenGoalDetails (GoalCard click) | MuscleLoadingClicked / TrainingStreakClicked / GoalDetailsClicked | Only after the nonnull resolved range guard |
 | onPerformanceMetricClick(type) | PerformanceMetricClicked → `home_performance_metric_clicked` | Only after the nonnull range guard; metric values/type omitted; the performance cards render only past the lifetime unlock thresholds (two trainings for the duration trend, three for performance trends), so eligibility is also UI-gated |
 | onOpenPeriodPicker (HighlightsHeader) | PeriodPickerClicked → `home_period_picker_clicked` | Existing dialog opening; no guard; the picker seeds from the current range kind |
-| PeriodPicker `onResult` closure | PeriodConfirmed → `home_period_confirmed`, then SavePeriod | Accepted result delivered after the sheet finishes; the picker emits on every card tap, including the already selected kind; the complete `setRange(result).getOrThrow()` block is decorated |
+| PeriodPicker `onResult` closure | PeriodConfirmed → `home_period_confirmed`, then SavePeriod | Accepted result delivered after the sheet finishes; the picker emits on every card tap, including the already selected kind; the complete `setRange(result)` block is decorated |
 | onAddGoal (GoalCard update action and the HomeUnlockBanner "Set goal" call to action) and the TrainingGoalDetails `onAddGoal` closure | AddGoalClicked → `home_add_goal_clicked` | Three controls share one event; existing navigation at the callback owner; no reporting context propagated and no control attribution |
 | onBack (BackCallback registered by HomeComponent) | DismissRequested → `home_dismiss_requested` | Existing Back callback |
-| Range-driven `mapLatest` → `refreshTrainings`, per-request `safeLaunch` under the Trainings loader | RefreshTrainings → `home_task_*` {home_operation = refresh_trainings} | Complete `getTrainings(start, end).getOrThrow()` block; waits for the resolved persisted range. A failed request reaches the standard error pipeline without terminating later range refreshes; no automatic retry. Range/lifecycle cancellation cancels and joins the request before replacing the loader. Clock-only local metric recomputation does not refresh the server, while changed rolling date bounds do; `Processing.WhileActive` re-runs it after a resume beyond the one-second disconnect grace |
-| Startup safeLaunch | RefreshExerciseExamples → `home_task_*` {refresh_exercise_examples} | Complete `getExerciseExamples().getOrThrow()` block; once per fresh VM, outside any loader; the exercise-example first load lives here, not in auth/profile creation |
+| Range-driven `mapLatest` → `refreshTrainings`, per-request `safeLaunch` under the Trainings loader | RefreshTrainings → `home_task_*` {home_operation = refresh_trainings} | Complete `getTrainings(start, end)` block; waits for the resolved persisted range. A failed request reaches the standard error pipeline without terminating later range refreshes; no automatic retry. Range/lifecycle cancellation cancels and joins the request before replacing the loader. Clock-only local metric recomputation does not refresh the server, while changed rolling date bounds do; `Processing.WhileActive` re-runs it after a resume beyond the one-second disconnect grace |
+| Startup safeLaunch | RefreshExerciseExamples → `home_task_*` {refresh_exercise_examples} | Complete `getExerciseExamples()` block; once per fresh VM, outside any loader; the exercise-example first load lives here, not in auth/profile creation |
 | onWelcomeConfettiShown | Deliberate omission | Rendering callback from the confetti parade, not a user click |
 
 All ten interaction schemas are version 1 and parameterless; the operation schemas
@@ -126,7 +128,7 @@ variants, the three HomeOperation values and the one HomeScreen value have VM
 consumers and exhaustive encoders. Toolkit decoration owns fresh operation IDs,
 monotonic timing, original return values/exceptions and cancellation; `trackEvent`
 isolates ordinary reporting exceptions and the failed operation payload drops the
-error object. Failed Result values reach the standard error pipeline instead of
+error object. Command exceptions reach the standard error pipeline instead of
 being silently discarded by startup refreshes. No entity IDs, selected date
 bounds, raw input, measurements or errors are encoded.
 
@@ -159,9 +161,9 @@ success-rate claim or historical backfill is introduced.
 Dialog presentation/close/cancellation for the six overlays, metric type and
 selected period attribution, control attribution for the three AddGoalClicked
 emitters, the notification permission request and reminder scheduling, the
-welcome-status read/write (read once with `first()`; the Celebrated write's
-Result is discarded, so a failed write reaches neither the error pipeline nor
-analytics) and the metric aggregation use cases are not tracked. Root forwarding
+welcome-status read/write (read once with `first()`; the Celebrated write is
+called directly inside the existing safeLaunch before showing confetti, so failures
+reach the shared error pipeline) and the metric aggregation use cases are not tracked. Root forwarding
 callbacks do not duplicate leaf events; the HomeRoot BackCallback closes without
 DismissRequested.
 
@@ -182,7 +184,7 @@ DismissRequested.
 | LastTrainingCard / GoalCard | Read-only workout creation and goal date labels | Rebuild in composition | `DateCompose` with the existing typed date and `DateTimeFormatState.format` | Current locale is resolved when rendering; absent typed values keep their existing display. No business dates or VM snapshots are changed |
 | HomeViewModel | `muscleLoad`, including excluded/unassigned set counts and `unmeasuredVolumeSets` | Rebuild | Resolved range → observeTrainings(range) → flatMapLatest(MuscleLoadingSummaryUseCase.observeFromTrainings) → mapper | Training and referenced-anatomy changes recalculate the distribution; an empty training period publishes null. Calculations use available mapped exercise details; the map and goal card state that scope explicitly, without a completeness flag or inferred missing reps/weights. Accepted performed-set shares survive incomplete load measurements; the derived unmeasured count explains omitted physical volume. No editable or archived metric snapshot |
 | HomeViewModel | `excludedMusclesCount`, `missingEquipmentCount`, `hasGoal` | Rebuild | Excluded-muscle/equipment and goal observations | Defaults 0/0/false |
-| HomeViewModel | `showWelcomeConfetti` | Runtime only | `observeHomeWelcomeStatus().first()` then `setHomeWelcomeStatus(Celebrated)`; DataStore `home_welcome_status`, default Idle | True once per fresh VM only when PendingCelebration; consumed inside WelcomeHomeContent and reset at animation start; no celebration on retained recreation; an unfinished animation is not a draft |
+| HomeViewModel | `showWelcomeConfetti` | Runtime only | `observeHomeWelcomeStatus().first()` → provideWelcomeStatus → `setHomeWelcomeStatus(Celebrated)`; DataStore `home_welcome_status`, default Idle | True once per fresh VM only after PendingCelebration is successfully persisted as Celebrated; failed writes use the shared error pipeline without displaying a successful celebration. Consumed inside WelcomeHomeContent and reset at animation start; an unfinished animation is not a draft |
 | HomeViewModel / HomeScreen | Loading presentation | Runtime only | Existing range/user readiness, initial empty performance list, and Trainings loader without period content (or lifetime count <1) | Home skeleton until initial readiness; a real empty period has five Empty metrics and resolves after the loader. Populated cached content remains visible during refresh; the existing picker stays available for returning users after range restoration, even during loading. Shared error feedback remains the failure owner; no new loading flag/draft/timer |
 | HomeViewModel | Jobs, whileActive subscriptions, notification permission/schedule, dialog sessions, analytics provenance | Runtime only | `Flow.safeLaunch` default WhileActive (one-second disconnect grace); each range refresh uses a local VM-owned command Job; live DialogConfig callbacks; host serializers null | Resume beyond the grace re-emits the current range and repeats RefreshTrainings. A request failure leaves the range observation alive; range/lifecycle cancellation cancels and joins the request before starting the next refresh. NonCancellable is confined to cancellation cleanup; requests remain cancellable. No persisted Job, restoration flag, previous-source cache or shadow copy |
 | Home dialogs | Unaccepted picker selection; `onResult`/`onAddGoal` closures | Runtime only | Dialog slot/step stacks unserialized; the picker value lives only in the dialog VM | The accepted period goes straight to DataStore through SavePeriod; a result still queued at process death has no durability |

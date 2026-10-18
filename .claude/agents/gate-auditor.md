@@ -51,7 +51,7 @@ slice. You verify each claim against the diff rather than accept it.
    `screenPresentation` in its VM) or container (keeps default `null`). Classify
    by rendered content, not by filename, router presence or base class.
 4. Check eligible Contract -> ViewModel callbacks, inputs and complete operations:
-   typed facts only, emitted after eligibility guards, `getOrThrow()` inside the
+   typed facts only, emitted after eligibility guards, complete throwing command inside the
    decorated block, no telemetry-only business fields, no raw text/IDs/secrets.
 5. Compare with the feature's `analytics/<feature>/COVERAGE.md` (and the root
    `analytics/COVERAGE.md` for cross-feature sections): rows missing, stale, or

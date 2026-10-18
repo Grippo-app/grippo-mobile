@@ -46,7 +46,7 @@ public class ExerciseViewModel(
                 val start = DateTimeUtils.startOfDay(selected.createdAt.date.minus(DatePeriod(days = 180)))
                 val end = DateTimeUtils.endOfDay(selected.createdAt.date)
 
-                trainingFeature.getTrainings(start = start, end = end).getOrThrow()
+                trainingFeature.getTrainings(start = start, end = end)
 
                 val trainings = trainingFeature.observeTrainings(start = start, end = end).first()
                 val current = trainingFeature.observeExercise(id).first()

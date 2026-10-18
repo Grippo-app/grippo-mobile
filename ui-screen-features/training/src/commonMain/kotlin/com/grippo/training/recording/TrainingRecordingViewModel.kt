@@ -108,7 +108,7 @@ internal class TrainingRecordingViewModel(
                     when (val stage = state.value.stage) {
                         StageState.Add -> {
                             analytics.trackOperation(TrainingOperation.DeleteDraft) {
-                                trainingFeature.deleteDraftTraining().getOrThrow()
+                                trainingFeature.deleteDraftTraining()
                             }
 
                             showStartTrainingDialog()
@@ -116,7 +116,7 @@ internal class TrainingRecordingViewModel(
 
                         is StageState.Edit -> {
                             analytics.trackOperation(TrainingOperation.DeleteDraft) {
-                                trainingFeature.deleteDraftTraining().getOrThrow()
+                                trainingFeature.deleteDraftTraining()
                             }
 
                             val training = analytics.trackOperation(TrainingOperation.LoadTraining) {
@@ -268,7 +268,7 @@ internal class TrainingRecordingViewModel(
     private fun clearDraftTraining() {
         safeLaunch {
             analytics.trackOperation(TrainingOperation.DeleteDraft) {
-                trainingFeature.deleteDraftTraining().getOrThrow()
+                trainingFeature.deleteDraftTraining()
             }
         }
     }
@@ -337,7 +337,7 @@ internal class TrainingRecordingViewModel(
     private fun discardDraftAndExit() {
         safeLaunch {
             analytics.trackOperation(TrainingOperation.DeleteDraft) {
-                trainingFeature.deleteDraftTraining().getOrThrow()
+                trainingFeature.deleteDraftTraining()
             }
 
             navigateTo(TrainingRecordingDirection.Back)
@@ -359,7 +359,7 @@ internal class TrainingRecordingViewModel(
             )
 
             analytics.trackOperation(TrainingOperation.SaveDraft) {
-                trainingFeature.setDraftTraining(draft).getOrThrow()
+                trainingFeature.setDraftTraining(draft)
             }
 
             scheduleNotificationReminder()

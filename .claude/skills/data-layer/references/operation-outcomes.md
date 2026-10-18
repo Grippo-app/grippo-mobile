@@ -1,32 +1,47 @@
 # Data operation errors and cancellation
 
 Read the affected operation and `ui-core/foundation/` error pipeline before changing failure behavior.
-A Result wrapper succeeding does not establish a successful business outcome.
+A successful return establishes the complete operation outcome, not just an accepted server write.
 
-- Throwing UseCase commands unwrap required Feature results with `getOrThrow()`. They preserve
-  their declared Boolean/Unit/domain return semantics. A false domain outcome is not an exception.
+## Throwing suspend contracts (canonical)
+
+- `GrippoApi`, Repository, Feature and command UseCase methods MUST be ordinary `suspend`
+  functions returning their success value `T` or `Unit`. They MUST NOT return `kotlin.Result`
+  or convert exceptions into success values. Observations keep `Flow<Domain>`; pure calculators
+  keep their direct return types.
+- Call required steps directly and sequentially. Exceptions from requests, decoding, mapping,
+  storage and required follow-up work propagate unchanged to the caller. MUST NOT add local
+  `try/catch`, `runCatching`, Result composition or generic execution/recovery wrappers in this
+  chain. `try/finally` remains valid for existing resource/Job cleanup. Infrastructure-owned
+  transport classification, auth refresh/retry and platform credential adapters keep their
+  separately documented boundaries; do not copy them into business operations.
 - Required payload validation, hydration (loading and storing the related data a record needs,
-  for example a training's exercises and iterations) and cleanup complete before the operation
-  reports success. Never turn missing required IDs or failed cleanup into fallback success.
-- Result-returning operations keep failures in their declared Result. Throwing operations
-  propagate the original failure. Do not catch-and-ignore failures here, and do not translate
-  them into UI dialogs here.
-- Preserve the caller's `CancellationException`. Do not store it as an ordinary recoverable
-  Result failure. If a Result boundary needs explicit exception handling, rethrow cancellation
-  before handling expected ordinary failures. Do not catch fatal Errors. Do not create generic
-  recovery wrappers. Explicit cancellation checks follow the
+  for example a training's exercises and iterations) and cleanup complete before success.
+  A save returns its required non-null ID only after those steps. Never turn a missing ID,
+  malformed required payload, failed cleanup or unavailable local mutation prerequisite into
+  `null`, `false`, an empty collection or a silent no-op.
+- Meaningful absence and domain rejection retain their explicit Boolean/nullable/domain contract.
+  Distinguish an absent profile or goal from a malformed non-null response before mapping. A
+  mapper returning null does not establish that the domain entity is absent. A missing local
+  prerequisite for a requested mutation fails before the remote write, using an existing error
+  meaning; it is not a malformed server response. Consumers MUST inspect Boolean/nullable
+  outcomes when their operation requires that entity to exist. A required profile refresh
+  returning false fails the composing operation; presence checks for routing keep that false.
+- Preserve the caller's `CancellationException` and fatal `Error` through the chain. Direct
+  suspend calls propagate them naturally. Explicit cancellation checks follow the
   [canonical coroutine rules](../../validation-gates/references/forbidden-patterns.md#coroutines).
-  `data-features/**` contains no `runCatching`; do not introduce one at a suspend boundary. The
-  existing Result boundaries (`GrippoApi.request`, `LocalSettingsRepositoryImpl`) rethrow
-  `CancellationException` and store other `Exception`s as `Result.failure`.
-- UI unwraps required failures inside `safeLaunch`. The existing ErrorProvider owns presentation.
-  Telemetry observes the complete operation without controlling recovery or outcome.
+- UI calls commands directly inside its existing `safeLaunch`, preserving any existing
+  `analytics.trackOperation` around the complete operation. The existing ErrorProvider owns
+  presentation. Platform credential adapters that still return `Result` are unwrapped at their
+  existing UI boundary inside that same error/analytics block; this is not a business command contract.
+- A failed operation after an accepted server mutation does not imply rollback or safe replay.
+  Preserve existing transaction boundaries and add no automatic retry or fallback.
 
 ## Operation outcomes and cache reconciliation (canonical)
 
 - The shared ResponseValidator ([backend transport](backend-client.md)) classifies HTTP/status
-  and decoding failures. No auth-specific sanitation is applied. `GrippoApi` delivers them as
-  `Result.failure(AppError.Network...)`. Pass existing transport failures through
+  and decoding failures. No auth-specific sanitation is applied. `GrippoApi` propagates them
+  as exceptions. Pass existing transport failures through
   repository/Feature/UseCase boundaries without wrapping or reclassifying them.
 - Mappers return null for objects that cannot be constructed. They do not create AppError, and
   they do not decide whether partial data is a successful operation.
@@ -34,16 +49,23 @@ A Result wrapper succeeding does not establish a successful business outcome.
   `AppError.Network.IncompleteResponse` when a successful response cannot hydrate required
   data. Confirmed empty collections are valid. A missing required collection or a dropped
   malformed row makes the response incomplete. Do not overwrite a complete cache with partial
-  records.
+  records. Validate received objects' intrinsic enum, component and consumed date mappings
+  before writing. A non-null entity is insufficient when those mappings reject its value.
+  Required children must belong to the enclosing parent; primary IDs must be unique across
+  each table's snapshot. Row-count equality alone does not establish completeness.
+  Observations that depend on separately refreshed catalogs retain their explicit availability
+  policy ([available mapped details](repositories.md#minimal-domain-models)); validate the
+  received records without manufacturing related catalog rows or fabricated metric totals.
 - No offline write queue exists. A mutation without connectivity fails through the standard
   pipeline and the cache stays unchanged. A queue is a separate architecture decision, never an
   incidental addition.
 - MUST update an API-backed cache only after confirmed server success, within the existing
   multi-row transaction boundary. Local drafts and preferences retain their Repository contract.
 - Identify the required save, hydration and cleanup steps from the UseCase and its callers.
-  Required failures MUST NOT become success. Optional readback may fail without changing
-  server-write success only when the operation explicitly defines that partial-success policy
-  in the use case's KDoc; without such a statement a failed readback is a failed operation.
+  Every step in the declared operation propagates failure; a failed readback is a failed
+  operation. KDoc does not authorize suppressing an exception or omitting a required result.
+  An intentionally separate follow-up has its own explicit operation contract and error owner;
+  it is not an ignored call appended to an otherwise successful command.
 - MUST reconcile only the requested owner/range (the cached rows the operation is allowed to
   replace, for example the trainings whose `createdAt` lies in the requested window). A missing
   required collection or any missing required server ID MUST prohibit range deletion. Confirmed
@@ -55,19 +77,22 @@ A Result wrapper succeeding does not establish a successful business outcome.
   when validation also writes the valid records. Preserve the operation's explicit atomic or
   partial-update policy, and protect incomplete raw server IDs from deletion.
 - Domain rejection uses the existing domain contract. Add a shared error subtype only for a
-  distinct meaning or required handling, not per endpoint or message. Update AppError,
-  AppErrorState and ErrorProviderImpl together; keep one canonical rule here.
-- UI `mapError` changes presentation only; logging and analytics receive the original failure.
+  distinct meaning or required handling, not per endpoint or message. Error-type synchronization
+  and presentation mapping follow the
+  [UI error pipeline](../../ui-feature/references/error-pipeline.md#the-error-triad-ui-corestate-work).
 
 Verified example (`data-features/trainings/.../TrainingRepositoryImpl.kt`, `getTrainings(start, end)`;
 re-inspect before relying on it): the range is the cached trainings whose `createdAt` lies between
-`start` and `end`. The repository first runs `provideTraining` on every response row (`count`, not
-`any`/`all`); that step writes a training only when the training itself, all its exercises and all
-their iterations map. If any row lacks an `id`, it returns `AppError.Network.IncompleteResponse()`
-without touching the range. Otherwise it deletes the range except the raw server IDs
-(`deleteByCreatedAtRangeExceptIds`), so a malformed row keeps its cached record, and it clears the
-whole range only for a confirmed empty response. If fewer rows were written than received, it still
-returns `IncompleteResponse` after that reconciliation.
+`start` and `end`. The repository identifies duplicate primary IDs across the response and skips
+implicated records, then calls `provideTraining` for every eligible row through `count` (not a
+short-circuiting `any`/`all`). A row is written only when its owned cache records map, required
+children belong to their parents, primary IDs are unique and consumed dates parse. Independently
+loaded example catalogs retain their observation availability policy. Missing raw training IDs
+prohibit range deletion. With all raw IDs known, reconciliation preserves malformed rows' cached
+records and deletes only stale IDs in the requested range; confirmed empty data clears that range.
+Any skipped/incomplete row makes the operation throw `IncompleteResponse` after that allowed
+reconciliation. Exceptions from parsing or storage propagate immediately and prevent subsequent
+reconciliation; already completed row transactions are not rolled back as one global transaction.
 
 Before completion, MUST trace the initial success, the alternate paths and the failure of each
 required step through actual source. Report runtime behavior that was not manually exercised.

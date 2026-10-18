@@ -29,8 +29,6 @@ public class GoalSetupSuggestionUseCase(
     }
 
     public suspend fun markShown() {
-        localSettingsFeature
-            .setLastGoalSuggestionShownAt(DateTimeUtils.now())
-            .getOrThrow()
+        localSettingsFeature.setLastGoalSuggestionShownAt(DateTimeUtils.now())
     }
 }

@@ -89,6 +89,11 @@ public object DarkColor : AppColor {
         override val markerBackground = lerp(background.screen, marker, 0.18f)
     }
 
+    override val goal: AppColor.GoalColors = object : AppColor.GoalColors {
+        override val accent = AppPalette.DarkAccent.Copper
+        override val background = lerp(DarkColor.background.card, accent, 0.14f)
+    }
+
     override val illustration: AppColor.IllustrationColors = object : AppColor.IllustrationColors {
         override val accent = AppPalette.DarkAccent.Orange
         override val backgroundStart = AppPalette.DarkAccent.Orange.copy(alpha = 0.16f)
@@ -200,7 +205,6 @@ public object DarkColor : AppColor {
     override val context: AppColor.ContextColors = object : AppColor.ContextColors {
         // Profile
         override val muscle: Color = AppPalette.DarkAccent.Coral
-        override val goal: Color = AppPalette.DarkAccent.Magenta
         override val equipment: Color = AppPalette.DarkAccent.Green
         override val experience: Color = AppPalette.DarkAccent.Teal
         override val body: Color = AppPalette.DarkAccent.Sky

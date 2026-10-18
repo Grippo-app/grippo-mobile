@@ -27,8 +27,8 @@ internal class OnboardingViewModel(
     private fun prepare() {
         safeLaunch(loader = OnboardingLoader.Preparation, onError = ::prepare) {
             if (!localSettingsFeature.observeOnboardingShown().first()) {
-                localSettingsFeature.setDefaultAnalyticsConsent(granted = true).getOrThrow()
-                localSettingsFeature.setOnboardingShown().getOrThrow()
+                localSettingsFeature.setDefaultAnalyticsConsent(granted = true)
+                localSettingsFeature.setOnboardingShown()
             }
 
             observeAnalyticsConsent()
@@ -55,7 +55,7 @@ internal class OnboardingViewModel(
         if (current == granted) return
 
         safeLaunch(loader = OnboardingLoader.AnalyticsConsent) {
-            localSettingsFeature.setAnalyticsConsent(granted).getOrThrow()
+            localSettingsFeature.setAnalyticsConsent(granted)
         }
     }
 

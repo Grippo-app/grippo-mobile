@@ -155,12 +155,16 @@ public class ExerciseDistributionUseCase {
             if (body == null || multiplier == null || body <= 0f || multiplier <= 0f) {
                 return null
             }
-            body.toDouble() * multiplier.toDouble()
+            val recordedBodyLoad = body * multiplier
+            if (!recordedBodyLoad.isFinite()) {
+                return null
+            }
+            recordedBodyLoad.toDouble()
         } else {
             0.0
         }
 
-        // Convert components before arithmetic: Iteration.volume can overflow in Float.
+        // Preserve the recorded body product; accumulate distinct load terms without Float overflow.
         val load = (iteration.externalWeight?.toDouble() ?: 0.0) +
             (iteration.extraWeight?.toDouble() ?: 0.0) + bodyLoad -
             (iteration.assistWeight?.toDouble() ?: 0.0)

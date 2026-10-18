@@ -6,6 +6,7 @@ import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.minus
 import kotlin.time.Duration
@@ -31,8 +32,8 @@ public sealed interface DigestState {
     ) : DigestState
 }
 
-public fun stubDigest(): DigestState {
-    val today = DateTimeUtils.now().date
+public fun stubDigest(): DigestState.Content {
+    val today = LocalDate(2026, 10, 18)
     val start = today.minus(DatePeriod(days = 6))
     val range = DateRange(
         from = DateTimeUtils.startOfDay(start),

@@ -5,6 +5,7 @@ import com.grippo.core.state.formatters.DateRangeFormatState
 import kotlinx.datetime.LocalDateTime
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
 public data class TrainingStreakState(
@@ -27,7 +28,7 @@ public data class TrainingStreakState(
 }
 
 public fun stubTrainingStreaks(): ImmutableList<TrainingStreakState> {
-    return persistentListOf(
+    val values = persistentListOf(
         TrainingStreakState(
             totalActiveDays = 9,
             featured = TrainingStreakFeaturedState.Daily(
@@ -161,5 +162,27 @@ public fun stubTrainingStreaks(): ImmutableList<TrainingStreakState> {
             lastTrainingGapDays = 0,
         ),
     )
+    val pattern = TrainingStreakFeaturedState.Pattern(
+        length = 12,
+        mask = persistentListOf(true, false, true, false, true, false, false, false),
+        mood = TrainingStreakMood.OnTrack,
+        progressPercent = 67,
+        confidence = 0.8f,
+    )
+    val patternValue = values.first().copy(
+        totalActiveDays = 128,
+        featured = pattern,
+        historyDays = 365,
+        timeline = persistentListOf(),
+    )
+    return (values + patternValue + patternValue.copy(
+        totalActiveDays = 0,
+        featured = pattern.copy(
+            length = 0,
+            mood = TrainingStreakMood.Restart,
+            progressPercent = 0,
+            confidence = 0.5f,
+        ),
+        lastTrainingGapDays = 7,
+    )).toPersistentList()
 }
-

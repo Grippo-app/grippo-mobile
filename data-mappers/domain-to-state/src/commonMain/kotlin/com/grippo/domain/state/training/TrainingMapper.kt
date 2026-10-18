@@ -22,11 +22,11 @@ public fun Training.toState(): TrainingState {
         id = id,
         exercises = exercises.toState(),
         total = TrainingTotalState(
-            volume = VolumeFormatState.of(volume),
-            repetitions = RepetitionsFormatState.of(repetitions),
-            intensity = IntensityFormatState.of(intensity),
+            volume = VolumeFormatState.ofTotal(volume),
+            repetitions = RepetitionsFormatState.ofTotal(repetitions),
+            intensity = IntensityFormatState.ofAverage(intensity),
         ),
-        duration = DurationFormatState.of(duration),
+        duration = DurationFormatState.ofTotal(duration),
         createdAt = DateTimeFormatState.of(
             value = createdAt,
             range = DateRangePresets.infinity(),

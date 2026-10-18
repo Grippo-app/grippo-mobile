@@ -46,7 +46,6 @@ import com.grippo.design.resources.provider.metric_overview_streak_rhythm_patter
 import com.grippo.design.resources.provider.metric_overview_streak_title
 import com.grippo.design.resources.provider.metric_overview_streak_weekly_pattern
 import com.grippo.design.resources.provider.training_streak_current_progress
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 public fun TrainingStreakCard(
@@ -269,7 +268,7 @@ private fun TrainingStreakCardDetailedDailyPreview() {
     PreviewContainer {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
-            value = trainingStreakCardPreviewValues()[0],
+            value = stubTrainingStreaks()[0],
             presentation = MetricCardPresentation.Detailed,
         )
     }
@@ -281,7 +280,7 @@ private fun TrainingStreakCardDetailedWeeklyPreview() {
     PreviewContainer {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
-            value = trainingStreakCardPreviewValues()[1],
+            value = stubTrainingStreaks()[1],
             presentation = MetricCardPresentation.Detailed,
         )
     }
@@ -293,7 +292,7 @@ private fun TrainingStreakCardDetailedRhythmPreview() {
     PreviewContainer {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
-            value = trainingStreakCardPreviewValues()[2],
+            value = stubTrainingStreaks()[2],
             presentation = MetricCardPresentation.Detailed,
         )
     }
@@ -305,7 +304,7 @@ private fun TrainingStreakCardDetailedPatternPreview() {
     PreviewContainer {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
-            value = trainingStreakCardPreviewValues()[3],
+            value = stubTrainingStreaks()[3],
             presentation = MetricCardPresentation.Detailed,
         )
     }
@@ -317,7 +316,7 @@ private fun TrainingStreakCardDetailedRestartPreview() {
     PreviewContainer {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
-            value = trainingStreakCardPreviewValues()[4],
+            value = stubTrainingStreaks()[4],
             presentation = MetricCardPresentation.Detailed,
         )
     }
@@ -329,7 +328,7 @@ private fun TrainingStreakCardOverviewDailyPreview() {
     PreviewContainer {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
-            value = trainingStreakCardPreviewValues()[0],
+            value = stubTrainingStreaks()[0],
             presentation = MetricCardPresentation.Overview,
         )
     }
@@ -341,7 +340,7 @@ private fun TrainingStreakCardOverviewWeeklyPreview() {
     PreviewContainer {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
-            value = trainingStreakCardPreviewValues()[1],
+            value = stubTrainingStreaks()[1],
             presentation = MetricCardPresentation.Overview,
         )
     }
@@ -353,7 +352,7 @@ private fun TrainingStreakCardOverviewRhythmPreview() {
     PreviewContainer {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
-            value = trainingStreakCardPreviewValues()[2],
+            value = stubTrainingStreaks()[2],
             presentation = MetricCardPresentation.Overview,
         )
     }
@@ -365,7 +364,7 @@ private fun TrainingStreakCardOverviewPatternPreview() {
     PreviewContainer {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
-            value = trainingStreakCardPreviewValues()[3],
+            value = stubTrainingStreaks()[3],
             presentation = MetricCardPresentation.Overview,
         )
     }
@@ -377,35 +376,8 @@ private fun TrainingStreakCardOverviewRestartPreview() {
     PreviewContainer {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
-            value = trainingStreakCardPreviewValues()[4],
+            value = stubTrainingStreaks()[4],
             presentation = MetricCardPresentation.Overview,
         )
     }
-}
-
-private fun trainingStreakCardPreviewValues(): List<TrainingStreakState> {
-    val values = stubTrainingStreaks()
-    val pattern = TrainingStreakFeaturedState.Pattern(
-        length = 12,
-        mask = persistentListOf(true, false, true, false, true, false, false, false),
-        mood = TrainingStreakMood.OnTrack,
-        progressPercent = 67,
-        confidence = 0.8f,
-    )
-    val patternValue = values.first().copy(
-        totalActiveDays = 128,
-        featured = pattern,
-        historyDays = 365,
-        timeline = persistentListOf(),
-    )
-    return values + patternValue + patternValue.copy(
-        totalActiveDays = 0,
-        featured = pattern.copy(
-            length = 0,
-            mood = TrainingStreakMood.Restart,
-            progressPercent = 0,
-            confidence = 0.5f,
-        ),
-        lastTrainingGapDays = 7,
-    )
 }

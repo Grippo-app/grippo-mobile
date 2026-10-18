@@ -15,17 +15,17 @@ internal class LocalSettingsFeatureImpl(
 
     override fun observeOnboardingShown(): Flow<Boolean> = repository.observeOnboardingShown()
 
-    override suspend fun setOnboardingShown(): Result<Unit> {
+    override suspend fun setOnboardingShown(): Unit {
         return repository.setOnboardingShown()
     }
 
     override fun observeAnalyticsConsent(): Flow<AnalyticsConsent> = repository.observeAnalyticsConsent()
 
-    override suspend fun setDefaultAnalyticsConsent(granted: Boolean): Result<Unit> {
+    override suspend fun setDefaultAnalyticsConsent(granted: Boolean): Unit {
         return repository.setDefaultAnalyticsConsent(granted)
     }
 
-    override suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit> {
+    override suspend fun setAnalyticsConsent(granted: Boolean): Unit {
         return repository.setAnalyticsConsent(granted)
     }
 
@@ -33,7 +33,7 @@ internal class LocalSettingsFeatureImpl(
         return repository.observeRange()
     }
 
-    override suspend fun setRange(range: Range?): Result<Unit> {
+    override suspend fun setRange(range: Range?): Unit {
         return repository.setRange(range)
     }
 
@@ -41,7 +41,7 @@ internal class LocalSettingsFeatureImpl(
         return repository.observeLastGoalSuggestionShownAt()
     }
 
-    override suspend fun setLastGoalSuggestionShownAt(value: LocalDateTime?): Result<Unit> {
+    override suspend fun setLastGoalSuggestionShownAt(value: LocalDateTime?): Unit {
         return repository.setLastGoalSuggestionShownAt(value)
     }
 
@@ -49,11 +49,11 @@ internal class LocalSettingsFeatureImpl(
         return repository.observeHomeWelcomeStatus()
     }
 
-    override suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Result<Unit> {
+    override suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Unit {
         return repository.setHomeWelcomeStatus(value)
     }
 
-    override suspend fun clearUserSettings(): Result<Unit> {
+    override suspend fun clearUserSettings(): Unit {
         return repository.clearUserSettings()
     }
 }

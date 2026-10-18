@@ -7,6 +7,7 @@ import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.decimal_separator
 import com.grippo.design.resources.provider.goal_fit_target_at_least
 import com.grippo.design.resources.provider.goal_fit_target_at_most
 import com.grippo.design.resources.provider.goal_fit_target_range
@@ -17,8 +18,7 @@ import com.grippo.design.resources.provider.goal_fit_unit_sets_per_week
 import com.grippo.design.resources.provider.goal_fit_value_target
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlin.math.abs
-import kotlin.math.roundToInt
+import com.grippo.toolkit.number.utils.formatDecimal
 
 @Immutable
 public data class GoalFitFindingState(
@@ -106,18 +106,20 @@ public data class GoalFitFindingState(
         }
     }
 
+    @Composable
     private fun number(value: Float): String {
         val scaledValue = when (rule) {
             GoalFitRuleState.BUILD_MUSCLE_LOAD_PROGRESSION,
             GoalFitRuleState.GET_STRONGER_STRENGTH_PROGRESSION,
             GoalFitRuleState.MAINTAIN_WEEKLY_VOLUME_STABILITY,
-            GoalFitRuleState.LOSE_FAT_WEEKLY_VOLUME_TREND -> value * 100f
+            GoalFitRuleState.LOSE_FAT_WEEKLY_VOLUME_TREND -> value.toDouble() * 100.0
 
-            else -> value
+            else -> value.toDouble()
         }
-        val tenths = (abs(scaledValue) * 10f).roundToInt()
-        val sign = if (scaledValue < 0f && tenths > 0) "−" else ""
-        return if (tenths % 10 == 0) "$sign${tenths / 10}" else "$sign${tenths / 10}.${tenths % 10}"
+        return formatDecimal(
+            value = scaledValue,
+            decimalSeparator = AppTokens.strings.res(Res.string.decimal_separator),
+        )
     }
 }
 

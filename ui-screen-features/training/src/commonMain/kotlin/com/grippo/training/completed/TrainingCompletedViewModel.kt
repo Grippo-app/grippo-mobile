@@ -81,10 +81,10 @@ internal class TrainingCompletedViewModel(
                 stage = stage,
                 exercises = exercises,
                 startAt = startAt,
-            ) ?: return@safeLaunch
+            )
 
             analytics.trackOperation(operation = TrainingOperation.DeleteDraft) {
-                trainingFeature.deleteDraftTraining().getOrThrow()
+                trainingFeature.deleteDraftTraining()
             }
 
             val domain = analytics.trackOperation(operation = TrainingOperation.LoadTraining) {
@@ -92,7 +92,7 @@ internal class TrainingCompletedViewModel(
             }
 
             analytics.trackOperation(operation = TrainingOperation.RefreshExamples) {
-                exerciseExampleFeature.getExerciseExamples().getOrThrow()
+                exerciseExampleFeature.getExerciseExamples()
             }
 
             provideTraining(domain)
@@ -103,27 +103,25 @@ internal class TrainingCompletedViewModel(
         stage: StageState,
         exercises: List<ExerciseState>,
         startAt: LocalDateTime,
-    ): String? {
+    ): String {
         val training = assembleTraining(
             exercises = exercises,
             startAt = startAt,
         )
 
-        val saveResult = when (val trainingId = stage.id) {
+        val savedId = when (val trainingId = stage.id) {
             null -> {
                 analytics.trackOperation(operation = TrainingOperation.CreateTraining) {
-                    setTrainingUseCase.execute(training).getOrThrow()
+                    setTrainingUseCase.execute(training)
                 }
             }
 
             else -> {
                 analytics.trackOperation(operation = TrainingOperation.UpdateTraining) {
-                    updateTrainingUseCase.execute(id = trainingId, training = training).getOrThrow()
+                    updateTrainingUseCase.execute(id = trainingId, training = training)
                 }
             }
         }
-
-        val savedId = saveResult ?: return null
 
         update { it.copy(savedTrainingId = savedId) }
         return savedId

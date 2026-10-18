@@ -108,17 +108,18 @@ analytics.trackEvent(AuthEvent.User.PickerConfirmed(field = ProfilePicker.Height
 
 The current [LoginUseCase](../../../../data-features/feature-api/src/commonMain/kotlin/com/grippo/data.features.api/authorization/LoginUseCase.kt)
 returns Boolean and throws on failure; the credential provider returns Result.
-Keep those contracts. For a Result-returning operation, the existing unwrap belongs
-inside the decorator, not after it:
+The credential unwrap stays inside its decorator. Feature/UseCase commands follow the
+[throwing suspend contract](../../data-layer/references/operation-outcomes.md#throwing-suspend-contracts-canonical)
+and are called directly inside the decorator:
 
 ```kotlin
 val value = analytics.trackOperation(FeatureOperation.Save) {
-    saveUseCase.execute(existingValue).getOrThrow()
+    saveUseCase.execute(existingValue)
 }
 ```
 
 This second example is a generic pattern. Reuse the actual business operation and
-its result type; a returned Result.failure otherwise looks like a completed block.
+its result type; required requests, validation and storage complete inside that block.
 
 Emit in existing Contract→VM callbacks after eligibility/busy guards. Rejected
 callbacks emit neither accepted intent nor operation events. Text events compare

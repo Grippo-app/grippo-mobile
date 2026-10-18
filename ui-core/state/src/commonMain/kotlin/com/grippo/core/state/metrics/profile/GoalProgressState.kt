@@ -2,6 +2,7 @@ package com.grippo.core.state.metrics.profile
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
@@ -69,7 +70,11 @@ public data class GoalProgressState(
         }
 
     public val progressFraction: Float
-        get() = (daysElapsed.toFloat() / (daysTotal - 1).coerceAtLeast(1)).coerceIn(0f, 1f)
+        get() = if (isFinished) {
+            1f
+        } else {
+            (daysElapsed.toFloat() / (daysTotal - 1).coerceAtLeast(1)).coerceIn(0f, 1f)
+        }
 
     public val isFinished: Boolean
         get() {
@@ -104,6 +109,16 @@ public data class GoalProgressState(
             score >= ON_TRACK_MIN -> AppTokens.strings.res(Res.string.goal_card_status_on_track)
             score >= DRIFTING_MIN -> AppTokens.strings.res(Res.string.goal_card_status_drifting)
             else -> AppTokens.strings.res(Res.string.goal_card_status_off_track)
+        }
+    }
+
+    @Composable
+    public fun statusColor(): Color {
+        val score = score ?: return AppTokens.colors.text.secondary
+        return when {
+            score >= ON_TRACK_MIN -> AppTokens.colors.semantic.success
+            score >= DRIFTING_MIN -> AppTokens.colors.semantic.warning
+            else -> AppTokens.colors.semantic.error
         }
     }
 

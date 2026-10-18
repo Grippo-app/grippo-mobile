@@ -10,7 +10,6 @@ import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
 import com.grippo.data.features.api.local.settings.models.Range
 import com.grippo.data.features.local.settings.domain.LocalSettingsRepository
 import com.grippo.toolkit.date.utils.DateTimeUtils
-import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime
@@ -33,15 +32,8 @@ internal class LocalSettingsRepositoryImpl(
         return dataStore.data.map { preferences -> preferences[OnboardingShownKey] ?: false }
     }
 
-    override suspend fun setOnboardingShown(): Result<Unit> {
-        return try {
-            dataStore.edit { preferences -> preferences[OnboardingShownKey] = true }
-            Result.success(Unit)
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Exception) {
-            Result.failure(error)
-        }
+    override suspend fun setOnboardingShown(): Unit {
+        dataStore.edit { preferences -> preferences[OnboardingShownKey] = true }
     }
 
     override fun observeAnalyticsConsent(): Flow<AnalyticsConsent> {
@@ -54,30 +46,16 @@ internal class LocalSettingsRepositoryImpl(
         }
     }
 
-    override suspend fun setDefaultAnalyticsConsent(granted: Boolean): Result<Unit> {
-        return try {
-            dataStore.edit { preferences ->
-                if (preferences[AnalyticsConsentKey] == null) {
-                    preferences[AnalyticsConsentKey] = granted
-                }
+    override suspend fun setDefaultAnalyticsConsent(granted: Boolean): Unit {
+        dataStore.edit { preferences ->
+            if (preferences[AnalyticsConsentKey] == null) {
+                preferences[AnalyticsConsentKey] = granted
             }
-            Result.success(Unit)
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Exception) {
-            Result.failure(error)
         }
     }
 
-    override suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit> {
-        return try {
-            dataStore.edit { preferences -> preferences[AnalyticsConsentKey] = granted }
-            Result.success(Unit)
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Exception) {
-            Result.failure(error)
-        }
+    override suspend fun setAnalyticsConsent(granted: Boolean): Unit {
+        dataStore.edit { preferences -> preferences[AnalyticsConsentKey] = granted }
     }
 
     override fun observeRange(): Flow<Range?> {
@@ -85,21 +63,14 @@ internal class LocalSettingsRepositoryImpl(
             .map { preferences -> Range.of(preferences[RangeKey]) }
     }
 
-    override suspend fun setRange(range: Range?): Result<Unit> {
-        return try {
-            dataStore.edit { preferences ->
-                val key = range?.key
-                if (key == null) {
-                    preferences.remove(RangeKey)
-                } else {
-                    preferences[RangeKey] = key
-                }
+    override suspend fun setRange(range: Range?): Unit {
+        dataStore.edit { preferences ->
+            val key = range?.key
+            if (key == null) {
+                preferences.remove(RangeKey)
+            } else {
+                preferences[RangeKey] = key
             }
-            Result.success(Unit)
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Exception) {
-            Result.failure(error)
         }
     }
 
@@ -109,20 +80,13 @@ internal class LocalSettingsRepositoryImpl(
         }
     }
 
-    override suspend fun setLastGoalSuggestionShownAt(value: LocalDateTime?): Result<Unit> {
-        return try {
-            dataStore.edit { preferences ->
-                if (value == null) {
-                    preferences.remove(LastGoalSuggestionShownAtKey)
-                } else {
-                    preferences[LastGoalSuggestionShownAtKey] = DateTimeUtils.toUtcIso(value)
-                }
+    override suspend fun setLastGoalSuggestionShownAt(value: LocalDateTime?): Unit {
+        dataStore.edit { preferences ->
+            if (value == null) {
+                preferences.remove(LastGoalSuggestionShownAtKey)
+            } else {
+                preferences[LastGoalSuggestionShownAtKey] = DateTimeUtils.toUtcIso(value)
             }
-            Result.success(Unit)
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Exception) {
-            Result.failure(error)
         }
     }
 
@@ -132,33 +96,19 @@ internal class LocalSettingsRepositoryImpl(
         }
     }
 
-    override suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Result<Unit> {
-        return try {
-            dataStore.edit { preferences ->
-                preferences[HomeWelcomeStatusKey] = value.key
-            }
-            Result.success(Unit)
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Exception) {
-            Result.failure(error)
+    override suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Unit {
+        dataStore.edit { preferences ->
+            preferences[HomeWelcomeStatusKey] = value.key
         }
     }
 
-    override suspend fun clearUserSettings(): Result<Unit> {
-        return try {
-            dataStore.edit { preferences ->
-                val consent = preferences[AnalyticsConsentKey]
-                val onboardingShown = preferences[OnboardingShownKey]
-                preferences.clear()
-                if (consent != null) preferences[AnalyticsConsentKey] = consent
-                if (onboardingShown != null) preferences[OnboardingShownKey] = onboardingShown
-            }
-            Result.success(Unit)
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Exception) {
-            Result.failure(error)
+    override suspend fun clearUserSettings(): Unit {
+        dataStore.edit { preferences ->
+            val consent = preferences[AnalyticsConsentKey]
+            val onboardingShown = preferences[OnboardingShownKey]
+            preferences.clear()
+            if (consent != null) preferences[AnalyticsConsentKey] = consent
+            if (onboardingShown != null) preferences[OnboardingShownKey] = onboardingShown
         }
     }
 }

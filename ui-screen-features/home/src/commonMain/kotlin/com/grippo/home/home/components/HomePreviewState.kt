@@ -12,8 +12,6 @@ import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.engagement.TrainingStreakFeaturedState
 import com.grippo.core.state.metrics.engagement.TrainingStreakMood
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
-import com.grippo.core.state.metrics.performance.PerformanceMetricState
-import com.grippo.core.state.metrics.performance.PerformanceTrendStatusState
 import com.grippo.core.state.metrics.performance.stubExerciseSpotlightGoodFrequency
 import com.grippo.core.state.metrics.performance.stubExerciseSpotlightNearBest
 import com.grippo.core.state.metrics.performance.stubExerciseSpotlightNeedsAttention
@@ -29,10 +27,7 @@ import com.grippo.core.state.profile.stubUser
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.home.home.HomeState
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRange
-import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.toolkit.date.utils.DateRangePresets
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
@@ -47,13 +42,9 @@ internal fun homePreviewState(
         range = DateRangePresets.infinity(),
         format = DateFormat.DateOnly.DateMmmDdYyyy,
     )
-    val range = DateRangeFormatState.Valid(
-        display = "Sep 16 – Oct 15",
-        value = DateRange(
-            from = LocalDateTime(2026, 9, 16, 0, 0),
-            to = LocalDateTime(2026, 10, 15, 23, 59),
-        ),
-        kind = DateRangeKind.Last30Days,
+    val range = DateRangeFormatState.of(
+        from = LocalDateTime(2026, 9, 16, 0, 0),
+        to = LocalDateTime(2026, 10, 15, 23, 59),
     )
     val total = TrainingTotalState(
         repetitions = RepetitionsFormatState.of(84),
@@ -163,48 +154,3 @@ internal fun homePreviewState(
         hasGoal = hasGoal,
     )
 }
-
-internal fun homePreviewEmptyPerformance(): ImmutableList<PerformanceMetricState> =
-    stubPerformanceMetrics().distinctBy { it.type }.map { metric ->
-        when (metric) {
-            is PerformanceMetricState.Duration -> metric.copy(
-                currentVsAveragePercentage = null,
-                current = null,
-                average = null,
-                best = null,
-                status = PerformanceTrendStatusState.Empty,
-            )
-
-            is PerformanceMetricState.Volume -> metric.copy(
-                currentVsAveragePercentage = null,
-                current = null,
-                average = null,
-                best = null,
-                status = PerformanceTrendStatusState.Empty,
-            )
-
-            is PerformanceMetricState.Density -> metric.copy(
-                currentVsAveragePercentage = null,
-                current = null,
-                average = null,
-                best = null,
-                status = PerformanceTrendStatusState.Empty,
-            )
-
-            is PerformanceMetricState.Repetitions -> metric.copy(
-                currentVsAveragePercentage = null,
-                current = null,
-                average = null,
-                best = null,
-                status = PerformanceTrendStatusState.Empty,
-            )
-
-            is PerformanceMetricState.Intensity -> metric.copy(
-                currentVsAveragePercentage = null,
-                current = null,
-                average = null,
-                best = null,
-                status = PerformanceTrendStatusState.Empty,
-            )
-        }
-    }.toPersistentList()

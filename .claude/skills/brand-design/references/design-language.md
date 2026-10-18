@@ -20,6 +20,48 @@ information readable; warmth gives focus and momentum.
 
 Visual expression MUST NOT invent coaching, rewards, measurements or capabilities.
 
+## Semantic recognition
+
+Domain entities and their user-facing concepts are the organizing basis of product
+visual semantics: for example goals, workouts, exercises, muscles and equipment.
+New or visually changed product UI MUST use a consistent visual vocabulary for
+these entities and concepts across features. Users should recognize what a block
+concerns from familiar cues before reading its explanation, especially among dense
+training data. Use product meaning established by actual source, including concepts
+shared by several entities.
+
+- Identify the domain entity and the presented concept (its role, attribute,
+  relationship or metric) before styling a data block. Inspect its established treatment in
+  [CONSISTENCY.md](../../../../design-system/CONSISTENCY.md) and actual consumers
+  before choosing a motif. Reuse its defining icon/shape family and semantic color
+  role across entry points, summaries, details, editors and pickers that represent
+  it. Adapt size and emphasis to the surface; keep identity recognizable through
+  supported empty, loading and populated states when the concept is shown.
+- Give concepts that users need to distinguish a distinguishable treatment. Avoid
+  assigning unrelated concepts the same defining combination of cues or inventing
+  a separate color, badge or metaphor for every field. Quiet shared layouts and
+  ordinary neutral values remain the default.
+- Keep concept identity separate from selection, validation, severity, data-series
+  meaning and measured progress. A familiar motif must not imply success,
+  achievement or a trend unsupported by the data; actual feedback retains its
+  established precedence and clarity.
+- Keep the motif lightweight: a useful recognition cue and coherent grouping should
+  reduce repeated explanation without adding competing heroes, frames or decoration.
+  Lead with the useful value, interpretation and available action; supporting detail
+  can use existing detail/expansion surfaces while preserving necessary facts, units,
+  bounds and uncertainty. Motivation comes from truthful feedback and useful next steps.
+- Pair visual recognition with concise labels and existing accessible semantics;
+  an unfamiliar symbol must not become a guessing task. Apply
+  [readable content and interaction](states-and-motion.md#readable-content-and-interaction).
+- When the task introduces a recurring entity or concept with no established treatment,
+  define a compact motif for its actual consumers and record its concrete role-to-token
+  mapping in CONSISTENCY.md. Implement model lookups through
+  [UI-state presentation accessors](../../ui-feature/references/state.md#state-owned-presentation-mappings)
+  and visual roles through existing design-system owners, following the
+  [module dependency rules](../../../../CLAUDE.md#module-dependency-rules).
+  Add only demanded roles within the authorized footprint, including necessary
+  shared-caller migrations.
+
 ## Relationship to artwork
 
 The [approved onboarding artwork](../../../../design-system/resources/provider/src/commonMain/composeResources/drawable/onboarding_hero.webp)

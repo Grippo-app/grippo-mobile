@@ -9,20 +9,20 @@ import kotlinx.datetime.LocalDateTime
 internal interface LocalSettingsRepository {
 
     fun observeOnboardingShown(): Flow<Boolean>
-    suspend fun setOnboardingShown(): Result<Unit>
+    suspend fun setOnboardingShown(): Unit
 
     fun observeAnalyticsConsent(): Flow<AnalyticsConsent>
-    suspend fun setDefaultAnalyticsConsent(granted: Boolean): Result<Unit>
-    suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit>
+    suspend fun setDefaultAnalyticsConsent(granted: Boolean): Unit
+    suspend fun setAnalyticsConsent(granted: Boolean): Unit
 
     fun observeRange(): Flow<Range?>
-    suspend fun setRange(range: Range?): Result<Unit>
+    suspend fun setRange(range: Range?): Unit
 
     fun observeLastGoalSuggestionShownAt(): Flow<LocalDateTime?>
-    suspend fun setLastGoalSuggestionShownAt(value: LocalDateTime?): Result<Unit>
+    suspend fun setLastGoalSuggestionShownAt(value: LocalDateTime?): Unit
 
     fun observeHomeWelcomeStatus(): Flow<HomeWelcomeStatus>
-    suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Result<Unit>
+    suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Unit
 
-    suspend fun clearUserSettings(): Result<Unit>
+    suspend fun clearUserSettings(): Unit
 }

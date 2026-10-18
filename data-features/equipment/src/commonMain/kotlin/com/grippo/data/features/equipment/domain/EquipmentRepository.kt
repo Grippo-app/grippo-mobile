@@ -7,5 +7,5 @@ internal interface EquipmentRepository {
 
     fun observeEquipments(): Flow<List<EquipmentGroup>>
 
-    suspend fun getEquipments(): Result<Unit>
+    suspend fun getEquipments(): Unit
 }

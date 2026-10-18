@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
+import com.grippo.core.state.metrics.performance.stubEmptyPerformanceMetrics
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
@@ -17,7 +18,6 @@ import com.grippo.design.resources.provider.dashboard
 import com.grippo.home.home.components.DashboardHomeContent
 import com.grippo.home.home.components.HomeLoadingContent
 import com.grippo.home.home.components.WelcomeHomeContent
-import com.grippo.home.home.components.homePreviewEmptyPerformance
 import com.grippo.home.home.components.homePreviewState
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
@@ -188,7 +188,7 @@ private fun HomeScreenEmptyCacheRefreshingPreview() {
                 streak = null,
                 goalProgress = null,
                 spotlights = persistentListOf(),
-                performance = homePreviewEmptyPerformance(),
+                performance = stubEmptyPerformanceMetrics(),
             ),
             loaders = persistentSetOf(HomeLoader.Trainings),
             contract = HomeContract.Empty,
@@ -246,7 +246,7 @@ private fun HomeScreenGoalOnlyBannerPreview() {
                 muscleLoad = null,
                 streak = null,
                 spotlights = persistentListOf(),
-                performance = homePreviewEmptyPerformance(),
+                performance = stubEmptyPerformanceMetrics(),
             ),
             loaders = persistentSetOf(),
             contract = HomeContract.Empty,
@@ -265,7 +265,7 @@ private fun HomeScreenEmptyPeriodPreview() {
                 streak = null,
                 goalProgress = null,
                 spotlights = persistentListOf(),
-                performance = homePreviewEmptyPerformance(),
+                performance = stubEmptyPerformanceMetrics(),
             ),
             loaders = persistentSetOf(),
             contract = HomeContract.Empty,

@@ -9,13 +9,13 @@ public interface UserFeature {
 
     public fun observeUser(): Flow<User?>
 
-    public suspend fun getUser(): Result<Boolean>
+    public suspend fun getUser(): Boolean
 
-    public suspend fun createProfile(profile: CreateUserProfile): Result<Boolean>
+    public suspend fun createProfile(profile: CreateUserProfile): Unit
 
-    public suspend fun deleteProfile(): Result<Unit>
+    public suspend fun deleteProfile(): Unit
 
-    public suspend fun setExperience(experience: ExperienceEnum): Result<Boolean>
+    public suspend fun setExperience(experience: ExperienceEnum): Unit
 
-    public suspend fun setHeight(height: Int): Result<Boolean>
+    public suspend fun setHeight(height: Int): Unit
 }

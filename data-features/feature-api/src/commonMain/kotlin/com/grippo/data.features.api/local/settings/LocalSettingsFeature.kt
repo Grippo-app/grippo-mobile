@@ -9,21 +9,21 @@ import kotlinx.datetime.LocalDateTime
 public interface LocalSettingsFeature {
 
     public fun observeOnboardingShown(): Flow<Boolean>
-    public suspend fun setOnboardingShown(): Result<Unit>
+    public suspend fun setOnboardingShown(): Unit
 
     public fun observeAnalyticsConsent(): Flow<AnalyticsConsent>
-    public suspend fun setDefaultAnalyticsConsent(granted: Boolean): Result<Unit>
-    public suspend fun setAnalyticsConsent(granted: Boolean): Result<Unit>
+    public suspend fun setDefaultAnalyticsConsent(granted: Boolean): Unit
+    public suspend fun setAnalyticsConsent(granted: Boolean): Unit
 
     public fun observeRange(): Flow<Range?>
-    public suspend fun setRange(range: Range?): Result<Unit>
+    public suspend fun setRange(range: Range?): Unit
 
     public fun observeLastGoalSuggestionShownAt(): Flow<LocalDateTime?>
-    public suspend fun setLastGoalSuggestionShownAt(value: LocalDateTime?): Result<Unit>
+    public suspend fun setLastGoalSuggestionShownAt(value: LocalDateTime?): Unit
 
     public fun observeHomeWelcomeStatus(): Flow<HomeWelcomeStatus>
-    public suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Result<Unit>
+    public suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Unit
 
     /** Clears account preferences, preserving this installation's onboarding and analytics preferences. */
-    public suspend fun clearUserSettings(): Result<Unit>
+    public suspend fun clearUserSettings(): Unit
 }

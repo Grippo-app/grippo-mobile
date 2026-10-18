@@ -16,23 +16,23 @@ internal class UserFeatureImpl(
         return repository.observeUser()
     }
 
-    override suspend fun getUser(): Result<Boolean> {
+    override suspend fun getUser(): Boolean {
         return repository.getUser()
     }
 
-    override suspend fun createProfile(profile: CreateUserProfile): Result<Boolean> {
+    override suspend fun createProfile(profile: CreateUserProfile): Unit {
         return repository.createProfile(profile)
     }
 
-    override suspend fun deleteProfile(): Result<Unit> {
+    override suspend fun deleteProfile(): Unit {
         return repository.deleteProfile()
     }
 
-    override suspend fun setExperience(experience: ExperienceEnum): Result<Boolean> {
+    override suspend fun setExperience(experience: ExperienceEnum): Unit {
         return repository.setExperience(experience)
     }
 
-    override suspend fun setHeight(height: Int): Result<Boolean> {
+    override suspend fun setHeight(height: Int): Unit {
         return repository.setHeight(height)
     }
 }

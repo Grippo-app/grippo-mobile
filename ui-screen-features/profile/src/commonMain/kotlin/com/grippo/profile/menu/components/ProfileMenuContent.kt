@@ -23,8 +23,8 @@ import com.grippo.design.resources.provider.cm
 import com.grippo.design.resources.provider.goal_picker_primary_title
 import com.grippo.design.resources.provider.goal_title
 import com.grippo.design.resources.provider.icons.Body
+import com.grippo.design.resources.provider.icons.Compass
 import com.grippo.design.resources.provider.icons.Muscle
-import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.icons.Tune
 import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.profile_account
@@ -94,8 +94,8 @@ internal fun ProfileMenuContent(
         }
         MenuSection(
             title = AppTokens.strings.res(Res.string.goal_title),
-            icon = AppTokens.icons.Trophy,
-            iconColor = AppTokens.colors.context.goal,
+            icon = goal?.primaryGoal?.icon() ?: AppTokens.icons.Compass,
+            iconColor = AppTokens.colors.goal.accent,
         ) {
             MenuValueRow(
                 title = AppTokens.strings.res(Res.string.goal_picker_primary_title),

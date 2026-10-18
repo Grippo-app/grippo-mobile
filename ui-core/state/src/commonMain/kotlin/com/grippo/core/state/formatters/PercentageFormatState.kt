@@ -41,6 +41,15 @@ public sealed class PercentageFormatState : FormatState<Int> {
 
     public companion object {
         @Composable
+        public fun shortShare(value: Float): String {
+            require(value.isFinite() && value in 0f..100f)
+
+            val unit = AppTokens.strings.res(Res.string.percent)
+            val rounded = value.roundToInt()
+            return if (value > 0f && rounded == 0) "<1$unit" else "$rounded$unit"
+        }
+
+        @Composable
         public fun shortDelta(value: Double): String {
             if (!value.isFinite()) return "—"
             val number = formatDecimal(

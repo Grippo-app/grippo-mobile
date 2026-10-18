@@ -3,7 +3,6 @@ package com.grippo.design.components.metrics
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -13,8 +12,7 @@ import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.trainings.TrainingState
-import com.grippo.core.state.trainings.stubPendingIteration
-import com.grippo.core.state.trainings.stubTraining
+import com.grippo.core.state.trainings.stubTrainingSummary
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
@@ -34,7 +32,6 @@ import com.grippo.design.resources.provider.available_sets_label
 import com.grippo.design.resources.provider.tonnage
 import com.grippo.design.resources.provider.training_completed_session_title
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
@@ -89,7 +86,7 @@ private fun SummaryBreakdown(
         training.exercises.sumOf { exercise -> exercise.iterations.size }
     }
 
-    val repsCount = training.total.repetitions.value ?: 0
+    val repsCount = training.total.repetitions.value
 
     Column(
         modifier = modifier,
@@ -119,39 +116,12 @@ private fun SummaryBreakdown(
                 ),
                 MetricBreakdownItem(
                     label = repsLabel,
-                    value = repsCount.toString(),
-                    dimmed = repsCount == 0,
+                    value = repsCount?.toString() ?: "—",
+                    dimmed = repsCount == null,
                 ),
             ),
         )
     }
-}
-
-private fun trainingSummaryPreviewTraining(): TrainingState {
-    val training = stubTraining()
-    val iteration = stubPendingIteration().copy(
-        id = "summary-set",
-        repetitions = RepetitionsFormatState.of(10),
-        externalWeight = VolumeFormatState.of(40f),
-    )
-    val exercises = training.exercises.take(3).mapIndexed { index, exercise ->
-        exercise.copy(
-            id = "summary-exercise-$index",
-            iterations = List(3) { setIndex ->
-                iteration.copy(id = "summary-set-$index-$setIndex")
-            }.toPersistentList(),
-        )
-    }.toPersistentList()
-
-    return training.copy(
-        id = "summary-training",
-        duration = DurationFormatState.of(75.minutes),
-        exercises = exercises,
-        total = training.total.copy(
-            volume = VolumeFormatState.of(3_600f),
-            repetitions = RepetitionsFormatState.of(90),
-        ),
-    )
 }
 
 @AppPreview
@@ -159,7 +129,7 @@ private fun trainingSummaryPreviewTraining(): TrainingState {
 private fun TrainingSummaryCardPreview() {
     PreviewContainer {
         TrainingSummaryCard(
-            training = trainingSummaryPreviewTraining(),
+            training = stubTrainingSummary(),
             muscleLoad = stubMuscleLoadSummary(),
             onClick = {},
         )
@@ -169,7 +139,7 @@ private fun TrainingSummaryCardPreview() {
 @AppPreview
 @Composable
 private fun TrainingSummaryCardEmptyPreview() {
-    val training = trainingSummaryPreviewTraining()
+    val training = stubTrainingSummary()
     val muscleLoad = stubMuscleLoadSummary()
 
     PreviewContainer {
@@ -197,7 +167,7 @@ private fun TrainingSummaryCardSingleGroupPreview() {
 
     PreviewContainer {
         TrainingSummaryCard(
-            training = trainingSummaryPreviewTraining(),
+            training = stubTrainingSummary(),
             muscleLoad = muscleLoad.copy(
                 perGroup = muscleLoad.perGroup.copy(
                     entries = persistentListOf(muscleLoad.perGroup.entries.first().copy(value = 100f)),
@@ -213,7 +183,7 @@ private fun TrainingSummaryCardSingleGroupPreview() {
 private fun TrainingSummaryCardWithoutMuscleLoadPreview() {
     PreviewContainer {
         TrainingSummaryCard(
-            training = trainingSummaryPreviewTraining(),
+            training = stubTrainingSummary(),
             muscleLoad = null,
             onClick = {},
         )
@@ -223,18 +193,38 @@ private fun TrainingSummaryCardWithoutMuscleLoadPreview() {
 @AppPreview
 @Composable
 private fun TrainingSummaryCardLongValuesPreview() {
-    val training = trainingSummaryPreviewTraining()
+    val training = stubTrainingSummary()
 
     PreviewContainer {
         TrainingSummaryCard(
             training = training.copy(
                 duration = DurationFormatState.of(23.hours + 59.minutes),
                 total = training.total.copy(
-                    volume = VolumeFormatState.of(12_345_678f),
-                    repetitions = RepetitionsFormatState.of(123_456),
+                    volume = VolumeFormatState.ofTotal(12_345_678f),
+                    repetitions = RepetitionsFormatState.ofTotal(123_456),
                 ),
             ),
             muscleLoad = stubMuscleLoadSummary(),
+            onClick = {},
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingSummaryCardRecordedZeroPreview() {
+    val training = stubTrainingSummary()
+    PreviewContainer {
+        TrainingSummaryCard(
+            training = training.copy(
+                duration = DurationFormatState.ofTotal(kotlin.time.Duration.ZERO),
+                exercises = persistentListOf(),
+                total = training.total.copy(
+                    volume = VolumeFormatState.ofTotal(0f),
+                    repetitions = RepetitionsFormatState.ofTotal(0),
+                ),
+            ),
+            muscleLoad = null,
             onClick = {},
         )
     }

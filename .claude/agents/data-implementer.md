@@ -41,7 +41,7 @@ service access, persistence and the mapper directions it needs.
 
 Outcome and acceptance criteria; owned paths; the verified backend evidence
 (operation, revision, fields) for any wire change; the existing contract shape
-to preserve (Flow observation, Result command, throwing command); schema/migration
+to preserve (Flow observation, pure calculation or throwing suspend command); schema/migration
 authorization when persistence changes; whether a build is authorized.
 
 ## Duties
@@ -57,8 +57,8 @@ authorization when persistence changes; whether a build is authorized.
    where an explicit `null` must be sent); mappers are top-level extensions in the
    right directional module with `AppLogger.Mapping.log(...) ?: return null` guards;
    closed sets become domain enums/sealed types.
-3. Keep operation outcomes honest: `getOrThrow()` at required boundaries, no
-   swallowed failures, `CancellationException` rethrown at Result boundaries,
+3. Apply the throwing suspend contract in the canonical operation-outcomes reference:
+   direct required calls, unchanged failures and cancellation,
    API-backed cache written only after confirmed server success inside the
    existing transaction, range reconciliation only when every required ID is known.
 4. For schema changes: add `Migration<N>To<N+1>` with `SQLiteConnection`, register

@@ -117,67 +117,69 @@ internal class ExerciseExampleRepositoryImpl(
             .map { it.toDomain() }
     }
 
-    override suspend fun getExerciseExamples(): Result<Unit> {
+    override suspend fun getExerciseExamples(): Unit {
         val response = api.getExerciseExamples()
 
-        response.onSuccess {
-            val examples = mutableListOf<ExerciseExampleEntity>()
-            val components = mutableListOf<ExerciseExampleComponentsEntity>()
-            val bundles = mutableListOf<ExerciseExampleBundleEntity>()
-            val equipments = mutableListOf<ExerciseExampleEquipmentEntity>()
+        val examples = mutableListOf<ExerciseExampleEntity>()
+        val components = mutableListOf<ExerciseExampleComponentsEntity>()
+        val bundles = mutableListOf<ExerciseExampleBundleEntity>()
+        val equipments = mutableListOf<ExerciseExampleEquipmentEntity>()
 
-            for (r in it) {
-                val entity = r.entity ?: return Result.failure(
-                    AppError.Network.IncompleteResponse()
-                )
-                val example = r.toEntityOrNull() ?: return Result.failure(
-                    AppError.Network.IncompleteResponse()
-                )
-                val mappedBundles = entity.exerciseExampleBundles.toEntities()
-                val mappedEquipments = entity.equipmentRefs.toEntities()
-                if (mappedBundles.size != entity.exerciseExampleBundles?.size ||
-                    mappedEquipments.size != entity.equipmentRefs?.size
-                ) {
-                    return Result.failure(AppError.Network.IncompleteResponse())
-                }
-                examples += example
-                components += entity.components.toEntity(example.id)
-                bundles += mappedBundles
-                equipments += mappedEquipments
+        for (value in response) {
+            val entity = value.entity ?: throw AppError.Network.IncompleteResponse()
+            val example = value.toEntityOrNull() ?: throw AppError.Network.IncompleteResponse()
+            val mappedComponents = entity.components.toEntity(example.id)
+            val mappedBundles = entity.exerciseExampleBundles.toEntities()
+            val mappedEquipments = entity.equipmentRefs.toEntities()
+            if (mappedBundles.size != entity.exerciseExampleBundles?.size ||
+                mappedEquipments.size != entity.equipmentRefs?.size ||
+                mappedBundles.any { it.exerciseExampleId != example.id } ||
+                mappedEquipments.any { it.exerciseExampleId != example.id }
+            ) {
+                throw AppError.Network.IncompleteResponse()
             }
-
-            exerciseExampleDao.replaceFromSnapshot(
-                examples = examples,
-                components = components,
-                bundles = bundles,
-                equipments = equipments,
-            )
+            example.toDomain() ?: throw AppError.Network.IncompleteResponse()
+            mappedComponents.toDomain() ?: throw AppError.Network.IncompleteResponse()
+            examples += example
+            components += mappedComponents
+            bundles += mappedBundles
+            equipments += mappedEquipments
         }
 
-        return response.map { }
+        if (examples.map { it.id }.toSet().size != examples.size ||
+            bundles.map { it.id }.toSet().size != bundles.size ||
+            equipments.map { it.id }.toSet().size != equipments.size
+        ) {
+            throw AppError.Network.IncompleteResponse()
+        }
+
+        exerciseExampleDao.replaceFromSnapshot(
+            examples = examples,
+            components = components,
+            bundles = bundles,
+            equipments = equipments,
+        )
     }
 
-    override suspend fun getExerciseExampleById(id: String): Result<Unit> {
+    override suspend fun getExerciseExampleById(id: String): Unit {
         val response = api.getExerciseExample(id)
 
-        response.onSuccess { r ->
-            val entity = r.entity ?: return Result.failure(
-                AppError.Network.IncompleteResponse()
-            )
-            val example = r.toEntityOrNull() ?: return Result.failure(
-                AppError.Network.IncompleteResponse()
-            )
-            val components = entity.components.toEntity(example.id)
-            val bundles = entity.exerciseExampleBundles.toEntities()
-            val equipments = entity.equipmentRefs.toEntities()
-            if (bundles.size != entity.exerciseExampleBundles?.size ||
-                equipments.size != entity.equipmentRefs?.size
-            ) {
-                return Result.failure(AppError.Network.IncompleteResponse())
-            }
-            exerciseExampleDao.insertOrReplace(example, components, bundles, equipments)
+        val entity = response.entity ?: throw AppError.Network.IncompleteResponse()
+        val example = response.toEntityOrNull() ?: throw AppError.Network.IncompleteResponse()
+        val components = entity.components.toEntity(example.id)
+        val bundles = entity.exerciseExampleBundles.toEntities()
+        val equipments = entity.equipmentRefs.toEntities()
+        if (example.id != id || bundles.size != entity.exerciseExampleBundles?.size ||
+            equipments.size != entity.equipmentRefs?.size ||
+            bundles.any { it.exerciseExampleId != example.id } ||
+            equipments.any { it.exerciseExampleId != example.id } ||
+            bundles.map { it.id }.toSet().size != bundles.size ||
+            equipments.map { it.id }.toSet().size != equipments.size
+        ) {
+            throw AppError.Network.IncompleteResponse()
         }
-
-        return response.map { }
+        example.toDomain() ?: throw AppError.Network.IncompleteResponse()
+        components.toDomain() ?: throw AppError.Network.IncompleteResponse()
+        exerciseExampleDao.insertOrReplace(example, components, bundles, equipments)
     }
 }

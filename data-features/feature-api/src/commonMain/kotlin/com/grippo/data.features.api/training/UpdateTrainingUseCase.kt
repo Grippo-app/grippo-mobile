@@ -7,13 +7,11 @@ public class UpdateTrainingUseCase(
     public val trainingFeature: TrainingFeature,
     public val userFeature: UserFeature,
 ) {
-    public suspend fun execute(id: String, training: SetTraining): Result<String?> {
-        val result = trainingFeature.updateTraining(id, training)
-
-        result.onSuccess {
-            userFeature.getUser().getOrNull()
+    public suspend fun execute(id: String, training: SetTraining): String {
+        val savedId = trainingFeature.updateTraining(id = id, training = training)
+        check(userFeature.getUser()) {
+            "The required user profile could not be refreshed"
         }
-
-        return result
+        return savedId
     }
 }

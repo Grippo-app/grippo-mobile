@@ -32,15 +32,21 @@ normal retainedInstance factory; shared registers ExerciseExampleAnalyticsModule
 | VM `onDismiss` | `exercise_example_dismiss_requested` | Existing hardware Back callback before Back direction; no inferred reason |
 | Segment → Contract → VM `onTabSelected` | `exercise_example_tab_selected`, bounded information/achievements enum | Real selection callback, including clicking the already selected tab; initial/default/restored widget selection emits nothing |
 | VM `onAction` | `exercise_example_action_clicked` | Before existing Action direction; button rendered only in Action mode; label and downstream result omitted |
-| Existing startup safeLaunch | LoadExample | Complete getExerciseExampleById/getOrThrow refresh block |
-| Finite observeRecentExercises Flow combined with the example observer under Processing.Infinity | LoadRecentExercises | Request/getOrThrow, chronological history mapping and volume publication; runs once per VM, then its result feeds the observed-example one-rep-max calculation |
-| Existing Achievements safeLaunch | LoadAchievements | Request/getOrThrow, state mapping and publication |
+| Existing startup safeLaunch | LoadExample | Complete getExerciseExampleById refresh block; intrinsic example/component domain values, child ownership and unique primary IDs are validated before insertion |
+| Finite observeRecentExercises Flow combined with the example observer under Processing.Infinity | LoadRecentExercises | Request, chronological history mapping and volume publication; response rows must belong to the requested example and nested iterations to their enclosing exercise, with unique primary IDs. Runs once per VM, then its result feeds the observed-example one-rep-max calculation |
+| Existing Achievements safeLaunch | LoadAchievements | Request, state mapping and publication |
 
 Operations use `exercise_example_task_started/completed/failed/interrupted` v1,
 with closed `exercise_example_operation` codes; terminal events include duration_ms.
 The shared decorator supplies fresh operation IDs and monotonic duration, isolates
 reporting Exceptions and preserves return values, original errors and cancellation.
-Analytics wiring introduces no loader, job, dispatcher, retry or operation-boundary changes.
+Analytics wiring introduces no additional loader, job, dispatcher or retry.
+The LoadRecentExercises boundary covers the request, chronological recent-record
+mapping, volume calculation and their State publication. Estimated 1RM now derives
+downstream from the emitted records combined with the observed example; it is
+outside this operation's completion/error boundary. The operation's completed
+outcome therefore confirms recent-record and volume publication, not completion
+of the dependent 1RM calculation.
 All seven schemas register once under the unique exercise_example_analytics qualifier.
 
 Deliberate omissions: dialog view/close, swipe/outside dismissal, entry/referrer,
@@ -103,8 +109,11 @@ without a fabricated zero or confidence score. No new interaction or event is
 introduced.
 Tap and horizontal exploration
 stay local to the chart; recent records and exerciseVolume keep their existing
-rebuild sources. No top-level VM State field, draft, callback, operation, analytics symbol,
-consent or transport contract changes.
+rebuild sources. No top-level VM State field, draft, callback, wire name, parameter,
+schema, consent or transport contract changes. LoadRecentExercises now completes
+before the combined one-rep-max calculation. The root admin mapping records this
+boundary and its live consumer reconciliation; earlier-build duration comparisons
+are not established.
 
 ## Verification
 

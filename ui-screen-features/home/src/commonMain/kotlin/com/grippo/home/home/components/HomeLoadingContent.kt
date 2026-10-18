@@ -199,17 +199,25 @@ private fun HomeLoadingRecap(modifier: Modifier) {
 
 @Composable
 private fun HomeLoadingGoal(modifier: Modifier) {
-    val factsHeight = AppTokens.typography.h4().lineHeightDp() +
-        AppTokens.typography.b11Semi().lineHeightDp() +
-        AppTokens.typography.b12Med().lineHeightDp() * 3 +
-        AppTokens.dp.contentPadding.text * 2 + AppTokens.dp.contentPadding.subContent * 2
-    val chartHeight = AppTokens.dp.metrics.profile.goal.chart +
-        AppTokens.typography.b11Med().lineHeightDp() + AppTokens.dp.contentPadding.text
+    val identityHeight = maxOf(
+        AppTokens.dp.goal.markSize,
+        AppTokens.typography.b12Med().lineHeightDp() + AppTokens.dp.contentPadding.text +
+            AppTokens.typography.h5().lineHeightDp(),
+    )
+    val alignmentHeight = maxOf(
+        AppTokens.typography.h2().lineHeightDp(),
+        AppTokens.typography.b13Semi().lineHeightDp() + AppTokens.dp.contentPadding.text +
+            AppTokens.typography.b12Med().lineHeightDp(),
+    ) + AppTokens.dp.contentPadding.subContent + AppTokens.typography.b12Med().lineHeightDp()
+    val calendarHeight = maxOf(
+        AppTokens.dp.metrics.overview.detailsIcon,
+        AppTokens.typography.b12Semi().lineHeightDp(),
+    ) + AppTokens.dp.contentPadding.subContent + AppTokens.dp.button.small.height
     HomeLoadingPanel(
         modifier = modifier,
-        contentHeight = AppTokens.typography.h5().lineHeightDp() +
-            maxOf(factsHeight, chartHeight) + AppTokens.typography.b13Med().lineHeightDp() +
-            AppTokens.dp.metrics.panel.large.spacer * 2,
+        contentHeight = identityHeight + alignmentHeight + calendarHeight +
+            AppTokens.typography.b12Med().lineHeightDp() * 2 +
+            AppTokens.dp.divider.thickness * 2 + AppTokens.dp.metrics.panel.large.spacer * 5,
     )
 }
 

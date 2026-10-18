@@ -16,8 +16,10 @@ actual signatures; an existing deviation does not weaken a rule.
 - Put a calculation or helper at its owning type as an ordinary method or
   computed property; use the companion for factories. Do not append private
   receiver extensions or unrelated utility functions to a State, ViewModel,
-  UseCase, Screen or mapper file. A top-level extension belongs in a dedicated,
-  purpose-named file at the mapper/utility owner. Shared model preview data follows
+  UseCase or Screen file. Mapper files keep their actual conversion extensions;
+  non-mapping calculation/recovery helpers belong at the source type or utility
+  owner. Other top-level extensions belong in dedicated, purpose-named utility
+  files. Shared model preview data follows
   [the stub convention](../../ui-feature/references/state.md#top-level-stub-functions);
   Compose decomposition follows its owning skill.
 - UI-emitting composables are `PascalCase`; value-returning composable helpers
@@ -36,8 +38,8 @@ actual signatures; an existing deviation does not weaken a rule.
   - Loader: `@Immutable internal sealed interface <Feature>Loader : BaseLoader`.
   - Contract: `@Immutable internal interface <Feature>Contract { companion object Empty }`.
   - New use case: `public class <Verb><Noun>UseCase` with one public method;
-    new command use cases return `Result<T>` from `execute(...)`, existing ones
-    keep their Boolean/Unit/Flow/throwing shapes.
+    command contracts follow
+    [throwing suspend operations](../../data-layer/references/operation-outcomes.md#throwing-suspend-contracts-canonical).
 
 ## Packages
 
@@ -66,10 +68,10 @@ actual signatures; an existing deviation does not weaken a rule.
 - ViewModel coroutines: only `safeLaunch` / `Flow.safeLaunch`. Never
   `viewModelScope.launch`, `GlobalScope`, `runBlocking`, raw `CoroutineScope`,
   a manual `CoroutineExceptionHandler` or `async { }.await()` for a single task.
-- Unwrap required `Result` values with `getOrThrow()` inside `safeLaunch`; no
-  local `try/catch`, `runCatching`, `onFailure`, `recover`, `fold` or
-  `getOrElse` that hides or presents an unhandled failure in a ViewModel.
-  Direct-value throwing calls stay direct. The rules live in the
+- Call throwing commands directly inside `safeLaunch`; no local `try/catch`,
+  `runCatching`, `onFailure`, `recover`, `fold` or `getOrElse` that hides or
+  presents an unhandled failure in a ViewModel. Credential-adapter Result handling
+  and the shared failure path live in the
   [UI error pipeline](../../ui-feature/references/error-pipeline.md).
 - Collections in `@Immutable` State and Loaders: only `kotlinx-collections-immutable`
   (`ImmutableList`, `ImmutableSet`, `PersistentList`). `List`/`Set`/`Map` and
@@ -122,7 +124,7 @@ statements are allowed there:
   one operator per line below it, the value handed to a handler by method
   reference (`.onEach(::provideNote)`);
 - a `safeLaunch { }` block for a startup load: it wraps the business call in
-  `analytics.trackOperation(...) { }` and either binds the unwrapped result to
+  `analytics.trackOperation(...) { }` and either binds the returned value to
   a local and passes it to a handler, or discards it when a Flow chain in the
   same `init` delivers the data (cache refresh);
 - a call to the private startup method shared with `onError`
@@ -166,7 +168,7 @@ shape: guards, then the analytics event, then the business step or
 
 - Bind every intermediate result to a descriptive local before passing it on;
   do not nest a conversion or use-case call inside another call's argument
-  list: `val history = noteFeature.getHistory(id).getOrThrow()` and then
+  list: `val history = noteFeature.getHistory(id)` and then
   `provideHistory(history)`.
 - Use named arguments for State constructors, `copy`, analytics and dialog
   config models and every call with two or more arguments; a trailing lambda
@@ -196,7 +198,7 @@ internal class NoteViewModel(
 
         safeLaunch(loader = NoteLoader.History) {
             analytics.trackOperation(NoteOperation.LoadHistory) {
-                val history = noteFeature.getHistory(id).getOrThrow()
+                val history = noteFeature.getHistory(id)
                 provideHistory(history)
             }
         }

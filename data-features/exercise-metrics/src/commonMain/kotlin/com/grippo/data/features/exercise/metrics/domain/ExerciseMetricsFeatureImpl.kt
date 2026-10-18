@@ -10,11 +10,11 @@ internal class ExerciseMetricsFeatureImpl(
     private val repository: ExerciseMetricsRepository
 ) : ExerciseMetricsFeature {
 
-    override suspend fun getRecentExercisesByExampleId(id: String): Result<List<Exercise>> {
+    override suspend fun getRecentExercisesByExampleId(id: String): List<Exercise> {
         return repository.getRecentExercisesByExampleId(id)
     }
 
-    override suspend fun getAchievementsByExampleId(id: String): Result<List<Achievement>> {
+    override suspend fun getAchievementsByExampleId(id: String): List<Achievement> {
         return repository.getAchievementsByExampleId(id)
     }
 }

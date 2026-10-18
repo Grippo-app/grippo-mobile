@@ -20,8 +20,9 @@ report file or design model is required.
 - For new UI, identify concrete intended consumers and the authorized integration
   before choosing a contract/layout. Inspect implemented callers afterward. Do not
   invent future uses to justify additional variants or a generic abstraction.
-- For each use, identify purpose, action/selection/status role, density, neighboring
-  hierarchy, background and geometry. Inspect actual bounds, optional slots,
+- For each use, identify purpose, domain entity, presented concept and its existing
+  [semantic vocabulary](design-language.md#semantic-recognition), action/selection/status
+  role, density, neighboring hierarchy, background and geometry. Inspect actual bounds, optional slots,
   scrolling, toolbar/bottom-bar ownership, pinned actions, keyboard and insets
   where relevant.
 
@@ -57,7 +58,8 @@ Styling does not add validation, state flags, loading phases or restoration beha
 ## 3. Use the findings to choose and verify the design
 
 For each distinct usage/state group, list source paths/host, role and constraints,
-applicable states/combinations, the resulting design choice and planned/actual
+the entity/concept's reused or newly defined recognition cues, applicable states/combinations,
+the resulting design choice and planned/actual
 source, preview or manual evidence. A few lines suffice for a small edit.
 
 Choose hierarchy, spacing, shape, emphasis, imagery and arrangement from those

@@ -40,6 +40,12 @@ public sealed class RepetitionsFormatState : FormatState<Int> {
     ) : RepetitionsFormatState(), FormatState.Empty<Int>
 
     public companion object {
+        public fun ofTotal(value: Int?): RepetitionsFormatState = when {
+            value == null -> Empty()
+            value < 0 -> Invalid(display = value.toString(), value = null)
+            else -> Valid(display = value.toString(), value = value)
+        }
+
         @Composable
         public fun shortAverage(value: Double?): String {
             if (value == null || !value.isFinite()) return "—"

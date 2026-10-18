@@ -15,7 +15,10 @@ public class PerformanceTrendUseCase {
         private const val MIN_COMPARISON_PERCENT: Double = 5.0
     }
 
-    /** Compares the latest session with valid earlier sessions in the supplied period. */
+    /**
+     * Compares recorded nonnegative session totals, including zero, with earlier valid totals.
+     * Density requires a positive duration; a zero baseline has no percentage comparison.
+     */
     public fun fromTrainings(trainings: List<Training>): List<PerformanceMetric> {
         val sorted = trainings.sortedWith(compareBy<Training> { it.createdAt }.thenBy { it.id })
 
@@ -54,8 +57,9 @@ public class PerformanceTrendUseCase {
         }
         val status = when {
             current == null -> PerformanceTrendStatus.Empty
-            previousBest == null || comparisonPercent == null -> PerformanceTrendStatus.Stable
+            previousBest == null -> PerformanceTrendStatus.Stable
             current > previousBest -> PerformanceTrendStatus.Record
+            comparisonPercent == null -> PerformanceTrendStatus.Stable
             else -> statusFromComparison(
                 comparisonPercent = comparisonPercent,
                 thresholdPercent = dynamicThresholdPercent(baselineValues),
@@ -72,10 +76,13 @@ public class PerformanceTrendUseCase {
     }
 
     private fun isValidMeasurement(value: Double): Boolean {
-        return value.isFinite() && value > 0.0
+        return value.isFinite() && value >= 0.0
     }
 
-    private fun currentVsAveragePercent(current: Double, average: Double): Double {
+    private fun currentVsAveragePercent(current: Double, average: Double): Double? {
+        if (average == 0.0) {
+            return null
+        }
         return ((current - average) / average) * 100.0
     }
 
@@ -118,13 +125,13 @@ public class PerformanceTrendUseCase {
     private fun densityOf(training: Training): Double? {
         val minutes = training.duration.toDouble(DurationUnit.MINUTES)
         val volume = training.volume.toDouble()
-        if (!isValidMeasurement(minutes) || !isValidMeasurement(volume)) {
+        if (!minutes.isFinite() || minutes <= 0.0 || !isValidMeasurement(volume)) {
             return null
         }
 
         val density = volume / minutes
         val storedDensity = density.toFloat()
-        return density.takeIf { storedDensity.isFinite() && storedDensity > 0f }
+        return density.takeIf { storedDensity.isFinite() && storedDensity >= 0f }
     }
 
     private fun densityMetric(trainings: List<Training>): PerformanceMetric.DensityMetric {
@@ -161,7 +168,7 @@ public class PerformanceTrendUseCase {
     }
 
     private fun validDuration(training: Training): Duration? {
-        return training.duration.takeIf { it.isFinite() && it > Duration.ZERO }
+        return training.duration.takeIf { it.isFinite() && !it.isNegative() }
     }
 
     private fun durationMetricNeutral(trainings: List<Training>): PerformanceMetric.DurationMetric {

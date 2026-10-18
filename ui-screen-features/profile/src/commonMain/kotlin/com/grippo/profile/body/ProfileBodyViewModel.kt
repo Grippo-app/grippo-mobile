@@ -64,13 +64,13 @@ internal class ProfileBodyViewModel(
 
         safeLaunch {
             analytics.trackOperation(ProfileOperation.RefreshWeightHistory) {
-                weightHistoryFeature.getWeightHistory().getOrThrow()
+                weightHistoryFeature.getWeightHistory()
             }
         }
 
         safeLaunch {
             analytics.trackOperation(ProfileOperation.RefreshUser) {
-                userFeature.getUser().getOrThrow()
+                userFeature.getUser()
             }
         }
 
@@ -159,11 +159,11 @@ internal class ProfileBodyViewModel(
                 val hasNewHeight = user.height.value != height
 
                 if (hasNewWeight) {
-                    updateWeightUseCase.execute(weight).getOrThrow()
+                    updateWeightUseCase.execute(weight)
                 }
 
                 if (hasNewHeight) {
-                    userFeature.setHeight(height).getOrThrow()
+                    userFeature.setHeight(height)
                 }
 
                 delay(500.milliseconds)

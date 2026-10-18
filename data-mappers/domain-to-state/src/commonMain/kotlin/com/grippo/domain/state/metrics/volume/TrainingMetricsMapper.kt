@@ -8,8 +8,8 @@ import com.grippo.data.features.api.metrics.volume.models.TrainingTotal as Domai
 
 public fun DomainTrainingMetrics.toState(): StateTrainingMetrics {
     return StateTrainingMetrics(
-        volume = VolumeFormatState.of(volume),
-        repetitions = RepetitionsFormatState.of(repetitions),
-        intensity = IntensityFormatState.of(intensity),
+        volume = VolumeFormatState.ofTotal(volume),
+        repetitions = RepetitionsFormatState.ofTotal(repetitions),
+        intensity = IntensityFormatState.ofAverage(intensity),
     )
 }

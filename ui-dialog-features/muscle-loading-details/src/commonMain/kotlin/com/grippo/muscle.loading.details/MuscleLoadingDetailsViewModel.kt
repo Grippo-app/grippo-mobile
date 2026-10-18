@@ -23,8 +23,7 @@ public class MuscleLoadingDetailsViewModel(
 ), MuscleLoadingDetailsContract {
 
     init {
-        trainingFeature
-            .observeTrainings(start = range.from, end = range.to)
+        trainingFeature.observeTrainings(start = range.from, end = range.to)
             .flatMapLatest(muscleLoadingSummaryUseCase::observeFromTrainings)
             .onEach(::provideMuscleLoad)
             .safeLaunch()
@@ -42,7 +41,10 @@ public class MuscleLoadingDetailsViewModel(
     }
 
     override fun onSelectMode(value: MuscleLoadingDetailsShowingMode) {
-        analytics.trackEvent(MuscleLoadingDetailsEvent.ModeSelected(value.toAnalytics()))
+        val mode = value.toAnalytics()
+
+        analytics.trackEvent(MuscleLoadingDetailsEvent.ModeSelected(mode = mode))
+
         update { it.copy(mode = value) }
     }
 }

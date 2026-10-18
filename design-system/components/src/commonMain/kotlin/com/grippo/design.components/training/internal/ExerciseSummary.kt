@@ -43,7 +43,7 @@ internal fun ExerciseSummary(
             ) {
                 null
             } else {
-                iteration.recordedVolume()
+                iteration.recordedVolume()?.takeIf { it.isFinite() && it >= 0f }
             }
         }
     val maximum = if (completedLoads.any { it == null }) {

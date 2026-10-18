@@ -17,7 +17,6 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.UiText
-import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.button.Button
@@ -42,7 +41,6 @@ import com.grippo.start.training.components.StartTrainingPage
 import com.grippo.start.training.components.StartTrainingRecentPicker
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -266,12 +264,7 @@ private fun StartTrainingRecentPreview() {
 private fun StartTrainingLongPlanPreview() {
     PreviewContainer {
         StartTrainingContent(
-            state = StartTrainingState(
-                options = persistentListOf(
-                    StartTrainingOption.Empty,
-                    StartTrainingOption.Preset(exercises = startTrainingPreviewLongExercises()),
-                ),
-            ),
+            state = startTrainingPreviewState(longContent = true, includeRecent = false),
             loaders = persistentSetOf(),
             selectedChoice = StartTrainingChoice.Preset,
             selectedRecentKey = null,
@@ -287,7 +280,7 @@ private fun StartTrainingLongPlanPreview() {
 private fun StartTrainingLongRecentPreview() {
     PreviewContainer {
         StartTrainingContent(
-            state = startTrainingPreviewState(exercises = startTrainingPreviewLongExercises()),
+            state = startTrainingPreviewState(longContent = true),
             loaders = persistentSetOf(),
             selectedChoice = StartTrainingChoice.Recent,
             selectedRecentKey = "recent:evening",
@@ -299,53 +292,16 @@ private fun StartTrainingLongRecentPreview() {
 }
 
 private fun startTrainingPreviewState(
-    exercises: ImmutableList<ExerciseState> = startTrainingPreviewExercises(),
+    longContent: Boolean = false,
+    includeRecent: Boolean = true,
 ): StartTrainingState {
-    return StartTrainingState(
-        options = persistentListOf(
-            StartTrainingOption.Preset(exercises = exercises),
-            StartTrainingOption.Empty,
-            StartTrainingOption.Recent(
-                trainingId = "evening",
-                createdAt = LocalDateTime(year = 2026, month = 10, day = 16, hour = 18, minute = 30),
-                exercises = exercises,
-            ),
-            StartTrainingOption.Recent(
-                trainingId = "morning",
-                createdAt = LocalDateTime(year = 2026, month = 10, day = 16, hour = 8, minute = 15),
-                exercises = exercises.take(2).toPersistentList(),
-            ),
-            StartTrainingOption.Recent(
-                trainingId = "earlier",
-                createdAt = LocalDateTime(year = 2026, month = 10, day = 14, hour = 17, minute = 0),
-                exercises = exercises,
-            ),
-        ),
-    )
-}
-
-private fun startTrainingPreviewLongExercises(): ImmutableList<ExerciseState> {
-    val exercises = startTrainingPreviewExercises()
-    val longName = "Жим гантелей лежачи на похилій лаві нейтральним хватом"
-
-    return List(8) { index ->
-        val exercise = exercises[index % exercises.size]
-        exercise.copy(
-            id = "long-exercise-$index",
-            name = longName,
-            exerciseExample = exercise.exerciseExample.copy(name = longName),
-            iterations = if (index == 0) persistentListOf() else exercise.iterations,
-        )
-    }.toPersistentList()
-}
-
-private fun startTrainingPreviewExercises(): ImmutableList<ExerciseState> {
     val names = listOf("Dumbbell bench press", "Lat pulldown", "Leg press", "Seated leg curl")
-    val createdAt = startTrainingPreviewDate(
-        LocalDateTime(year = 2026, month = 10, day = 16, hour = 18, minute = 30),
+    val createdAt = DateTimeFormatState.of(
+        value = LocalDateTime(year = 2026, month = 10, day = 16, hour = 18, minute = 30),
+        range = DateRangePresets.infinity(),
+        format = DateFormat.DateOnly.DateMmmDdYyyy,
     )
-
-    return names.mapIndexed { exerciseIndex, name ->
+    val regularExercises = names.mapIndexed { exerciseIndex, name ->
         val base = stubExercise()
         base.copy(
             id = "exercise-$exerciseIndex",
@@ -368,12 +324,43 @@ private fun startTrainingPreviewExercises(): ImmutableList<ExerciseState> {
             createdAt = createdAt,
         )
     }.toPersistentList()
-}
+    val exercises = if (longContent) {
+        List(8) { index ->
+            val exercise = regularExercises[index % regularExercises.size]
+            val name = "Жим гантелей лежачи на похилій лаві нейтральним хватом"
+            exercise.copy(
+                id = "long-exercise-$index",
+                name = name,
+                exerciseExample = exercise.exerciseExample.copy(name = name),
+                iterations = if (index == 0) persistentListOf() else exercise.iterations,
+            )
+        }.toPersistentList()
+    } else {
+        regularExercises
+    }
+    val options = buildList {
+        add(StartTrainingOption.Preset(exercises = exercises))
+        add(StartTrainingOption.Empty)
+        if (includeRecent) {
+            add(StartTrainingOption.Recent(
+                trainingId = "evening",
+                createdAt = LocalDateTime(year = 2026, month = 10, day = 16, hour = 18, minute = 30),
+                exercises = exercises,
+            ))
+            add(StartTrainingOption.Recent(
+                trainingId = "morning",
+                createdAt = LocalDateTime(year = 2026, month = 10, day = 16, hour = 8, minute = 15),
+                exercises = exercises.take(2).toPersistentList(),
+            ))
+            add(StartTrainingOption.Recent(
+                trainingId = "earlier",
+                createdAt = LocalDateTime(year = 2026, month = 10, day = 14, hour = 17, minute = 0),
+                exercises = exercises,
+            ))
+        }
+    }.toPersistentList()
 
-private fun startTrainingPreviewDate(value: LocalDateTime): DateTimeFormatState {
-    return DateTimeFormatState.of(
-        value = value,
-        range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
+    return StartTrainingState(
+        options = options,
     )
 }

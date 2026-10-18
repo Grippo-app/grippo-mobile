@@ -37,7 +37,7 @@ internal class ProfileMusclesViewModel(
 
         safeLaunch {
             analytics.trackOperation(ProfileOperation.RefreshMuscles) {
-                excludedMusclesFeature.getExcludedMuscles().getOrThrow()
+                excludedMusclesFeature.getExcludedMuscles()
             }
         }
     }
@@ -105,7 +105,7 @@ internal class ProfileMusclesViewModel(
         analytics.trackEvent(ProfileEvent.Muscles.Apply)
         safeLaunch(loader = ProfileMusclesLoader.ApplyButton) {
             analytics.trackOperation(ProfileOperation.SaveMuscles) {
-                excludedMusclesFeature.setExcludedMuscles(excludedMuscleIds).getOrThrow()
+                excludedMusclesFeature.setExcludedMuscles(excludedMuscleIds)
             }
             navigateTo(ProfileMusclesDirection.Back)
         }

@@ -15,17 +15,17 @@ public interface TrainingFeature {
 
     public fun observeExercise(id: String): Flow<Exercise?>
 
-    public suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit>
+    public suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Unit
 
-    public suspend fun setTraining(training: SetTraining): Result<String?>
+    public suspend fun setTraining(training: SetTraining): String
 
-    public suspend fun updateTraining(id: String, training: SetTraining): Result<String?>
+    public suspend fun updateTraining(id: String, training: SetTraining): String
 
-    public suspend fun deleteTraining(id: String): Result<Unit>
+    public suspend fun deleteTraining(id: String): Unit
 
     public fun getDraftTraining(): Flow<DraftTraining?>
 
-    public suspend fun setDraftTraining(draft: DraftTraining): Result<Unit>
+    public suspend fun setDraftTraining(draft: DraftTraining): Unit
 
-    public suspend fun deleteDraftTraining(): Result<Unit>
+    public suspend fun deleteDraftTraining(): Unit
 }

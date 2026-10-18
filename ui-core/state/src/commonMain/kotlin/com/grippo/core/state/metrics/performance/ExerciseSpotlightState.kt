@@ -6,9 +6,9 @@ import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.stubExerciseExampleValueState
 import com.grippo.core.state.formatters.UiText
-import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.decimal_separator
 import com.grippo.design.resources.provider.spotlight_good_frequency_action
 import com.grippo.design.resources.provider.spotlight_good_frequency_context
 import com.grippo.design.resources.provider.spotlight_good_frequency_metric
@@ -26,7 +26,7 @@ import com.grippo.design.resources.provider.spotlight_progress_win_context
 import com.grippo.design.resources.provider.spotlight_progress_win_metric
 import com.grippo.design.resources.provider.spotlight_progress_win_title
 import kotlinx.collections.immutable.persistentListOf
-import kotlin.math.floor
+import com.grippo.toolkit.number.utils.formatDecimal
 
 @Immutable
 public data class ExerciseSpotlightState(
@@ -112,6 +112,7 @@ public data class ExerciseSpotlightState(
         }
     }
 
+    @Composable
     public fun metricText(): UiText {
         return when (val value = details) {
             is Details.ProgressWin -> UiText.Res(
@@ -139,13 +140,14 @@ public data class ExerciseSpotlightState(
         }
     }
 
+    @Composable
     public fun contextText(): UiText {
         return when (val value = details) {
             is Details.ProgressWin -> UiText.Res(
                 Res.string.spotlight_progress_win_context,
                 persistentListOf(
-                    VolumeFormatState.ofTotal(value.latestSessionVolume).display,
-                    VolumeFormatState.ofTotal(value.baselineVolumeMedian).display,
+                    decimalText(value.latestSessionVolume),
+                    decimalText(value.baselineVolumeMedian),
                     value.comparisonWindowDays,
                 ),
             )
@@ -167,8 +169,8 @@ public data class ExerciseSpotlightState(
             is Details.NearBest -> UiText.Res(
                 Res.string.spotlight_near_best_context,
                 persistentListOf(
-                    VolumeFormatState.ofTotal(value.latestSessionVolume).display,
-                    VolumeFormatState.ofTotal(value.bestSessionVolume).display,
+                    decimalText(value.latestSessionVolume),
+                    decimalText(value.bestSessionVolume),
                     value.comparisonWindowDays,
                 ),
             )
@@ -184,9 +186,12 @@ public data class ExerciseSpotlightState(
         }
     }
 
+    @Composable
     private fun decimalText(value: Float): String {
-        val rounded = floor(value.toDouble() * 10.0 + 0.5) / 10.0
-        return rounded.toString()
+        return formatDecimal(
+            value = value.toDouble(),
+            decimalSeparator = AppTokens.strings.res(Res.string.decimal_separator),
+        )
     }
 }
 

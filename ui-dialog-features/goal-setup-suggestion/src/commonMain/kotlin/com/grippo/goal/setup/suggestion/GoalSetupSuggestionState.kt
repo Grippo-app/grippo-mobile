@@ -7,7 +7,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_description
 import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_title
-import com.grippo.design.resources.provider.icons.Medal
+import com.grippo.design.resources.provider.icons.Tune
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -22,7 +22,7 @@ public data class GoalSetupSuggestionState(
 
         @Composable
         public fun icon(): ImageVector = when (this) {
-            Tailored -> AppTokens.icons.Medal
+            Tailored -> AppTokens.icons.Tune
         }
 
         @Composable

@@ -15,8 +15,8 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
+import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummaryUnknown
 import com.grippo.core.state.metrics.volume.stubTotal
 import com.grippo.core.state.metrics.volume.stubVolumeSeries
 import com.grippo.design.components.chart.internal.BarChartXAxisLabels
@@ -33,9 +33,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.available_training_details_notice
 import com.grippo.design.resources.provider.muscles
-import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.datetime.LocalDateTime
 
@@ -154,7 +152,12 @@ private fun ScreenPreview() {
     PreviewContainer {
         StatisticsScreen(
             state = StatisticsState(
-                mode = StatisticsMode.Trainings(range = DateRangeFormatState.of(DateRangeKind.Weekly)),
+                mode = StatisticsMode.Trainings(
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 5, 0, 0),
+                        to = LocalDateTime(2026, 10, 11, 23, 59),
+                    ),
+                ),
                 total = stubTotal(),
                 exerciseVolume = stubVolumeSeries(),
                 muscleLoad = stubMuscleLoadSummary(),
@@ -238,7 +241,7 @@ private fun StatisticsUnknownMuscleDataPreview() {
                 mode = StatisticsMode.Exercises,
                 total = stubTotal(),
                 exerciseVolume = stubVolumeSeries(),
-                muscleLoad = unknownMuscleLoadPreview(),
+                muscleLoad = stubMuscleLoadSummaryUnknown(),
             ),
             loaders = persistentSetOf(),
             contract = StatisticsContract.Empty,
@@ -260,28 +263,10 @@ private fun StatisticsTrainingsUnknownMuscleDataPreview() {
                 ),
                 total = stubTotal(),
                 exerciseVolume = stubVolumeSeries(),
-                muscleLoad = unknownMuscleLoadPreview(),
+                muscleLoad = stubMuscleLoadSummaryUnknown(),
             ),
             loaders = persistentSetOf(),
             contract = StatisticsContract.Empty,
         )
     }
-}
-
-private fun unknownMuscleLoadPreview(): MuscleLoadSummaryState {
-    val summary = stubMuscleLoadSummary()
-    val emptyBreakdown = summary.perGroup.copy(entries = persistentListOf())
-
-    return summary.copy(
-        meta = summary.meta.copy(
-            dominantGroup = null,
-            unassignedSets = summary.meta.totalSets,
-        ),
-        perGroup = emptyBreakdown,
-        perMuscle = emptyBreakdown,
-        volumePerGroup = emptyBreakdown,
-        volumePerMuscle = emptyBreakdown,
-        dominance = summary.dominance.copy(top1SharePercent = 0f, top2SharePercent = 0f),
-        groupDominance = summary.groupDominance.copy(top1SharePercent = 0f, top2SharePercent = 0f),
-    )
 }

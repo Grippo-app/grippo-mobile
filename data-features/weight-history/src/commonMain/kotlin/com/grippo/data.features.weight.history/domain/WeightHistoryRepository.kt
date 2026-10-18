@@ -9,9 +9,9 @@ internal interface WeightHistoryRepository {
 
     fun observeLastWeight(): Flow<WeightHistory?>
 
-    suspend fun getWeightHistory(): Result<Unit>
+    suspend fun getWeightHistory(): Unit
 
-    suspend fun updateWeight(value: Float): Result<Unit>
+    suspend fun updateWeight(value: Float): Unit
 
-    suspend fun deleteWeight(id: String): Result<Unit>
+    suspend fun deleteWeight(id: String): Unit
 }

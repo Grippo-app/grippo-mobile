@@ -1,5 +1,6 @@
 package com.grippo.data.features.weight.history.data
 
+import com.grippo.core.error.provider.AppError
 import com.grippo.data.features.api.weight.history.models.WeightHistory
 import com.grippo.data.features.weight.history.domain.WeightHistoryRepository
 import com.grippo.dto.entity.user.toEntities
@@ -29,41 +30,53 @@ internal class WeightHistoryRepositoryImpl(
             .map { it?.toDomain() }
     }
 
-    override suspend fun getWeightHistory(): Result<Unit> {
-        val userId = userActiveDao.get().firstOrNull() ?: return Result.success(Unit)
+    override suspend fun getWeightHistory(): Unit {
+        val userId = userActiveDao.get().firstOrNull()
+            ?: throw AppError.Expected(
+                message = "An active user is required to load weight history",
+                description = null,
+            )
         val response = api.getWeightHistory()
 
-        response.onSuccess { r ->
-            val entitles = r.toEntities(userId)
-            entitles.forEach { weightHistoryDao.insertOrUpdate(it) }
+        val entities = response.toEntities(userId)
+        if (entities.size != response.size || entities.map { it.id }.toSet().size != entities.size) {
+            throw AppError.Network.IncompleteResponse()
         }
-
-        return response.map { }
+        entities.forEach { it.toDomain() }
+        weightHistoryDao.replaceByUserId(userId = userId, values = entities)
     }
 
-    override suspend fun updateWeight(value: Float): Result<Unit> {
-        val userId = userActiveDao.get().firstOrNull() ?: return Result.success(Unit)
-        val response = api.updateWeightHistory(value)
+    override suspend fun updateWeight(value: Float): Unit {
+        val userId = userActiveDao.get().firstOrNull()
+            ?: throw AppError.Expected(
+                message = "An active user is required to update weight",
+                description = null,
+            )
+        api.updateWeightHistory(value)
 
-        response.onSuccess {
-            val list = api.getWeightHistory().getOrNull() ?: return@onSuccess
-            val entitles = list.toEntities(userId)
-            entitles.forEach { weightHistoryDao.insertOrUpdate(it) }
+        val response = api.getWeightHistory()
+        val entities = response.toEntities(userId)
+        if (entities.size != response.size || entities.map { it.id }.toSet().size != entities.size) {
+            throw AppError.Network.IncompleteResponse()
         }
-
-        return response.map { }
+        entities.forEach { it.toDomain() }
+        weightHistoryDao.replaceByUserId(userId = userId, values = entities)
     }
 
-    override suspend fun deleteWeight(id: String): Result<Unit> {
-        val userId = userActiveDao.get().firstOrNull() ?: return Result.success(Unit)
-        val response = api.deleteWeight(id)
+    override suspend fun deleteWeight(id: String): Unit {
+        val userId = userActiveDao.get().firstOrNull()
+            ?: throw AppError.Expected(
+                message = "An active user is required to delete weight",
+                description = null,
+            )
+        api.deleteWeight(id)
 
-        response.onSuccess {
-            val list = api.getWeightHistory().getOrNull() ?: return@onSuccess
-            val entitles = list.toEntities(userId)
-            entitles.forEach { weightHistoryDao.insertOrUpdate(it) }
+        val response = api.getWeightHistory()
+        val entities = response.toEntities(userId)
+        if (entities.size != response.size || entities.map { it.id }.toSet().size != entities.size) {
+            throw AppError.Network.IncompleteResponse()
         }
-
-        return response.map { }
+        entities.forEach { it.toDomain() }
+        weightHistoryDao.replaceByUserId(userId = userId, values = entities)
     }
 }

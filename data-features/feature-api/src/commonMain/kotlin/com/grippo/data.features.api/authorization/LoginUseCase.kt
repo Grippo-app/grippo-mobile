@@ -15,31 +15,31 @@ public class LoginUseCase(
     private val goalFeature: GoalFeature,
 ) {
     public suspend fun loginEmail(email: String, password: String): Boolean {
-        authorizationFeature.login(email, password).getOrThrow()
+        authorizationFeature.login(email, password)
         return prepare()
     }
 
     public suspend fun loginGoogle(token: String): Boolean {
-        authorizationFeature.google(token).getOrThrow()
+        authorizationFeature.google(token)
         return prepare()
     }
 
     public suspend fun loginApple(code: String): Boolean {
-        authorizationFeature.apple(code).getOrThrow()
+        authorizationFeature.apple(code)
         return prepare()
     }
 
     private suspend fun prepare(): Boolean {
-        val hasProfile = userFeature.getUser().getOrThrow()
+        val hasProfile = userFeature.getUser()
         if (hasProfile) {
-            excludedMusclesFeature.getExcludedMuscles().getOrThrow()
-            excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
-            weightHistoryFeature.getWeightHistory().getOrThrow()
-            goalFeature.getGoal().getOrThrow()
+            excludedMusclesFeature.getExcludedMuscles()
+            excludedEquipmentsFeature.getExcludedEquipments()
+            weightHistoryFeature.getWeightHistory()
+            goalFeature.getGoal()
         }
         val pushToken = authorizationFeature.getPushToken()
         if (pushToken != null) {
-            authorizationFeature.updatePushToken(pushToken).getOrThrow()
+            authorizationFeature.updatePushToken(pushToken)
         }
         return hasProfile
     }

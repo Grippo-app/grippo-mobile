@@ -9,10 +9,10 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_menu
 import com.grippo.design.resources.provider.icons.Body
+import com.grippo.design.resources.provider.icons.Compass
 import com.grippo.design.resources.provider.icons.Kettlebell
 import com.grippo.design.resources.provider.icons.Medal
 import com.grippo.design.resources.provider.icons.Muscle
-import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.profile_menu_excluded_muscles
 import com.grippo.design.resources.provider.profile_menu_experience
 import com.grippo.design.resources.provider.profile_menu_missing_equipment
@@ -86,12 +86,12 @@ public sealed class ProfileMenu : PickerMenuItem {
         override fun text(): UiText = UiText.Res(Res.string.goal_menu)
 
         @Composable
-        override fun icon(): ImageVector = AppTokens.icons.Trophy
+        override fun icon(): ImageVector = AppTokens.icons.Compass
 
         @Composable
         override fun textColor(): Color = AppTokens.colors.text.primary
 
         @Composable
-        override fun iconColor(): Color = AppTokens.colors.context.goal
+        override fun iconColor(): Color = AppTokens.colors.goal.accent
     }
 }

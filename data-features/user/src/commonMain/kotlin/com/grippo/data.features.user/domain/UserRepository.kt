@@ -9,13 +9,13 @@ internal interface UserRepository {
 
     fun observeUser(): Flow<User?>
 
-    suspend fun getUser(): Result<Boolean>
+    suspend fun getUser(): Boolean
 
-    suspend fun createProfile(profile: CreateUserProfile): Result<Boolean>
+    suspend fun createProfile(profile: CreateUserProfile): Unit
 
-    suspend fun deleteProfile(): Result<Unit>
+    suspend fun deleteProfile(): Unit
 
-    suspend fun setExperience(experience: ExperienceEnum): Result<Boolean>
+    suspend fun setExperience(experience: ExperienceEnum): Unit
 
-    suspend fun setHeight(height: Int): Result<Boolean>
+    suspend fun setHeight(height: Int): Unit
 }

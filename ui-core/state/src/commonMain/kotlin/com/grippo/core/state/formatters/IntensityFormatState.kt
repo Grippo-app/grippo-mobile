@@ -41,6 +41,15 @@ public sealed class IntensityFormatState : FormatState<Float> {
     ) : IntensityFormatState(), FormatState.Empty<Float>
 
     public companion object {
+        public fun ofAverage(value: Float?): IntensityFormatState = when {
+            value == null -> Empty()
+            !value.isFinite() || value < 0f -> Invalid(display = value.toString(), value = null)
+            else -> Valid(
+                display = formatDecimal(value = value.toDouble(), decimalSeparator = "."),
+                value = value,
+            )
+        }
+
         @Composable
         public fun shortAverage(value: Float?): String {
             if (value == null || !value.isFinite()) return "—"
@@ -87,17 +96,20 @@ public sealed class IntensityFormatState : FormatState<Float> {
     @Composable
     public fun short(): String {
         val kg = AppTokens.strings.res(Res.string.kg)
-        return "${value?.roundToInt() ?: "-"}$kg"
+        val separator = AppTokens.strings.res(Res.string.decimal_separator)
+        val number = value?.let { formatDecimal(value = it.toDouble(), decimalSeparator = separator) }
+        return "${number ?: "-"}$kg"
     }
 
     @Composable
     public fun shortAnnotated(): AnnotatedString {
         val kg = AppTokens.strings.res(Res.string.kg)
         val tertiary = AppTokens.colors.text.tertiary
-        val display = value?.roundToInt()
+        val separator = AppTokens.strings.res(Res.string.decimal_separator)
+        val display = value?.let { formatDecimal(value = it.toDouble(), decimalSeparator = separator) }
         return buildAnnotatedString {
             if (display != null) {
-                append(display.toString())
+                append(display)
                 append(kg)
             } else {
                 withStyle(SpanStyle(color = tertiary)) {

@@ -1,6 +1,6 @@
 ---
 name: brand-design
-description: Design and visually review Grippo screens, dialogs and components in its warm orange, graphite and sculptural brand language. Owns composition, usage/state analysis and visual acceptance. Use for new UI and visual changes; behavior-only changes and standalone artwork use their own skills.
+description: Design and visually review Grippo UI in its warm orange, graphite and sculptural brand language, with composition, visual semantics organized by domain entities, usage/state analysis and visual acceptance. Use for new UI and visual changes; behavior-only changes and standalone artwork use their own skills.
 ---
 
 # Grippo brand design
@@ -23,7 +23,7 @@ Very small-device appearance is outside the default design/review scope.
 
 | Owner | Responsibility |
 |---|---|
-| This skill | Visual intent, composition, usage/state analysis and brand acceptance |
+| This skill | Visual intent, domain entity visual semantics, composition, usage/state analysis and brand acceptance |
 | [design-system](../design-system/SKILL.md) | Tokens, shared component contracts, resources, themes and previews |
 | [CONSISTENCY.md](../../../design-system/CONSISTENCY.md) | Concrete product role-to-token choices |
 | [illustrations](../illustrations/SKILL.md) | Artwork reference, generation, exports and asset acceptance |
@@ -42,8 +42,9 @@ Resolve conflicts at the owning document rather than adding a competing policy.
 1. Establish the authorized outcome, existing working-tree changes and actual
    supplied design/state. Distinguish a local composition change from a shared
    component, token or artwork change.
-2. Complete the usage/state analysis. Use its findings to choose the composition
-   and the correct shared or local owner.
+2. Complete the usage/state analysis and
+   [domain entity semantic recognition](references/design-language.md#semantic-recognition).
+   Use the findings to choose the composition and the correct shared or local owner.
 3. Keep a compact visual brief in the reply, the task report
    ([records](../../../CLAUDE.md#records)): purpose and next action, usage/state
    constraints, intended visual treatment, affected owners, accepted departures and
@@ -62,7 +63,7 @@ Resolve conflicts at the owning document rather than adding a competing policy.
 
 | Task | Reference |
 |---|---|
-| New composition, redesign or brand review | [Design language](references/design-language.md) |
+| New composition, redesign or brand review | [Design language](references/design-language.md), including [semantic recognition](references/design-language.md#semantic-recognition) |
 | Screen, form, dashboard, list, empty state or dialog | Relevant sections of [surface composition](references/surface-composition.md) |
 | Controls, feedback, themes or animation | Relevant sections of [states and motion](references/states-and-motion.md) |
 | Implementation, migration or completion review | [Workflow and review](references/workflow-and-review.md) |

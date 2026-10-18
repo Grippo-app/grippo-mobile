@@ -20,8 +20,9 @@ No screen enum or separate dialog presentation contract is introduced.
 | HomeViewModel config onAddGoal closure | HomeEvent.AddGoalClicked | Parent observes its accepted navigation callback, separate from dialog click intent |
 | Training/goal/catalog observation and adherence calculation | Deliberate omission | Reactive presentation rebuilding, no finite command or submission |
 
-BackHandler invokes `onBack`. `DismissRequested` records a request, not completed
-dismissal. Swipe/outside dismissal can bypass the VM and remains omitted. Dialog
+The leaf `onBack` callback records `DismissRequested`, not completed dismissal.
+The shared host handles toolbar Back/Close, Compose/system Back and swipe/outside
+dismissal without invoking the leaf callback; those paths remain omitted. Dialog
 views/close, scrolling, calculation/card impressions and navigation completion are
 omitted. There are no editable inputs or picker-result callbacks. No operation API
 is introduced for continuous observation or calculation. Events carry no goals,

@@ -161,8 +161,8 @@ Do not recreate these classes from a generic template.
 ## Data boundary for result producers and receivers
 
 ViewModels consume the actual Feature/UseCase contracts, not backend/DAO/repository
-implementations. Preserve the declared error/return semantics: unwrap Result calls
-inside safeLaunch; direct-value throwing commands remain direct. Observations use
+implementations. Call throwing commands directly inside safeLaunch under the
+[operation contract](../../data-layer/references/operation-outcomes.md#throwing-suspend-contracts-canonical). Observations use
 the existing Flow.safeLaunch pipeline and may fail; navigation/result delivery
 must not manufacture success when a required operation fails.
 Business-model conversion remains in directional data-mappers. Result ownership

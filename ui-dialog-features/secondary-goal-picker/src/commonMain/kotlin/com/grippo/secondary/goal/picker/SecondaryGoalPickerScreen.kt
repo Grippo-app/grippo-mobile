@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
@@ -43,17 +42,15 @@ internal fun SecondaryGoalPickerScreen(
         ),
     ) {
         items(state.goals, key = { it.ordinal }) { goal ->
-            val onClickProvider = remember(goal) {
-                { contract.onSelectGoal(goal) }
-            }
             CheckSelectableCard(
                 modifier = Modifier.fillMaxWidth(),
-                style = CheckSelectableCardStyle.Medium(
+                style = CheckSelectableCardStyle.Large(
                     title = goal.label(),
-                    description = goal.description()
+                    description = goal.description(),
+                    icon = goal.icon(),
                 ),
                 isSelected = state.value == goal,
-                onSelect = onClickProvider,
+                onSelect = { contract.onSelectGoal(goal) },
             )
         }
 
@@ -68,6 +65,18 @@ private fun ScreenPreview() {
             state = SecondaryGoalPickerState(
                 value = GoalSecondaryGoalEnumState.CONSISTENCY,
             ),
+            loaders = persistentSetOf(),
+            contract = SecondaryGoalPickerContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun UnselectedGoalsPreview() {
+    PreviewContainer {
+        SecondaryGoalPickerScreen(
+            state = SecondaryGoalPickerState(value = null),
             loaders = persistentSetOf(),
             contract = SecondaryGoalPickerContract.Empty,
         )

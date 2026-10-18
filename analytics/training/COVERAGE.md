@@ -67,8 +67,7 @@ or route attribution exists.
 | Completed summary / exercise / back | SummaryOpened after the loaded-training guard (`state.training.id`, Statistics dialog); ExerciseOpened without a guard; DismissRequested from "Done" or system Back, then close to the entry host. Result fallbacks retain Done without a retry or second save. Error-dismissal navigation after a failed save bypasses the user Back event |
 | ConfirmTrainingCompletion duration / save / keep training | DurationOpened before the PickDuration direction (the host pushes DurationPicker as a nested step); DurationSelected on the accepted nested result; ConfirmClicked only after the VM resolves `DurationFormatState.Valid`, then the Confirm direction carries that same value. Save workout is disabled for Invalid/Empty, and direct invalid callbacks emit nothing and navigate nowhere; the host forwards the non-null raw duration. DismissRequested from Keep training or system Back, then `finish(null)`. The read-only exercise/set summary adds no interaction or telemetry |
 
-Seven typed operations decorate complete existing Feature/UseCase calls with
-`getOrThrow()` inside the block:
+Seven typed operations decorate complete throwing Feature/UseCase calls inside the block:
 
 - DeleteDraft: Add initialization, Edit initialization, the list becoming empty,
   discard, and the Completed cleanup after a successful save.
@@ -80,10 +79,19 @@ Seven typed operations decorate complete existing Feature/UseCase calls with
 - CreateTraining / UpdateTraining: one Completed `init` block under the
   SaveTraining loader skips the write when a saved ID is already present, calls
   `setTrainingUseCase` when the stage has no ID or `updateTrainingUseCase`
-  otherwise, and stops uncommitted (no DeleteDraft/LoadTraining/RefreshExamples,
-  unconfirmed-result fallback) when the returned ID is null; a nonnull ID is committed to State
-  immediately. The written duration is computed at save time from the route
-  `startAt`.
+  otherwise. The repository succeeds only after a nonnull ID, readback of that
+  same training and complete transactional cache hydration. The UseCase also
+  requires its user refresh to confirm an existing profile before returning the
+  saved ID; a false profile result fails the UseCase. Mutation/readback
+  failures retain their original errors; missing IDs or incomplete/mismatched
+  payloads fail with IncompleteResponse. Nested exercises/iterations must have
+  matching parent IDs and unique primary IDs; consumed creation dates parse
+  before cache insertion. Cancellation propagates. These failures
+  reach the existing error pipeline before savedTrainingId or draft cleanup is
+  committed. The API chain returns a non-null saved ID, which is committed to
+  State immediately after the whole UseCase succeeds. The written duration is
+  computed at save time from the route `startAt`. A failure after the server write does not establish
+  that the write was rolled back; no automatic retry is introduced.
 - RefreshExamples: `getExerciseExamples()` after the Completed save chain.
 
 The recording initialization chain runs only when the restored or initial
@@ -134,7 +142,12 @@ cross-screen reporting context; the four completion-confirmation codes extend th
 same schema additively. Admin consumers (the `grippo_training_create_completed`
 derived key event on `training_task_completed` with `create_training`) are
 reconciled in the root GA4 review; completion proves the operation completed,
-not that an ID was returned.
+including the current repository's required ID and training hydration. Earlier
+builds could report completion with a null ID or failed readback; historical
+events do not establish the corrected current-build outcome. Wire names,
+schemas, decorators, tracking placement, consent and transport are unchanged;
+only business-result propagation and its coverage description changed, so no
+live admin synchronization trigger is introduced by this fix.
 
 ## Omissions and privacy
 
@@ -176,7 +189,7 @@ symbol, consent or persisted field changes.
 | Exercise | `exercise` (ExerciseState) | Preserve | `DRAFT = PersistenceKey("TrainingExerciseDraft", TrainingExerciseState.serializer())`; nullable initialState | The route seed is used only without an archive, so the local draft wins; the exercise ID never changes (a swap copies name/example), keeping the SimilarTo result key stable |
 | Exercise | `exerciseExample`, `previousIterations`, volume/repetition artifact IDs | Rebuild | `@Transient`; example observation by current ID; validation flow | Recomputed from the restored exercise without replaying callbacks |
 | Exercise | Iteration dialog session; body-weight lookup | Runtime only | DialogConfig.Iteration; WeightHistoryFeature | The accepted iteration enters the exercise and reaches the parent through Sync/Remove |
-| Completed | `savedTrainingId` | Preserve | `DRAFT = PersistenceKey("TrainingCompletedDraft", TrainingCompletedState.serializer())`; `restoreState(DRAFT) ?: TrainingCompletedState()` (non-null); default null | Committed immediately after a nonnull save; a restored ID skips Create/Update and resumes DeleteDraft/LoadTraining/RefreshExamples and presentation; a null returned ID stops the chain uncommitted |
+| Completed | `savedTrainingId` | Preserve | `DRAFT = PersistenceKey("TrainingCompletedDraft", TrainingCompletedState.serializer())`; `restoreState(DRAFT) ?: TrainingCompletedState()` (non-null); default null | Committed only after successful required training readback, hydration and UseCase user refresh; a restored ID skips Create/Update and resumes DeleteDraft/LoadTraining/RefreshExamples and presentation. Repository failures keep this checkpoint uncommitted and preserve the durable draft |
 | Completed | `title`, `description`, `timeline`, `training`, `muscleLoad` | Rebuild | `@Transient`; localized UiText resources selected from route stage; `observeTraining(id).firstOrNull()` plus timeline/distribution use cases | Copy rebuilds before startup: Edit confirms an update, Add/Draft a completed workout; details rebuild by ID. No localized snapshot is archived |
 | Completed | Route inputs `stage`, `exercises`, `startAt` | Rebuild from route | `TrainingRouter.Completed` constructor inputs | Stage seeds rebuilt confirmation copy; all three inputs also serve the save branch, whose duration is computed at write time |
 | Completed | SaveTraining loader; Statistics/Exercise dialogs | Runtime only | VM loader and DialogConfig | Not archived |

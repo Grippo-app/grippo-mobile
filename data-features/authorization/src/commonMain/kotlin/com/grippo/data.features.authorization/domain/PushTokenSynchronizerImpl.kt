@@ -11,6 +11,6 @@ internal class PushTokenSynchronizerImpl(
 ) : PushTokenSynchronizer {
 
     override suspend fun syncToken(token: PushToken) {
-        authorizationFeature.updatePushToken(token.value).getOrThrow()
+        authorizationFeature.updatePushToken(token.value)
     }
 }

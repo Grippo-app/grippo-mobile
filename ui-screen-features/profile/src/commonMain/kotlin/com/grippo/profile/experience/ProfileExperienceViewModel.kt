@@ -39,7 +39,7 @@ internal class ProfileExperienceViewModel(
 
         safeLaunch {
             analytics.trackOperation(ProfileOperation.RefreshUser) {
-                userFeature.getUser().getOrThrow()
+                userFeature.getUser()
             }
         }
     }
@@ -60,7 +60,7 @@ internal class ProfileExperienceViewModel(
         analytics.trackEvent(ProfileEvent.Experience.Apply)
         safeLaunch(loader = ProfileExperienceLoader.ApplyButton) {
             analytics.trackOperation(ProfileOperation.SaveExperience) {
-                userFeature.setExperience(selected.toDomain()).getOrThrow()
+                userFeature.setExperience(selected.toDomain())
             }
             navigateTo(ProfileExperienceDirection.Back)
         }

@@ -27,6 +27,7 @@ public interface AppColor {
     public val charts: Charts
     public val example: ExampleColors
     public val profile: ProfileColors
+    public val goal: GoalColors
     public val palette: PaletteColors
     public val static: Static
     public val context: ContextColors
@@ -194,7 +195,6 @@ public interface AppColor {
         public val muscle: Color
         public val equipment: Color
         public val experience: Color
-        public val goal: Color
         public val body: Color
 
         // Training
@@ -216,6 +216,11 @@ public interface AppColor {
             public val advanced: Color
             public val pro: Color
         }
+    }
+
+    public interface GoalColors {
+        public val accent: Color
+        public val background: Color
     }
 
     public interface ExampleColors {

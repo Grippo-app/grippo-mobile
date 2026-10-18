@@ -4,21 +4,21 @@ import kotlinx.coroutines.flow.Flow
 
 internal interface AuthorizationRepository {
 
-    suspend fun login(email: String, password: String): Result<Unit>
+    suspend fun login(email: String, password: String): Unit
 
-    suspend fun google(token: String): Result<Unit>
+    suspend fun google(token: String): Unit
 
-    suspend fun apple(code: String): Result<Unit>
+    suspend fun apple(code: String): Unit
 
-    suspend fun register(email: String, password: String): Result<Unit>
+    suspend fun register(email: String, password: String): Unit
 
     suspend fun logout()
 
     fun getToken(): Flow<String?>
 
-    suspend fun updatePushToken(token: String): Result<Unit>
+    suspend fun updatePushToken(token: String): Unit
 
     suspend fun getPushToken(): String?
 
-    suspend fun deletePushToken(): Result<Unit>
+    suspend fun deletePushToken(): Unit
 }

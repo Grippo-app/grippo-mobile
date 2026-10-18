@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.onEach
 public class StatisticsViewModel(
     config: DialogConfig.Statistics,
     private val analytics: StatisticsAnalytics,
-    private val trainingFeature: TrainingFeature,
+    trainingFeature: TrainingFeature,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
     private val trainingTotalUseCase: TrainingTotalUseCase,
@@ -43,8 +43,7 @@ public class StatisticsViewModel(
     init {
         when (config) {
             is DialogConfig.Statistics.Trainings -> {
-                trainingFeature
-                    .observeTrainings(config.range.from, config.range.to)
+                trainingFeature.observeTrainings(start = config.range.from, end = config.range.to)
                     .flatMapLatest { trainings ->
                         observeTrainingStatistics(range = config.range, trainings = trainings)
                     }
@@ -55,9 +54,7 @@ public class StatisticsViewModel(
                 safeLaunch {
                     withLoader(StatisticsLoader.Charts) {
                         analytics.trackOperation(StatisticsOperation.RefreshTrainings) {
-                            trainingFeature
-                                .getTrainings(start = config.range.from, end = config.range.to)
-                                .getOrThrow()
+                            trainingFeature.getTrainings(start = config.range.from, end = config.range.to)
                         }
                     }
                 }

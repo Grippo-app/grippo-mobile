@@ -2,6 +2,7 @@ package com.grippo.core.state.profile
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_primary_build_muscle
@@ -16,6 +17,12 @@ import com.grippo.design.resources.provider.goal_primary_maintain
 import com.grippo.design.resources.provider.goal_primary_maintain_desc
 import com.grippo.design.resources.provider.goal_primary_return_to_training
 import com.grippo.design.resources.provider.goal_primary_return_to_training_desc
+import com.grippo.design.resources.provider.icons.Body
+import com.grippo.design.resources.provider.icons.Dumbbell
+import com.grippo.design.resources.provider.icons.Flame
+import com.grippo.design.resources.provider.icons.Muscle
+import com.grippo.design.resources.provider.icons.Repeat
+import com.grippo.design.resources.provider.icons.Stack
 
 @Immutable
 public enum class GoalPrimaryGoalEnumState {
@@ -47,6 +54,18 @@ public enum class GoalPrimaryGoalEnumState {
             RETURN_TO_TRAINING -> AppTokens.strings.res(Res.string.goal_primary_return_to_training_desc)
             MAINTAIN -> AppTokens.strings.res(Res.string.goal_primary_maintain_desc)
             GENERAL_FITNESS -> AppTokens.strings.res(Res.string.goal_primary_general_fitness_desc)
+        }
+    }
+
+    @Composable
+    public fun icon(): ImageVector {
+        return when (this) {
+            BUILD_MUSCLE -> AppTokens.icons.Muscle
+            GET_STRONGER -> AppTokens.icons.Dumbbell
+            LOSE_FAT -> AppTokens.icons.Flame
+            RETURN_TO_TRAINING -> AppTokens.icons.Repeat
+            MAINTAIN -> AppTokens.icons.Stack
+            GENERAL_FITNESS -> AppTokens.icons.Body
         }
     }
 }

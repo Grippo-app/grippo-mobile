@@ -7,5 +7,5 @@ internal interface MuscleRepository {
 
     fun observeMuscles(): Flow<List<MuscleGroup>>
 
-    suspend fun getMuscles(): Result<Unit>
+    suspend fun getMuscles(): Unit
 }

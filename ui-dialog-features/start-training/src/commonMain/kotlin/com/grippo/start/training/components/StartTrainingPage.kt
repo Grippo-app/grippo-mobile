@@ -17,11 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import com.grippo.core.state.formatters.DateTimeFormatState
-import com.grippo.core.state.formatters.RepetitionsFormatState
-import com.grippo.core.state.trainings.ExerciseState
-import com.grippo.core.state.trainings.stubExercise
-import com.grippo.core.state.trainings.stubPendingIteration
+import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.empty.IllustratedEmptyState
 import com.grippo.design.components.illustration.IllustrationStyle
@@ -40,9 +36,6 @@ import com.grippo.design.resources.provider.start_training_option_recent_title
 import com.grippo.design.resources.provider.start_training_plan_edit_hint
 import com.grippo.design.resources.provider.start_training_recent_description
 import com.grippo.start.training.StartTrainingOption
-import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRangePresets
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
@@ -173,7 +166,7 @@ private fun StartTrainingPagePresetPreview() {
     PreviewContainer {
         StartTrainingPage(
             modifier = Modifier.fillMaxSize(),
-            option = StartTrainingOption.Preset(exercises = startTrainingPagePreviewExercises()),
+            option = StartTrainingOption.Preset(exercises = stubExercises().take(2).toPersistentList()),
             contentPadding = PaddingValues(AppTokens.dp.dialog.horizontalPadding),
         )
     }
@@ -183,7 +176,7 @@ private fun StartTrainingPagePresetPreview() {
 @Composable
 private fun StartTrainingPageRecentPreview() {
     PreviewContainer {
-        val exercises = startTrainingPagePreviewExercises()
+        val exercises = stubExercises().take(2).toPersistentList()
         val recents = persistentListOf(
             StartTrainingOption.Recent(
                 trainingId = "evening",
@@ -212,32 +205,4 @@ private fun StartTrainingPageRecentPreview() {
             },
         )
     }
-}
-
-private fun startTrainingPagePreviewExercises(): ImmutableList<ExerciseState> {
-    val createdAt = DateTimeFormatState.of(
-        value = LocalDateTime(year = 2026, month = 10, day = 16, hour = 18, minute = 30),
-        range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
-    )
-
-    return listOf("Dumbbell bench press", "Lat pulldown").mapIndexed { exerciseIndex, name ->
-        val base = stubExercise()
-        base.copy(
-            id = "page-exercise-$exerciseIndex",
-            name = name,
-            exerciseExample = base.exerciseExample.copy(
-                id = "page-example-$exerciseIndex",
-                name = name,
-                imageUrl = null,
-            ),
-            iterations = List(3) { setIndex ->
-                stubPendingIteration().copy(
-                    id = "page-exercise-$exerciseIndex-set-$setIndex",
-                    repetitions = RepetitionsFormatState.of(12 - setIndex * 2),
-                )
-            }.toPersistentList(),
-            createdAt = createdAt,
-        )
-    }.toPersistentList()
 }

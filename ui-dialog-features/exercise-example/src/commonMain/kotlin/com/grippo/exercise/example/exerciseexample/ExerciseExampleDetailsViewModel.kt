@@ -33,7 +33,7 @@ public class ExerciseExampleDetailsViewModel(
     private val exerciseMetricsFeature: ExerciseMetricsFeature,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
-    private val estimatedOneRepMaxUseCase: EstimatedOneRepMaxUseCase
+    private val estimatedOneRepMaxUseCase: EstimatedOneRepMaxUseCase,
 ) : BaseViewModel<ExerciseExampleDetailsState, ExerciseExampleDetailsDirection, ExerciseExampleDetailsLoader>(
     ExerciseExampleDetailsState(mode = mode)
 ), ExerciseExampleDetailsContract {
@@ -54,13 +54,13 @@ public class ExerciseExampleDetailsViewModel(
 
         safeLaunch {
             analytics.trackOperation(ExerciseExampleOperation.LoadExample) {
-                exerciseExampleFeature.getExerciseExampleById(id).getOrThrow()
+                exerciseExampleFeature.getExerciseExampleById(id)
             }
         }
 
         safeLaunch(loader = ExerciseExampleDetailsLoader.Achievements) {
             analytics.trackOperation(ExerciseExampleOperation.LoadAchievements) {
-                val achievements = exerciseMetricsFeature.getAchievementsByExampleId(id).getOrThrow()
+                val achievements = exerciseMetricsFeature.getAchievementsByExampleId(id)
                 provideAchievements(achievements)
             }
         }
@@ -69,7 +69,7 @@ public class ExerciseExampleDetailsViewModel(
     private fun observeRecentExercises(id: String): Flow<List<Exercise>> = flow {
         val exercises = withLoader(ExerciseExampleDetailsLoader.RecentExercises) {
             analytics.trackOperation(ExerciseExampleOperation.LoadRecentExercises) {
-                val exercises = exerciseMetricsFeature.getRecentExercisesByExampleId(id).getOrThrow()
+                val exercises = exerciseMetricsFeature.getRecentExercisesByExampleId(id)
                 provideRecentExercises(exercises)
                 exercises
             }
@@ -123,7 +123,9 @@ public class ExerciseExampleDetailsViewModel(
     }
 
     override fun onTabSelected(value: ExerciseExampleDetailsTabState) {
-        analytics.trackEvent(ExerciseExampleEvent.TabSelected(value.toAnalytics()))
+        val tab = value.toAnalytics()
+
+        analytics.trackEvent(ExerciseExampleEvent.TabSelected(tab = tab))
     }
 
     override fun onDismiss() {

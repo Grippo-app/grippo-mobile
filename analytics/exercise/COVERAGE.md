@@ -23,7 +23,7 @@ Back/close behavior and in-memory session ownership.
 |---|---|---|
 | ExerciseViewModel.onExampleDetailsClick | ExampleDetailsClicked / `exercise_example_details_clicked` | After the existing available exercise/example ID guard, before ShowExampleDetails; observes the click, not downstream display. Loading/unavailable content emits nothing. |
 | ExerciseViewModel.onDismiss | DismissRequested / `exercise_dismiss_requested` | Before Back; reports callback invocation without inferring user source or host dismissal. |
-| ExerciseViewModel.init / startup safeLaunch | LoadHistory / `exercise_task_started`, `exercise_task_completed`, `exercise_task_failed`, `exercise_task_interrupted` | Once after the primary subscription supplies an available record. The complete decorated block rechecks the selected record, refreshes the 180-day workout window, reads the reconciled cache and fresh selected record, selects prior workouts and maps their history. `getOrThrow()` remains inside the block. |
+| ExerciseViewModel.init / startup safeLaunch | LoadHistory / `exercise_task_started`, `exercise_task_completed`, `exercise_task_failed`, `exercise_task_interrupted` | Once after the primary subscription supplies an available record. The complete decorated block rechecks the selected record, refreshes the 180-day workout window, reads the reconciled cache and fresh selected record, selects prior workouts and maps their history. The throwing refresh remains inside the block. |
 
 The two existing event schemas remain parameterless. The four version-1
 operation schemas carry `exercise_operation=load_history`; terminal schemas also

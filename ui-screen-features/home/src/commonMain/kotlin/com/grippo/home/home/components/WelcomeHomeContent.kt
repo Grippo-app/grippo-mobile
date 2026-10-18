@@ -34,8 +34,7 @@ import com.grippo.design.resources.provider.empty_workouts
 import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_description
 import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_title
 import com.grippo.design.resources.provider.icons.LineUp
-import com.grippo.design.resources.provider.icons.Lock
-import com.grippo.design.resources.provider.icons.Medal
+import com.grippo.design.resources.provider.icons.Compass
 import com.grippo.design.resources.provider.icons.Sparkle
 import com.grippo.design.resources.provider.icons.Stack
 import com.grippo.design.resources.provider.welcome_benefit_history_subtitle
@@ -217,7 +216,7 @@ private fun WelcomeBody(
                             tint = AppTokens.colors.icon.secondary,
                             surface = AppTokens.colors.bannerCard.mutedBackground,
                         ),
-                        icon = if (hasGoal) AppTokens.icons.Medal else AppTokens.icons.Lock,
+                        icon = AppTokens.icons.Compass,
                         title = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_title),
                         description = AppTokens.strings.res(Res.string.goal_setup_suggestion_benefit_tailored_description),
                         enabled = hasGoal,

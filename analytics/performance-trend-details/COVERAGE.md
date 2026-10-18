@@ -20,8 +20,9 @@ the default null screenPresentation. Dialog sessions have no presentation contra
 | HomeViewModel.onPerformanceMetricClick | HomeEvent.PerformanceMetricClicked | Existing valid-range guard; parameterless event. Metric type is a business dialog input omitted from telemetry; owned by Home |
 | Training observation and history calculation | Deliberate omission | Data-backed rebuilding and pure local calculation, no finite request or submission |
 
-Back observes a dismissal request, not proof of delivered dismissal. Swipe/outside
-dismissal may bypass it and is omitted. Dialog views/close, scrolling, chart gestures
+The leaf Back callback observes a dismissal request, not delivered dismissal.
+The shared host handles toolbar Back/Close, Compose/system Back and swipe/outside
+dismissal without invoking that callback; those paths are omitted. Dialog views/close, scrolling, chart gestures
 and read-only history cards have no events. No range, values, identity, body
 measurements, text or exceptions are reported. The typed stateless analytics service
 retains its existing injection, schema and shared module registration.
@@ -34,10 +35,12 @@ transport. The live admin synchronization trigger therefore does not apply.
 
 The same pure PerformanceTrendUseCase produces Home and every history entry.
 Sessions are ordered by creation date and identity. Each entry compares that
-session with available positive finite values of earlier sessions in the selected
+session with available nonnegative finite values of earlier sessions in the selected
 period. No earlier session means an unavailable comparison, not a fabricated zero.
 An unavailable latest measurement remains unavailable; an older measurement never
 replaces it. Missing measurements are excluded independently for each metric.
+Recorded zero remains available; a zero baseline has no percentage comparison.
+Density requires a positive duration denominator, including when volume is zero.
 
 All five metrics describe workout aggregates. Percentages and statuses use the
 same current-versus-previous-average comparison, with a minimum 5% threshold widened

@@ -56,9 +56,7 @@ internal class ProfileCompletedViewModel(
 
                     createProfileUseCase.execute(profile)
 
-                    localSettingsFeature
-                        .setHomeWelcomeStatus(HomeWelcomeStatus.PendingCelebration)
-                        .getOrThrow()
+                    localSettingsFeature.setHomeWelcomeStatus(HomeWelcomeStatus.PendingCelebration)
                 }
 
                 navigateTo(ProfileCompletedDirection.Home)

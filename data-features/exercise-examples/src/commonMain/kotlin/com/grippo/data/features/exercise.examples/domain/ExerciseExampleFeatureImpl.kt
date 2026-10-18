@@ -34,11 +34,11 @@ internal class ExerciseExampleFeatureImpl(
         return repository.observeExerciseExample(id)
     }
 
-    override suspend fun getExerciseExamples(): Result<Unit> {
+    override suspend fun getExerciseExamples(): Unit {
         return repository.getExerciseExamples()
     }
 
-    override suspend fun getExerciseExampleById(id: String): Result<Unit> {
+    override suspend fun getExerciseExampleById(id: String): Unit {
         return repository.getExerciseExampleById(id)
     }
 }

@@ -35,7 +35,7 @@
     <string name="metric_overview_density">Вага за хвилину</string>
     <string name="metric_overview_intensity">Середня вага</string>
     <string name="metric_overview_repetitions">Повторення</string>
-    <string name="metric_overview_goal_score">Відповідність цілі</string>
+    <string name="metric_overview_goal_score">Відповідність тренувань</string>
     <string name="metric_overview_goal_analyzed">Проаналізовано тренувань за період: %1$d</string>
     <string name="metric_overview_goal_target">Дата цілі: %1$s</string>
     <string name="spotlight_progress_win_title">Зростання обсягу</string>
@@ -590,9 +590,11 @@
 
     <!-- Goal progress card -->
     <string name="goal_card_title">Ціль тренувань</string>
-    <string name="goal_card_status_on_track">За планом</string>
-    <string name="goal_card_status_drifting">Відхиляєшся</string>
-    <string name="goal_card_status_off_track">Збився з цілі</string>
+    <string name="goal_course_title">Ваш курс</string>
+    <string name="goal_period_label">Період цілі</string>
+    <string name="goal_card_status_on_track">На правильному курсі</string>
+    <string name="goal_card_status_drifting">Є що покращити</string>
+    <string name="goal_card_status_off_track">Скоригуйте курс</string>
     <string name="goal_card_progress_day">День %1$d з %2$d</string>
     <string name="goal_card_progress_days_left">Залишилось %1$d дн.</string>
     <string name="goal_card_progress_overdue">Прострочено на %1$d дн.</string>
@@ -611,14 +613,14 @@
     <string name="goal_details_reason_too_early_detail">Для оцінки тижневої структури тренувань потрібен період спостереження щонайменше сім днів.</string>
     <string name="goal_details_reason_overdue_title">Дата фінішу минула</string>
     <string name="goal_details_reason_overdue_detail">Ти пройшов початковий дедлайн. Продовж термін або закрий ціль.</string>
-    <string name="goal_details_reason_almost_done_title">Фінішна пряма</string>
+    <string name="goal_details_reason_almost_done_title">Цільова дата близько</string>
     <string name="goal_details_reason_almost_done_detail">Цільова дата наближається. Оцініть свої тренування й наступні кроки.</string>
-    <string name="goal_details_reason_on_track_title">За графіком</string>
+    <string name="goal_details_reason_on_track_title">На правильному курсі</string>
     <string name="goal_details_reason_on_track_detail">Більшість доступних критеріїв тренувань виконано в періоді аналізу.</string>
-    <string name="goal_details_reason_drifting_title">Трохи вбік</string>
-    <string name="goal_details_reason_drifting_detail">Частина доступних критеріїв тренувань потребує уваги. Значення й орієнтири показано вище.</string>
-    <string name="goal_details_reason_off_track_title">Не за курсом</string>
-    <string name="goal_details_reason_off_track_detail">Кілька доступних критеріїв тренувань нижчі за орієнтири. Перевірте записи за період та окремі критерії вище.</string>
+    <string name="goal_details_reason_drifting_title">Є що покращити</string>
+    <string name="goal_details_reason_drifting_detail">Частина доступних критеріїв тренувань потребує уваги. Порівняйте значення й орієнтири для кожного критерію.</string>
+    <string name="goal_details_reason_off_track_title">Скоригуйте курс</string>
+    <string name="goal_details_reason_off_track_detail">Кілька доступних критеріїв тренувань нижчі за орієнтири. Перевірте записи за період і кожен критерій.</string>
 
     <!-- Training goal details: per-axis reasons -->
 
@@ -631,8 +633,8 @@
     <string name="goal_details_tip_review_deadline">Переглянь дату фінішу — продовж її або закрий ціль і почни нову.</string>
 
     <!-- Goal-fit diagnostic sections -->
-    <string name="goal_fit_diagnostic_drifting_title">Відхилення</string>
-    <string name="goal_fit_diagnostic_on_track_title">В нормі</string>
+    <string name="goal_fit_diagnostic_drifting_title">Що налаштувати</string>
+    <string name="goal_fit_diagnostic_on_track_title">Що вже працює</string>
     <string name="goal_fit_value_target">%1$s · ціль %2$s</string>
     <string name="goal_fit_target_at_least">≥%1$s</string>
     <string name="goal_fit_target_at_most">≤%1$s</string>
@@ -800,7 +802,7 @@
 
     <!-- Goal setup suggestion dialog -->
     <string name="goal_setup_suggestion_title">Яка твоя ціль?</string>
-    <string name="goal_setup_suggestion_subtitle">Підберемо вправи й обсяг саме під неї.</string>
+    <string name="goal_setup_suggestion_subtitle">Задайте напрям тренуванням.</string>
     <string name="goal_setup_suggestion_benefit_tailored_title">Тренування під ціль</string>
     <string name="goal_setup_suggestion_benefit_tailored_description">Повторення й інтенсивність підлаштовані під твій результат.</string>
     <string name="goal_setup_suggestion_primary_btn">Вказати ціль</string>
@@ -905,7 +907,7 @@
     <string name="goal_fit_rule_build_muscle_weekly_frequency_title">Регулярність тренувань</string>
     <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Регулярність тренувань</string>
     <string name="goal_fit_rule_get_stronger_compound_set_share_title">Частка багатосуглобових підходів</string>
-    <string name="goal_fit_unit_training_days_per_week">дн. тренувань/тиж.</string>
+    <string name="goal_fit_unit_training_days_per_week">дн./тиж.</string>
     <string name="muscle_load_set_share_note">Оцінкова частка підходів за доступними даними вправ із відомою участю м’язів.</string>
     <string name="muscle_load_anatomy_note">Оцінкова участь м’язів у цій вправі.</string>
     <string name="muscle_load_excluded_sets">Не враховано підходів без повторень або з некоректними вимірюваннями: %1$d.</string>

@@ -35,6 +35,7 @@ import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.home_unlock_set_goal_cta
 import com.grippo.design.resources.provider.home_unlock_set_goal_description
 import com.grippo.design.resources.provider.home_unlock_set_goal_title
+import com.grippo.design.resources.provider.icons.Compass
 import com.grippo.design.resources.provider.icons.Lock
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.volume
@@ -88,10 +89,10 @@ internal fun HomeUnlockBanner(
             BannerCard(
                 modifier = Modifier.fillMaxWidth(),
                 style = BannerCardStyle.Custom(
-                    tint = AppTokens.colors.icon.secondary,
-                    surface = AppTokens.colors.bannerCard.mutedBackground,
+                    tint = AppTokens.colors.goal.accent,
+                    surface = AppTokens.colors.goal.background,
                 ),
-                icon = AppTokens.icons.Lock,
+                icon = AppTokens.icons.Compass,
                 title = AppTokens.strings.res(Res.string.home_unlock_set_goal_title),
                 description = AppTokens.strings.res(Res.string.home_unlock_set_goal_description),
                 trailing = {

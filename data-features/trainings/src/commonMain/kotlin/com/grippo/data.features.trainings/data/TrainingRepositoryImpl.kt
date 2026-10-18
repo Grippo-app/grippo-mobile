@@ -52,7 +52,7 @@ internal class TrainingRepositoryImpl(
         ).map { it.toDomain() }
     }
 
-    override suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit> {
+    override suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Unit {
         val startUtc = DateTimeUtils.toUtcIso(start)
         val endUtc = DateTimeUtils.toUtcIso(end)
         val response = api.getTrainings(
@@ -60,70 +60,90 @@ internal class TrainingRepositoryImpl(
             end = endUtc
         )
 
-        response.onSuccess { r ->
-            val actualIds = r.mapNotNull(TrainingResponse::id)
-            val savedCount = r.count { training -> provideTraining(training) }
-            if (actualIds.size != r.size) {
-                return Result.failure(AppError.Network.IncompleteResponse())
-            }
-
-            if (actualIds.isEmpty()) {
-                trainingDao.deleteByCreatedAtRange(startUtc, endUtc)
-            } else {
-                trainingDao.deleteByCreatedAtRangeExceptIds(startUtc, endUtc, actualIds)
-            }
-            if (savedCount != r.size) {
-                return Result.failure(AppError.Network.IncompleteResponse())
-            }
+        val actualIds = response.mapNotNull(TrainingResponse::id)
+        val duplicateTrainingIds = actualIds.groupingBy { it }.eachCount().filterValues { it > 1 }.keys
+        val rawExercises = response.flatMap { it.exercises.orEmpty() }
+        val duplicateExerciseIds = rawExercises.mapNotNull { it.id }
+            .groupingBy { it }.eachCount().filterValues { it > 1 }.keys
+        val duplicateIterationIds = rawExercises.flatMap { it.iterations.orEmpty() }.mapNotNull { it.id }
+            .groupingBy { it }.eachCount().filterValues { it > 1 }.keys
+        val savedCount = response.count { training ->
+            val hasDuplicateIds = training.id?.let { it in duplicateTrainingIds } == true ||
+                training.exercises.orEmpty().any { exercise ->
+                    exercise.id?.let { it in duplicateExerciseIds } == true ||
+                        exercise.iterations.orEmpty().any { iteration ->
+                            iteration.id?.let { it in duplicateIterationIds } == true
+                        }
+                }
+            !hasDuplicateIds && provideTraining(training)
+        }
+        if (actualIds.size != response.size) {
+            throw AppError.Network.IncompleteResponse()
         }
 
-        return response.map {}
+        if (actualIds.isEmpty()) {
+            trainingDao.deleteByCreatedAtRange(startUtc, endUtc)
+        } else {
+            trainingDao.deleteByCreatedAtRangeExceptIds(startUtc, endUtc, actualIds)
+        }
+        if (savedCount != response.size) {
+            throw AppError.Network.IncompleteResponse()
+        }
     }
 
-    override suspend fun updateTraining(id: String, training: SetTraining): Result<String?> {
-        val response = api.updateTraining(
+    override suspend fun updateTraining(id: String, training: SetTraining): String {
+        api.updateTraining(
             id = id,
-            body = training.toBody()
+            body = training.toBody(),
         )
 
-        response.onSuccess {
-            val updated = api.getTraining(id).getOrNull() ?: return@onSuccess
-            provideTraining(updated)
+        val updated = api.getTraining(id)
+        if (updated.id != id || !provideTraining(updated)) {
+            throw AppError.Network.IncompleteResponse()
         }
 
-        return response.map { id }
+        return id
     }
 
-    override suspend fun setTraining(training: SetTraining): Result<String?> {
+    override suspend fun setTraining(training: SetTraining): String {
         val response = api.setTraining(
-            body = training.toBody()
+            body = training.toBody(),
         )
+        val id = response.id ?: throw AppError.Network.IncompleteResponse()
 
-        response.onSuccess { r ->
-            val id = r.id ?: return@onSuccess
-            val training = api.getTraining(id).getOrNull() ?: return@onSuccess
-            provideTraining(training)
+        val saved = api.getTraining(id)
+        if (saved.id != id || !provideTraining(saved)) {
+            throw AppError.Network.IncompleteResponse()
         }
 
-        return response.map { it.id }
+        return id
     }
 
-    override suspend fun deleteTraining(id: String): Result<Unit> {
-        val response = api.deleteTraining(id = id)
-
-        response.onSuccess {
-            trainingDao.deleteById(id)
-        }
-
-        return response
+    override suspend fun deleteTraining(id: String): Unit {
+        api.deleteTraining(id = id)
+        trainingDao.deleteById(id)
     }
 
     private suspend fun provideTraining(value: TrainingResponse): Boolean {
         val training = value.toEntityOrNull() ?: return false
-        val exercises = value.exercises.toEntities()
-        val rawIterations = value.exercises.orEmpty().flatMap { exercise -> exercise.iterations.orEmpty() }
+        val rawExercises = value.exercises ?: return false
+        val exercises = rawExercises.toEntities()
+        val rawIterations = rawExercises.flatMap { it.iterations ?: return false }
         val iterations = rawIterations.toEntities()
-        if (exercises.size != value.exercises?.size || iterations.size != rawIterations.size) return false
+        if (exercises.size != rawExercises.size || iterations.size != rawIterations.size ||
+            exercises.any { it.trainingId != training.id } ||
+            rawExercises.any { exercise ->
+                exercise.iterations.orEmpty().any { it.exerciseId != exercise.id }
+            } ||
+            exercises.map { it.id }.toSet().size != exercises.size ||
+            iterations.map { it.id }.toSet().size != iterations.size
+        ) {
+            return false
+        }
+        DateTimeUtils.toLocalDateTime(training.createdAt)
+        exercises.forEach {
+            DateTimeUtils.toLocalDateTime(it.createdAt)
+        }
         trainingDao.insertOrReplace(training, exercises, iterations)
         return true
     }
@@ -133,11 +153,14 @@ internal class TrainingRepositoryImpl(
             .map { it?.toDraftDomain() }
     }
 
-    override suspend fun setDraftTraining(draft: DraftTraining): Result<Unit> {
+    override suspend fun setDraftTraining(draft: DraftTraining): Unit {
         val profileId = userActiveDao.get()
             .firstOrNull()
             ?.let { userDao.getById(it).firstOrNull()?.profileId }
-            ?: return Result.success(Unit)
+            ?: throw AppError.Expected(
+                message = "An active profile is required to save a training draft",
+                description = null,
+            )
 
         val draftId = Uuid.random().toString()
         val draftExercises = draft.exercises.map { exercise ->
@@ -157,12 +180,9 @@ internal class TrainingRepositoryImpl(
         val iterations = pack.exercises.flatMap { it.iterations }
 
         draftTrainingDao.insertOrReplace(training, exercises, iterations)
-
-        return Result.success(Unit)
     }
 
-    override suspend fun deleteDraftTraining(): Result<Unit> {
+    override suspend fun deleteDraftTraining(): Unit {
         draftTrainingDao.delete()
-        return Result.success(Unit)
     }
 }

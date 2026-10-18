@@ -5,7 +5,7 @@ import com.grippo.data.features.api.training.models.Exercise
 
 internal interface ExerciseMetricsRepository {
 
-    suspend fun getRecentExercisesByExampleId(id: String): Result<List<Exercise>>
+    suspend fun getRecentExercisesByExampleId(id: String): List<Exercise>
 
-    suspend fun getAchievementsByExampleId(id: String): Result<List<Achievement>>
+    suspend fun getAchievementsByExampleId(id: String): List<Achievement>
 }

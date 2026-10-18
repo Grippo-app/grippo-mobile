@@ -31,9 +31,11 @@ public sealed interface ExerciseExampleDetailsModeState {
 
     @Immutable
     public data class Action(val title: UiText) : ExerciseExampleDetailsModeState
-}
 
-internal fun DialogConfig.ExerciseExampleDetails.Mode.toState(): ExerciseExampleDetailsModeState = when (this) {
-    DialogConfig.ExerciseExampleDetails.Mode.Default -> ExerciseExampleDetailsModeState.Default
-    is DialogConfig.ExerciseExampleDetails.Mode.Action -> ExerciseExampleDetailsModeState.Action(title = title)
+    public companion object {
+        internal fun of(value: DialogConfig.ExerciseExampleDetails.Mode): ExerciseExampleDetailsModeState = when (value) {
+            DialogConfig.ExerciseExampleDetails.Mode.Default -> Default
+            is DialogConfig.ExerciseExampleDetails.Mode.Action -> Action(title = value.title)
+        }
+    }
 }

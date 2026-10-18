@@ -1,5 +1,6 @@
 package com.grippo.data.features.excluded.equipments.data
 
+import com.grippo.core.error.provider.AppError
 import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.excluded.equipments.domain.ExcludedEquipmentsRepository
 import com.grippo.entity.domain.equipment.toDomain
@@ -29,29 +30,34 @@ internal class ExcludedEquipmentsRepositoryImpl(
             }
     }
 
-    override suspend fun getExcludedEquipments(): Result<Unit> {
+    override suspend fun getExcludedEquipments(): Unit {
+        val profileId = getActiveProfileId()
+            ?: throw AppError.Expected(
+                message = "An active profile is required to load excluded equipment",
+                description = null,
+            )
         val response = api.getExcludedEquipments()
-
-        response.onSuccess {
-            val profileId = getActiveProfileId() ?: return@onSuccess
-            val ids = it.mapNotNull { m -> m.id }
-            userDao.insertOrReplaceExcludedEquipments(profileId, ids)
+        val ids = response.mapNotNull { it.id }
+        if (ids.size != response.size) {
+            throw AppError.Network.IncompleteResponse()
         }
-
-        return response.map { }
+        userDao.insertOrReplaceExcludedEquipments(profileId, ids)
     }
 
-    override suspend fun setExcludedEquipments(ids: List<String>): Result<Unit> {
-        val response = api.postExcludedEquipments(IdsBody(ids))
+    override suspend fun setExcludedEquipments(ids: List<String>): Unit {
+        val profileId = getActiveProfileId()
+            ?: throw AppError.Expected(
+                message = "An active profile is required to save excluded equipment",
+                description = null,
+            )
+        api.postExcludedEquipments(IdsBody(ids))
 
-        response.onSuccess {
-            val profileId = getActiveProfileId() ?: return@onSuccess
-            val equipments = api.getExcludedEquipments().getOrNull() ?: return@onSuccess
-            val ids = equipments.mapNotNull { it.id }
-            userDao.insertOrReplaceExcludedEquipments(profileId, ids)
+        val equipments = api.getExcludedEquipments()
+        val savedIds = equipments.mapNotNull { it.id }
+        if (savedIds.size != equipments.size) {
+            throw AppError.Network.IncompleteResponse()
         }
-
-        return response.map { }
+        userDao.insertOrReplaceExcludedEquipments(profileId, savedIds)
     }
 
     private fun observeActiveProfileId(): Flow<String?> {

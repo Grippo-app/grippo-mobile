@@ -6,7 +6,9 @@ description: Implement and review Grippo screens, dialogs, UI state and Decompos
 Build Grippo UI features using the current source and the topic references below.
 
 Designing, redesigning or visually reviewing product UI MUST apply
-[brand-design](../brand-design/SKILL.md) for intent, composition and brand acceptance,
+[brand-design](../brand-design/SKILL.md) for intent,
+[semantic recognition](../brand-design/references/design-language.md#semantic-recognition),
+composition and brand acceptance,
 with design-system for implementation. This skill retains feature/state/navigation
 ownership. Compose source implementation/review applies
 [compose-components](../compose-components/SKILL.md). Changes without visual impact
@@ -41,8 +43,7 @@ apply it as written there.
 
 Drafts, restoration flags and data-backed form synchronization are owned by
 [state-preservation](../state-preservation/SKILL.md#data-backed-form-synchronization);
-the single error path (`getOrThrow()` inside `safeLaunch`, no local catches, pure
-`mapError`, `onError` after dismissal) is owned by the
+the single error path is owned by the
 [error pipeline](references/error-pipeline.md). Apply both as written there.
 
 ## State preservation
@@ -205,6 +206,8 @@ implementation. Apply the mandatory analytics and preservation gates before comp
 Inventory every changed ViewModel member and State constructor field against
 [minimal runtime state](references/state.md#minimal-runtime-state); reject shadow
 stores and fields whose value is already determined by the retained inputs.
+Review UI-model display accessors and their consumers against
+[state-owned presentation mappings](references/state.md#state-owned-presentation-mappings).
 Fix findings and review the resulting diff again. Run the checks the
 [verification policy](../../../CLAUDE.md#verification-policy) names; report
 evidence and unverified runtime scenarios.

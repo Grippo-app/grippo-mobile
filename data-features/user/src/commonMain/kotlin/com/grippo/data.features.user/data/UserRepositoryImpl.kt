@@ -1,5 +1,6 @@
 package com.grippo.data.features.user.data
 
+import com.grippo.core.error.provider.AppError
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.user.models.CreateUserProfile
 import com.grippo.data.features.api.user.models.User
@@ -35,56 +36,86 @@ internal class UserRepositoryImpl(
             }.map { it?.toDomain() }
     }
 
-    override suspend fun getUser(): Result<Boolean> {
+    override suspend fun getUser(): Boolean {
+        val userId = requireActiveUserId()
         val response = api.getUser()
 
-        return response.map { dto ->
-            val pack = dto.toEntityOrNull() ?: return@map false
-            userDao.insertOrUpdate(pack)
-            true
+        if (response.id != userId || response.email == null || response.role == null ||
+            response.createdAt == null || response.updatedAt == null
+        ) {
+            throw AppError.Network.IncompleteResponse()
         }
+        if (response.profile == null) {
+            if (userDao.getById(userId).firstOrNull() != null) {
+                // Deleting this cached user would also delete the local training draft.
+                throw AppError.Expected(
+                    message = "The user profile is unavailable",
+                    description = null,
+                )
+            }
+            return false
+        }
+
+        val pack = response.toEntityOrNull() ?: throw AppError.Network.IncompleteResponse()
+        pack.toDomain() ?: throw AppError.Network.IncompleteResponse()
+        userDao.insertOrUpdate(pack)
+        return true
     }
 
-    override suspend fun createProfile(profile: CreateUserProfile): Result<Boolean> {
+    override suspend fun createProfile(profile: CreateUserProfile): Unit {
+        val userId = requireActiveUserId()
         val response = api.createProfile(profile.toBody())
 
-        return response.map { dto ->
-            val pack = dto.toEntityOrNull() ?: return@map false
-            userDao.insertOrUpdate(pack)
-            true
+        if (response.id != userId) {
+            throw AppError.Network.IncompleteResponse()
         }
+
+        val pack = response.toEntityOrNull() ?: throw AppError.Network.IncompleteResponse()
+        pack.toDomain() ?: throw AppError.Network.IncompleteResponse()
+        userDao.insertOrUpdate(pack)
     }
 
-    override suspend fun deleteProfile(): Result<Unit> {
-        val response = api.deleteUser()
-
-        return response.map {
-            val activeId = userActiveDao.get().firstOrNull() ?: return@map
-            tokenDao.delete(activeId)
-        }
+    override suspend fun deleteProfile(): Unit {
+        val activeId = requireActiveUserId()
+        api.deleteUser()
+        tokenDao.delete(activeId)
     }
 
-    override suspend fun setExperience(experience: ExperienceEnum): Result<Boolean> {
+    override suspend fun setExperience(experience: ExperienceEnum): Unit {
+        val userId = requireActiveUserId()
         val response = api.updateExperience(
             com.grippo.services.backend.dto.user.ExperienceBody(experience = experience.key)
         )
 
-        return response.map { dto ->
-            val pack = dto.toEntityOrNull() ?: return@map false
-            userDao.insertOrUpdate(pack)
-            true
+        if (response.id != userId) {
+            throw AppError.Network.IncompleteResponse()
         }
+
+        val pack = response.toEntityOrNull() ?: throw AppError.Network.IncompleteResponse()
+        pack.toDomain() ?: throw AppError.Network.IncompleteResponse()
+        userDao.insertOrUpdate(pack)
     }
 
-    override suspend fun setHeight(height: Int): Result<Boolean> {
+    override suspend fun setHeight(height: Int): Unit {
+        val userId = requireActiveUserId()
         val response = api.updateHeight(
             HeightBody(height = height)
         )
 
-        return response.map { dto ->
-            val pack = dto.toEntityOrNull() ?: return@map false
-            userDao.insertOrUpdate(pack)
-            true
+        if (response.id != userId) {
+            throw AppError.Network.IncompleteResponse()
         }
+
+        val pack = response.toEntityOrNull() ?: throw AppError.Network.IncompleteResponse()
+        pack.toDomain() ?: throw AppError.Network.IncompleteResponse()
+        userDao.insertOrUpdate(pack)
+    }
+
+    private suspend fun requireActiveUserId(): String {
+        return userActiveDao.get().firstOrNull()
+            ?: throw AppError.Expected(
+                message = "An active user is required",
+                description = null,
+            )
     }
 }

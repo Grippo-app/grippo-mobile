@@ -19,7 +19,7 @@ public class ExerciseExampleDetailsComponent(
     override val viewModel: ExerciseExampleDetailsViewModel = componentContext.retainedInstance {
         ExerciseExampleDetailsViewModel(
             id = id,
-            mode = mode.toState(),
+            mode = ExerciseExampleDetailsModeState.of(mode),
             analytics = getKoin().get(),
             exerciseExampleFeature = getKoin().get(),
             exerciseMetricsFeature = getKoin().get(),

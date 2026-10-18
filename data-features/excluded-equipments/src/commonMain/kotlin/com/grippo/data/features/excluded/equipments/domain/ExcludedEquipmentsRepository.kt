@@ -7,7 +7,7 @@ internal interface ExcludedEquipmentsRepository {
 
     fun observeExcludedEquipments(): Flow<List<Equipment>>
 
-    suspend fun getExcludedEquipments(): Result<Unit>
+    suspend fun getExcludedEquipments(): Unit
 
-    suspend fun setExcludedEquipments(ids: List<String>): Result<Unit>
+    suspend fun setExcludedEquipments(ids: List<String>): Unit
 }

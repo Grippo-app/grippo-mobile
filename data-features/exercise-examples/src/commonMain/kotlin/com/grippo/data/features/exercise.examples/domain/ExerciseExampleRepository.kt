@@ -23,7 +23,7 @@ internal interface ExerciseExampleRepository {
 
     fun observeExerciseExample(id: String): Flow<ExerciseExample?>
 
-    suspend fun getExerciseExamples(): Result<Unit>
+    suspend fun getExerciseExamples(): Unit
 
-    suspend fun getExerciseExampleById(id: String): Result<Unit>
+    suspend fun getExerciseExampleById(id: String): Unit
 }

@@ -41,8 +41,8 @@ internal class SplashViewModel(
             loader = SplashLoader.AppContent,
             onError = ::loadContent,
         ) {
-            muscleFeature.getMuscles().getOrThrow()
-            equipmentFeature.getEquipments().getOrThrow()
+            muscleFeature.getMuscles()
+            equipmentFeature.getEquipments()
             navigateTo(resolveDirection())
         }
     }
@@ -62,7 +62,7 @@ internal class SplashViewModel(
             if (cachedUser != null) {
                 return@trackOperation true
             }
-            userFeature.getUser().getOrThrow()
+            userFeature.getUser()
         }
     }
 }

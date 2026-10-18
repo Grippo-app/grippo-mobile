@@ -91,7 +91,7 @@ init {
         .safeLaunch()
 
     safeLaunch(loader = NotesListLoader.LoadingNotes) {
-        notesFeature.getNotes(start = state.value.range.from, end = state.value.range.to).getOrThrow()
+        notesFeature.getNotes(start = state.value.range.from, end = state.value.range.to)
     }
 }
 

@@ -40,7 +40,7 @@ the credential adapters (`data-services/google-auth`, `data-services/apple-auth`
   current exchange and storage ownership; UI consumes the credential adapters only where the
   architecture already allows them (`:ui-screen-features:authorization`).
 - Preserve complete operation outcomes: authentication, profile detection/hydration and required
-  cleanup. Do not infer login success from one Result or change token deletion conditions.
+  cleanup. Do not infer login success from one returned request or change token deletion conditions.
 - Refresh synchronization/retry/circuit-breaker is load-bearing network core; edit it only when the
   authorized scope covers that behavior. Preserve caller cancellation and keep the timeout policy
   (no deletion) distinct from a rejected refresh (deletion).

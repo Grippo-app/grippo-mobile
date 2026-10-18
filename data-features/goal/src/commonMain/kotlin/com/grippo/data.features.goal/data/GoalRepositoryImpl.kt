@@ -1,5 +1,6 @@
 package com.grippo.data.features.goal.data
 
+import com.grippo.core.error.provider.AppError
 import com.grippo.data.features.api.goal.models.Goal
 import com.grippo.data.features.api.goal.models.SetGoal
 import com.grippo.data.features.goal.domain.GoalRepository
@@ -31,25 +32,47 @@ internal class GoalRepositoryImpl(
             }
     }
 
-    override suspend fun getGoal(): Result<Boolean> {
-        val userId = userActiveDao.get().firstOrNull() ?: return Result.success(false)
+    override suspend fun getGoal(): Boolean {
+        val userId = userActiveDao.get().firstOrNull() ?: return false
         val response = api.getGoal()
 
-        return response.map { dto ->
-            val entity = dto?.toEntityOrNull(userId) ?: return@map false
-            goalDao.insertOrUpdate(entity)
-            true
+        if (response == null) {
+            goalDao.deleteByUserId(userId)
+            return false
         }
+
+        if (response.personalizations == null) {
+            throw AppError.Network.IncompleteResponse()
+        }
+        val entity = response.toEntityOrNull(userId) ?: throw AppError.Network.IncompleteResponse()
+        val mapped = entity.toDomain() ?: throw AppError.Network.IncompleteResponse()
+        if (mapped.personalizations.size != entity.personalizations.size ||
+            (response.secondaryGoal != null && mapped.secondaryGoal == null)
+        ) {
+            throw AppError.Network.IncompleteResponse()
+        }
+        goalDao.insertOrUpdate(entity)
+        return true
     }
 
-    override suspend fun setGoal(goal: SetGoal): Result<Boolean> {
-        val userId = userActiveDao.get().firstOrNull() ?: return Result.success(false)
+    override suspend fun setGoal(goal: SetGoal): Unit {
+        val userId = userActiveDao.get().firstOrNull()
+            ?: throw AppError.Expected(
+                message = "An active user is required to save a goal",
+                description = null,
+            )
         val response = api.setGoal(goal.toBody())
 
-        return response.map { dto ->
-            val entity = dto.toEntityOrNull(userId) ?: return@map false
-            goalDao.insertOrUpdate(entity)
-            true
+        if (response.personalizations == null) {
+            throw AppError.Network.IncompleteResponse()
         }
+        val entity = response.toEntityOrNull(userId) ?: throw AppError.Network.IncompleteResponse()
+        val mapped = entity.toDomain() ?: throw AppError.Network.IncompleteResponse()
+        if (mapped.personalizations.size != entity.personalizations.size ||
+            (response.secondaryGoal != null && mapped.secondaryGoal == null)
+        ) {
+            throw AppError.Network.IncompleteResponse()
+        }
+        goalDao.insertOrUpdate(entity)
     }
 }

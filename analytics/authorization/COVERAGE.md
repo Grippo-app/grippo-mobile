@@ -16,14 +16,14 @@ unreleased and every schema is version 1. The historical route-entry reason code
 
 ## Startup and navigation
 
-- Splash loads muscles, then equipment (each `getOrThrow()`), then navigates to
+- Splash loads muscles, then equipment (direct throwing calls), then navigates to
   `resolveDirection()` under the `AppContent` loader with `onError = ::loadContent`;
   retry repeats both catalog requests and the resolution, with no extra caching.
   Resolution order: onboarding not yet shown → Onboarding; no token → AuthProcess;
   `hasProfile()` → Home, otherwise ProfileCreation. The SessionCheck decorator
   lives inside `hasProfile()` and encloses the cached-user read
   (`observeUser().firstOrNull()`, early true) and the optional
-  `getUser().getOrThrow()` call, once per invocation. It therefore runs only after
+  `getUser()` call, once per invocation. It therefore runs only after
   onboarding has been shown and a token exists; no-session catalog fetches are not
   SessionCheck operations.
 - `AuthRouter.Onboarding` is a payload-free serializable object with its original
@@ -94,15 +94,26 @@ not telemetry.
 | Owner | Observed callbacks / inputs → typed event → wire | Complete operations and eligibility |
 |---|---|---|
 | SplashViewModel | System Back → Splash.DismissRequested → `auth_control_clicked` {auth_splash, dismiss_requested}; no busy guard | SessionCheck → `auth_session_check_*`, no parameters besides terminal `duration_ms`; wraps `hasProfile()` only (see above); cache hit and remote lookup both complete normally; startup retry stays business-owned |
-| OnboardingViewModel | Accepted Get started → Onboarding.GetStarted → `auth_control_clicked` {auth_onboarding, next}; Back → Onboarding.DismissRequested → {auth_onboarding, dismiss_requested}; both require a known consent source (non-null) and no active loaders, then navigate to Login | None. Preparation initializes absent consent and marks shown without persistence telemetry; `onAnalyticsConsentChange` rejects busy, pending and unchanged values, then persists with `getOrThrow()` inside safeLaunch and deliberately emits nothing |
+| OnboardingViewModel | Accepted Get started → Onboarding.GetStarted → `auth_control_clicked` {auth_onboarding, next}; Back → Onboarding.DismissRequested → {auth_onboarding, dismiss_requested}; both require a known consent source (non-null) and no active loaders, then navigate to Login | None. Preparation initializes absent consent and marks shown without persistence telemetry; `onAnalyticsConsentChange` rejects busy, pending and unchanged values, then persists directly inside safeLaunch and deliberately emits nothing |
 | LoginViewModel | Email/password validation-status transitions → Login.InputChanged → `auth_input_changed` {auth_login, input_field, input_status}; focus → `auth_input_focused`; email clear → `auth_input_cleared`; Next/Done IME → `auth_keyboard_action` {field, next/done}; password visibility → `auth_password_visibility_changed` {password_visible}; Submit by Email/Google/Apple → `auth_submit_clicked` {auth_method} inside safeLaunch after guards; Register → `auth_control_clicked` {register} after the busy guard, passing the valid email display as the route seed; Back → {dismiss_requested}, no guard | Login(Email) → `auth_attempt_*` {auth_method=email, auth_action=login}: busy guard plus valid email and password; block is the throwing `loginEmail` use case (Boolean). Login(Google)/Login(Apple): busy guard; block includes the provider UI sign-in `getOrThrow()` and `loginGoogle(token)`/`loginApple(code)`. `mapAuthError` is presentation-only |
 | RegistrationViewModel | Same input family under Registration.* with `interaction_screen=auth_registration`; Submit → `auth_submit_clicked` {email} emitted after busy and validity guards, before safeLaunch; toolbar/system Back → {dismiss_requested}, no guard | Register → `auth_attempt_*` {email, register}; block is `createAccount(email, password)` including its private preparation |
 | UserViewModel | Name status transitions → `auth_input_changed` {profile_creation_user, name, status}; focus, clear, Done IME as above; Weight/Height picker open → User.PickerOpened → `auth_picker_opened` {input_field} after the busy guard; each accepted picker result → state update, then User.PickerConfirmed → `auth_picker_confirmed` {input_field, input_status} (including unchanged values); Next → `auth_control_clicked` {next} after the busy guard and valid name/weight/height; Back → {dismiss_requested} after the busy guard | Logout → `profile_operation_*` {profile_action=logout}; block is `logoutUseCase.execute()`, then Back → parent replaces the stack with AuthProcess |
 | ExperienceViewModel | Selection → Experience.Selected → `auth_experience_selected` {profile_experience}; Next → {next} only with a selected experience; Back → {dismiss_requested} | None |
 | ExcludedMusclesViewModel | Group click → `auth_control_clicked` {group_selected}; item toggle → Muscles.SelectionChanged → `auth_selection_changed` {selected, selected_count}; Next → {next}, no guard; Back → {dismiss_requested} | None; catalog observations rebuild state without interaction events |
 | MissingEquipmentsViewModel | Group click, item toggle, Next, Back as for muscles with `interaction_screen=profile_creation_missing_equipments` | None |
-| ProfileCompletedViewModel | System Back → `auth_control_clicked` {profile_creation_completed, dismiss_requested}, no busy guard | CreateProfile → `profile_operation_*` {profile_action=create}, started from `init` only when the accepted experience maps to a domain value (absent experience navigates Back without an operation); block builds the profile request, runs the throwing `createProfileUseCase.execute()` (create, reload user and related data) and writes the local home welcome status with `getOrThrow()`; `onError` navigates Back after dismissal |
+| ProfileCompletedViewModel | System Back → `auth_control_clicked` {profile_creation_completed, dismiss_requested}, no busy guard | CreateProfile → `profile_operation_*` {profile_action=create}, started from `init` only when the accepted experience maps to a domain value (absent experience navigates Back without an operation); block builds the profile request, runs the throwing `createProfileUseCase.execute()` (create, reload user and related data) and directly writes the local home welcome status; `onError` navigates Back after dismissal |
 | Container VMs | No synthetic navigation/click facts | No analytics operations |
+
+Login/Register preparation calls throwing commands directly. A malformed token
+response or profile-present user response that cannot produce the complete domain
+User fails before its cache write. Every user response must match the active
+account captured before its request. A valid absent profile returns false only
+when no same-account profile is cached; otherwise synchronization fails while
+preserving the cached profile and local draft (deleting User would cascade it).
+Push-token Unavailable remains optional; Failed throws with the typed
+failure reason instead of completing login after reporting and discarding it.
+The messaging state contains no original Throwable, so no cause preservation is
+claimed for that typed failure. Existing operation types and boundaries remain.
 
 Text status events compare the existing old/new validation status, omit equal
 statuses (including Empty → Empty) and keep no cache. Clear is a separate callback

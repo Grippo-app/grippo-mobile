@@ -71,7 +71,7 @@ public class DraftTrainingViewModel(
         analytics.trackEvent(DraftTrainingEvent.StartNewClicked)
         safeLaunch(loader = DraftTrainingLoader.DeleteDraft) {
             analytics.trackOperation(DraftTrainingOperation.DeleteDraft) {
-                trainingFeature.deleteDraftTraining().getOrThrow()
+                trainingFeature.deleteDraftTraining()
             }
             navigateTo(DraftTrainingDirection.StartNew)
         }

@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 internal interface GoalRepository {
     fun observeGoal(): Flow<Goal?>
-    suspend fun getGoal(): Result<Boolean>
-    suspend fun setGoal(goal: SetGoal): Result<Boolean>
+    suspend fun getGoal(): Boolean
+    suspend fun setGoal(goal: SetGoal): Unit
 }

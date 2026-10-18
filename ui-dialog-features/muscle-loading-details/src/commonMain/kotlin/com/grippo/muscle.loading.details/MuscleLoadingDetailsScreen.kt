@@ -20,6 +20,7 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
+import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummaryUnknown
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingFocusCard
@@ -36,10 +37,8 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.muscle_loading_distribution_title
-import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
 
@@ -138,22 +137,18 @@ internal fun MuscleLoadingDetailsScreen(
 
 @Composable
 private fun MuscleLoadOverviewCard(
+    modifier: Modifier = Modifier,
     summary: MuscleLoadSummaryState,
     mode: MuscleLoadingDetailsShowingMode,
-    modifier: Modifier = Modifier,
 ) {
-    val imagesMode = remember(mode) {
-        when (mode) {
-            MuscleLoadingDetailsShowingMode.PerGroup -> MuscleLoadingImagesMode.PerGroup
-            MuscleLoadingDetailsShowingMode.PerMuscle -> MuscleLoadingImagesMode.PerMuscle
-        }
+    val imagesMode = when (mode) {
+        MuscleLoadingDetailsShowingMode.PerGroup -> MuscleLoadingImagesMode.PerGroup
+        MuscleLoadingDetailsShowingMode.PerMuscle -> MuscleLoadingImagesMode.PerMuscle
     }
 
-    val listMode = remember(mode) {
-        when (mode) {
-            MuscleLoadingDetailsShowingMode.PerGroup -> MuscleLoadingMode.PerGroup
-            MuscleLoadingDetailsShowingMode.PerMuscle -> MuscleLoadingMode.PerMuscle
-        }
+    val listMode = when (mode) {
+        MuscleLoadingDetailsShowingMode.PerGroup -> MuscleLoadingMode.PerGroup
+        MuscleLoadingDetailsShowingMode.PerMuscle -> MuscleLoadingMode.PerMuscle
     }
 
     Column(
@@ -181,7 +176,10 @@ private fun ScreenPerGroupPreview() {
     PreviewContainer {
         MuscleLoadingDetailsScreen(
             state = MuscleLoadingDetailsState(
-                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(2026, 10, 11, 0, 0),
+                    to = LocalDateTime(2026, 10, 17, 23, 59),
+                ),
                 summary = stubMuscleLoadSummary(),
                 mode = MuscleLoadingDetailsShowingMode.PerGroup
             ),
@@ -197,7 +195,10 @@ private fun ScreenPerMusclePreview() {
     PreviewContainer {
         MuscleLoadingDetailsScreen(
             state = MuscleLoadingDetailsState(
-                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(2026, 10, 11, 0, 0),
+                    to = LocalDateTime(2026, 10, 17, 23, 59),
+                ),
                 summary = stubMuscleLoadSummary(),
                 mode = MuscleLoadingDetailsShowingMode.PerMuscle
             ),
@@ -211,15 +212,13 @@ private fun ScreenPerMusclePreview() {
 @Composable
 private fun UnknownMuscleDataPreview() {
     PreviewContainer {
-        val summary = stubMuscleLoadSummary()
         MuscleLoadingDetailsScreen(
             state = MuscleLoadingDetailsState(
-                range = DateRangeFormatState.of(DateRangeKind.Last7Days),
-                summary = summary.copy(
-                    meta = summary.meta.copy(unassignedSets = summary.meta.totalSets),
-                    perGroup = summary.perGroup.copy(entries = persistentListOf()),
-                    perMuscle = summary.perMuscle.copy(entries = persistentListOf()),
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(2026, 10, 11, 0, 0),
+                    to = LocalDateTime(2026, 10, 17, 23, 59),
                 ),
+                summary = stubMuscleLoadSummaryUnknown(),
             ),
             loaders = persistentSetOf(),
             contract = MuscleLoadingDetailsContract.Empty,

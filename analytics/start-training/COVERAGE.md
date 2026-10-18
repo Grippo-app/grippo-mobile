@@ -39,11 +39,12 @@ Deliberate omissions: category tabs, recent-workout date selection and data
 population do not emit confirmation. Only the pinned action confirms the current
 option key. The read-only plan shows planned sets and repetitions beside each
 exercise in the current option. PresetIteration.toState already supplies empty weight
-fields for generated plans; recent plans clear weights through asPreset. Both
+fields for generated plans; recent plans clear weights through the owning VM's
+prepareRecentExercise/prepareRecentIteration methods. Both
 retain planned repetitions and enter the recording editor as pending sets.
 The preview never displays stale exercise totals or completion. Outside/swipe host
 dismissal is not synthesized as Back. Dedicated dialog view/close is not defined.
-The range refresh unwraps `getTrainings` through `getOrThrow()` in the existing
+The range refresh calls the throwing `getTrainings` directly in the existing
 safeLaunch. Refresh, observation and preset failures use the shared error pipeline;
 they do not produce cached or fabricated options. The refresh remains outside
 BuildOptions, so a refresh failure emits no BuildOptions start, failure or duration.

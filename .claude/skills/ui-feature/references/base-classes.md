@@ -115,7 +115,7 @@ changing this lifecycle contract; do not duplicate its implementation in a leaf.
   including equivalents hidden in wrappers or mutable closures. Keep feature data
   in State/update and derive conditions from existing values; apply the
   [canonical draft policy](../../state-preservation/SKILL.md#data-backed-form-synchronization).
-- `@Composable` functions. Named local function declarations in `init`, constructors, functions or lambdas. Direct `Context`/`Activity` access. Direct API/DAO calls (only `<X>Feature`/`<X>UseCase`). Local catches, `runCatching` or result failure handlers that hide/present failures, including private helpers; use `getOrThrow()` inside `safeLaunch`. `runBlocking`. Compose state holders (`mutableStateOf`, `mutableStateListOf`) — use `update { ... }`.
+- `@Composable` functions. Named local function declarations in `init`, constructors, functions or lambdas. Direct `Context`/`Activity` access. Direct API/DAO calls (only `<X>Feature`/`<X>UseCase`). Local catches, `runCatching` or result failure handlers that hide/present failures, including private helpers; call throwing commands inside `safeLaunch`. `runBlocking`. Compose state holders (`mutableStateOf`, `mutableStateListOf`) — use `update { ... }`.
 
 ### Partial MVI-only VM excerpt
 
@@ -141,7 +141,7 @@ internal class FooViewModel(private val barFeature: BarFeature) :
 
     override fun onRefreshClick() {
         safeLaunch(loader = FooLoader.Refresh) {
-            barFeature.getBars().getOrThrow()
+            barFeature.getBars()
         }
     }
 

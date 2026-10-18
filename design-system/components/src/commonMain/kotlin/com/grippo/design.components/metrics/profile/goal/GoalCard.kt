@@ -2,7 +2,6 @@ package com.grippo.design.components.metrics.profile.goal
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.core.state.metrics.profile.stubGoalProgressList
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
@@ -12,13 +11,6 @@ import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.components.metrics.profile.goal.internal.GoalCardContent
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRangePresets
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.atTime
-import kotlinx.datetime.minus
-import kotlinx.datetime.plus
 
 @Composable
 public fun GoalCard(
@@ -45,7 +37,7 @@ public fun GoalCard(
 private fun GoalCardPreview() {
     PreviewContainer {
         GoalCard(
-            value = goalCardPreviewValues().first { !it.isFinished && it.daysRemaining >= 0 },
+            value = stubGoalProgressList().first { !it.isFinished && it.daysRemaining >= 0 },
             onUpdateClick = {}
         )
     }
@@ -56,7 +48,7 @@ private fun GoalCardPreview() {
 private fun GoalCardOverduePreview() {
     PreviewContainer {
         GoalCard(
-            value = goalCardPreviewValues().first { it.daysRemaining < 0 },
+            value = stubGoalProgressList().first { it.daysRemaining < 0 },
             onUpdateClick = {}
         )
     }
@@ -67,7 +59,7 @@ private fun GoalCardOverduePreview() {
 private fun GoalCardCompletedPreview() {
     PreviewContainer {
         GoalCard(
-            value = goalCardPreviewValues().first { it.isFinished },
+            value = stubGoalProgressList().first { it.isFinished },
             onUpdateClick = {}
         )
     }
@@ -78,7 +70,7 @@ private fun GoalCardCompletedPreview() {
 private fun GoalCardOverviewPreview() {
     PreviewContainer {
         GoalCard(
-            value = goalCardPreviewValues().first { !it.isFinished && it.daysRemaining > 0 },
+            value = stubGoalProgressList().first { !it.isFinished && it.daysRemaining > 0 },
             onUpdateClick = {},
             presentation = MetricCardPresentation.Overview,
         )
@@ -90,7 +82,7 @@ private fun GoalCardOverviewPreview() {
 private fun GoalCardOverviewDueTodayPreview() {
     PreviewContainer {
         GoalCard(
-            value = goalCardPreviewValues().first { it.daysRemaining == 0 },
+            value = stubGoalProgressList().first { it.daysRemaining == 0 },
             onUpdateClick = {},
             presentation = MetricCardPresentation.Overview,
         )
@@ -102,7 +94,7 @@ private fun GoalCardOverviewDueTodayPreview() {
 private fun GoalCardOverviewDriftingPreview() {
     PreviewContainer {
         GoalCard(
-            value = goalCardPreviewValues().first {
+            value = stubGoalProgressList().first {
                 !it.isFinished && it.daysRemaining > 0 &&
                         it.score in GoalProgressState.DRIFTING_MIN until GoalProgressState.ON_TRACK_MIN
             },
@@ -116,7 +108,7 @@ private fun GoalCardOverviewDriftingPreview() {
 @Composable
 private fun GoalCardOverviewOffTrackPreview() {
     PreviewContainer {
-        val value = goalCardPreviewValues().first { it.score?.let { score -> score < GoalProgressState.DRIFTING_MIN } == true }
+        val value = stubGoalProgressList().first { it.score?.let { score -> score < GoalProgressState.DRIFTING_MIN } == true }
         GoalCard(
             value = value.copy(
                 goal = value.goal.copy(primaryGoal = GoalPrimaryGoalEnumState.RETURN_TO_TRAINING),
@@ -132,7 +124,7 @@ private fun GoalCardOverviewOffTrackPreview() {
 private fun GoalCardOverviewOverduePreview() {
     PreviewContainer {
         GoalCard(
-            value = goalCardPreviewValues().first { it.daysRemaining < 0 },
+            value = stubGoalProgressList().first { it.daysRemaining < 0 },
             onUpdateClick = {},
             presentation = MetricCardPresentation.Overview,
         )
@@ -144,7 +136,7 @@ private fun GoalCardOverviewOverduePreview() {
 private fun GoalCardOverviewCompletedPreview() {
     PreviewContainer {
         GoalCard(
-            value = goalCardPreviewValues().first { it.isFinished }.copy(score = 100),
+            value = stubGoalProgressList().first { it.isFinished }.copy(score = 100),
             onUpdateClick = {},
             presentation = MetricCardPresentation.Overview,
         )
@@ -155,7 +147,7 @@ private fun GoalCardOverviewCompletedPreview() {
 @Composable
 private fun GoalCardOverviewNoAnalyzedWorkoutsPreview() {
     PreviewContainer {
-        val value = goalCardPreviewValues().first { !it.isFinished && it.daysRemaining > 0 }
+        val value = stubGoalProgressList().first { !it.isFinished && it.daysRemaining > 0 }
         GoalCard(
             value = value.copy(
                 goal = value.goal.copy(primaryGoal = GoalPrimaryGoalEnumState.RETURN_TO_TRAINING),
@@ -174,7 +166,7 @@ private fun GoalCardOverviewNoAnalyzedWorkoutsPreview() {
 @Composable
 private fun GoalCardOverviewFinishedOffTrackPreview() {
     PreviewContainer {
-        val value = goalCardPreviewValues().first { it.isFinished }
+        val value = stubGoalProgressList().first { it.isFinished }
         GoalCard(
             value = value.copy(
                 score = null,
@@ -192,38 +184,11 @@ private fun GoalCardOverviewFinishedOffTrackPreview() {
 @Composable
 private fun GoalCardOverviewPartialEvidencePreview() {
     PreviewContainer {
-        val value = goalCardPreviewValues().first { it.daysRemaining > 0 }
+        val value = stubGoalProgressList().first { it.daysRemaining > 0 }
         GoalCard(
             value = value.copy(evidence = value.evidence.copy(missingMetadataSetCount = 8)),
             onUpdateClick = {},
             presentation = MetricCardPresentation.Overview,
-        )
-    }
-}
-
-internal fun goalCardPreviewValues(): List<GoalProgressState> {
-    val now = LocalDateTime(2026, 10, 15, 10, 0)
-    val date = DateTimeFormatState.of(
-        value = now,
-        range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
-    )
-    return stubGoalProgressList().map { value ->
-        value.copy(
-            now = date,
-            goal = value.goal.copy(
-                primaryGoal = GoalPrimaryGoalEnumState.GET_STRONGER,
-                createdAt = DateTimeFormatState.of(
-                    value = now.date.minus(DatePeriod(days = value.daysElapsed)).atTime(now.time),
-                    range = DateRangePresets.infinity(),
-                    format = DateFormat.DateOnly.DateMmmDdYyyy,
-                ),
-                target = DateTimeFormatState.of(
-                    value = now.date.plus(DatePeriod(days = value.daysRemaining)).atTime(now.time),
-                    range = DateRangePresets.infinity(),
-                    format = DateFormat.DateOnly.DateMmmDdYyyy,
-                ),
-            ),
         )
     }
 }

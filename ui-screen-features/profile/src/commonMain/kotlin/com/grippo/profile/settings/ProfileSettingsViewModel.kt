@@ -61,7 +61,7 @@ internal class ProfileSettingsViewModel(
         val current = state.value.analyticsConsent ?: return
         if (current == granted || ProfileSettingsLoader.AnalyticsConsent in loaders.value) return
         safeLaunch(loader = ProfileSettingsLoader.AnalyticsConsent) {
-            localSettingsFeature.setAnalyticsConsent(granted).getOrThrow()
+            localSettingsFeature.setAnalyticsConsent(granted)
         }
     }
 

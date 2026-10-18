@@ -279,7 +279,7 @@ for Claude Code and Codex launch, capabilities and protection.
 | [task-prep](.claude/skills/task-prep/SKILL.md) | Scope clarification, dependency ordering, questions | Any non-trivial request, before coding |
 | [task-orchestrator](.claude/skills/task-orchestrator/SKILL.md) | Execution loop, delegation, independent review, recurring findings | Any implementation task |
 | [validation-gates](.claude/skills/validation-gates/SKILL.md) | Cross-cut review, forbidden patterns, code style, final response format | Every review and every completion |
-| [ui-feature](.claude/skills/ui-feature/SKILL.md) | Screens, dialogs, MVI, navigation, results, error pipeline, UI state | Any UI/navigation change |
+| [ui-feature](.claude/skills/ui-feature/SKILL.md) | Screens, dialogs, MVI, navigation, results, error pipeline, UI state and presentation metadata | Any UI/navigation change |
 | [compose-components](.claude/skills/compose-components/SKILL.md) | Compose APIs, readable structure, lifetimes, performance, interaction semantics, component audits | Any Compose implementation, refactor or source review |
 | [state-preservation](.claude/skills/state-preservation/SKILL.md) | Drafts, restoration, form synchronization, secret exclusion | Any behavior change |
 | [feature-analytics](.claude/skills/feature-analytics/SKILL.md) | Typed analytics, screen coverage gate, privacy, admin sync | Any behavior change or analytics task |
@@ -287,8 +287,8 @@ for Claude Code and Codex launch, capabilities and protection.
 | [backend-contract-client](.claude/skills/backend-contract-client/SKILL.md) | Backend evidence gate, drift audits | Any wire change |
 | [mappers](.claude/skills/mappers/SKILL.md) | Seven directional conversions, null guards | Any conversion change |
 | [di-modules](.claude/skills/di-modules/SKILL.md) | Koin annotations, lifetimes, shared composition | Any binding/registration change |
-| [design-system](.claude/skills/design-system/SKILL.md) | Tokens, components, resources, previews, visual checks | Any visual change |
-| [brand-design](.claude/skills/brand-design/SKILL.md) | Visual intent, composition, usage/state analysis, acceptance | New or changed product UI |
+| [design-system](.claude/skills/design-system/SKILL.md) | Tokens, components, resources, previews, semantic role implementation, visual checks | Any visual change |
+| [brand-design](.claude/skills/brand-design/SKILL.md) | Visual intent, domain entity visual semantics, composition, usage/state analysis, acceptance | New or changed product UI |
 | [illustrations](.claude/skills/illustrations/SKILL.md) | Artwork style, generation, export, integration | Requested artwork |
 | [platform-build-toolkit](.claude/skills/platform-build-toolkit/SKILL.md) | Conventions, catalog, new modules, toolkit, shells, iOS framework, secrets, release, dependency updates | Any build/platform change |
 | [runtime-verification](.claude/skills/runtime-verification/SKILL.md) | Build, install, run, drive and inspect the app on emulator/simulator | Manual runtime checks |

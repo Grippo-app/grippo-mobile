@@ -7,21 +7,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.chart.sparkline.SparklineData
 import com.grippo.chart.sparkline.SparklinePoint
-import com.grippo.core.state.formatters.DateTimeFormatState
-import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceTrendHistoryEntry
 import com.grippo.core.state.metrics.performance.stubEmptyPerformanceMetric
-import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
+import com.grippo.core.state.metrics.performance.stubPerformanceTrendHistory
 import com.grippo.design.components.chart.internal.Sparkline
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
-import kotlinx.datetime.LocalDateTime
 
 @Composable
 public fun PerformanceTrendHistoryCard(
@@ -68,7 +62,7 @@ public fun PerformanceTrendHistoryCard(
 private fun PerformanceTrendHistoryCardPreview() {
     PreviewContainer {
         PerformanceTrendHistoryCard(
-            history = performanceTrendPreviewHistory()
+            history = stubPerformanceTrendHistory()
         )
     }
 }
@@ -78,7 +72,7 @@ private fun PerformanceTrendHistoryCardPreview() {
 private fun PerformanceTrendHistoryCardEmptyPreview() {
     PreviewContainer {
         PerformanceTrendHistoryCard(history = persistentListOf())
-        PerformanceTrendHistoryCard(history = persistentListOf(performanceTrendPreviewHistory().first()))
+        PerformanceTrendHistoryCard(history = persistentListOf(stubPerformanceTrendHistory().first()))
     }
 }
 
@@ -86,7 +80,7 @@ private fun PerformanceTrendHistoryCardEmptyPreview() {
 @Composable
 private fun PerformanceTrendHistoryCardMissingValuePreview() {
     PreviewContainer {
-        val history = performanceTrendPreviewHistory()
+        val history = stubPerformanceTrendHistory()
         PerformanceTrendHistoryCard(
             history = persistentListOf(
                 history[0],
@@ -95,19 +89,4 @@ private fun PerformanceTrendHistoryCardMissingValuePreview() {
             ),
         )
     }
-}
-
-private fun performanceTrendPreviewHistory(): ImmutableList<PerformanceTrendHistoryEntry> {
-    val metric = stubPerformanceMetrics().filterIsInstance<PerformanceMetricState.Volume>().first()
-    return persistentListOf(1_200f, 900f, 780f).mapIndexed { index, value ->
-        PerformanceTrendHistoryEntry(
-            trainingId = "preview-performance-history-$index",
-            endDate = DateTimeFormatState.of(
-                value = LocalDateTime(2026, 10, 15 - index, 10, 0),
-                range = DateRangePresets.infinity(),
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
-            ),
-            metric = metric.copy(current = value),
-        )
-    }.toPersistentList()
 }

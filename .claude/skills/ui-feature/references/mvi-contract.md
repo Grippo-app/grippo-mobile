@@ -143,7 +143,7 @@ Rules:
 - `internal class` for a leaf; `public class` when the owning Component is public (dialogs and feature roots expose `viewModel`, inspect `WeightPickerViewModel`/`ProfileViewModel`). Extends `BaseViewModel<State, Direction, Loader>`, **implements** `Contract`.
 - Constructor receives caller route inputs, typed feature analytics,
   `Feature` / `UseCase` / `Controller` dependencies and a restored `initialState`.
-  No direct API/DAO/repository dependencies (observe Flows, call Result/throwing
+  No direct API/DAO/repository dependencies (observe Flows, call throwing suspend
   commands - see [data boundary](results.md#data-boundary-for-result-producers-and-receivers)).
   Authorization's documented
   Google/Apple credential-provider exception stays local to that feature.
@@ -158,10 +158,8 @@ Rules:
 - Mutate state via `update { it.copy(...) }`. Never assign to a `var`.
 - Emit navigation via `navigateTo(Direction.Foo)`.
 - Run async work via `safeLaunch { ... }` or `Flow.safeLaunch()`. **Never** `viewModelScope.launch`, `GlobalScope`, or raw `CoroutineScope`.
-- Unwrap failed results with `getOrThrow()` inside `safeLaunch`; do not hide or
-  present unhandled failures with local catches or result failure handlers.
-  `Result.onSuccess` alone does not propagate failures: unwrap the returned Result
-  with `getOrThrow()` inside `safeLaunch` before treating the operation as complete. Pure
+- Call throwing Feature/UseCase commands inside `safeLaunch`; do not hide or
+  present unhandled failures with local catches or result failure handlers. Pure
   `mapError` changes only dialog presentation; `onError` runs after dismissal.
   Suspend helpers propagate failures to the caller's `safeLaunch`; no local
   catches or telemetry-owned recovery. Request isolation follows

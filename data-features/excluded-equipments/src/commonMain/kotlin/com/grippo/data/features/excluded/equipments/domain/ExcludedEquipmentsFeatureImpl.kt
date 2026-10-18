@@ -14,11 +14,11 @@ internal class ExcludedEquipmentsFeatureImpl(
         return repository.observeExcludedEquipments()
     }
 
-    override suspend fun getExcludedEquipments(): Result<Unit> {
+    override suspend fun getExcludedEquipments(): Unit {
         return repository.getExcludedEquipments()
     }
 
-    override suspend fun setExcludedEquipments(ids: List<String>): Result<Unit> {
+    override suspend fun setExcludedEquipments(ids: List<String>): Unit {
         return repository.setExcludedEquipments(ids)
     }
 }

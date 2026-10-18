@@ -56,8 +56,20 @@ A compact navigation item and a screen heading do not need the same font size.
   data colors. A minimum or maximum alone does not imply warning or success,
   including in bodyweight history.
 - Detailed muscle-distribution rows keep the same calm data hues as the map;
-  rank alone carries no success/warning/error meaning. Goal diagnostic stripes
+  rank alone carries no success/warning/error meaning. Goal diagnostic markers
   use their severity accent directly while their explanatory text stays neutral.
+- Goals share the “Course” motif: direction, training alignment and calendar
+  time are separate facts. `goal.accent/background` supplies a restrained copper
+  identity pair in both themes; it does not indicate selection or success.
+  `GoalMark` uses `goal.markSize/iconSize/radius` (40/24/12 dp). Compass identifies
+  the goal section and an unspecified goal; Muscle, Dumbbell, Flame, Repeat,
+  Stack and Body identify muscle growth, strength, fat loss, returning,
+  maintenance and general fitness respectively. Calendar identifies the secondary
+  consistency goal. Primary and secondary pickers share the same icon mapping,
+  complete labels/descriptions and neutral choice-card selection.
+  Goal entry points in Profile and Home use Compass for an unspecified goal;
+  a configured Profile goal uses its shared goal icon. Both keep the copper
+  accent. Ordinary benefit and methodology text stays neutral.
 - Muscle-focus summaries show the leading recorded-set share with `charts.ring.info`;
   the ring is descriptive data and has no success/warning thresholds. Empty summaries
   show neutral unavailable information without an inferred score or status.
@@ -266,13 +278,22 @@ A compact navigation item and a screen heading do not need the same font size.
   the existing streak headline and cadence on the left, active-day count on the
   right, with its short localized caption. Both columns wrap naturally; the
   existing thin progress indicator follows below. Full history stays in Details.
-- Goal ring percentages are labelled as goal fit, distinct from elapsed days.
-  Home pairs the ring with the primary goal/status, analyzed-workout count scoped
-  to the selected period and the actual target date. Only sessions eligible for
-  goal analysis contribute to that count; it is not the lifetime workout total.
+- Goal cards lead with the shared goal mark and primary goal. Training alignment
+  is a neutral numerical percentage with an explicit caption and a separate
+  semantic status; no completion ring suggests an achieved outcome. Missing
+  scores show an unavailable value, and partial evidence retains its notice.
+  A separate calendar route shows the actual target and remaining time; Details
+  also shows start/target dates and elapsed days. Time uses the copper identity
+  accent, never inferred success at expiry. The analyzed-workout count is scoped
+  to the selected period: only eligible sessions contribute, not lifetime totals.
   Overview content determines its own height without filler spacers; the existing
   remaining/overdue message and Update eligibility are preserved.
-  Performance labels explain weight/minute and average weight; overview compares
+  Details puts the training summary and actionable diagnostic values before
+  evidence and methodology, retaining the complete explanation and data limits.
+  Weekly training-day diagnostics use compact localized day/week units; their
+  criterion heading carries the training context instead of each value repeating it.
+  Status wording describes a course to follow or adjust without judging the user.
+- Performance labels explain weight/minute and average weight; overview compares
   the latest workout with available prior measurements in the selected period.
   Numeric averages and their percentage comparison occupy separate lines so both
   remain visible within the metric panel's intrinsic height.
@@ -381,7 +402,7 @@ A compact navigation item and a screen heading do not need the same font size.
 - The goal editor groups primary focus, secondary goal and target date in one
   cohesive summary/editing card using `menu.radius/contentPadding/borderWidth`,
   `background.card` and `border.default`. The leading focus has a secondary
-  `b13Med` label, primary `h4` value and secondary chevron; the following
+  `b13Med` Course label, shared GoalMark, primary `h4` value and secondary chevron; the following
   MenuValueRow controls share the surface and quiet dividers. Optional status
   appears only for an empty secondary goal. Invalid dates keep their error label,
   accessibility error semantics and `b12Med` explanation inside the same card.

@@ -15,11 +15,11 @@ internal class GoalFeatureImpl(
         return repository.observeGoal()
     }
 
-    override suspend fun getGoal(): Result<Boolean> {
+    override suspend fun getGoal(): Boolean {
         return repository.getGoal()
     }
 
-    override suspend fun setGoal(goal: SetGoal): Result<Boolean> {
+    override suspend fun setGoal(goal: SetGoal): Unit {
         return repository.setGoal(goal)
     }
 }

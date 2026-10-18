@@ -7,5 +7,5 @@ public interface EquipmentFeature {
 
     public fun observeEquipments(): Flow<List<EquipmentGroup>>
 
-    public suspend fun getEquipments(): Result<Unit>
+    public suspend fun getEquipments(): Unit
 }

@@ -2,15 +2,15 @@
 
 Source: `data-services/backend/src/commonMain/kotlin/com/grippo/services/backend/GrippoApi.kt`
 and its sibling `dto/`. The flat `GrippoApi` owns one public method per existing backend operation:
-32 `public suspend fun ...: Result<T>` today, grouped by three-line `/* * Auth service * */`-style
+32 throwing public suspend endpoints today, grouped by three-line `/* * Auth service * */`-style
 section comments (Auth, Push token, User, Muscle, Equipment, Weight history, Goal, Trainings,
 Exercise examples, Utilities). Use its private `request` helper; do not split the API into
 subgroup services. Transport is described in [backend transport](backend-client.md).
 
-`request(method, path, body, queryParams)` calls `BackendClient.invoke` and `response.body<T>()`
-inside one `try`: it rethrows `CancellationException`, maps every other `Exception` (including the
-`AppError` thrown by the shared validator) to `Result.failure`, and lets `Error` propagate. A
-repository therefore receives validated HTTP failures as `Result.failure(AppError.Network...)`.
+`request(method, path, body, queryParams)` calls `BackendClient.invoke` and returns
+`response.body<T>()` directly. Repositories receive the decoded value or the original exception,
+including `AppError` from the shared validator. Apply the
+[throwing suspend contract](operation-outcomes.md#throwing-suspend-contracts-canonical).
 
 All DTO fields - response, request body and collections - use nullable types, default `= null`
 and explicit `@SerialName` matching the exact wire key (202 of 202 properties today). Kotlin

@@ -177,3 +177,67 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
         ),
     )
 }
+
+public fun stubMuscleLoadSummaryUnknown(): MuscleLoadSummaryState {
+    val summary = stubMuscleLoadSummary()
+    val emptyBreakdown = summary.perGroup.copy(entries = persistentListOf())
+
+    return summary.copy(
+        meta = summary.meta.copy(
+            dominantGroup = null,
+            unassignedSets = summary.meta.totalSets,
+        ),
+        perGroup = emptyBreakdown,
+        perMuscle = emptyBreakdown,
+        volumePerGroup = emptyBreakdown,
+        volumePerMuscle = emptyBreakdown,
+        dominance = summary.dominance.copy(top1SharePercent = 0f, top2SharePercent = 0f),
+        groupDominance = summary.groupDominance.copy(top1SharePercent = 0f, top2SharePercent = 0f),
+    )
+}
+
+public fun stubMuscleLoadSummaryEmpty(): MuscleLoadSummaryState {
+    val summary = stubMuscleLoadSummaryUnknown()
+    return summary.copy(
+        meta = summary.meta.copy(
+            trainingsCount = 0,
+            totalExercises = 0,
+            totalSets = 0,
+            totalRepetitions = 0,
+            totalVolume = 0f,
+            unassignedSets = 0,
+        ),
+    )
+}
+
+public fun stubMuscleLoadSummarySingleGroup(): MuscleLoadSummaryState {
+    val summary = stubMuscleLoadSummary()
+    val entry = summary.perGroup.entries.first().copy(
+        group = MuscleGroupEnumState.LEGS,
+        value = 100f,
+        muscles = persistentListOf(MuscleEnumState.CALF),
+        hitTrainingsCount = 3,
+        primaryTrainingsCount = 3,
+        avgWeightedSetsPerSession = 1f,
+        maxWeightedSetsInOneSession = 1f,
+        avgVolumePerHitSession = 100f,
+        maxVolumeInOneSession = 100f,
+    )
+    val breakdown = summary.perGroup.copy(entries = persistentListOf(entry))
+    return summary.copy(
+        meta = summary.meta.copy(
+            trainingsCount = 3,
+            totalExercises = 3,
+            totalSets = 3,
+            totalRepetitions = 30,
+            totalVolume = 300f,
+            dominantGroup = MuscleGroupEnumState.LEGS,
+        ),
+        perGroup = breakdown,
+        perMuscle = breakdown,
+        volumePerGroup = breakdown,
+        volumePerMuscle = breakdown,
+        dominance = summary.dominance.copy(top1SharePercent = 100f, top2SharePercent = 100f),
+        groupDominance = summary.groupDominance.copy(top1SharePercent = 100f, top2SharePercent = 100f),
+    )
+}

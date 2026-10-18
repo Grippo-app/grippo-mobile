@@ -17,7 +17,9 @@ module and the uniquely qualified `muscle_loading_details_analytics` schema cata
 No host, route, lifecycle or screen identity changes are needed. The shared focus
 card shows the actual largest weighted-set share and all tied leading groups,
 without a balance-quality score, gap recommendation or fatigue/recovery estimate.
-An empty distribution shows neutral no-data text. Positive anatomy shares allocate
+An empty distribution shows neutral no-data text. Negative anatomy percentages
+leave the performed set unassigned; surviving shares are not silently reweighted.
+Positive anatomy shares allocate
 each accepted recorded set linearly; recorded resistance × repetitions is a
 separate distribution of measured work. Positive-repetition sets with valid supplied
 measurements retain their set shares when required load fields are missing; their

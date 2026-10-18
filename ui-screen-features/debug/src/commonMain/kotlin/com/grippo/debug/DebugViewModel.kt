@@ -51,7 +51,7 @@ public class DebugViewModel(
             AppLogger.General.warning(
                 "Training intensity=${training.intensity}, volume=${training.volume}, repetitions=${training.repetitions}, exercises=${training.exercises.joinToString { "${it.name}:${it.intensity}" }}"
             )
-            trainingFeature.setTraining(training).getOrThrow()
+            trainingFeature.setTraining(training)
         }
     }
 

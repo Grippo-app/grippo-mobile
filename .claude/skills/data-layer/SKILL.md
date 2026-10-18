@@ -11,22 +11,22 @@ implementations MUST remain internal. MUST NOT add analytics dependencies to the
 
 ## Workflow
 
-1. Establish the existing operation contract: Flow observation, Result-returning method or
-   throwing command ([repositories](references/repositories.md) lists the current UseCase shapes).
+1. Establish the operation contract: Flow observation, pure calculation or throwing suspend
+   command ([repositories](references/repositories.md) lists the current UseCase shapes).
    Preserve required outcomes, cleanup, hydration and cancellation.
 2. For wire changes, read [backend-contract-client](../backend-contract-client/SKILL.md).
    Verify authoritative fields/method/path first. Never invent transport shape.
 3. Keep conversions in the seven directional modules using [mappers](../mappers/SKILL.md).
    Domain closed sets are typed; transport/storage retain wire values.
 4. MUST apply [operation outcome and cache rules](references/operation-outcomes.md) to required
-   hydration, partial success and reconciliation; local drafts/preferences keep their owner contract.
+   hydration, partial cache updates and reconciliation; local drafts/preferences keep their owner contract.
 5. Use [DI](../di-modules/SKILL.md) for bindings. Add only dependencies the implementation uses.
 6. For changed feature behavior apply [analytics](../feature-analytics/SKILL.md) and
    [state preservation](../state-preservation/SKILL.md); business code stays telemetry-free.
 
 ## Decisions and gates
 
-- Resolve an unclear domain shape or partial-success policy with the user before implementing it
+- Resolve an unclear domain shape or partial-update policy with the user before implementing it
   ([when to stop and ask](../../../CLAUDE.md#when-to-stop-and-ask)).
 - Module, schema/migration and auth/network-core changes stay inside the authorized scope: its
   necessary steps need no repeated consent; scope expansion or a locked-decision change needs a
@@ -35,12 +35,9 @@ implementations MUST remain internal. MUST NOT add analytics dependencies to the
   wire keys; a request field the server must receive as explicit `null` carries
   `@EncodeDefault(EncodeDefault.Mode.ALWAYS)` ([DTO/API](references/dtos-and-api.md)).
   Request validity is enforced before sending.
-- MUST preserve caller cancellation at suspend Result boundaries: rethrow `CancellationException`
-  before handling ordinary failures and add no generic wrappers. `data-features/**` contains no
-  `runCatching`; the only `runCatching` calls in the data layer are the google-auth/apple-auth
-  platform adapters, whose suspend paths rethrow cancellation and fatal errors. Explicit
-  cancellation checks follow the [canonical coroutine rules](../validation-gates/references/forbidden-patterns.md#coroutines).
-  Review actual callees and retain the declared error contract.
+- Apply [throwing suspend contracts](references/operation-outcomes.md#throwing-suspend-contracts-canonical)
+  across API, Repository, Feature, UseCase and their callers. Review actual callees, required
+  outcomes and the distinction between domain absence and malformed data.
 - Before completion MUST review ownership, required outcomes, cache reconciliation, UTC conversion,
   privacy and cancellation in the source/diff, run the permitted checks under the
   [verification policy](../../../CLAUDE.md#verification-policy) and report unverified runtime behavior.

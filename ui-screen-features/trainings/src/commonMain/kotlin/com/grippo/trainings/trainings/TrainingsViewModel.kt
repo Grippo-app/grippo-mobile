@@ -96,7 +96,7 @@ internal class TrainingsViewModel(
                     trainingFeature.getTrainings(
                         start = range.from,
                         end = range.to,
-                    ).getOrThrow()
+                    )
                 }
             }
 
@@ -165,7 +165,7 @@ internal class TrainingsViewModel(
     private fun deleteTraining(id: String) {
         safeLaunch {
             analytics.trackOperation(operation = TrainingsOperation.DeleteTraining) {
-                deleteTrainingUseCase.execute(id).getOrThrow()
+                deleteTrainingUseCase.execute(id)
             }
         }
     }

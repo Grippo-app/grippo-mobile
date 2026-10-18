@@ -6,13 +6,10 @@ public class UpdateWeightUseCase(
     private val userFeature: UserFeature,
     private val weightHistoryFeature: WeightHistoryFeature
 ) {
-    public suspend fun execute(value: Float): Result<Unit> {
-        val request = weightHistoryFeature.updateWeight(value)
-
-        request.onSuccess {
-            userFeature.getUser()
+    public suspend fun execute(value: Float): Unit {
+        weightHistoryFeature.updateWeight(value)
+        check(userFeature.getUser()) {
+            "The required user profile could not be refreshed"
         }
-
-        return request
     }
 }

@@ -23,7 +23,7 @@ public interface ExerciseExampleFeature {
 
     public fun observeExerciseExample(id: String): Flow<ExerciseExample?>
 
-    public suspend fun getExerciseExamples(): Result<Unit>
+    public suspend fun getExerciseExamples(): Unit
 
-    public suspend fun getExerciseExampleById(id: String): Result<Unit>
+    public suspend fun getExerciseExampleById(id: String): Unit
 }

@@ -31,8 +31,7 @@ public class PerformanceTrendDetailsViewModel(
 ), PerformanceTrendDetailsContract {
 
     init {
-        trainingFeature
-            .observeTrainings(start = range.from, end = range.to)
+        trainingFeature.observeTrainings(start = range.from, end = range.to)
             .onEach(::providePerformance)
             .safeLaunch()
     }

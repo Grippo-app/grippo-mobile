@@ -18,23 +18,52 @@ internal class ExerciseMetricsRepositoryImpl(
     private val exampleDao: ExerciseExampleDao,
 ) : ExerciseMetricsRepository {
 
-    override suspend fun getRecentExercisesByExampleId(id: String): Result<List<Exercise>> {
+    override suspend fun getRecentExercisesByExampleId(id: String): List<Exercise> {
         val response = api.getRecentExercisesByExampleId(id)
 
+        val iterations = response.flatMap {
+            it.iterations ?: throw AppError.Network.IncompleteResponse()
+        }
+        if (response.map { it.id }.toSet().size != response.size ||
+            iterations.map { it.id }.toSet().size != iterations.size ||
+            response.any { exercise ->
+                exercise.exerciseExampleId != id ||
+                    exercise.iterations.orEmpty().any { it.exerciseId != exercise.id }
+            }
+        ) {
+            throw AppError.Network.IncompleteResponse()
+        }
+
         val example = exampleDao.getById(id).firstOrNull()?.toDomain()
-            ?: return Result.failure(
-                AppError.Expected(
-                    "Missing exercise example for recent exercises",
-                    description = null
-                )
+            ?: throw AppError.Expected(
+                message = "Missing exercise example for recent exercises",
+                description = null,
             )
 
-        return response.map { it.toDomain(example = example.value) }
+        val exercises = response.toDomain(example = example.value)
+        if (exercises.size != response.size || response.zip(exercises).any { (raw, mapped) ->
+                raw.iterations?.size != mapped.iterations.size
+            }
+        ) {
+            throw AppError.Network.IncompleteResponse()
+        }
+        return exercises
     }
 
-    override suspend fun getAchievementsByExampleId(id: String): Result<List<Achievement>> {
+    override suspend fun getAchievementsByExampleId(id: String): List<Achievement> {
         val response = api.getAchievementsByExampleId(id)
 
-        return response.map { it.toDomain() }
+        val achievements = response.toDomain()
+        val recordedCount = listOfNotNull(
+            response.bestTonnage,
+            response.bestWeight,
+            response.lifetimeVolume,
+            response.maxRepetitions,
+            response.peakIntensity,
+        ).size
+        if (achievements.size != recordedCount || achievements.any { it.exerciseExampleId != id }) {
+            throw AppError.Network.IncompleteResponse()
+        }
+        return achievements
     }
 }

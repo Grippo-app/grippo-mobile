@@ -41,7 +41,7 @@ public class StartTrainingViewModel(
                 minus = RECENT_TRAININGS_WINDOW_DAYS.days,
             )
 
-            trainingFeature.getTrainings(start = recentRangeStart, end = now).getOrThrow()
+            trainingFeature.getTrainings(start = recentRangeStart, end = now)
 
             analytics.trackOperation(StartTrainingOperation.BuildOptions) {
                 val recents = trainingFeature.observeTrainings(start = recentRangeStart, end = now)
@@ -80,7 +80,7 @@ public class StartTrainingViewModel(
         val mapped = training.toState()
 
         val presetExercises = mapped.exercises
-            .map { it.asPreset() }
+            .map(::prepareRecentExercise)
             .toPersistentList()
 
         return StartTrainingOption.Recent(
@@ -103,15 +103,15 @@ public class StartTrainingViewModel(
         return value.toState(id = id, iterations = iterations, createdAt = createdAt)
     }
 
-    private fun ExerciseState.asPreset(): ExerciseState {
-        val iterations = iterations
-            .map { it.asPreset() }
+    private fun prepareRecentExercise(value: ExerciseState): ExerciseState {
+        val iterations = value.iterations
+            .map(::prepareRecentIteration)
             .toPersistentList()
 
-        return copy(iterations = iterations)
+        return value.copy(iterations = iterations)
     }
 
-    private fun IterationState.asPreset(): IterationState = copy(
+    private fun prepareRecentIteration(value: IterationState): IterationState = value.copy(
         externalWeight = VolumeFormatState.Empty(),
         extraWeight = VolumeFormatState.Empty(),
         assistWeight = VolumeFormatState.Empty(),
@@ -129,25 +129,25 @@ public class StartTrainingViewModel(
             format = DateFormat.DateOnly.DateMmmDdYyyy,
         )
 
-        val cloned = source.map { it.cloned(createdAt = createdAt) }.toPersistentList()
+        val cloned = source.map { cloneExercise(value = it, createdAt = createdAt) }.toPersistentList()
 
         navigateTo(StartTrainingDirection.UseExercises(exercises = cloned))
     }
 
-    private fun ExerciseState.cloned(createdAt: DateTimeFormatState): ExerciseState {
+    private fun cloneExercise(value: ExerciseState, createdAt: DateTimeFormatState): ExerciseState {
         val id = Uuid.random().toString()
 
-        val iterations = iterations
-            .map { it.cloned() }
+        val iterations = value.iterations
+            .map(::cloneIteration)
             .toPersistentList()
 
-        return copy(id = id, iterations = iterations, createdAt = createdAt)
+        return value.copy(id = id, iterations = iterations, createdAt = createdAt)
     }
 
-    private fun IterationState.cloned(): IterationState {
+    private fun cloneIteration(value: IterationState): IterationState {
         val id = Uuid.random().toString()
 
-        return copy(id = id)
+        return value.copy(id = id)
     }
 
     override fun onSelect(key: String) {

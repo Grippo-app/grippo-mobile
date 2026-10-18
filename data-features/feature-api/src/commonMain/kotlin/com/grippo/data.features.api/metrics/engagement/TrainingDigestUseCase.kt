@@ -19,7 +19,9 @@ public class TrainingDigestUseCase {
         trainings: List<Training>,
         range: DateRange,
     ): TrainingDigestResult {
-        val selected = selectTrainingsInRange(trainings = trainings, range = range)
+        require(range.isWellFormed()) { "Training range must end at or after its start." }
+
+        val selected = trainings.filter { it.createdAt >= range.from && it.createdAt <= range.to }
         val trainingsCount = selected.size
         val duration = if (selected.all { it.duration.isFinite() && !it.duration.isNegative() }) {
             selected.fold(ZERO) { total, training -> total + training.duration }
@@ -53,14 +55,4 @@ public class TrainingDigestUseCase {
             avgVolumePerTraining = avgVolumePerTraining,
         )
     }
-}
-
-internal fun selectTrainingsInRange(
-    trainings: List<Training>,
-    range: DateRange,
-): List<Training> {
-    require(range.isWellFormed()) { "Training range must end at or after its start." }
-
-    return trainings
-        .filter { it.createdAt >= range.from && it.createdAt <= range.to }
 }
