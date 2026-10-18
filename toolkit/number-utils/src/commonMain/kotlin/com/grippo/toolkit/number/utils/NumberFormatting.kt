@@ -8,6 +8,8 @@ import kotlin.math.round
  * Nonzero values below that precision use `<0.1` with the supplied decimal separator.
  */
 public fun formatDecimal(value: Double, decimalSeparator: String): String {
+    require(value.isFinite()) { "Decimal formatting requires a finite value" }
+
     val rounded = if (abs(value) <= Double.MAX_VALUE / 10.0) round(value * 10.0) / 10.0 else value
     if (value > 0.0 && rounded == 0.0) return "<0${decimalSeparator}1"
     if (value < 0.0 && rounded == 0.0) return "−<0${decimalSeparator}1"

@@ -18,11 +18,11 @@ import com.grippo.design.resources.provider.goal_card_status_not_evaluated
 import com.grippo.design.resources.provider.goal_card_status_drifting
 import com.grippo.design.resources.provider.goal_card_status_off_track
 import com.grippo.design.resources.provider.goal_card_status_on_track
-import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.atTime
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
@@ -125,7 +125,7 @@ public fun stubGoalProgress(
     sessionCount: Int = 6,
     findings: ImmutableList<GoalFitFindingState> = stubGoalFitFindings(primary),
 ): GoalProgressState {
-    val now = DateTimeUtils.now()
+    val now = LocalDateTime(2026, 10, 18, 12, 0)
     val start = now.date.minus(DatePeriod(days = daysElapsed.coerceAtLeast(0)))
     val target = start.plus(DatePeriod(days = daysTotal.coerceAtLeast(1) - 1))
     val baseGoal = stubGoal()
@@ -156,7 +156,10 @@ public fun stubGoalProgress(
         sessionCount = sessionCount,
         findings = findings,
         evidence = GoalAnalysisEvidenceState(
-            range = DateRangeFormatState.of(DateRangeKind.Last30Days),
+            range = DateRangeFormatState.of(
+                from = DateTimeUtils.startOfDay(now.date.minus(DatePeriod(days = 29))),
+                to = DateTimeUtils.endOfDay(now.date),
+            ),
             setCount = sessionCount * 12,
             excludedSetCount = 0,
             missingMetadataSetCount = 0,

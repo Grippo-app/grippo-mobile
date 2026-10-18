@@ -90,9 +90,7 @@ public class GoalFollowingUseCase(
     }
 
     private fun analysisRange(goal: Goal, range: DateRange, now: LocalDateTime): DateRange? {
-        if (!range.isWellFormed()) {
-            return null
-        }
+        require(range.isWellFormed()) { "Goal analysis range must end at or after its start." }
         val from = maxOf(range.from, goal.createdAt)
         val to = minOf(range.to, now)
         if (from > to) {
@@ -117,7 +115,10 @@ public class GoalFollowingUseCase(
         }
 
         val weightType = exercise.exerciseExample.weightType
-        val externalLoad = iteration.externalWeight?.takeIf { it > 0f }
+        val externalLoad = iteration.externalWeight?.takeIf {
+            it > 0f && iteration.extraWeight == null && iteration.assistWeight == null &&
+                iteration.bodyWeight == null && iteration.bodyMultiplier == null
+        }
 
         return LoggedSet(
             trainingId = training.id,

@@ -37,9 +37,33 @@ public fun stubTrainingStreaks(): ImmutableList<TrainingStreakState> {
                 confidence = 0.8f,
             ),
             timeline = persistentListOf(
-                streakPreviewPeriod(fromDay = 16, toDay = 16, achieved = 1, target = 1),
-                streakPreviewPeriod(fromDay = 17, toDay = 17, achieved = 1, target = 1),
-                streakPreviewPeriod(fromDay = 18, toDay = 18, achieved = 1, target = 1, isPartial = true),
+                stubTrainingStreakProgress().copy(
+                    achievedTrainingDays = 1,
+                    targetTrainingDays = 1,
+                    isPartial = false,
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 16, 0, 0),
+                        to = LocalDateTime(2026, 10, 16, 23, 59),
+                    ),
+                ),
+                stubTrainingStreakProgress().copy(
+                    achievedTrainingDays = 1,
+                    targetTrainingDays = 1,
+                    isPartial = false,
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 17, 0, 0),
+                        to = LocalDateTime(2026, 10, 17, 23, 59),
+                    ),
+                ),
+                stubTrainingStreakProgress().copy(
+                    achievedTrainingDays = 1,
+                    targetTrainingDays = 1,
+                    isPartial = true,
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 18, 0, 0),
+                        to = LocalDateTime(2026, 10, 18, 23, 59),
+                    ),
+                ),
             ),
             historyDays = 30,
             lastTrainingGapDays = 0,
@@ -54,9 +78,33 @@ public fun stubTrainingStreaks(): ImmutableList<TrainingStreakState> {
                 confidence = 0.7f,
             ),
             timeline = persistentListOf(
-                streakPreviewPeriod(fromDay = 5, toDay = 11, achieved = 4, target = 4),
-                streakPreviewPeriod(fromDay = 12, toDay = 18, achieved = 4, target = 4),
-                streakPreviewPeriod(fromDay = 19, toDay = 25, achieved = 1, target = 4, isPartial = true),
+                stubTrainingStreakProgress().copy(
+                    achievedTrainingDays = 4,
+                    targetTrainingDays = 4,
+                    isPartial = false,
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 5, 0, 0),
+                        to = LocalDateTime(2026, 10, 11, 23, 59),
+                    ),
+                ),
+                stubTrainingStreakProgress().copy(
+                    achievedTrainingDays = 4,
+                    targetTrainingDays = 4,
+                    isPartial = false,
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 12, 0, 0),
+                        to = LocalDateTime(2026, 10, 18, 23, 59),
+                    ),
+                ),
+                stubTrainingStreakProgress().copy(
+                    achievedTrainingDays = 1,
+                    targetTrainingDays = 4,
+                    isPartial = true,
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 19, 0, 0),
+                        to = LocalDateTime(2026, 10, 25, 23, 59),
+                    ),
+                ),
             ),
             historyDays = 60,
             lastTrainingGapDays = 1,
@@ -72,10 +120,42 @@ public fun stubTrainingStreaks(): ImmutableList<TrainingStreakState> {
                 confidence = 0.9f,
             ),
             timeline = persistentListOf(
-                streakPreviewPeriod(fromDay = 10, toDay = 12, achieved = 2, target = 2),
-                streakPreviewPeriod(fromDay = 13, toDay = 15, achieved = 2, target = 2),
-                streakPreviewPeriod(fromDay = 16, toDay = 18, achieved = 2, target = 2),
-                streakPreviewPeriod(fromDay = 19, toDay = 21, achieved = 1, target = 2, isPartial = true),
+                stubTrainingStreakProgress().copy(
+                    achievedTrainingDays = 2,
+                    targetTrainingDays = 2,
+                    isPartial = false,
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 10, 0, 0),
+                        to = LocalDateTime(2026, 10, 12, 23, 59),
+                    ),
+                ),
+                stubTrainingStreakProgress().copy(
+                    achievedTrainingDays = 2,
+                    targetTrainingDays = 2,
+                    isPartial = false,
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 13, 0, 0),
+                        to = LocalDateTime(2026, 10, 15, 23, 59),
+                    ),
+                ),
+                stubTrainingStreakProgress().copy(
+                    achievedTrainingDays = 2,
+                    targetTrainingDays = 2,
+                    isPartial = false,
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 16, 0, 0),
+                        to = LocalDateTime(2026, 10, 18, 23, 59),
+                    ),
+                ),
+                stubTrainingStreakProgress().copy(
+                    achievedTrainingDays = 1,
+                    targetTrainingDays = 2,
+                    isPartial = true,
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 19, 0, 0),
+                        to = LocalDateTime(2026, 10, 21, 23, 59),
+                    ),
+                ),
             ),
             historyDays = 45,
             lastTrainingGapDays = 0,
@@ -83,20 +163,3 @@ public fun stubTrainingStreaks(): ImmutableList<TrainingStreakState> {
     )
 }
 
-private fun streakPreviewPeriod(
-    fromDay: Int,
-    toDay: Int,
-    achieved: Int,
-    target: Int,
-    isPartial: Boolean = false,
-): TrainingStreakProgressState {
-    return TrainingStreakProgressState(
-        achievedTrainingDays = achieved,
-        targetTrainingDays = target,
-        isPartial = isPartial,
-        range = DateRangeFormatState.of(
-            from = LocalDateTime(2026, 10, fromDay, 0, 0),
-            to = LocalDateTime(2026, 10, toDay, 23, 59),
-        ),
-    )
-}

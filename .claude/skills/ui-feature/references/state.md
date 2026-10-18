@@ -266,6 +266,10 @@ public fun stubNotes(): ImmutableList<NoteState> = persistentListOf(
 - **Where**: shared model stubs live next to the class in `:ui-core:state`. Private builders assembling a feature-owned screen/dialog MVI State may live beside that feature's preview and reuse shared model stubs. MUST NOT move feature State into ui-core or expose a public fixture API solely for a local preview.
 - **Visibility**: shared model stubs are `public`; local feature-State fixture builders are `private`.
 - **Naming**: shared stubs use `stubX()` for a single instance, `stubXs()` / `stubXList()` for collections; local builders use a descriptive preview name.
+- **Reuse**: assemble shared preview models through the matching `stubX()` and
+  `copy` for distinguishing facts. Keep a nested model's stub beside that model;
+  do not add private ad hoc builders such as a day-number-based period factory
+  to another State file.
 - **Content**: realistic data — not `"foo"` placeholders.
 
 ### State anti-patterns (MUST avoid)

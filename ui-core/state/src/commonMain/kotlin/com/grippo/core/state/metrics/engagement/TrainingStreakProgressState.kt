@@ -1,6 +1,7 @@
 package com.grippo.core.state.metrics.engagement
 
 import androidx.compose.runtime.Immutable
+import kotlinx.datetime.LocalDateTime
 import kotlin.math.roundToInt
 import com.grippo.core.state.formatters.DateRangeFormatState
 
@@ -17,4 +18,16 @@ public data class TrainingStreakProgressState(
         } else {
             0
         }
+}
+
+public fun stubTrainingStreakProgress(): TrainingStreakProgressState {
+    return TrainingStreakProgressState(
+        achievedTrainingDays = 4,
+        targetTrainingDays = 4,
+        isPartial = false,
+        range = DateRangeFormatState.of(
+            from = LocalDateTime(2026, 10, 12, 0, 0),
+            to = LocalDateTime(2026, 10, 18, 23, 59),
+        ),
+    )
 }

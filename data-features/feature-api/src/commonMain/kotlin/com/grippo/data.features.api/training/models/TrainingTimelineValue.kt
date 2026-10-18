@@ -1,6 +1,7 @@
 package com.grippo.data.features.api.training.models
 
 import com.grippo.data.features.api.metrics.engagement.models.TrainingDigestResult
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlin.time.Duration
@@ -58,7 +59,10 @@ public sealed interface TrainingTimelineValue {
         val trainingId: String,
         override val position: TrainingTimelinePosition,
         override val key: String,
-    ) : Daily.Item
+    ) : Daily.Item {
+        public val startAt: LocalDateTime?
+            get() = duration?.let { DateTimeUtils.minus(value = createdAt, minus = it) }
+    }
 
     public data class BetweenExercises(
         override val position: TrainingTimelinePosition,

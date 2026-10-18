@@ -7,6 +7,9 @@ An existing deviation in the code never authorizes copying it.
 
 ## Kotlin structure
 
+- **Private receiver extension helpers or unrelated utilities embedded in another
+  owner's file.** Apply [helper ownership](code-style.md#visibility-and-files)
+  and the shared model stub convention it links.
 - **Named local functions** declared inside `init`, constructors, another function
   or a lambda. Declare methods at class scope or functions at file scope. Ordinary
   callbacks, lambdas and DSLs remain allowed; do not confuse them with declarations.

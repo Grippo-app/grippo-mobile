@@ -181,13 +181,13 @@ public class TrainingStreakUseCase {
     }
 
     private fun weeklyCandidate(observation: Observation): Candidate? {
-        val firstWeekStart = observation.from.weekStart()
+        val firstWeekStart = weekStart(observation.from)
         val firstCompleteWeek = if (firstWeekStart == observation.from) {
             firstWeekStart
         } else {
             firstWeekStart.plus(DatePeriod(days = 7))
         }
-        val completedWeekStart = observation.completedThrough.weekStart()
+        val completedWeekStart = weekStart(observation.completedThrough)
         val lastCompleteWeek = if (
             completedWeekStart.plus(DatePeriod(days = 6)) <= observation.completedThrough
         ) {
@@ -432,7 +432,7 @@ public class TrainingStreakUseCase {
         return ((achieved.toFloat() / target).coerceIn(0f, 1f) * 100).roundToInt()
     }
 
-    private fun LocalDate.weekStart(): LocalDate {
-        return minus(DatePeriod(days = dayOfWeek.isoDayNumber - 1))
+    private fun weekStart(date: LocalDate): LocalDate {
+        return date.minus(DatePeriod(days = date.dayOfWeek.isoDayNumber - 1))
     }
 }

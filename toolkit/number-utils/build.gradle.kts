@@ -3,8 +3,3 @@ plugins {
     id("kotlin.multiplatform.convention")
 }
 
-kotlin {
-    android {
-        namespace = "com.grippo.toolkit.number.utils"
-    }
-}

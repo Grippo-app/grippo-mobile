@@ -60,11 +60,11 @@ public class EstimatedOneRepMaxUseCase {
         if (iteration.repetitions !in 1..10) {
             return null
         }
-        if (!iteration.externalWeight.isValidOptionalLoad() ||
-            !iteration.extraWeight.isValidOptionalLoad() ||
-            !iteration.assistWeight.isValidOptionalLoad() ||
-            !iteration.bodyWeight.isValidOptionalLoad() ||
-            !iteration.bodyMultiplier.isValidOptionalLoad()
+        if (!isValidOptionalLoad(iteration.externalWeight) ||
+            !isValidOptionalLoad(iteration.extraWeight) ||
+            !isValidOptionalLoad(iteration.assistWeight) ||
+            !isValidOptionalLoad(iteration.bodyWeight) ||
+            !isValidOptionalLoad(iteration.bodyMultiplier)
         ) {
             return null
         }
@@ -147,8 +147,8 @@ public class EstimatedOneRepMaxUseCase {
         )
     }
 
-    private fun Float?.isValidOptionalLoad(): Boolean {
-        return this == null || (isFinite() && this >= 0f)
+    private fun isValidOptionalLoad(value: Float?): Boolean {
+        return value == null || (value.isFinite() && value >= 0f)
     }
 
     private data class SetEstimate(

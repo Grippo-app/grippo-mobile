@@ -59,6 +59,10 @@ public sealed class VolumeFormatState : FormatState<Float> {
             else -> Valid(display = formatVolume(value = value, decimalSeparator = ","), value = value)
         }
 
+        private fun formatVolume(value: Float, decimalSeparator: String): String {
+            return formatDecimal(value = value.toDouble(), decimalSeparator = decimalSeparator)
+        }
+
         private fun tenths(value: Float): Int = (value * 10f).roundToInt()
 
         private fun normalize1dp(value: Float): Float {
@@ -80,6 +84,9 @@ public sealed class VolumeFormatState : FormatState<Float> {
 
             return try {
                 val parsed = display.replace(',', '.').toFloat()
+                if (!parsed.isFinite()) {
+                    return Invalid(display = display, value = null)
+                }
                 val normalized = normalize1dp(parsed)
 
                 when {
@@ -101,6 +108,9 @@ public sealed class VolumeFormatState : FormatState<Float> {
         }
 
         public fun of(value: Float?): VolumeFormatState {
+            if (value != null && !value.isFinite()) {
+                return Invalid(display = value.toString(), value = null)
+            }
             val normalized = value?.let(::normalize1dp)
 
             return when {
@@ -159,7 +169,3 @@ public sealed class VolumeFormatState : FormatState<Float> {
     }
 }
 
-private fun formatVolume(value: Float, decimalSeparator: String): String {
-    if (!value.isFinite()) return "—"
-    return formatDecimal(value = value.toDouble(), decimalSeparator = decimalSeparator)
-}

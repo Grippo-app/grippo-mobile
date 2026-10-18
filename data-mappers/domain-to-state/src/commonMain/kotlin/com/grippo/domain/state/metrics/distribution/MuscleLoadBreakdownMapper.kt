@@ -14,10 +14,9 @@ public fun DomainMuscleLoadBreakdown.toState(): StateMuscleLoadBreakdown {
 }
 
 private fun DomainMuscleLoadEntry.toState(): StateMuscleLoadEntry {
-    val normalizedValue = percentage.coerceIn(0f, 100f)
     return StateMuscleLoadEntry(
         group = group.toState(),
-        value = normalizedValue,
+        value = percentage,
         muscles = muscles.map { it.toState() }.toPersistentList(),
         hitTrainingsCount = hitTrainingsCount,
         primaryTrainingsCount = primaryTrainingsCount,

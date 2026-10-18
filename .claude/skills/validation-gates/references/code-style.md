@@ -13,6 +13,13 @@ actual signatures; an existing deviation does not weaken a rule.
 - Independent new types get separate files. Related sealed variants and an
   existing coherent model family may share a file; do not split or merge types
   only to satisfy a template.
+- Put a calculation or helper at its owning type as an ordinary method or
+  computed property; use the companion for factories. Do not append private
+  receiver extensions or unrelated utility functions to a State, ViewModel,
+  UseCase, Screen or mapper file. A top-level extension belongs in a dedicated,
+  purpose-named file at the mapper/utility owner. Shared model preview data follows
+  [the stub convention](../../ui-feature/references/state.md#top-level-stub-functions);
+  Compose decomposition follows its owning skill.
 - UI-emitting composables are `PascalCase`; value-returning composable helpers
   are `lowerCamelCase`. A helper that retains its result or object identity uses
   `remember<Noun>` and keys every changing input, including locale. Preserve the
