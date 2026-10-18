@@ -343,6 +343,14 @@ A compact navigation item and a screen heading do not need the same font size.
   explanations meet related choices at `content`, while the anatomy region starts
   a new section at `block`. Settings consent keeps `text` between title and body
   and `content` between the text group and its switch.
+- Profile screens compose their own toolbar and guidance locally. Editor titles
+  use a transparent toolbar with Back. Guidance sits outside the toolbar, uses
+  `block` before it, starts at the screen gutter and uses `b14Med` /
+  `text.secondary`; the following content owns its section spacing.
+  Editor copy states the current task, with muscle/equipment copy describing
+  enabled choices. Community uses the same quiet guidance without a second hero
+  title or logo; the root menu keeps its identity card in the scrolling content.
+  Settings starts with its toolbar and keeps consent in the scrolling body.
 - Goal, streak and performance details use `block` before a new section heading
   and `content` from the heading to its card or between related entries. The first
   visible section has no leading separator. Full-width sheet ranges retain
@@ -368,7 +376,9 @@ A compact navigation item and a screen heading do not need the same font size.
   with a Large illustration, `h4` title and secondary `b14Med` description.
   Populated modes use a left-aligned `h3` introduction and secondary `b14Med`
   explanation. Repeat places its Small CheckSelectableCard historical dates
-  after that introduction, in the same scroll area as the exercises. Plan previews
+  after that introduction, in the same scroll area as the exercises. The date row
+  uses the full dialog width with `dialog.horizontalPadding` as internal scroll
+  content padding; its label and the plan content retain the same gutter. Plan previews
   lead directly into ExerciseCardStyle.Planned with Compact exercise images, full
   wrapping `b14Semi` names and secondary planned sets/repetitions; they carry no
   completion counters, stale tonnage or detail chevrons.

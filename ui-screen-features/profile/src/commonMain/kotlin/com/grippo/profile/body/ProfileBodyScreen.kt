@@ -55,7 +55,7 @@ internal fun ProfileBodyScreen(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.weight_and_height),
         style = ToolbarStyle.Transparent,
-        leading = Leading.Back(contract::onBack)
+        leading = Leading.Back(contract::onBack),
     )
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
@@ -67,7 +67,7 @@ internal fun ProfileBodyScreen(
         text = AppTokens.strings.res(Res.string.update_your_body_metrics),
         style = AppTokens.typography.b14Med(),
         color = AppTokens.colors.text.secondary,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Start,
     )
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
@@ -173,7 +173,7 @@ internal fun ProfileBodyScreen(
 
 @AppPreview
 @Composable
-private fun ScreenPreview() {
+private fun ProfileBodyScreenPreview() {
     PreviewContainer {
         ProfileBodyScreen(
             state = ProfileBodyState(
@@ -184,6 +184,51 @@ private fun ScreenPreview() {
             ),
             loaders = persistentSetOf(),
             contract = ProfileBodyContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileBodyScreenUserUnavailablePreview() {
+    PreviewContainer {
+        ProfileBodyScreen(
+            state = ProfileBodyState(),
+            loaders = persistentSetOf(),
+            contract = ProfileBodyContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileBodyScreenUnchangedPreview() {
+    PreviewContainer {
+        val user = stubUser()
+        ProfileBodyScreen(
+            state = ProfileBodyState(
+                weight = user.weight,
+                height = user.height,
+                user = user,
+            ),
+            loaders = persistentSetOf(),
+            contract = ProfileBodyContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileBodyScreenApplyingPreview() {
+    PreviewContainer {
+        ProfileBodyScreen(
+            state = ProfileBodyState(
+                weight = WeightFormatState.of(33f),
+                height = HeightFormatState.of(90),
+                user = stubUser(),
+            ),
+            loaders = persistentSetOf(ProfileBodyLoader.ApplyBodyChanges),
+            contract = ProfileBodyContract.Empty,
         )
     }
 }

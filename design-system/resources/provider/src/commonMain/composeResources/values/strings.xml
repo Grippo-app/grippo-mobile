@@ -9,7 +9,7 @@
     <string name="plus_value_more">+ %1$s more</string>
     <string name="body_weight_placeholder">Body weight</string>
     <string name="weight_and_height">Weight &amp; height</string>
-    <string name="update_your_body_metrics">Keep your weight and height up to date — we use them to fine-tune your plan.</string>
+    <string name="update_your_body_metrics">Update your current weight and height.</string>
     <string name="extra_weight_placeholder">Extra weight</string>
     <string name="assist_weight_placeholder">Assist weight</string>
     <string name="home_exercise_highlights_title">Your exercise highlights</string>
@@ -48,7 +48,7 @@
     <string name="push_token">Push token</string>
     <string name="start_new">Start new</string>
     <string name="weight">Weight</string>
-    <string name="choose_your_experience_level">Pick your experience level — we’ll recommend exercises that fit you best.</string>
+    <string name="choose_your_experience_level">Choose your current training experience level.</string>
     <string name="weight_input_hint">1–999 kg</string>
     <string name="spotlight_progress_win_metric">+%1$s% vs last %2$d sessions</string>
     <string name="spotlight_progress_win_context">Now %1$s kg vs usual %2$s kg</string>
@@ -249,7 +249,6 @@
     <string name="threads">Threads</string>
     <string name="tiktok">TikTok</string>
     <string name="youtube">YouTube</string>
-    <string name="social_hero_headline">Join the Grippo community</string>
     <string name="social_hero_subtitle">Workout tips, product updates, and practical training ideas.</string>
     <string name="value_statistics">%1$s statistics</string>
     <string name="value_muscle_loading">%1$s muscle loading</string>
@@ -278,6 +277,8 @@
     <string name="estimated_one_rm_peak">Peak %1$s</string>
     <string name="equipments">Equipment</string>
     <string name="muscles">Muscles</string>
+    <string name="profile_equipment_description">Enable the equipment available for your workouts.</string>
+    <string name="profile_muscles_description">Enable the muscles you want to train.</string>
     <string name="weight_history">Weight history</string>
     <string name="start_workout">Start workout</string>
     <string name="debug">Debug</string>
@@ -566,7 +567,7 @@
     <string name="personalizations_set_method_preferences_section">Set / method preferences</string>
     <string name="personalizations_equipment_preferences_section">Equipment preferences</string>
     <string name="personalizations_training_phase_section">Training phase</string>
-    <string name="goal_intro">What are you working toward right now? We’ll shape the experience around it.</string>
+    <string name="goal_intro">Choose your goal and training preferences.</string>
     <string name="goal_menu">Training goal</string>
 
     <!-- Primary goals -->

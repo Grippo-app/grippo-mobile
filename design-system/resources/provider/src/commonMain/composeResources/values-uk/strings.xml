@@ -9,7 +9,7 @@
     <string name="plus_value_more">+ ще %1$s</string>
     <string name="body_weight_placeholder">Вага тіла</string>
     <string name="weight_and_height">Вага та зріст</string>
-    <string name="update_your_body_metrics">Тримай вагу та зріст актуальними — ми використовуємо їх, щоб точніше налаштовувати твій план.</string>
+    <string name="update_your_body_metrics">Вкажи актуальні вагу та зріст.</string>
     <string name="extra_weight_placeholder">Додаткова вага</string>
     <string name="assist_weight_placeholder">Асистована вага</string>
     <string name="home_exercise_highlights_title">Твої вправи</string>
@@ -48,7 +48,7 @@
     <string name="push_token">Пуш-токен</string>
     <string name="start_new">Почати нове</string>
     <string name="weight">Вага</string>
-    <string name="choose_your_experience_level">Обери свій рівень — ми порекомендуємо вправи, які підійдуть найкраще.</string>
+    <string name="choose_your_experience_level">Обери свій поточний рівень підготовки.</string>
     <string name="weight_input_hint">1–999 кг</string>
     <string name="spotlight_progress_win_metric">+%1$s% до останніх %2$d сесій</string>
     <string name="spotlight_progress_win_context">Зараз %1$s кг проти звичних %2$s кг</string>
@@ -247,7 +247,6 @@
     <string name="threads">Threads</string>
     <string name="tiktok">TikTok</string>
     <string name="youtube">YouTube</string>
-    <string name="social_hero_headline">Приєднуйся до спільноти Grippo</string>
     <string name="social_hero_subtitle">Поради для тренувань, оновлення Grippo та практичні ідеї для залу.</string>
     <string name="value_statistics">%1$s — статистика</string>
     <string name="value_muscle_loading">%1$s — м’язове навантаження</string>
@@ -276,6 +275,8 @@
     <string name="estimated_one_rm_peak">Пік %1$s</string>
     <string name="equipments">Обладнання</string>
     <string name="muscles">М’язи</string>
+    <string name="profile_equipment_description">Увімкни обладнання, доступне для тренувань.</string>
+    <string name="profile_muscles_description">Увімкни м’язи, які хочеш тренувати.</string>
     <string name="weight_history">Історія ваги</string>
     <string name="start_workout">Почати тренування</string>
     <string name="debug">Налагодження</string>
@@ -562,7 +563,7 @@
     <string name="personalizations_set_method_preferences_section">Стиль виконання</string>
     <string name="personalizations_equipment_preferences_section">Обладнання</string>
     <string name="personalizations_training_phase_section">Фаза циклу</string>
-    <string name="goal_intro">До чого ти зараз ідеш? Підлаштуємо тренування під це.</string>
+    <string name="goal_intro">Обери ціль і вподобання для тренувань.</string>
     <string name="goal_menu">Ціль тренувань</string>
 
     <!-- Primary goals -->

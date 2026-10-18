@@ -9,7 +9,7 @@
     <string name="plus_value_more">+ ещё %1$s</string>
     <string name="body_weight_placeholder">Вес тела</string>
     <string name="weight_and_height">Вес и рост</string>
-    <string name="update_your_body_metrics">Держи вес и рост актуальными — мы используем их, чтобы точнее настраивать твой план.</string>
+    <string name="update_your_body_metrics">Укажи актуальные вес и рост.</string>
     <string name="extra_weight_placeholder">Дополнительный вес</string>
     <string name="assist_weight_placeholder">Ассистированный вес</string>
     <string name="home_exercise_highlights_title">Твои упражнения</string>
@@ -48,7 +48,7 @@
     <string name="push_token">Пуш-токен</string>
     <string name="start_new">Начать новое</string>
     <string name="weight">Вес</string>
-    <string name="choose_your_experience_level">Выбери свой уровень — мы порекомендуем упражнения, которые подойдут лучше всего.</string>
+    <string name="choose_your_experience_level">Выбери свой текущий уровень подготовки.</string>
     <string name="weight_input_hint">1–999 кг</string>
     <string name="spotlight_progress_win_metric">+%1$s% к последним %2$d сессиям</string>
     <string name="spotlight_progress_win_context">Сейчас %1$s кг против обычных %2$s кг</string>
@@ -248,7 +248,6 @@
     <string name="threads">Threads</string>
     <string name="tiktok">TikTok</string>
     <string name="youtube">YouTube</string>
-    <string name="social_hero_headline">Присоединяйся к сообществу Grippo</string>
     <string name="social_hero_subtitle">Советы для тренировок, обновления Grippo и практичные идеи для зала.</string>
     <string name="value_statistics">%1$s — статистика</string>
     <string name="value_muscle_loading">%1$s — мышечная нагрузка</string>
@@ -277,6 +276,8 @@
     <string name="estimated_one_rm_peak">Пик %1$s</string>
     <string name="equipments">Оборудование</string>
     <string name="muscles">Мышцы</string>
+    <string name="profile_equipment_description">Включи оборудование, доступное для тренировок.</string>
+    <string name="profile_muscles_description">Включи мышцы, которые хочешь тренировать.</string>
     <string name="weight_history">История веса</string>
     <string name="start_workout">Начать тренировку</string>
     <string name="debug">Отладка</string>
@@ -563,7 +564,7 @@
     <string name="personalizations_set_method_preferences_section">Стиль выполнения</string>
     <string name="personalizations_equipment_preferences_section">Оборудование</string>
     <string name="personalizations_training_phase_section">Фаза цикла</string>
-    <string name="goal_intro">К чему ты сейчас идёшь? Подстроим тренировки под это.</string>
+    <string name="goal_intro">Выбери цель и предпочтения для тренировок.</string>
     <string name="goal_menu">Цель тренировок</string>
 
     <!-- Primary goals -->

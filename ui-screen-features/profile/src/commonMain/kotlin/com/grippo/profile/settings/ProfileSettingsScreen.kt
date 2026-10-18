@@ -49,7 +49,7 @@ internal fun ProfileSettingsScreen(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.settings),
         style = ToolbarStyle.Transparent,
-        leading = Leading.Back(contract::onBack)
+        leading = Leading.Back(contract::onBack),
     )
 
     val consentTitle = AppTokens.strings.res(Res.string.analytics_consent_title)
@@ -143,6 +143,54 @@ private fun AnalyticsConsentEnabledPreview() {
         ProfileSettingsScreen(
             state = ProfileSettingsState(analyticsConsent = true),
             loaders = persistentSetOf(),
+            contract = ProfileSettingsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileSettingsConsentUnavailablePreview() {
+    PreviewContainer {
+        ProfileSettingsScreen(
+            state = ProfileSettingsState(),
+            loaders = persistentSetOf(),
+            contract = ProfileSettingsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileSettingsConsentLoadingPreview() {
+    PreviewContainer {
+        ProfileSettingsScreen(
+            state = ProfileSettingsState(analyticsConsent = true),
+            loaders = persistentSetOf(ProfileSettingsLoader.AnalyticsConsent),
+            contract = ProfileSettingsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileSettingsLogoutLoadingPreview() {
+    PreviewContainer {
+        ProfileSettingsScreen(
+            state = ProfileSettingsState(analyticsConsent = false),
+            loaders = persistentSetOf(ProfileSettingsLoader.LogoutButton),
+            contract = ProfileSettingsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileSettingsDeleteLoadingPreview() {
+    PreviewContainer {
+        ProfileSettingsScreen(
+            state = ProfileSettingsState(analyticsConsent = false),
+            loaders = persistentSetOf(ProfileSettingsLoader.DeleteAccountButton),
             contract = ProfileSettingsContract.Empty,
         )
     }

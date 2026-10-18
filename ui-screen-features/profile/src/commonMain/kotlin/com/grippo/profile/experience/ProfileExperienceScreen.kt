@@ -65,7 +65,7 @@ internal fun ProfileExperienceScreen(
         text = AppTokens.strings.res(Res.string.choose_your_experience_level),
         style = AppTokens.typography.b14Med(),
         color = AppTokens.colors.text.secondary,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Start,
     )
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
@@ -144,6 +144,32 @@ internal fun ProfileExperienceScreen(
             Spacer(modifier = Modifier.navigationBarsPadding())
         }
     )
+}
+
+@AppPreview
+@Composable
+private fun ProfileExperienceScreenUnselectedPreview() {
+    PreviewContainer {
+        ProfileExperienceScreen(
+            state = ProfileExperienceState(),
+            loaders = persistentSetOf(),
+            contract = ProfileExperienceContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileExperienceScreenLoadingPreview() {
+    PreviewContainer {
+        ProfileExperienceScreen(
+            state = ProfileExperienceState(
+                selected = ExperienceEnumState.INTERMEDIATE,
+            ),
+            loaders = persistentSetOf(ProfileExperienceLoader.ApplyButton),
+            contract = ProfileExperienceContract.Empty,
+        )
+    }
 }
 
 @AppPreview

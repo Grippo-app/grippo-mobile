@@ -78,7 +78,7 @@ internal fun ProfileGoalScreen(
         text = AppTokens.strings.res(Res.string.goal_intro),
         style = AppTokens.typography.b14Med(),
         color = AppTokens.colors.text.secondary,
-        textAlign = TextAlign.Center,
+        textAlign = TextAlign.Start,
     )
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
@@ -305,6 +305,21 @@ private fun ProfileGoalScreenEmptyPreview() {
         ProfileGoalScreen(
             state = ProfileGoalState(),
             loaders = persistentSetOf(),
+            contract = ProfileGoalContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileGoalScreenSavingPreview() {
+    PreviewContainer {
+        ProfileGoalScreen(
+            state = ProfileGoalState(
+                selectedPrimary = GoalPrimaryGoalEnumState.BUILD_MUSCLE,
+                selectedSecondary = GoalSecondaryGoalEnumState.GET_STRONGER,
+            ),
+            loaders = persistentSetOf(ProfileGoalLoader.SaveButton),
             contract = ProfileGoalContract.Empty,
         )
     }

@@ -28,7 +28,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.apply_btn
 import com.grippo.design.resources.provider.equipments
-import com.grippo.design.resources.provider.registration_equipment_description
+import com.grippo.design.resources.provider.profile_equipment_description
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
@@ -48,22 +48,21 @@ internal fun ProfileEquipmentsScreen(
         title = AppTokens.strings.res(Res.string.equipments),
         style = ToolbarStyle.Transparent,
         leading = Leading.Back(contract::onBack),
-        content = {
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
-
-            Text(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth(),
-                text = AppTokens.strings.res(Res.string.registration_equipment_description),
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.secondary,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-        }
     )
+
+    Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
+
+    Text(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .fillMaxWidth(),
+        text = AppTokens.strings.res(Res.string.profile_equipment_description),
+        style = AppTokens.typography.b14Med(),
+        color = AppTokens.colors.text.secondary,
+        textAlign = TextAlign.Start,
+    )
+
+    Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
     EquipmentSelection(
         modifier = Modifier.fillMaxWidth().weight(1f),
@@ -104,7 +103,7 @@ internal fun ProfileEquipmentsScreen(
 
 @AppPreview
 @Composable
-private fun ScreenPreview() {
+private fun ProfileEquipmentsScreenPreview() {
     PreviewContainer {
         val groups = stubEquipments()
         ProfileEquipmentsScreen(
@@ -121,7 +120,23 @@ private fun ScreenPreview() {
 
 @AppPreview
 @Composable
-private fun ScreenPreviewLoading() {
+private fun ProfileEquipmentsScreenUnselectedPreview() {
+    PreviewContainer {
+        val groups = stubEquipments()
+        ProfileEquipmentsScreen(
+            state = ProfileEquipmentsState(
+                suggestions = groups,
+                selectedGroupId = groups.first().id,
+            ),
+            loaders = persistentSetOf(),
+            contract = ProfileEquipmentsContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileEquipmentsScreenLoadingPreview() {
     PreviewContainer {
         val groups = stubEquipments()
         ProfileEquipmentsScreen(
@@ -130,6 +145,18 @@ private fun ScreenPreviewLoading() {
                 selectedGroupId = groups.first().id,
             ),
             loaders = persistentSetOf(ProfileEquipmentsLoader.ApplyButton),
+            contract = ProfileEquipmentsContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileEquipmentsScreenEmptyPreview() {
+    PreviewContainer {
+        ProfileEquipmentsScreen(
+            state = ProfileEquipmentsState(),
+            loaders = persistentSetOf(),
             contract = ProfileEquipmentsContract.Empty
         )
     }

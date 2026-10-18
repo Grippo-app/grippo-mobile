@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.trainings.ExerciseState
@@ -77,17 +80,26 @@ internal fun StartTrainingPage(
         is StartTrainingOption.Recent -> option.exercises
     }
     val listState = remember(option.key) { LazyListState() }
+    val layoutDirection = LocalLayoutDirection.current
+    val horizontalPadding = PaddingValues(
+        start = contentPadding.calculateStartPadding(layoutDirection),
+        end = contentPadding.calculateEndPadding(layoutDirection),
+    )
 
     LazyColumn(
         modifier = modifier,
         state = listState,
-        contentPadding = contentPadding,
+        contentPadding = PaddingValues(
+            top = contentPadding.calculateTopPadding(),
+            bottom = contentPadding.calculateBottomPadding(),
+        ),
         verticalArrangement = Arrangement.Top,
     ) {
         item(key = "introduction", contentType = "introduction") {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontalPadding)
                     .padding(bottom = AppTokens.dp.contentPadding.content),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
             ) {
@@ -116,22 +128,28 @@ internal fun StartTrainingPage(
             contentType = { _, _ -> "exercise" },
         ) { index, exercise ->
             ExerciseCard(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontalPadding),
                 value = exercise,
                 style = ExerciseCardStyle.Planned,
             )
             if (index < exercises.lastIndex) {
                 ContentDivider(
-                    modifier = Modifier.padding(
-                        start = AppTokens.dp.exerciseExampleImage.compact.size +
-                                AppTokens.dp.contentPadding.subContent,
-                    ),
+                    modifier = Modifier
+                        .padding(horizontalPadding)
+                        .padding(
+                            start = AppTokens.dp.exerciseExampleImage.compact.size +
+                                    AppTokens.dp.contentPadding.subContent,
+                        ),
                 )
             }
         }
         item(key = "edit-hint", contentType = "hint") {
             Text(
-                modifier = Modifier.padding(top = AppTokens.dp.contentPadding.content),
+                modifier = Modifier
+                    .padding(horizontalPadding)
+                    .padding(top = AppTokens.dp.contentPadding.content),
                 text = AppTokens.strings.res(Res.string.start_training_plan_edit_hint),
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,

@@ -27,7 +27,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.apply_btn
 import com.grippo.design.resources.provider.muscles
-import com.grippo.design.resources.provider.registration_muscles_description
+import com.grippo.design.resources.provider.profile_muscles_description
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
@@ -55,10 +55,10 @@ internal fun ProfileMusclesScreen(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
             .fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.registration_muscles_description),
+        text = AppTokens.strings.res(Res.string.profile_muscles_description),
         style = AppTokens.typography.b14Med(),
         color = AppTokens.colors.text.secondary,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Start,
     )
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
@@ -119,6 +119,22 @@ private fun ProfileMusclesScreenPreview() {
 
 @AppPreview
 @Composable
+private fun ProfileMusclesScreenUnselectedPreview() {
+    PreviewContainer {
+        val groups = stubMuscleGroup()
+        ProfileMusclesScreen(
+            state = ProfileMusclesState(
+                suggestions = groups,
+                selectedGroupId = groups.first().id
+            ),
+            loaders = persistentSetOf(),
+            contract = ProfileMusclesContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
 private fun ProfileMusclesScreenLoadingPreview() {
     PreviewContainer {
         val groups = stubMuscleGroup()
@@ -128,6 +144,18 @@ private fun ProfileMusclesScreenLoadingPreview() {
                 selectedGroupId = groups.first().id
             ),
             loaders = persistentSetOf(ProfileMusclesLoader.ApplyButton),
+            contract = ProfileMusclesContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileMusclesScreenEmptyPreview() {
+    PreviewContainer {
+        ProfileMusclesScreen(
+            state = ProfileMusclesState(),
+            loaders = persistentSetOf(),
             contract = ProfileMusclesContract.Empty
         )
     }

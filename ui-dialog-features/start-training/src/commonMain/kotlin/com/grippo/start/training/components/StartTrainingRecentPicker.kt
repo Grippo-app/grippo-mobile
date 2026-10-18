@@ -2,6 +2,9 @@ package com.grippo.start.training.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -42,12 +45,15 @@ internal fun StartTrainingRecentPicker(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
         Text(
+            modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
             text = AppTokens.strings.res(Res.string.start_training_recent_picker_label),
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.secondary,
         )
         LazyRow(
+            modifier = Modifier.fillMaxWidth(),
             state = listState,
+            contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         ) {
             items(items = options, key = { it.key }) { option ->
@@ -80,6 +86,7 @@ private fun StartTrainingRecentPickerSinglePreview() {
             .toPersistentList()
 
         StartTrainingRecentPicker(
+            modifier = Modifier.fillMaxWidth(),
             options = recent,
             selectedKey = recent.first().key,
             onSelect = {},
@@ -94,6 +101,7 @@ private fun StartTrainingRecentPickerMultiplePreview() {
         val recent = startTrainingRecentPickerPreviewOptions()
 
         StartTrainingRecentPicker(
+            modifier = Modifier.fillMaxWidth(),
             options = recent,
             selectedKey = recent.last().key,
             onSelect = {},
