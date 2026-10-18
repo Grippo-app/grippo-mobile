@@ -7,7 +7,6 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.formatters.DurationFormatState
-import org.koin.core.component.get
 
 public class DurationPickerComponent(
     componentContext: ComponentContext,

@@ -361,6 +361,39 @@ A compact navigation item and a screen heading do not need the same font size.
   keeps `text` bottom padding beside the first row's
   `subContent` top padding. Exercise sheets scroll long content rather than
   compressing text, images, sets or the final action.
+- Start workout sheets expose available Custom, Suggested and Repeat choices
+  through pinned equal-width Segment controls. All modes fill the same available
+  host height so the sheet, choices and action stay in place when content changes.
+  Custom centers the existing empty-exercises artwork in IllustratedEmptyState
+  with a Large illustration, `h4` title and secondary `b14Med` description.
+  Populated modes use a left-aligned `h3` introduction and secondary `b14Med`
+  explanation. Repeat places its Small CheckSelectableCard historical dates
+  after that introduction, in the same scroll area as the exercises. Plan previews
+  lead directly into ExerciseCardStyle.Planned with Compact exercise images, full
+  wrapping `b14Semi` names and secondary planned sets/repetitions; they carry no
+  completion counters, stale tonnage or detail chevrons.
+  The single pinned Primary action names the selected next step, with measured
+  BottomOverlayContainer padding rather than a manually reserved overlay height.
+  Its pinned action padding, including the single navigation inset, uses an opaque
+  dialog surface so scrolled rows cannot show through the action region.
+- Draft workout sheets use a left-aligned task heading and short secondary
+  explanation. A single Large neutral metrics panel groups exercise count,
+  filled/all sets and positive saved duration with the existing `TrainingStat`
+  (`h5` values, secondary `b12Med` labels); zero duration is omitted. Empty drafts
+  show guidance instead of a zero-value panel. Read-only Medium exercise rows
+  stay open with text-aligned dividers between adjacent rows. Introduction,
+  summary and exercises share one scroll area. Full-width Primary Continue and
+  Secondary Start new stay pinned on an opaque `background.dialog` footer that
+  includes the navigation inset, with a secondary consequence caption; Edit
+  distinguishes discarded draft edits from the unchanged saved workout.
+- Workout completion confirmation keeps the host title and left-aligned secondary
+  introduction. One Large neutral metrics panel groups only recorded exercise and
+  set counts with `TrainingStat` (`h5` neutral values, secondary `b12Med` labels);
+  planned empty sets and exercises without recorded sets do not inflate the recap.
+  The shared `InputDuration` follows at `block` spacing, with a secondary `b12Med`
+  adjustment hint at `text` spacing. Full-width Primary Save workout and Secondary
+  Keep training actions follow at `block`, separated by `content`; warmth stays in
+  the primary action, with no duplicate success header or decorative artwork.
 - A completed-exercise sheet leads with an open 64 dp identity row, a complete
   `h4` name and a secondary `b12Med` session date. Their Sets heading uses
   `subContent` bottom padding before the first row's `subContent` top padding.

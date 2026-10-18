@@ -45,6 +45,7 @@ import com.grippo.statistics.StatisticsComponent
 import com.grippo.training.goal.details.TrainingGoalDetailsComponent
 import com.grippo.training.streak.details.TrainingStreakDetailsComponent
 import com.grippo.weight.picker.WeightPickerComponent
+import kotlinx.collections.immutable.toPersistentList
 
 internal class DialogContentComponent(
     initial: DialogStep,
@@ -336,6 +337,7 @@ internal class DialogContentComponent(
                     },
                     componentContext = context,
                     initial = DurationFormatState.of(router.initial),
+                    exercises = router.exercises.toPersistentList(),
                     onResult = { duration ->
                         val raw = duration.value
                         dialogNavigation.finish(raw?.let { { router.onResult.invoke(it) } })

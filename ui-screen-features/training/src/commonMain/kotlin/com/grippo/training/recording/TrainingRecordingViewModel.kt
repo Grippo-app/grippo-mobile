@@ -274,7 +274,10 @@ internal class TrainingRecordingViewModel(
     }
 
     private fun showCompletionDialog() {
-        val hasCompletedSets = state.value.exercises.orEmpty().any { exercise ->
+        val snapshot = state.value
+        val exercises = snapshot.exercises ?: return
+
+        val hasCompletedSets = exercises.any { exercise ->
             exercise.iterations.any { !it.isPending }
         }
 
@@ -282,11 +285,12 @@ internal class TrainingRecordingViewModel(
             return
         }
 
-        val duration = DateTimeUtils.ago(state.value.startAt)
+        val duration = DateTimeUtils.ago(snapshot.startAt)
 
         val dialog = DialogConfig.ConfirmTrainingCompletion(
             title = UiText.Res(Res.string.confirm_training_completion_title),
             initial = duration,
+            exercises = exercises,
             onResult = { result ->
                 analytics.trackEvent(TrainingEvent.Recording.CompletionConfirmed)
 

@@ -4,4 +4,10 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.foundation.models.BaseLoader
 
 @Immutable
-public sealed interface DraftTrainingLoader : BaseLoader
+public sealed interface DraftTrainingLoader : BaseLoader {
+    @Immutable
+    public data object Draft : DraftTrainingLoader
+
+    @Immutable
+    public data object DeleteDraft : DraftTrainingLoader
+}

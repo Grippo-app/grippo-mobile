@@ -32,6 +32,9 @@ internal fun ExerciseCardRow(
     value: ExerciseState,
     isCompact: Boolean,
     onClick: (() -> Unit)?,
+    summary: @Composable () -> Unit = {
+        ExerciseSummary(value = value, modifier = Modifier.fillMaxWidth())
+    },
 ) {
     val imageStyle = if (isCompact) {
         ExerciseExampleImageStyle.COMPACT
@@ -75,7 +78,7 @@ internal fun ExerciseCardRow(
                 style = titleStyle,
                 color = AppTokens.colors.text.primary,
             )
-            ExerciseSummary(value = value, modifier = Modifier.fillMaxWidth())
+            summary()
         }
         if (onClick != null) {
             Icon(

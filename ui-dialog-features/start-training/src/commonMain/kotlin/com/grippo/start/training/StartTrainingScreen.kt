@@ -1,237 +1,362 @@
 package com.grippo.start.training
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerDefaults
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.unit.Dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateTimeFormatState
-import com.grippo.core.state.trainings.stubExercises
+import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.UiText
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.stubExercise
+import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.indicators.PagerIndicator
+import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.loading.Loader
+import com.grippo.design.components.segment.Segment
+import com.grippo.design.components.segment.SegmentStyle
+import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.start_training_use_btn
-import com.grippo.start.training.internal.StartTrainingPage
+import com.grippo.design.resources.provider.start_training_choice_empty
+import com.grippo.design.resources.provider.start_training_choice_preset
+import com.grippo.design.resources.provider.start_training_choice_recent
+import com.grippo.design.resources.provider.start_training_choose_exercises_btn
+import com.grippo.design.resources.provider.start_training_repeat_btn
+import com.grippo.design.resources.provider.start_training_use_preset_btn
+import com.grippo.start.training.components.StartTrainingPage
+import com.grippo.start.training.components.StartTrainingRecentPicker
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
-import com.grippo.toolkit.date.utils.DateTimeUtils
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.launch
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.datetime.LocalDateTime
 
-internal val overlayReservedHeight: Dp
-    @Composable
-    @ReadOnlyComposable
-    get() = AppTokens.dp.contentPadding.block +
-            (AppTokens.dp.pagerIndicator.dotSize + AppTokens.dp.contentPadding.subContent * 2) +
-            AppTokens.dp.contentPadding.block +
-            AppTokens.dp.button.medium.height +
-            AppTokens.dp.dialog.bottom
+private enum class StartTrainingChoice {
+    Empty,
+    Preset,
+    Recent,
+}
 
 @Composable
 internal fun StartTrainingScreen(
     state: StartTrainingState,
     loaders: ImmutableSet<StartTrainingLoader>,
-    contract: StartTrainingContract
-) = BaseComposeScreen(
-    background = ScreenBackground.Color(AppTokens.colors.background.dialog)
+    contract: StartTrainingContract,
 ) {
-    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+    var selectedChoice by remember { mutableStateOf(StartTrainingChoice.Empty) }
+    var selectedRecentKey by remember { mutableStateOf<String?>(null) }
 
-    val pagerState = rememberPagerState(
-        pageCount = { state.options.size }
+    StartTrainingContent(
+        state = state,
+        loaders = loaders,
+        selectedChoice = selectedChoice,
+        selectedRecentKey = selectedRecentKey,
+        onSelectChoice = { selectedChoice = it },
+        onSelectRecent = { selectedRecentKey = it },
+        contract = contract,
     )
+}
 
-    LaunchedEffect(state.options.size, pagerState) {
-        val size = state.options.size
-        if (pagerState.currentPage >= size && size > 0) {
-            pagerState.scrollToPage(size - 1)
+@Composable
+private fun StartTrainingContent(
+    state: StartTrainingState,
+    loaders: ImmutableSet<StartTrainingLoader>,
+    selectedChoice: StartTrainingChoice,
+    selectedRecentKey: String?,
+    onSelectChoice: (StartTrainingChoice) -> Unit,
+    onSelectRecent: (String) -> Unit,
+    contract: StartTrainingContract,
+) = BaseComposeScreen(
+    background = ScreenBackground.Color(AppTokens.colors.background.dialog),
+) {
+    val isLoading = StartTrainingLoader.Options in loaders
+    val preset = state.options.filterIsInstance<StartTrainingOption.Preset>().firstOrNull()
+    val recents = state.options.filterIsInstance<StartTrainingOption.Recent>().toPersistentList()
+    val selectedRecent = recents.firstOrNull { it.key == selectedRecentKey } ?: recents.firstOrNull()
+    val option = when (selectedChoice) {
+        StartTrainingChoice.Empty -> StartTrainingOption.Empty
+        StartTrainingChoice.Preset -> preset
+        StartTrainingChoice.Recent -> selectedRecent
+    } ?: StartTrainingOption.Empty
+    val activeChoice = when (option) {
+        StartTrainingOption.Empty -> StartTrainingChoice.Empty
+        is StartTrainingOption.Preset -> StartTrainingChoice.Preset
+        is StartTrainingOption.Recent -> StartTrainingChoice.Recent
+    }
+    val choices = buildList<Pair<StartTrainingChoice, UiText>> {
+        add(StartTrainingChoice.Empty to UiText.Res(Res.string.start_training_choice_empty))
+        if (preset != null) {
+            add(StartTrainingChoice.Preset to UiText.Res(Res.string.start_training_choice_preset))
         }
-    }
-
-    var didInitialFocusOnEmpty by remember {
-        mutableStateOf(false)
-    }
-
-    LaunchedEffect(state.options) {
-        if (didInitialFocusOnEmpty) return@LaunchedEffect
-        if (state.options.size <= 1) return@LaunchedEffect
-
-        val emptyIndex = state.options.indexOfFirst { it is StartTrainingOption.Empty }
-        if (emptyIndex >= 0 && pagerState.currentPage != emptyIndex) {
-            pagerState.scrollToPage(emptyIndex)
+        if (recents.isNotEmpty()) {
+            add(StartTrainingChoice.Recent to UiText.Res(Res.string.start_training_choice_recent))
         }
-        didInitialFocusOnEmpty = true
+    }.toPersistentList()
+    val actionLabel = when (option) {
+        StartTrainingOption.Empty -> Res.string.start_training_choose_exercises_btn
+        is StartTrainingOption.Preset -> Res.string.start_training_use_preset_btn
+        is StartTrainingOption.Recent -> Res.string.start_training_repeat_btn
     }
-
-    val haptic = LocalHapticFeedback.current
-
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }
-            .drop(1)
-            .collect { haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove) }
-    }
-
-    val activeKey by remember(state.options) {
-        derivedStateOf {
-            state.options.getOrNull(pagerState.currentPage)?.key
+    val recentPicker: (@Composable () -> Unit)? = if (option is StartTrainingOption.Recent) {
+        {
+            StartTrainingRecentPicker(
+                modifier = Modifier.fillMaxWidth(),
+                options = recents,
+                selectedKey = option.key,
+                onSelect = onSelectRecent,
+            )
         }
+    } else {
+        null
     }
 
-    val pagerScope = rememberCoroutineScope()
+    if (choices.size > 1) {
+        Segment(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = AppTokens.dp.dialog.horizontalPadding,
+                    end = AppTokens.dp.dialog.horizontalPadding,
+                    top = AppTokens.dp.dialog.top,
+                ),
+            items = choices,
+            style = SegmentStyle.Fill,
+            selected = activeChoice,
+            onSelect = onSelectChoice,
+            segmentWidth = SegmentWidth.EqualFill,
+        )
+    }
 
-    Box(
+    BottomOverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f)
-            .navigationBarsPadding(),
-    ) {
-        HorizontalPager(
-            modifier = Modifier.fillMaxSize(),
-            state = pagerState,
-            pageSpacing = AppTokens.dp.contentPadding.subContent,
-            key = { index -> state.options.getOrNull(index)?.key ?: index },
-            flingBehavior = PagerDefaults.flingBehavior(
-                state = pagerState,
-                snapPositionalThreshold = 0.2f,
-                snapAnimationSpec = tween(
-                    durationMillis = 280,
-                    easing = FastOutSlowInEasing,
-                ),
-            ),
-        ) { index ->
-
-            val option = state.options.getOrNull(index)
-                ?: return@HorizontalPager
-
-            StartTrainingPage(
-                modifier = Modifier.fillMaxSize(),
-                option = option,
-                previousOption = state.options.getOrNull(index - 1),
-                nextOption = state.options.getOrNull(index + 1),
-                onSwipePrevious = {
-                    pagerScope.launch {
-                        pagerState.animateScrollToPage((index - 1).coerceAtLeast(0))
-                    }
-                },
-                onSwipeNext = {
-                    pagerScope.launch {
-                        pagerState.animateScrollToPage(
-                            (index + 1).coerceAtMost(state.options.lastIndex)
-                        )
-                    }
-                },
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(overlayReservedHeight),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            PagerIndicator(
-                pageCount = state.options.size,
-                selectedIndex = pagerState.currentPage,
-            )
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            Button(
+            .weight(weight = 1f, fill = true),
+        contentPadding = PaddingValues(
+            horizontal = AppTokens.dp.dialog.horizontalPadding,
+            vertical = AppTokens.dp.contentPadding.block,
+        ),
+        overlay = AppTokens.colors.background.dialog,
+        bottom = {
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    .fillMaxWidth(),
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.start_training_use_btn),
-                ),
-                style = ButtonStyle.Primary,
-                onClick = {
-                    val key = activeKey ?: return@Button
-                    contract.onSelect(key)
-                }
-            )
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-        }
-    }
+                    .fillMaxWidth()
+                    .background(AppTokens.colors.background.dialog)
+                    .navigationBarsPadding()
+                    .padding(
+                        start = AppTokens.dp.dialog.horizontalPadding,
+                        end = AppTokens.dp.dialog.horizontalPadding,
+                        top = AppTokens.dp.contentPadding.content,
+                        bottom = AppTokens.dp.dialog.bottom,
+                    ),
+            ) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    content = ButtonContent.Text(text = AppTokens.strings.res(actionLabel)),
+                    style = ButtonStyle.Primary,
+                    onClick = { contract.onSelect(option.key) },
+                )
+            }
+        },
+        content = { contentModifier, contentPadding ->
+            if (isLoading) {
+                Loader(
+                    modifier = contentModifier
+                        .fillMaxSize()
+                        .padding(contentPadding),
+                )
+            } else {
+                StartTrainingPage(
+                    modifier = contentModifier.fillMaxSize(),
+                    option = option,
+                    contentPadding = contentPadding,
+                    recentPicker = recentPicker,
+                )
+            }
+        },
+    )
 }
 
 @AppPreview
 @Composable
-private fun ScreenPreviewEmpty() {
-    PreviewContainer {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            StartTrainingScreen(
-                state = StartTrainingState(),
-                contract = StartTrainingContract.Empty,
-                loaders = persistentSetOf(),
-            )
-        }
-    }
-}
-
-@AppPreview
-@Composable
-private fun ScreenPreviewWithOptions() {
+private fun StartTrainingLoadingPreview() {
     PreviewContainer {
         StartTrainingScreen(
+            state = StartTrainingState(),
+            loaders = persistentSetOf(StartTrainingLoader.Options),
+            contract = StartTrainingContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun StartTrainingEmptyPreview() {
+    PreviewContainer {
+        StartTrainingScreen(
+            state = StartTrainingState(),
+            loaders = persistentSetOf(),
+            contract = StartTrainingContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun StartTrainingEmptyWithChoicesPreview() {
+    PreviewContainer {
+        StartTrainingScreen(
+            state = startTrainingPreviewState(),
+            loaders = persistentSetOf(),
+            contract = StartTrainingContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun StartTrainingPresetPreview() {
+    PreviewContainer {
+        StartTrainingContent(
+            state = startTrainingPreviewState(),
+            loaders = persistentSetOf(),
+            selectedChoice = StartTrainingChoice.Preset,
+            selectedRecentKey = null,
+            onSelectChoice = {},
+            onSelectRecent = {},
+            contract = StartTrainingContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun StartTrainingRecentPreview() {
+    PreviewContainer {
+        StartTrainingContent(
+            state = startTrainingPreviewState(),
+            loaders = persistentSetOf(),
+            selectedChoice = StartTrainingChoice.Recent,
+            selectedRecentKey = "recent:evening",
+            onSelectChoice = {},
+            onSelectRecent = {},
+            contract = StartTrainingContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun StartTrainingLongPlanPreview() {
+    PreviewContainer {
+        val exercises = startTrainingPreviewExercises()
+        val longName = "Жим гантелей лежачи на похилій лаві нейтральним хватом"
+        val longPlan = List(8) { index ->
+            val exercise = exercises[index % exercises.size]
+            exercise.copy(
+                id = "long-exercise-$index",
+                name = longName,
+                exerciseExample = exercise.exerciseExample.copy(name = longName),
+                iterations = if (index == 0) persistentListOf() else exercise.iterations,
+            )
+        }.toPersistentList()
+
+        StartTrainingContent(
             state = StartTrainingState(
                 options = persistentListOf(
                     StartTrainingOption.Empty,
-                    StartTrainingOption.Preset(stubExercises()),
-                    StartTrainingOption.Recent(
-                        trainingId = "stub-1",
-                        createdAt = DateTimeFormatState.of(
-                            value = DateTimeUtils.now(),
-                            range = DateRangePresets.infinity(),
-                            format = DateFormat.DateOnly.DateMmmDdYyyy,
-                        ),
-                        exercises = stubExercises(),
-                    ),
+                    StartTrainingOption.Preset(exercises = longPlan),
                 ),
             ),
-            contract = StartTrainingContract.Empty,
             loaders = persistentSetOf(),
+            selectedChoice = StartTrainingChoice.Preset,
+            selectedRecentKey = null,
+            onSelectChoice = {},
+            onSelectRecent = {},
+            contract = StartTrainingContract.Empty,
         )
     }
+}
+
+private fun startTrainingPreviewState(): StartTrainingState {
+    val exercises = startTrainingPreviewExercises()
+
+    return StartTrainingState(
+        options = persistentListOf(
+            StartTrainingOption.Preset(exercises = exercises),
+            StartTrainingOption.Empty,
+            StartTrainingOption.Recent(
+                trainingId = "evening",
+                createdAt = LocalDateTime(year = 2026, month = 10, day = 16, hour = 18, minute = 30),
+                exercises = exercises,
+            ),
+            StartTrainingOption.Recent(
+                trainingId = "morning",
+                createdAt = LocalDateTime(year = 2026, month = 10, day = 16, hour = 8, minute = 15),
+                exercises = exercises.take(2).toPersistentList(),
+            ),
+            StartTrainingOption.Recent(
+                trainingId = "earlier",
+                createdAt = LocalDateTime(year = 2026, month = 10, day = 14, hour = 17, minute = 0),
+                exercises = exercises,
+            ),
+        ),
+    )
+}
+
+private fun startTrainingPreviewExercises(): ImmutableList<ExerciseState> {
+    val names = listOf("Dumbbell bench press", "Lat pulldown", "Leg press", "Seated leg curl")
+    val createdAt = startTrainingPreviewDate(
+        LocalDateTime(year = 2026, month = 10, day = 16, hour = 18, minute = 30),
+    )
+
+    return names.mapIndexed { exerciseIndex, name ->
+        val base = stubExercise()
+        base.copy(
+            id = "exercise-$exerciseIndex",
+            name = name,
+            exerciseExample = base.exerciseExample.copy(
+                id = "example-$exerciseIndex",
+                name = name,
+                imageUrl = null,
+            ),
+            iterations = List(3) { setIndex ->
+                stubPendingIteration().copy(
+                    id = "exercise-$exerciseIndex-set-$setIndex",
+                    repetitions = when {
+                        exerciseIndex == 1 -> RepetitionsFormatState.of(12 - setIndex * 2)
+                        exerciseIndex == 2 && setIndex == 1 -> RepetitionsFormatState.Empty()
+                        else -> RepetitionsFormatState.of(10)
+                    },
+                )
+            }.toPersistentList(),
+            createdAt = createdAt,
+        )
+    }.toPersistentList()
+}
+
+private fun startTrainingPreviewDate(value: LocalDateTime): DateTimeFormatState {
+    return DateTimeFormatState.of(
+        value = value,
+        range = DateRangePresets.infinity(),
+        format = DateFormat.DateOnly.DateMmmDdYyyy,
+    )
 }

@@ -4,23 +4,30 @@ import com.grippo.analytics.training.TrainingAnalytics
 import com.grippo.analytics.training.models.TrainingEvent
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DurationFormatState
+import com.grippo.core.state.trainings.ExerciseState
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
+import kotlinx.collections.immutable.ImmutableList
 
 public class ConfirmTrainingCompletionViewModel(
     initial: DurationFormatState,
+    exercises: ImmutableList<ExerciseState>,
     private val analytics: TrainingAnalytics,
 ) : BaseViewModel<ConfirmTrainingCompletionState, ConfirmTrainingCompletionDirection, ConfirmTrainingCompletionLoader>(
     ConfirmTrainingCompletionState(
         duration = DurationFormatState.of(
-            (initial.value ?: Duration.ZERO).coerceAtLeast(1.minutes)
-        )
+            initial.value
+                ?.coerceAtLeast(DurationFormatState.DurationLimitation.start)
+                ?: DurationFormatState.DurationLimitation.start
+        ),
+        exercises = exercises,
     )
 ), ConfirmTrainingCompletionContract {
 
     override fun onConfirm() {
+        val duration = state.value.duration as? DurationFormatState.Valid ?: return
+
         analytics.trackEvent(TrainingEvent.CompletionConfirmation.ConfirmClicked)
-        navigateTo(ConfirmTrainingCompletionDirection.Confirm(state.value.duration))
+        navigateTo(ConfirmTrainingCompletionDirection.Confirm(duration))
     }
 
     override fun onDurationInputClick() {
@@ -30,7 +37,10 @@ public class ConfirmTrainingCompletionViewModel(
 
     public fun onDurationSelected(value: Duration) {
         analytics.trackEvent(TrainingEvent.CompletionConfirmation.DurationSelected)
-        update { it.copy(duration = DurationFormatState.of(value)) }
+
+        val duration = DurationFormatState.of(value)
+
+        update { it.copy(duration = duration) }
     }
 
     override fun onBack() {

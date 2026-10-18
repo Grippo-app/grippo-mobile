@@ -12,6 +12,7 @@ import com.grippo.core.state.trainings.stubExercise
 import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.training.internal.ExerciseCardRow
 import com.grippo.design.components.training.internal.ExerciseCardSmall
+import com.grippo.design.components.training.internal.ExercisePlanSummary
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.toolkit.date.utils.DateFormat
@@ -33,6 +34,9 @@ public sealed interface ExerciseCardStyle {
 
     @Immutable
     public data object Small : ExerciseCardStyle
+
+    @Immutable
+    public data object Planned : ExerciseCardStyle
 }
 
 @Composable
@@ -42,6 +46,14 @@ public fun ExerciseCard(
     style: ExerciseCardStyle,
 ) {
     when (style) {
+        ExerciseCardStyle.Planned -> ExerciseCardRow(
+            modifier = modifier,
+            value = value,
+            isCompact = true,
+            onClick = null,
+            summary = { ExercisePlanSummary(value = value) },
+        )
+
         is ExerciseCardStyle.Small -> ExerciseCardSmall(
             modifier = modifier,
             value = value,
@@ -137,6 +149,32 @@ private fun ExerciseCardStatesPreview() {
             ),
         ).forEach { exercise ->
             ExerciseCard(value = exercise, style = ExerciseCardStyle.Medium(onClick = {}))
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseCardPlannedPreview() {
+    PreviewContainer {
+        val base = exercisePreviewValue()
+        val known = exercisePreviewPendingIteration()
+        val unknown = known.copy(repetitions = RepetitionsFormatState.Empty())
+
+        listOf(
+            base.copy(iterations = persistentListOf(known, known.copy(id = "set-2"))),
+            base.copy(iterations = persistentListOf(known, known.copy(repetitions = RepetitionsFormatState.of(12)))),
+            base.copy(iterations = persistentListOf(known, unknown)),
+            base.copy(iterations = persistentListOf(unknown)),
+            base.copy(iterations = persistentListOf()),
+            base.copy(
+                exerciseExample = base.exerciseExample.copy(
+                    name = "Жим гантелей лёжа на наклонной скамье нейтральным хватом",
+                ),
+                iterations = persistentListOf(known),
+            ),
+        ).forEach { exercise ->
+            ExerciseCard(value = exercise, style = ExerciseCardStyle.Planned)
         }
     }
 }

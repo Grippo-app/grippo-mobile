@@ -54,7 +54,8 @@ public sealed class DialogConfig(
             is StartTraining -> other is StartTraining
             is TrainingMenuPicker -> other is TrainingMenuPicker
             is Confirmation -> other is Confirmation && description == other.description
-            is ConfirmTrainingCompletion -> other is ConfirmTrainingCompletion && initial == other.initial
+            is ConfirmTrainingCompletion -> other is ConfirmTrainingCompletion &&
+                initial == other.initial && exercises == other.exercises
             is Statistics.Trainings -> other is Statistics.Trainings && range == other.range
             is Statistics.Training -> other is Statistics.Training && id == other.id
         }
@@ -209,6 +210,7 @@ public sealed class DialogConfig(
     public data class ConfirmTrainingCompletion(
         public override val title: UiText,
         val initial: Duration?,
+        val exercises: List<ExerciseState>,
         val onResult: (Duration) -> Unit = {},
     ) : DialogConfig()
 

@@ -16,12 +16,16 @@ public class DurationPickerViewModel(
 ), DurationPickerContract {
 
     override fun onSelectDuration(value: Duration) {
-        update { it.copy(value = DurationFormatState.of(value)) }
+        val duration = DurationFormatState.of(value)
+
+        update { it.copy(value = duration) }
     }
 
     override fun onSubmitClick() {
+        val duration = state.value.value as? DurationFormatState.Valid ?: return
+
         analytics.trackEvent(DurationPickerEvent.SubmitClicked)
-        navigateTo(DurationPickerDirection.BackWithResult(state.value.value))
+        navigateTo(DurationPickerDirection.BackWithResult(duration))
     }
 
     override fun onDismiss() {

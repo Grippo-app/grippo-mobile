@@ -7,12 +7,15 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.formatters.DurationFormatState
+import com.grippo.core.state.trainings.ExerciseState
 import kotlin.time.Duration
+import kotlinx.collections.immutable.ImmutableList
 
 public class ConfirmTrainingCompletionComponent(
     componentContext: ComponentContext,
     private val onPickDuration: (initial: Duration?, onResult: (Duration) -> Unit) -> Unit,
     private val initial: DurationFormatState,
+    private val exercises: ImmutableList<ExerciseState>,
     private val onResult: (DurationFormatState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<ConfirmTrainingCompletionDirection>(componentContext) {
@@ -20,6 +23,7 @@ public class ConfirmTrainingCompletionComponent(
     override val viewModel: ConfirmTrainingCompletionViewModel = componentContext.retainedInstance {
         ConfirmTrainingCompletionViewModel(
             initial = initial,
+            exercises = exercises,
             analytics = getKoin().get(),
         )
     }

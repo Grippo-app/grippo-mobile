@@ -42,7 +42,7 @@ version 1.
 | Exercise editor, new/edit/replacement-library return | TrainingExerciseComponent → TrainingExerciseViewModel | `TrainingScreen.Exercise` / `training_exercise`; typed hook; original navigation/result owner |
 | Exercise editor identity while observed catalog details are unavailable or still belong to the previous selection | Same Exercise owner; no extra surface | Passive Medium reads the existing exercise snapshot's value; no click/chevron or inferred load type. Details eligibility and `ExampleOpened` require observed metadata matching the current example ID |
 | Completed, saving loader then create/update confirmation and summary; saved-without-details or unconfirmed-result fallback | TrainingCompletedComponent → TrainingCompletedViewModel | `TrainingScreen.Completed` / `training_completed`; typed hook |
-| `DialogConfig.ConfirmTrainingCompletion(title, initial, onResult)`, opened only by the recording screen; duration input, Confirm, Cancel | ConfirmTrainingCompletionComponent → ConfirmTrainingCompletionViewModel | Live bottom sheet; default null screenPresentation under the dialog policy; no `TrainingScreen` entry; `hasSameContentAs` compares `initial` |
+| `DialogConfig.ConfirmTrainingCompletion(title, initial, exercises, onResult)`, opened only by the recording screen; recorded exercise/set summary, duration input, Save workout, Keep training | ConfirmTrainingCompletionComponent → ConfirmTrainingCompletionViewModel | Live bottom sheet; default null screenPresentation under the dialog policy; no `TrainingScreen` entry; `hasSameContentAs` compares `initial` and `exercises`; summary counts only `!isPending` sets and exercises containing them |
 | Exercises / Library | ExercisesRootComponent → ExerciseLibraryComponent → ExerciseLibraryViewModel | Delegated `ExercisesScreen.Library` / `exercise_library`; owned by the exercises feature; ExercisesRoot is a container |
 | Training stack host (`RootRouter.Training`) | TrainingComponent → TrainingViewModel | Default null; renders only the child stack; forwards navigation; resolves no analytics |
 
@@ -65,7 +65,7 @@ or route attribution exists.
 | Exercise delete / reorder / end / save / back | DeleteIteration without a guard; ReorderIterations per accepted move after the same-ID and index guards (the drag-drop list calls `onMove` per midpoint crossing); ReorderFinished at drag end with no VM guard, then Sync to the parent; Save, then Sync and Back; DismissRequested from the toolbar or system Back |
 | Exercise details / replacement library | ExampleOpened unconditionally; ReplaceExample on the detail dialog action, then ToLibrary SimilarTo; ExampleSelected after the different-ID guard (the swap copies name/example and keeps the exercise ID) |
 | Completed summary / exercise / back | SummaryOpened after the loaded-training guard (`state.training.id`, Statistics dialog); ExerciseOpened without a guard; DismissRequested from "Done" or system Back, then close to the entry host. Result fallbacks retain Done without a retry or second save. Error-dismissal navigation after a failed save bypasses the user Back event |
-| ConfirmTrainingCompletion duration / confirm / cancel | DurationOpened before the PickDuration direction (the host pushes DurationPicker as a nested step); DurationSelected on the accepted nested result; ConfirmClicked before the Confirm direction (the host delivers the result only for a valid duration, and the UI disables Confirm for Invalid/Empty); DismissRequested from Cancel or system Back, then `finish(null)` |
+| ConfirmTrainingCompletion duration / save / keep training | DurationOpened before the PickDuration direction (the host pushes DurationPicker as a nested step); DurationSelected on the accepted nested result; ConfirmClicked only after the VM resolves `DurationFormatState.Valid`, then the Confirm direction carries that same value. Save workout is disabled for Invalid/Empty, and direct invalid callbacks emit nothing and navigate nowhere; the host forwards the non-null raw duration. DismissRequested from Keep training or system Back, then `finish(null)`. The read-only exercise/set summary adds no interaction or telemetry |
 
 Seven typed operations decorate complete existing Feature/UseCase calls with
 `getOrThrow()` inside the block:
@@ -176,6 +176,7 @@ fixed finding or a preservation pass.
 | Training container | Child stack: Recording / Exercise(seed, result key) / Exercises(Library) / Completed(stage, exercises, startAt) | Preserve (navigation) | `TrainingRouter.serializer()`, key `TrainingComponent`; `RootRouter.Training(stage)` preserved by the root stack | The parent re-registers its result observers in init; route inputs remain ordinary business inputs; no duplicate container draft |
 | Training container | `TrainingState.exercises` | Runtime only (never written) | Container state without `update` calls | No DRAFT; the container holds no business draft |
 | ConfirmTrainingCompletion dialog | `duration` (DurationFormatState), including the accepted nested-picker value before Confirm | Runtime only (explicit user decision: the existing unsaved-dialog policy) | State not serializable; retainedInstance; host session/step serializers null; no DRAFT | Initial from the parent's elapsed time since startAt, coerced to at least one minute; ordinary recreation keeps the live VM; process death closes both dialog steps |
+| ConfirmTrainingCompletion dialog | `exercises` snapshot and its derived recorded exercise/set counts | Runtime only | Recording State → live DialogConfig → retained dialog VM State; counts use `!isPending`, matching completion cleanup | Snapshot is read-only and does not modify the recording; re-entry receives current parent exercises; nested duration edits retain it; process death closes the session while Recording preserves its own exercises |
 | ConfirmTrainingCompletion → Recording → Completed | Confirmed duration | Preserve at parent, then route | Recording sets `startAt = now - result` and replaces the stack with `Completed(stage, exercises, startAt)` | Recording's archive is dropped by `replaceAll`; accepted values live in the Completed route |
 
 The exact `@Transient` sets are Recording (examples, muscles), Exercise (example,
@@ -194,65 +195,3 @@ preserves a known completed business outcome and invents no idempotency
 mechanism. Android saved state and completed iOS background checkpoints are the
 supported shell boundaries; abrupt active iOS termination has no guaranteed
 checkpoint.
-
-## Verification
-
-Source gates for the current revision were reconciled against actual routes,
-render bodies, the three leaf hooks, null containers, delegated Library ownership,
-the four retained injections, common foundation binding, the complete
-catalog/encoders/callers, current eligibility and the absence of synthetic
-init/error-navigation interactions; the preservation gate covered local
-suppliers/serializers, restored-empty precedence, accepted parent seeds, transient
-data/runtime fields and completed-outcome rebuilding (read-only audit on
-2026-10-15; no build was part of it). Checks recorded for the implementing
-revisions (2026-10-13):
-
-- Training instrumentation and recreation preservation: final source/diff review
-  and `git diff --check` passed; inline invariants confirmed every event consumer
-  and matrix entry, seven operation consumers, three leaf hooks/draft suppliers,
-  the null container, transient completed presentation, analytics dependency
-  boundaries and shared module registration; an independent read-only reviewer
-  found no blocking source findings and confirmed the absence of synthetic
-  Add/Back events; generated Koin source holds the TrainingAnalytics binding and
-  one qualified `training_analytics` provider. Combined
-  `:analytics:training:compileKotlinIosSimulatorArm64`,
-  `:ui-screen-features:training:compileKotlinIosSimulatorArm64`,
-  `:shared:compileKotlinIosSimulatorArm64` and `:androidApp:assembleDebug` passed
-  (BUILD SUCCESSFUL; initial integrated run 1m 15s, final rerun 15s). The
-  initial sandboxed Gradle wrapper could not write its cache lock; authorized
-  execution succeeded. A residual review found no orphan declarations, unused
-  imports, missing suppliers or synthetic restoration callbacks. Concurrent
-  home/profile/transport working-tree changes were preserved.
-- Confirm training completion dialog: source invariants and `git diff --check`
-  passed; `:ui-dialog-features:confirm-training-completion:compileAndroidMain`,
-  `:analytics:training:compileAndroidMain` and both
-  `compileKotlinIosSimulatorArm64` tasks passed together (BUILD SUCCESSFUL,
-  5m 12s); the follow-up review rechecked all four event consumers, exhaustive
-  encoders, retained injection, generated bindings and the accepted parent state
-  path.
-- Scoped Home and Training flows review: authorized `:androidApp:assembleDebug`
-  and `:shared:assembleSharedDebugXCFramework` (device and simulator frameworks)
-  passed after adding the shared `Network.IncompleteResponse` type and removing
-  auth response sanitation. Training set/update preserve the existing successful
-  server-write outcome when the optional readback cannot hydrate; that review
-  also removed redundant example snapshot IDs, and required exercise-example
-  snapshots validate completely before writing. These data-boundary changes add
-  no screen draft or event/operation payload.
-
-Android Completed saved-result restoration was verified after Home, a confirmed
-cached-process kill via `am kill`, and relaunch with a new PID: the saved summary
-and values were restored. No duplicate training was observed.
-
-Not verified: StateKeeper save → platform serialization → destroy → fresh-context
-restore for Recording and Exercise on Android, and all Training owners on iOS
-(including the Essenty codec for LocalDateTime and
-nested immutable lists); result-bus ordering between the library pop and the
-Recording push; foundation Initial/Restore delivery; Firebase transport; generated
-Koin content at runtime; the real `onMove` frequency during a drag; a null
-`observeTraining(id).firstOrNull()` right after save; the 300 ms Start dialog
-race against an early Add tap; reporting-failure and cancellation injection.
-Manual checks not run: Add/Edit/Draft exact and empty exercise lists, pending
-iteration formats/order and accepted dialog values; editor replacement-library,
-Back, pop and re-entry; pause/resume beyond the subscription grace;
-restore during an in-flight write;
-SDK delivery. Compilation does not prove these scenarios.
