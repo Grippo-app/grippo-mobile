@@ -11,7 +11,6 @@ import io.ktor.http.Parameters
 import io.ktor.http.contentType
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.CancellationException
@@ -59,7 +58,6 @@ public actual class GoogleAuthUiProvider internal constructor(
     private val presentationContextProvider = SessionPresentationProvider(anchorProvider)
     private var currentSession: ASWebAuthenticationSession? = null
 
-    @OptIn(ExperimentalForeignApi::class)
     public actual suspend fun signIn(): GoogleAccount {
         return try {
             validateConfiguration(configuration)
@@ -116,7 +114,6 @@ public actual class GoogleAuthUiProvider internal constructor(
         }
     }
 
-    @OptIn(ExperimentalForeignApi::class)
     private suspend fun beginSessionOrThrow(authUrl: NSURL): NSURL =
         suspendCancellableCoroutine { continuation ->
             var createdSession: ASWebAuthenticationSession? = null
@@ -486,7 +483,9 @@ private fun authorizationUrl(
 }
 
 private fun queryItems(items: List<*>?): Map<String, String> {
-    if (items == null) return emptyMap()
+    if (items == null) {
+        return emptyMap()
+    }
     val result = mutableMapOf<String, String>()
     items.forEach { entry ->
         val item = entry as? NSURLQueryItem ?: return@forEach
@@ -498,7 +497,9 @@ private fun queryItems(items: List<*>?): Map<String, String> {
 }
 
 private fun parseFragment(fragment: String?): Map<String, String> {
-    if (fragment.isNullOrBlank()) return emptyMap()
+    if (fragment.isNullOrBlank()) {
+        return emptyMap()
+    }
     val parser = NSURLComponents()
     parser.setPercentEncodedQuery(fragment)
     return queryItems(parser.queryItems)
@@ -512,12 +513,11 @@ private fun pkceChallenge(verifier: String): Pair<String, String> {
     return encodeToUrlSafe(hash) to "S256"
 }
 
-@OptIn(ExperimentalEncodingApi::class, ExperimentalForeignApi::class)
+@OptIn(ExperimentalEncodingApi::class)
 private fun randomUrlSafeString(): String {
     return encodeToUrlSafe(secureRandomBytes(64))
 }
 
-@OptIn(ExperimentalForeignApi::class)
 private fun secureRandomBytes(count: Int): ByteArray {
     val data = ByteArray(count)
     val status = data.usePinned {
@@ -702,12 +702,16 @@ private class SessionPresentationProvider(
 
 private fun currentPresentationAnchor(): ASPresentationAnchor? {
     val application = UIApplication.sharedApplication
-    application.keyWindow?.let { return it }
+    application.keyWindow?.let {
+        return it
+    }
 
     val windowList = application.windows
     val typedWindows = windowList.mapNotNull { it as? UIWindow }
     val keyWindow = typedWindows.firstOrNull { it.isKeyWindow() }
-    if (keyWindow != null) return keyWindow
+    if (keyWindow != null) {
+        return keyWindow
+    }
 
     return typedWindows.firstOrNull()
 }

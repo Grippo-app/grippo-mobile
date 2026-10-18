@@ -10,6 +10,7 @@ import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun MuscleLoadingPerMuscle(
@@ -29,6 +30,7 @@ internal fun MuscleLoadingPerMuscle(
                 MuscleLoadingItem(
                     entry = entry,
                     label = muscle?.title()?.text() ?: "-",
+                    color = summary.perMuscle.color(entry),
                     muscle = muscle,
                     dominant = entry.value == highestShare,
                 )
@@ -43,6 +45,34 @@ private fun MuscleLoadingPerMusclePreview() {
     PreviewContainer {
         MuscleLoadingPerMuscle(
             summary = stubMuscleLoadSummary(),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingPerMuscleEqualPreview() {
+    PreviewContainer {
+        val summary = stubMuscleLoadSummary()
+        MuscleLoadingPerMuscle(
+            summary = summary.copy(
+                perMuscle = summary.perMuscle.copy(
+                    entries = summary.perMuscle.entries.take(2).map { it.copy(value = 50f) }.toPersistentList(),
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingPerMuscleReorderedPreview() {
+    PreviewContainer {
+        val summary = stubMuscleLoadSummary()
+        MuscleLoadingPerMuscle(
+            summary = summary.copy(
+                perMuscle = summary.perMuscle.copy(entries = summary.perMuscle.entries.reversed().toPersistentList()),
+            ),
         )
     }
 }

@@ -17,6 +17,7 @@ kotlin {
             implementation(projects.toolkit.logger)
             implementation(projects.toolkit.localization)
             implementation(projects.dataServices.database)
+            implementation(projects.uiCore.error.errorProvider)
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.serialization.kotlinx.json)

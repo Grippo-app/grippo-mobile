@@ -5,8 +5,8 @@ public enum class RoleEnum(public val key: String) {
     ADMIN(key = "admin");
 
     public companion object {
-        public fun of(key: String?): RoleEnum {
-            return entries.firstOrNull { it.key == key } ?: DEFAULT
+        public fun of(key: String?): RoleEnum? {
+            return entries.firstOrNull { it.key == key }
         }
     }
 }

@@ -39,12 +39,12 @@ public fun MuscleLoadingImagesRow(
     compact: Boolean = false,
 ) {
     val muscleColors = AppTokens.colors.muscle
-    val entries = when (mode) {
-        MuscleLoadingImagesMode.PerGroup -> summary.perGroup.entries
-        MuscleLoadingImagesMode.PerMuscle -> summary.perMuscle.entries
+    val breakdown = when (mode) {
+        MuscleLoadingImagesMode.PerGroup -> summary.perGroup
+        MuscleLoadingImagesMode.PerMuscle -> summary.perMuscle
     }
-    val colorMap = entries.flatMap { entry ->
-        val color = entry.group.color()
+    val colorMap = breakdown.entries.flatMap { entry ->
+        val color = breakdown.color(entry)
         entry.muscles.map { muscle -> muscle to color }
     }.toMap()
 

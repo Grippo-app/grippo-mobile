@@ -17,32 +17,38 @@ internal fun HttpClientConfig<*>.responseValidator(
 
         if (statusCode in 200..299) return@validateResponse
 
+        var bodyReadFailure: IOException? = null
         val rawBody = try {
             response.bodyAsText()
         } catch (cause: CancellationException) {
             throw cause
-        } catch (_: IOException) {
+        } catch (cause: IOException) {
+            cause.rethrowCancellationOrFatal()
+            bodyReadFailure = cause
             null
         }
 
         when (statusCode) {
             in 400..499 -> {
-                val parsed = apiErrorParser.parseDetailedMessage(rawBody, statusCode)
+                val parsed = apiErrorParser.parseDetailedMessage(rawBody = rawBody, status = statusCode)
                 throw AppError.Network.Expected(
                     keys = apiErrorParser.parseKeys(rawBody),
                     title = parsed.title,
-                    description = parsed.description
+                    description = parsed.description,
+                    cause = bodyReadFailure,
                 )
             }
 
             in 500..599 -> {
                 throw AppError.Network.Unexpected(
-                    message = apiErrorParser.getDefaultServerErrorMessage(statusCode)
+                    message = apiErrorParser.getDefaultServerErrorMessage(statusCode),
+                    cause = bodyReadFailure,
                 )
             }
 
             else -> throw AppError.Network.Unexpected(
-                message = "Unexpected HTTP code: $statusCode"
+                message = "Unexpected HTTP code: $statusCode",
+                cause = bodyReadFailure,
             )
         }
     }
@@ -53,8 +59,7 @@ internal fun HttpClientConfig<*>.responseValidator(
         }
 
         if (cause is JsonConvertException) {
-            val decodingCause = cause.cause
-            if (decodingCause is CancellationException || decodingCause is Error) throw decodingCause
+            cause.rethrowCancellationOrFatal()
         }
 
         throw when (cause) {

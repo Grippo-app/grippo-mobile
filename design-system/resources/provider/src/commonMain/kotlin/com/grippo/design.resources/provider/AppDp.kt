@@ -148,6 +148,7 @@ public data object AppDp {
 
     public data object Muscle {
         public val markSize: Dp = size.small
+        public val inlineMarkSize: Dp = 28.dp
         public val markRadius: Dp = radius.small
         public val markPadding: Dp = padding.tiny
     }

@@ -30,7 +30,8 @@ SDK classification retains the original Kotlin exception as its cause; native er
 their available domain, code and description.
 Check `googleAuthProvider.isSupported` before rendering a
 "Continue with Google" button – the provider reports `false` when the platform is missing the
-required identifiers.
+primary configuration key. A supplied blank, wrong-type or invalid setting is checked inside
+`getUiProvider`/`signIn` and reaches the existing login error pipeline.
 
 When configured, the UI layer simply calls `googleAuthProvider.getUiProvider(context).signIn()` and
 uses the existing `safeLaunch` error pipeline.

@@ -126,11 +126,7 @@ internal class DefaultMessaging(
         val target = snapshot.provider ?: return@withLock PushTokenState.Unavailable(
             PushTokenUnavailableReason.ProviderNotAttached
         )
-        val result = try {
-            target.fetchToken()
-        } catch (_: Exception) {
-            PushTokenState.Failed(PushTokenFailure.ProviderFailure)
-        }
+        val result = target.fetchToken()
         currentCoroutineContext().ensureActive()
         lock.withLock {
             if (!closed && revision == snapshot.revision) {

@@ -12,6 +12,9 @@ public fun UserEntity.toDomain(stats: UserStats): User? {
     val mappedExperience = AppLogger.Mapping.log(ExperienceEnum.of(experience)) {
         "UserEntity $id has unrecognized experience: $experience"
     } ?: return null
+    val mappedRole = AppLogger.Mapping.log(RoleEnum.of(role)) {
+        "UserEntity $id has unrecognized role: $role"
+    } ?: return null
 
     return User(
         id = id,
@@ -21,7 +24,7 @@ public fun UserEntity.toDomain(stats: UserStats): User? {
         experience = mappedExperience,
         height = height,
         createdAt = DateTimeUtils.toLocalDateTime(createdAt),
-        role = RoleEnum.of(role),
+        role = mappedRole,
         stats = stats
     )
 }

@@ -61,10 +61,11 @@ null score shows TooEarly only when valid sets exist in a period shorter than
 explanation for an unavailable analysis range. No corrective findings are
 presented as an evaluated assessment without a numeric score.
 
-The collapsed sheet shows at most two non-PASS findings in the existing
-severity/rule order. Disclosure exposes all scored non-PASS and PASS findings,
-actual analysis dates, analyzed days, counted sets and conditional excluded or
-metadata-missing set counts. Findings preserve their existing units, bounds and
+The sheet keeps at most two priority non-PASS findings visible in the existing
+severity/rule order. Disclosure expands and fades in the remaining scored findings
+and evidence without replacing those priority rows or the control. Each finding
+appears once. Actual analysis dates, analyzed days, counted sets and conditional
+excluded or metadata-missing set counts remain available. Findings preserve their existing units, bounds and
 formatting. No new priority formula, prescription or coaching is calculated.
 
 The analyzed period and short method distinguish training alignment from goal

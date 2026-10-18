@@ -1,8 +1,12 @@
 # Dialog sessions
 
-`DialogController.open(config)` starts a new bottom-sheet session. If one is visible,
-it closes before the new one opens. When multiple openings arrive during closing,
-the latest opening wins. Opening never silently pushes into the existing sheet.
+`DialogController.open(config)` starts a new bottom-sheet session. An ordinary
+session closes before the next opening appears. When multiple ordinary openings
+are pending, the latest ordinary opening wins. `ErrorDisplay` openings are retained
+in arrival order and appear before the pending ordinary opening. An active error
+stays visible until dismissed; later openings wait. Each error keeps its dismissal
+callback, which runs after its session is released. Opening never silently pushes
+into the existing sheet.
 
 Dialog ViewModels emit feature intentions through their existing `Direction`
 channel: `PickBodyWeight(initial)`, `PickDuration(initial)`, or

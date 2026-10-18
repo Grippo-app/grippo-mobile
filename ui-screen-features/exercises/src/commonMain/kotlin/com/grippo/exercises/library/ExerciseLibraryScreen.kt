@@ -212,12 +212,7 @@ internal fun ExerciseLibraryScreen(
                                     style = ExerciseExampleCardStyle.Large(value = item),
                                 )
                                 if (index < state.exerciseExamples.lastIndex) {
-                                    ContentDivider(
-                                        modifier = Modifier.padding(
-                                            start = AppTokens.dp.exerciseExampleImage.medium.size +
-                                                    AppTokens.dp.contentPadding.content,
-                                        ),
-                                    )
+                                    ContentDivider()
                                 }
                             }
                         }

@@ -16,6 +16,7 @@ import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.components.muscle.MuscleMark
+import com.grippo.design.components.muscle.MuscleMarkStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_example_last_used_value
@@ -43,70 +44,76 @@ internal fun ExerciseExampleCardLarge(
         }
     }
 
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = AppTokens.dp.contentPadding.subContent),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        verticalAlignment = Alignment.Top,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
-        ExerciseExampleImage(
-            value = value.value.imageUrl,
-            style = ExerciseExampleImageStyle.MEDIUM,
-        )
-
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            verticalAlignment = Alignment.Top,
         ) {
-            Text(
-                text = value.value.name,
-                style = AppTokens.typography.h5(),
-                color = AppTokens.colors.text.primary,
+            ExerciseExampleImage(
+                value = value.value.imageUrl,
+                style = ExerciseExampleImageStyle.MEDIUM,
             )
 
-            Text(
-                text = equipmentText,
-                style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.secondary,
-            )
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+            ) {
+                Text(
+                    text = value.value.name,
+                    style = AppTokens.typography.h5(),
+                    color = AppTokens.colors.text.primary,
+                )
 
-            if (muscleGroups.isNotEmpty()) {
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-                ) {
-                    muscleGroups.forEach { group ->
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            MuscleMark(group = group)
-                            Text(
-                                text = group.title().text(),
-                                style = AppTokens.typography.b12Med(),
-                                color = AppTokens.colors.text.secondary,
-                            )
-                        }
+                Text(
+                    text = equipmentText,
+                    style = AppTokens.typography.b13Med(),
+                    color = AppTokens.colors.text.secondary,
+                )
+
+                val lastUsed = value.value.lastUsed
+                if (lastUsed !is DateTimeFormatState.Empty) {
+                    val lastUsedValue = lastUsed.value
+                    val lastUsedDate = if (lastUsedValue != null) {
+                        DateCompose.rememberFormat(value = lastUsedValue, format = lastUsed.format)
+                    } else {
+                        lastUsed.display
+                    }
+
+                    if (lastUsedDate.isNotBlank()) {
+                        Text(
+                            text = AppTokens.strings.res(Res.string.exercise_example_last_used_value, lastUsedDate),
+                            style = AppTokens.typography.b12Med(),
+                            color = AppTokens.colors.text.secondary,
+                        )
                     }
                 }
             }
+        }
 
-            val lastUsed = value.value.lastUsed
-            if (lastUsed !is DateTimeFormatState.Empty) {
-                val lastUsedValue = lastUsed.value
-                val lastUsedDate = if (lastUsedValue != null) {
-                    DateCompose.rememberFormat(value = lastUsedValue, format = lastUsed.format)
-                } else {
-                    lastUsed.display
-                }
-
-                if (lastUsedDate.isNotBlank()) {
-                    Text(
-                        text = AppTokens.strings.res(Res.string.exercise_example_last_used_value, lastUsedDate),
-                        style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
+        if (muscleGroups.isNotEmpty()) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+            ) {
+                muscleGroups.forEach { group ->
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        MuscleMark(group = group, style = MuscleMarkStyle.Inline)
+                        Text(
+                            text = group.title().text(),
+                            style = AppTokens.typography.b12Med(),
+                            color = AppTokens.colors.text.secondary,
+                        )
+                    }
                 }
             }
         }

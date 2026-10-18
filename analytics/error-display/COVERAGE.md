@@ -1,6 +1,6 @@
 # Error display analytics and recreation policy
 
-Scope: `ui-dialog-features/error-display`, reviewed on 2026-10-13.
+Scope: `ui-dialog-features/error-display` and the shared error delivery/dismissal owner.
 
 ## Surface and observation inventory
 
@@ -15,6 +15,11 @@ screen hook or feature lifecycle wiring. Analytics is injected through the norma
 retainedInstance factory. Shared registers the generated annotated module and its
 uniquely qualified `error_display_analytics` schema catalog once.
 
+The controller delivers openings without conflation. The shared host retains pending errors
+FIFO before the latest ordinary opening; an active error remains until user dismissal.
+Each error keeps its dismissal/recovery callback. These host changes emit no synthetic
+presentation, dismissal or result facts and preserve the leaf callback contract below.
+
 | Callback / path | Observation | Meaning and eligibility |
 |---|---|---|
 | ErrorDisplayViewModel.onDismiss | DismissRequested / error_display_dismiss_requested v1 | Existing unconditional callback; emitted before the unchanged Back direction |
@@ -27,8 +32,8 @@ The payload has no parameters: no error type/classifier, message, title,
 exception, URL, route ID, input length, credential or reporting history is sent.
 There is no asynchronous business operation to decorate and no operation API.
 Ordinary reporting Exceptions are isolated by the implementation and cannot block
-navigation. Fatal Errors propagate. Repeated callbacks remain repeated observations;
-no exactly-once guard or new navigation policy is introduced.
+navigation. Fatal Errors propagate. Repeated leaf callbacks remain repeated observations;
+no exactly-once telemetry guard is introduced.
 
 ## Preservation inventory
 
@@ -36,7 +41,7 @@ no exactly-once guard or new navigation policy is introduced.
 |---|---|---|---|
 | ErrorDisplayComponent / VM | ErrorDisplayState.error | Runtime only; retained in live session | Existing error route input seeds a fresh VM; retainedInstance keeps the current VM while its InstanceKeeper survives |
 | ErrorDisplayScreen | Localized description | Rebuild | Existing AppErrorState.description() / UiText.text() at rendering |
-| Dialog host / component | Live session, Back callback, pending dismissal | Runtime only | Slot and content stack use serializer = null; fresh process has no restored dialog session |
+| Dialog host / component | Live session, pending error FIFO, latest ordinary opening, Back callback and pending dismissal | Runtime only | Retained DialogState; slot and content stack use serializer = null; fresh process has no restored dialog session or pending error callback |
 | Foundation VM | Jobs/loaders and telemetry | Runtime only | No StateKeeper supplier, snapshot, secret or analytics provenance added |
 
 Preservation source gate: the dialog has no editable inputs, selections, filters,
@@ -51,13 +56,15 @@ existing preview and rendering consumers were inspected.
 
 ## Verification
 
-Source/diff self-review covers the callback chain, exhaustive event encoding,
-empty payload/privacy, reporting isolation, retained VM injection, dependency
-boundaries and shared DI registration. Screen and preservation source gates pass.
+Source/diff review covers the callback chain, lossless request delivery, pending-error
+FIFO, active-error retention, callback reentrancy and stale-session guards, as well as
+event encoding, payload privacy, reporting isolation, retained VM injection, dependency
+boundaries and shared DI registration. Independent source review and the analytics and
+preservation gates pass for the current changes.
 No automated test sources, dependencies or infrastructure were added.
 
-Independent review was unavailable: no permitted independent local reviewer was
-available in this chat. Compilation results are recorded below.
+Current Android/iOS compilation and runtime checks were prohibited by the user and were not run.
+The earlier compilation attempts below provide no evidence for the current changes.
 
 Manual checks not run: Got-it and component/host Back paths, swipe/outside
 closure omissions, ordinary Activity recreation with a retained error, actual

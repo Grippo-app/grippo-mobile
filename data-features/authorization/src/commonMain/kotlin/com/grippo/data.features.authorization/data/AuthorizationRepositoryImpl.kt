@@ -8,6 +8,7 @@ import com.grippo.services.backend.dto.auth.AppleBody
 import com.grippo.services.backend.dto.auth.EmailAuthBody
 import com.grippo.services.backend.dto.auth.GoogleBody
 import com.grippo.services.backend.dto.auth.RegisterBody
+import com.grippo.services.backend.dto.auth.TokenResponse
 import com.grippo.services.backend.dto.push.PushTokenBody
 import com.grippo.services.database.dao.TokenDao
 import com.grippo.services.database.dao.UserActiveDao
@@ -30,35 +31,27 @@ internal class AuthorizationRepositoryImpl(
 ) : AuthorizationRepository {
 
     override suspend fun login(email: String, password: String): Unit {
-        val response = api.login(EmailAuthBody(email, password))
+        val response = api.login(EmailAuthBody(email = email, password = password))
 
-        val entity = response.toEntityOrNull() ?: throw AppError.Network.IncompleteResponse()
-        tokenDao.insertOrUpdate(entity)
-        userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
+        saveSession(response)
     }
 
     override suspend fun google(token: String): Unit {
         val response = api.google(GoogleBody(idToken = token))
 
-        val entity = response.toEntityOrNull() ?: throw AppError.Network.IncompleteResponse()
-        tokenDao.insertOrUpdate(entity)
-        userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
+        saveSession(response)
     }
 
     override suspend fun apple(code: String): Unit {
         val response = api.apple(AppleBody(code = code))
 
-        val entity = response.toEntityOrNull() ?: throw AppError.Network.IncompleteResponse()
-        tokenDao.insertOrUpdate(entity)
-        userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
+        saveSession(response)
     }
 
     override suspend fun register(email: String, password: String): Unit {
         val response = api.register(RegisterBody(email = email, password = password))
 
-        val entity = response.toEntityOrNull() ?: throw AppError.Network.IncompleteResponse()
-        tokenDao.insertOrUpdate(entity)
-        userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
+        saveSession(response)
     }
 
     override fun getToken(): Flow<String?> {
@@ -90,5 +83,14 @@ internal class AuthorizationRepositoryImpl(
 
     override suspend fun deletePushToken(): Unit {
         return api.deletePushToken()
+    }
+
+    private suspend fun saveSession(response: TokenResponse) {
+        val entity = response.toEntityOrNull() ?: throw AppError.Network.IncompleteResponse()
+        if (entity.id.isBlank() || entity.access.isNullOrBlank() || entity.refresh.isNullOrBlank()) {
+            throw AppError.Network.IncompleteResponse()
+        }
+        tokenDao.insertOrUpdate(entity)
+        userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
     }
 }

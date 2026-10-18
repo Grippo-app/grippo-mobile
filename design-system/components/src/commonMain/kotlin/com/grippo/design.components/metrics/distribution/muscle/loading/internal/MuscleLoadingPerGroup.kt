@@ -7,6 +7,7 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
+import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummarySingleGroup
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -29,6 +30,7 @@ internal fun MuscleLoadingPerGroup(
                 MuscleLoadingItem(
                     entry = entry,
                     label = entry.group.title().text(),
+                    color = summary.perGroup.color(entry),
                     dominant = entry.value == highestShare,
                 )
             }
@@ -71,5 +73,13 @@ private fun MuscleLoadingPerGroupTiedPreview() {
                 ),
             ),
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingPerGroupSinglePreview() {
+    PreviewContainer {
+        MuscleLoadingPerGroup(summary = stubMuscleLoadSummarySingleGroup())
     }
 }

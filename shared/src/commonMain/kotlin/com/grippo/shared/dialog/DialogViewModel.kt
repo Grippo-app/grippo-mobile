@@ -18,6 +18,32 @@ internal class DialogViewModel(
             .safeLaunch(processing = Processing.Infinity)
     }
 
+    private fun open(config: DialogConfig) {
+        update { current ->
+            if (current.phase == SheetPhase.Released) {
+                current.copy(
+                    session = DialogSession(id = Uuid.random().toString()),
+                    stack = persistentListOf(DialogEntry(config)),
+                    phase = SheetPhase.Present,
+                )
+            } else {
+                val pending = if (config is DialogConfig.ErrorDisplay) current.pending else config
+                val pendingErrors = if (config is DialogConfig.ErrorDisplay) {
+                    current.pendingErrors.add(config)
+                } else {
+                    current.pendingErrors
+                }
+                val phase = if (current.stack.lastOrNull()?.config is DialogConfig.ErrorDisplay) {
+                    current.phase
+                } else {
+                    SheetPhase.Dismissing
+                }
+
+                current.copy(pending = pending, pendingErrors = pendingErrors, phase = phase)
+            }
+        }
+    }
+
     fun navigation(session: DialogSession, owner: DialogStep): SessionDialogNavigation =
         SessionDialogNavigation(
             sessionId = session.id,
@@ -30,7 +56,9 @@ internal class DialogViewModel(
 
     override fun onDismiss(pendingResult: (() -> Unit)?) {
         val current = state.value
-        if (current.phase != SheetPhase.Present) return
+        if (current.phase != SheetPhase.Present) {
+            return
+        }
         val top = current.stack.lastOrNull() ?: return
         if (current.stack.size == 1) {
             update {
@@ -47,33 +75,41 @@ internal class DialogViewModel(
     }
 
     override fun onClose() {
-        if (state.value.phase != SheetPhase.Present) return
+        if (state.value.phase != SheetPhase.Present) {
+            return
+        }
         update { it.copy(phase = SheetPhase.Dismissing) }
     }
 
     override fun onRelease(session: DialogSession) {
         val current = state.value
-        if (current.session?.id != session.id || current.phase == SheetPhase.Released) return
+        if (current.session?.id != session.id || current.phase == SheetPhase.Released) {
+            return
+        }
+
+        val nextError = current.pendingErrors.firstOrNull()
+        val nextConfig = nextError ?: current.pending
+        val pending = if (nextError == null) null else current.pending
+        val pendingErrors = if (nextError == null) {
+            current.pendingErrors
+        } else {
+            current.pendingErrors.removeAt(0)
+        }
+        val nextState = if (nextConfig == null) {
+            DialogState()
+        } else {
+            DialogState(
+                session = DialogSession(id = Uuid.random().toString()),
+                stack = persistentListOf(DialogEntry(nextConfig)),
+                phase = SheetPhase.Present,
+                pending = pending,
+                pendingErrors = pendingErrors,
+            )
+        }
+
         // Invalidate old navigation before callbacks can open or modify another session.
-        update { DialogState() }
-        current.pending?.let(::open)
+        update { nextState }
         current.stack.asReversed().forEach { it.config.onDismiss?.invoke() }
         current.stack.lastOrNull()?.pendingResult?.invoke()
-    }
-
-    private fun open(config: DialogConfig) {
-        val current = state.value
-        if (current.phase != SheetPhase.Released) {
-            // A new opening is a new session, never an implicit in-sheet push.
-            update { it.copy(pending = config, phase = SheetPhase.Dismissing) }
-        } else {
-            update {
-                DialogState(
-                    session = DialogSession(id = Uuid.random().toString()),
-                    stack = persistentListOf(DialogEntry(config)),
-                    phase = SheetPhase.Present,
-                )
-            }
-        }
     }
 }

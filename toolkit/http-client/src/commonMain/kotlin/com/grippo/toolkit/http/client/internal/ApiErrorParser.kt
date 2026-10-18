@@ -30,13 +30,7 @@ internal class ApiErrorParser(private val json: Json) {
         }
 
         return try {
-            val element = runCatching { json.parseToJsonElement(rawBody) }
-                .getOrElse {
-                    return ParsedError(
-                        title = getFallbackMessage(status),
-                        description = null
-                    )
-                }
+            val element = json.parseToJsonElement(rawBody)
 
             if (element is JsonObject) {
                 val message = element["message"]?.jsonPrimitive?.contentOrNull
@@ -61,6 +55,7 @@ internal class ApiErrorParser(private val json: Json) {
 
             ParsedError(title = fallbackText, description = null)
         } catch (e: Exception) {
+            e.rethrowCancellationOrFatal()
             ParsedError(title = getFallbackMessage(status), description = null)
         }
     }
@@ -68,13 +63,16 @@ internal class ApiErrorParser(private val json: Json) {
     fun parseKeys(rawBody: String?): List<String> {
         if (rawBody.isNullOrBlank()) return emptyList()
 
-        return runCatching {
+        return try {
             val element = json.parseToJsonElement(rawBody)
             element.jsonObject["errors"]
                 ?.jsonArray
                 ?.mapNotNull { it.jsonObject["code"]?.jsonPrimitive?.content }
                 .orEmpty()
-        }.getOrDefault(emptyList())
+        } catch (e: Exception) {
+            e.rethrowCancellationOrFatal()
+            emptyList()
+        }
     }
 
     fun getDefaultClientErrorMessage(status: Int?): String = when (status) {

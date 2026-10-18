@@ -131,8 +131,13 @@ ViewModels **never** call `navigation.push(...)` directly. They emit `Direction`
 // inside RootComponent (abbreviated; inspect RootComponent.kt for every branch)
 override suspend fun eventListener(direction: RootDirection) {
     when (direction) {
-        RootDirection.Login -> if (childStack.value.active.instance !is Child.Authorization) {
-            navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess()))
+        RootDirection.Login -> {
+            val authorization = childStack.value.active.instance as? Child.Authorization
+            if (authorization != null) {
+                authorization.component.onSessionLost()
+            } else {
+                navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess()))
+            }
         }
         RootDirection.Home -> navigation.replaceAll(RootRouter.Home)
         RootDirection.Goal -> navigation.push(RootRouter.Profile(ProfileRouter.Goal))
@@ -150,7 +155,11 @@ override suspend fun eventListener(direction: RootDirection) {
 dead Home/Profile directions were removed).
 
 Two patterns:
-- **Guarded `replaceAll`**: `RootDirection.Login` only replaces if the current top isn't already an `Authorization` child — the token observer emits `Login` on every token-null transition, including the initial one; without the guard the user is bounced back mid-splash.
+- **Session-loss ownership**: `RootDirection.Login` replaces a non-Authorization root with AuthProcess.
+  An active `AuthComponent` handles that signal itself: only ProfileCreation redirects to
+  AuthProcess; Splash, Onboarding and an existing AuthProcess remain in place. The initial null
+  token must not bypass startup/onboarding, and token loss must not leave an authenticated
+  profile-creation flow active.
 - **Most `RootDirection` subtypes are `data object`**, not `data class`. They name a destination and the Component picks the concrete sub-route. `Training` carries a `StageState` payload (`Add`, `Edit(id)`, `Draft`) because the same destination opens different stages.
 
 For sub-feature components, `eventListener` handles two kinds of directions:

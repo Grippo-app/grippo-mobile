@@ -12,6 +12,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -138,7 +139,7 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
             } else {
                 entries.forEach { entry ->
                     key(entry.group) {
-                        MuscleLoadingOverviewRow(entry = entry)
+                        MuscleLoadingOverviewRow(entry = entry, color = summary.perGroup.color(entry))
                     }
                 }
             }
@@ -172,8 +173,8 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
 }
 
 @Composable
-private fun MuscleLoadingOverviewRow(entry: MuscleLoadEntryState) {
-    val indicatorColors = rememberMuscleLoadIndicatorColors(entry.group.color())
+private fun MuscleLoadingOverviewRow(entry: MuscleLoadEntryState, color: Color) {
+    val indicatorColors = rememberMuscleLoadIndicatorColors(color)
 
     Column(
         modifier = Modifier.fillMaxWidth(),

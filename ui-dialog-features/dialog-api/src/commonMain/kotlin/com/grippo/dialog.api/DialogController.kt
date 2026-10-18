@@ -3,7 +3,11 @@ package com.grippo.dialog.api
 import kotlinx.coroutines.flow.Flow
 
 public interface DialogController {
-    /** Opens a new sheet session. An existing session closes before this one opens. */
+    /**
+     * Opens a new sheet session after the current one closes. The latest pending
+     * ordinary opening wins. Errors are retained in arrival order ahead of the
+     * pending ordinary opening. An active error waits for dismissal.
+     */
     public fun open(config: DialogConfig)
 
     /**

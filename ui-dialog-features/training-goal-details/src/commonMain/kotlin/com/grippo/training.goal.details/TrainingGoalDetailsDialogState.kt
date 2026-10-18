@@ -31,6 +31,15 @@ public data class TrainingGoalDetailsDialogState(
                 .toPersistentList()
         }
 
+    public val additionalFindings: ImmutableList<GoalFitFindingState>
+        get() {
+            val progress = progress ?: return persistentListOf()
+            if (progress.score == null) return persistentListOf()
+
+            val priority = priorityFindings
+            return progress.findings.filterNot { it in priority }.toPersistentList()
+        }
+
     @Composable
     public fun notice(): String? {
         val progress = progress

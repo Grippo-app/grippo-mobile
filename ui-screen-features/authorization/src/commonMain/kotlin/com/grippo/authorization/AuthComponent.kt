@@ -57,6 +57,12 @@ public class AuthComponent(
         childFactory = ::createChild,
     )
 
+    public fun onSessionLost() {
+        if (childStack.value.active.configuration == AuthRouter.ProfileCreation) {
+            viewModel.toAuthProcess()
+        }
+    }
+
     private fun createChild(router: AuthRouter, context: ComponentContext): Child {
         return when (router) {
             AuthRouter.Splash -> Splash(

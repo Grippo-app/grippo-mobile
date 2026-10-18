@@ -68,7 +68,7 @@ public fun MuscleLoadingFocusCard(
                                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                MuscleMark(group = entry.group)
+                                MuscleMark(group = entry.group, color = summary.perGroup.color(entry))
                                 Text(
                                     modifier = Modifier.weight(1f),
                                     text = entry.group.title().text(),

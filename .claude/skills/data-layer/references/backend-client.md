@@ -35,8 +35,14 @@ on a detail below.
 - `handleResponseExceptionWithRequest`: rethrows non-`Exception` throwables and cancellation;
   passes an `AppError` through; maps `HttpRequestTimeoutException` to `AppError.Network.Timeout`,
   `JsonConvertException` to `AppError.Network.Unexpected("Invalid server response format.")`
-  (after rethrowing a cancellation or `Error` cause), `IOException` to `AppError.Network.NoInternet`
+  (after finding cancellation/fatal errors anywhere in the decoding cause chain, with cycle
+  protection), `IOException` to `AppError.Network.NoInternet`
   and anything else to `AppError.Network.Unexpected`.
+- Reading an error response body may use status-based text after an `IOException`, retaining that
+  exception as the status error's cause. The error-body parser keeps its malformed-text/key
+  fallbacks, but rethrows cancellation/fatal errors, including wrapped causes. Required successful
+  response decoding never uses those presentation fallbacks. Inspect `ThrowableControlFailure.kt`
+  for the shared control-failure check; do not generalize it into a recovery/execution wrapper.
 - The validator runs in Ktor's send hook and is registered before the Auth plugin, so a validated
   failure surfaces from the request call itself, after any refresh/retry the Auth plugin performed;
   `GrippoApi.request` propagates it unchanged. `AppError.Network.IncompleteResponse` is

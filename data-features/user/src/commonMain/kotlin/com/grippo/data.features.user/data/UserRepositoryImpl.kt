@@ -3,6 +3,7 @@ package com.grippo.data.features.user.data
 import com.grippo.core.error.provider.AppError
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.user.models.CreateUserProfile
+import com.grippo.data.features.api.user.models.RoleEnum
 import com.grippo.data.features.api.user.models.User
 import com.grippo.data.features.user.domain.UserRepository
 import com.grippo.domain.dto.user.toBody
@@ -40,7 +41,7 @@ internal class UserRepositoryImpl(
         val userId = requireActiveUserId()
         val response = api.getUser()
 
-        if (response.id != userId || response.email == null || response.role == null ||
+        if (response.id != userId || response.email == null || RoleEnum.of(response.role) == null ||
             response.createdAt == null || response.updatedAt == null
         ) {
             throw AppError.Network.IncompleteResponse()

@@ -9,7 +9,7 @@ import com.grippo.toolkit.logger.internal.models.LogCategory
 
 public object AppLogger {
 
-    private val fileDestination = FileLogDestination(LogFileWriter.create())
+    private val fileDestination = FileLogDestination { LogFileWriter.create() }
     private val dispatcher = LogDispatcher(fileDestination)
 
     public fun logFileContentsByCategory(): Map<String, List<String>> {

@@ -18,6 +18,7 @@ import com.grippo.design.components.cards.selectable.CheckSelectableCard
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.inputs.InputSearch
 import com.grippo.design.components.muscle.MuscleMark
+import com.grippo.design.components.muscle.MuscleMarkStyle
 import com.grippo.core.state.muscles.stubMuscleGroup
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -98,7 +99,7 @@ internal fun Header(
                     ),
                     isSelected = value.filter is QueryFilter.Group && value.filter.id == item.id,
                     onSelect = clickProvider,
-                    leading = { MuscleMark(group = item.type) },
+                    leading = { MuscleMark(group = item.type, style = MuscleMarkStyle.Inline) },
                 )
             }
         }
@@ -116,6 +117,49 @@ private fun HeaderPreview() {
                 muscleGroups = stubMuscleGroup(),
             ),
             canShowSuggestions = true,
+            contract = ExerciseLibraryContract.Empty,
+        )
+    }
+}
+
+@Composable
+@AppPreview
+private fun HeaderAllPreview() {
+    PreviewContainer {
+        Header(
+            value = Queries(muscleGroups = stubMuscleGroup()),
+            canShowSuggestions = false,
+            contract = ExerciseLibraryContract.Empty,
+        )
+    }
+}
+
+@Composable
+@AppPreview
+private fun HeaderSuggestionsPreview() {
+    PreviewContainer {
+        Header(
+            value = Queries(
+                filter = QueryFilter.Suggestions,
+                muscleGroups = stubMuscleGroup(),
+            ),
+            canShowSuggestions = true,
+            contract = ExerciseLibraryContract.Empty,
+        )
+    }
+}
+
+@Composable
+@AppPreview
+private fun HeaderLastGroupPreview() {
+    val groups = stubMuscleGroup()
+    PreviewContainer {
+        Header(
+            value = Queries(
+                filter = QueryFilter.Group(groups.last().id),
+                muscleGroups = groups,
+            ),
+            canShowSuggestions = false,
             contract = ExerciseLibraryContract.Empty,
         )
     }

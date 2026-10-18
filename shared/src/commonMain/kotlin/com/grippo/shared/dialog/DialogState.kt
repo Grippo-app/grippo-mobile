@@ -12,6 +12,7 @@ internal data class DialogState(
     val stack: PersistentList<DialogEntry> = persistentListOf(),
     val phase: SheetPhase = SheetPhase.Released,
     val pending: DialogConfig? = null,
+    val pendingErrors: PersistentList<DialogConfig.ErrorDisplay> = persistentListOf(),
 )
 
 @Immutable

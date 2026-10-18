@@ -45,9 +45,9 @@ public enum class MuscleGroupEnumState {
     }
 
     @Composable
-    public fun icon(): ImageVector {
+    public fun icon(color: Color = color()): ImageVector {
         val colors = AppTokens.colors.muscle
-        val identity = color()
+        val identity = color
         val preset = remember(this, colors, identity) {
             MuscleEnumState.colorPreset(
                 fallback = colors.inactive,

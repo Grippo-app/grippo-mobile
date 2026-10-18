@@ -57,32 +57,42 @@ A compact navigation item and a screen heading do not need the same font size.
   including in bodyweight history.
 - Muscles share the “Body Map” motif across exercise-library filters and rows,
   exercise anatomy, onboarding/profile muscle selection, training summaries,
-  Home and statistics/details. The anatomical zone is the primary cue; complete
-  localized group/muscle labels accompany it. `MuscleMark` uses
-  `muscle.markSize/markPadding/markRadius` (32/2/8 dp), with the existing front,
-  back, split torso or split legs projection. Individual muscles highlight their
-  exact zone and inherit their group's identity hue.
-- Fixed categorical muscle roles use the corresponding LightAccent/DarkAccent
-  values in both themes: `muscle.chest` = Coral, `muscle.back` = Sky,
+  Home and statistics/details. The anatomical zone is the primary recognition
+  cue, paired with complete localized muscle/group labels. Individual muscles
+  highlight their exact zone through the existing front/back/split projections.
+- Identity contexts (catalogue, library filters and muscle choice) use fixed
+  LightAccent/DarkAccent roles: `muscle.chest` = Coral, `muscle.back` = Sky,
   `muscle.abdominal` = Copper, `muscle.legs` = Teal, `muscle.arms` = Purple,
-  `muscle.shoulders` = Indigo. `MuscleEnumState.group()/color()/icon()` and
-  `MuscleGroupEnumState.color()/icon()/image(preset)` own these identity mappings;
-  components own geometry. Identity never depends on share, rank, sorting or
-  breakdown mode. `muscle.inactive/background/outline` frame absent anatomy;
-  a neutral area alone is not a zero or a fatigue/recovery assessment.
-- Distribution maps and row indicators share the fixed group hue. Bar length
-  remains a linear 0–100% share, with the exact existing formatted value outside
-  the bar. This is the estimated distribution of recorded sets weighted by
-  exercise involvement, not volume, muscle size, recovery or a score; exercise
-  anatomy retains its separate involvement explanation. Existing exclusions and
-  missing-data notices remain visible. Tied leaders receive equal emphasis.
-- Group identity stays visible in selection headers and muscle rows regardless of
-  choice. Existing neutral choice-card borders, Segment selection and Switch
-  state retain selection ownership; the selected zones of the large anatomy
-  illustration use the group's hue. An identity mark never indicates selection,
-  exclusion severity or success. Suggestions remain a separate filter role.
-  Goal diagnostic markers use their severity accent directly while their
-  explanatory text stays neutral.
+  `muscle.shoulders` = Indigo. Model `group()/color()/icon()/image(preset)`
+  methods own anatomical identity; group and muscle `icon(color)` accept the
+  tint supplied by a measured context without changing their anatomical zone.
+- Measured contexts (Home, exercise involvement, recorded-set statistics and
+  muscle comparisons) use the existing relative green
+  `muscle.palette6MuscleCalm` scale. `MuscleLoadBreakdownState.color(entry)`
+  maps the complete current breakdown's min/max shares to its six bins before
+  any sorting or top-three truncation. A single entry uses the strongest tint;
+  equal multi-entry values share the first tint, preserving the existing scale.
+  Map regions, anatomical row marks and bars use the same load tint. This tint
+  communicates relative load, not a group's categorical identity, selection,
+  fatigue or recovery. Missing anatomy stays neutral through
+  `muscle.inactive/background/outline`, without inventing zeros.
+- Bar length remains the linear 0–100% share with the existing formatted value
+  outside. Recorded-set distribution remains weighted by exercise involvement;
+  exercise anatomy keeps its distinct participation explanation. Exclusions and
+  missing-data notices remain visible, and tied leaders receive equal emphasis.
+  The leading-share ring retains `charts.ring.info`, with no status thresholds.
+- `MuscleMark` Standard uses `muscle.markSize/markPadding/markRadius`
+  (32/2/8 dp). Inline uses `muscle.inlineMarkSize` (28 dp) without a background
+  tile or padding, preserving the same 28 dp anatomical drawing. Library filters
+  and exercise-group labels use Inline to avoid repeated nested tiles. The
+  exercise list keeps image/name/equipment/date together and shows all actual
+  muscle groups in a full-width wrapping row below; dividers follow those gutters.
+- MuscleSelection keeps one large hero and existing group tabs, with no duplicate
+  small group mark/title above the hero. Muscle rows keep their own identity cues;
+  the large image highlights chosen zones with the group's hue. Neutral choice
+  borders, Segment selection and Switch state retain selection ownership.
+  Suggestions remain a separate filter role. Goal diagnostic markers retain
+  severity accents and neutral explanatory text.
 - Goals share the “Course” motif: direction, training alignment and calendar
   time are separate facts. `goal.accent/background` supplies a restrained copper
   identity pair in both themes; it does not indicate selection or success.
@@ -295,8 +305,8 @@ A compact navigation item and a screen heading do not need the same font size.
   Its compact image row removes the generic weighted outer spacers, uses two
   equal image slots with an 8 dp gap and centers the complete bodies vertically.
   The muscle-details image layout retains its original default spacing.
-  Map and bars retain each group's fixed Body Map hue before and after choosing
-  the three visible rows. Percentages remain labelled as estimated recorded-set
+  Map and bars use the same relative green load tint from the complete
+  breakdown before choosing the three visible rows. Percentages remain labelled as estimated recorded-set
   shares; the context counts selected-period workouts/sets. Useful anatomy and
   values precede methodology and missing-data notes. A single group names its
   uniquely leading individual muscle when that fact exists. Missing groups are
@@ -316,8 +326,11 @@ A compact navigation item and a screen heading do not need the same font size.
   Overview content determines its own height without filler spacers; the existing
   remaining/overdue message and Update eligibility are preserved.
   Details shows at most two non-passing diagnostic facts first, in the existing
-  severity/rule order. One disclosure reveals every criterion, evidence counts
-  and a short explanation of the estimate. Titles sit above actual/target values
+  severity/rule order. Those facts and the disclosure keep their order when
+  toggled. Additional criteria, evidence counts and the short explanation expand
+  vertically from the control and fade over 200 ms; no duplicate findings or
+  replacement lazy items make the sheet jump to its new height.
+  Titles sit above actual/target values
   so both retain their full width. Repeated introductions and score/deadline
   summaries are omitted; unavailable assessments stay neutral, and partial-data
   limitations remain visible. The score describes training alignment, not goal

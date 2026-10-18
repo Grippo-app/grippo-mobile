@@ -140,6 +140,18 @@ after the user dismisses the dialog. Relaunch the complete required sequence thr
 `safeLaunch` in the existing ViewModel scope; do not add a new scope, a retry loop
 before dismissal or an analytics retry policy.
 
+Root's session-token observation is a long-lived routing source. Inspect
+`RootViewModel.observeToken`: an observation error uses the shared pipeline and restarts that
+subscription only from its dismissal callback. A terminated subscription must not permanently
+disable token-loss navigation. Session-loss destinations follow
+[navigation ownership](navigation.md#direction--navigation-translation).
+Error delivery and dismissal callbacks follow the
+[dialog host retention policy](dialogs.md#dialogcontroller--dialogprovider); a later opening must
+not discard the pending error that owns this recovery callback.
+
+File logging isolation belongs to the
+[logger sink](../../platform-build-toolkit/references/toolkit-utilities-core.md).
+
 ## Anti-patterns (MUST avoid)
 
 - **Local catches that hide or present failures** — call throwing commands inside the shared pipeline, including private suspend helpers; request isolation follows the source contract above.

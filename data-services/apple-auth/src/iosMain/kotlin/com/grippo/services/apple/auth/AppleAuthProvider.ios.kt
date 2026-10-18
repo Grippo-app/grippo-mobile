@@ -209,12 +209,16 @@ private fun runOnMain(block: () -> Unit) {
 
 private fun currentPresentationAnchor(): ASPresentationAnchor? {
     val application = UIApplication.sharedApplication
-    application.keyWindow?.let { return it }
+    application.keyWindow?.let {
+        return it
+    }
 
     val windowList = application.windows
     val typedWindows = windowList.mapNotNull { it as? UIWindow }
     val keyWindow = typedWindows.firstOrNull { it.isKeyWindow() }
-    if (keyWindow != null) return keyWindow
+    if (keyWindow != null) {
+        return keyWindow
+    }
 
     return typedWindows.firstOrNull()
 }

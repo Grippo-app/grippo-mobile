@@ -1,5 +1,6 @@
 package com.grippo.services.backend.client
 
+import com.grippo.core.error.provider.AppError
 import com.grippo.services.backend.dto.auth.RefreshBody
 import com.grippo.services.backend.dto.auth.TokenResponse
 import com.grippo.services.database.dao.TokenDao
@@ -22,7 +23,7 @@ import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.http.path
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.milliseconds
-import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
@@ -36,8 +37,7 @@ internal class TokenProvider(
     private val userActiveDao: UserActiveDao,
 ) : AuthProvider {
     private val refreshMutex = Mutex()
-    private var lastRefreshError: Throwable? = null
-    private var lastKnownInvalidAccessToken: String? = null
+    private var ongoingRefresh: CompletableDeferred<String?>? = null
 
     private companion object {
         private const val REFRESH_WAIT_TIMEOUT_MS = 10_000L
@@ -70,69 +70,80 @@ internal class TokenProvider(
     }
 
     override suspend fun refreshToken(response: HttpResponse): Boolean {
-        return if (refreshMutex.isLocked) {
-            waitForOngoingRefresh()
+        val (completion, ownsRefresh) = refreshMutex.withLock {
+            val current = ongoingRefresh
+            if (current != null && !current.isCompleted) {
+                current to false
+            } else {
+                val next = CompletableDeferred<String?>()
+                ongoingRefresh = next
+                next to true
+            }
+        }
+
+        return if (ownsRefresh) {
+            performTokenRefreshBlock(response = response, completion = completion)
         } else {
-            performTokenRefreshBlock(response)
+            waitForOngoingRefresh(completion)
         }
     }
 
-    private suspend fun waitForOngoingRefresh(): Boolean {
-        withTimeout(REFRESH_WAIT_TIMEOUT_MS.milliseconds) {
-            refreshMutex.withLock {
-                val token = getCurrentToken()
+    private suspend fun waitForOngoingRefresh(completion: CompletableDeferred<String?>): Boolean {
+        return withTimeout(REFRESH_WAIT_TIMEOUT_MS.milliseconds) {
+            val rejectedAccess = completion.await() ?: return@withTimeout false
 
-                if (token?.access != lastKnownInvalidAccessToken) {
-                    return@withLock
-                }
-
-                lastRefreshError?.let {
-                    throw it
-                }
-            }
+            val access = getCurrentToken()?.access?.takeIf { it.isNotBlank() }
+            access != null && access != rejectedAccess
         }
-
-        return true
     }
 
-    private suspend fun performTokenRefreshBlock(response: HttpResponse): Boolean {
+    private suspend fun performTokenRefreshBlock(
+        response: HttpResponse,
+        completion: CompletableDeferred<String?>,
+    ): Boolean {
         return try {
-            withTimeout(REFRESH_WAIT_TIMEOUT_MS.milliseconds) {
-                refreshMutex.withLock {
-                    lastRefreshError = null
-
-                    val token = getCurrentToken() ?: return@withLock false
-
-                    val accessToken = token.requireAccess()
-                    val refreshToken = token.requireRefresh()
-
-                    lastKnownInvalidAccessToken = accessToken
-
-                    try {
-                        val refresh = retryWithBackoff {
-                            performTokenRefresh(response.call.client, refreshToken)
-                        }
-
-                        val newId = refresh.id ?: return@withLock false
-
-                        tokenDao.insertOrUpdate(
-                            TokenEntity(
-                                id = newId,
-                                access = refresh.accessToken,
-                                refresh = refresh.refreshToken
-                            )
-                        )
-
-                        true
-                    } catch (e: Throwable) {
-                        if (e is Error) throw e
-
-                        handleRefreshFailure(e)
-                    }
-                }
+            val rejectedAccess = withTimeout(REFRESH_WAIT_TIMEOUT_MS.milliseconds) {
+                refreshCurrentSession(response)
             }
-        } catch (e: TimeoutCancellationException) {
-            handleRefreshFailure(e)
+            completion.complete(rejectedAccess)
+            rejectedAccess != null
+        } catch (e: Throwable) {
+            completion.completeExceptionally(e)
+            throw e
+        }
+    }
+
+    /** Returns the rejected access token after storing its replacement, or null for an AuthProvider failure. */
+    private suspend fun refreshCurrentSession(response: HttpResponse): String? {
+        val token = getCurrentToken() ?: return null
+        val accessToken = requireAccess(token)
+        val refreshToken = requireRefresh(token)
+
+        return try {
+            val refresh = retryWithBackoff {
+                performTokenRefresh(client = response.call.client, refreshToken = refreshToken)
+            }
+
+            val newId = refresh.id ?: return null
+            if (newId != token.id || newId.isBlank() ||
+                refresh.accessToken.isNullOrBlank() || refresh.refreshToken.isNullOrBlank()
+            ) {
+                throw AppError.Network.IncompleteResponse()
+            }
+
+            tokenDao.insertOrUpdate(
+                TokenEntity(
+                    id = newId,
+                    access = refresh.accessToken,
+                    refresh = refresh.refreshToken,
+                )
+            )
+            accessToken
+        } catch (e: Throwable) {
+            if (e is CancellationException || e !is Exception) {
+                throw e
+            }
+            handleRefreshFailure(e = e, userId = token.id)
         }
     }
 
@@ -158,14 +169,18 @@ internal class TokenProvider(
         }
     }
 
-    private suspend fun handleRefreshFailure(e: Throwable): Nothing {
-        lastRefreshError = e
-        lastKnownInvalidAccessToken = null
-
-        if (e !is CancellationException) {
-            val userId = userActiveDao.get().firstOrNull()
-            if (userId != null) {
-                tokenDao.delete(userId)
+    private suspend fun handleRefreshFailure(e: Throwable, userId: String): Nothing {
+        try {
+            tokenDao.delete(userId)
+        } catch (cleanupError: Throwable) {
+            if (cleanupError is CancellationException || cleanupError !is Exception) {
+                if (cleanupError !== e) {
+                    cleanupError.addSuppressed(e)
+                }
+                throw cleanupError
+            }
+            if (cleanupError !== e) {
+                e.addSuppressed(cleanupError)
             }
         }
 
@@ -176,13 +191,13 @@ internal class TokenProvider(
         return userActiveDao.get().firstOrNull()?.let { tokenDao.getById(it).firstOrNull() }
     }
 
-    private fun TokenEntity?.requireAccess(): String {
-        return this?.access?.takeIf { it.isNotBlank() }
+    private fun requireAccess(token: TokenEntity): String {
+        return token.access?.takeIf { it.isNotBlank() }
             ?: throw IllegalStateException("Access token is missing")
     }
 
-    private fun TokenEntity?.requireRefresh(): String {
-        return this?.refresh?.takeIf { it.isNotBlank() }
+    private fun requireRefresh(token: TokenEntity): String {
+        return token.refresh?.takeIf { it.isNotBlank() }
             ?: throw IllegalStateException("Refresh token is missing")
     }
 
@@ -197,8 +212,12 @@ internal class TokenProvider(
             try {
                 return block()
             } catch (e: Throwable) {
-                if (e is CancellationException || e is Error) throw e
-                if (e is RefreshUnauthorizedException) throw e
+                if (e is CancellationException || e is Error) {
+                    throw e
+                }
+                if (e is RefreshUnauthorizedException) {
+                    throw e
+                }
             }
             delay(currentDelay.milliseconds)
             currentDelay = (currentDelay * factor).toLong()

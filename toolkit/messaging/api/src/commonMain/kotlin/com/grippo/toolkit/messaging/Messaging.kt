@@ -9,6 +9,6 @@ public interface Messaging {
     public val tokenState: StateFlow<PushTokenState>
     /** Backend sync of the latest valid callback, independent of explicit fetches. */
     public val tokenSyncStatus: StateFlow<PushTokenSyncStatus>
-    /** Fetches from the provider without backend registration; caller cancellation propagates. */
+    /** Fetches without backend registration; provider exceptions and cancellation propagate. */
     public suspend fun fetchToken(): PushTokenState
 }

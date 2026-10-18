@@ -46,7 +46,11 @@ unreleased and every schema is version 1. The historical route-entry reason code
 - AuthProcess starts at Login; Registration is pushed with the optional valid
   email seed. Alternative entry: `RootDirection.Login` opens
   `Auth(AuthRouter.AuthProcess())` from Root's token-null observer when the active
-  child is not Authorization; queued deeplinks still resolve at Home. Login and
+  child is not Authorization. An active AuthComponent redirects only ProfileCreation
+  on session loss; Splash, Onboarding and an existing AuthProcess remain in place.
+  A failed Root token observation restarts after its error dialog is dismissed;
+  the host retains pending errors and their callbacks FIFO, and a later opening does not close an active error.
+  queued deeplinks still resolve at Home. Login and
   Registration use ordinary push/pop.
 - ProfileCreation runs User → Experience → ExcludedMuscles → MissingEquipments →
   Completed; the parent stores accepted step values and seeds fresh children from
@@ -106,14 +110,19 @@ not telemetry.
 
 Login/Register preparation calls throwing commands directly. A malformed token
 response or profile-present user response that cannot produce the complete domain
-User fails before its cache write. Every user response must match the active
+User fails before its cache write. Unknown role keys fail required dictionary promotion;
+they do not become DEFAULT, including the profile-absent routing branch.
+All four account/session exchanges share
+`AuthorizationRepositoryImpl.saveSession`; blank required IDs/access/refresh values
+fail before token storage or active-session publication. Every user response must match the active
 account captured before its request. A valid absent profile returns false only
 when no same-account profile is cached; otherwise synchronization fails while
 preserving the cached profile and local draft (deleting User would cascade it).
-Push-token Unavailable remains optional; Failed throws with the typed
-failure reason instead of completing login after reporting and discarding it.
-The messaging state contains no original Throwable, so no cause preservation is
-claimed for that typed failure. Existing operation types and boundaries remain.
+Push-token Unavailable remains optional; a returned typed Failed outcome throws with
+its reason. Explicit provider fetch exceptions and cancellation propagate unchanged;
+the Swift provider passes Firebase's Error through the existing completion error slot.
+The separate app-lifetime callback synchronization queue keeps its coarse status
+contract. Existing operation types and boundaries remain.
 
 Google/Apple UI providers return their account directly and throw on failure inside
 the same complete Login operation. Kotlin failures retain their cause when SDK
@@ -121,6 +130,21 @@ classification is required; coroutine cancellation and fatal errors propagate un
 Native failures retain the available domain/code/description. Required credential/token
 decoding failures do not become successful accounts with fallback values. Optional
 display fields retain their declared defaults when absent.
+Google availability tests whether its primary configuration key exists. Supplied
+invalid, blank or wrong-type configuration fails inside the existing Login operation;
+an absent optional iOS redirect still uses the established derived URI.
+
+Refresh ownership and waiter attachment are selected together under a short mutex.
+Each waiter retains its attempt's completion and rejected-access value; a later attempt
+cannot overwrite that failure. The owner publishes success only after its timeout block returns.
+Refresh waiters return true only for a new nonblank token with no recorded failure;
+failed owners complete that captured attempt exceptionally with the original failure.
+Ordinary cleanup errors remain suppressed on that failure, while cleanup cancellation
+or fatal errors remain primary. Cleanup targets the captured failing session, not a
+new active account. Caller/owner-timeout cancellation does not initiate token deletion.
+Malformed nonmissing refresh IDs or blank credentials fail before storage. The existing
+missing-refresh-ID AuthProvider false outcome remains a failure with no deletion.
+Ordinary file-sink failures cannot replace the original error or prevent the shared error dialog.
 
 Text status events compare the existing old/new validation status, omit equal
 statuses (including Empty → Empty) and keep no cache. Clear is a separate callback

@@ -11,7 +11,7 @@ import org.koin.core.annotation.Single
 @Single(binds = [DialogController::class, DialogProvider::class])
 internal class DialogControllerImpl : DialogController, DialogProvider {
 
-    private val _openings = Channel<DialogConfig>(Channel.CONFLATED)
+    private val _openings = Channel<DialogConfig>(Channel.UNLIMITED)
     override val openings: Flow<DialogConfig> = _openings.receiveAsFlow()
 
     override fun open(config: DialogConfig) {

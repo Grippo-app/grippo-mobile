@@ -8,15 +8,24 @@ import kotlinx.coroutines.flow.onEach
 
 public class RootViewModel(
     deeplink: String? = null,
-    authorizationFeature: AuthorizationFeature,
+    private val authorizationFeature: AuthorizationFeature,
 ) : BaseViewModel<RootState, RootDirection, RootLoader>(RootState(deeplink = deeplink)),
     RootContract {
 
     init {
-        authorizationFeature
-            .getToken()
-            .onEach { if (it == null) navigateTo(RootDirection.Login) }
-            .safeLaunch()
+        observeToken()
+    }
+
+    private fun observeToken() {
+        authorizationFeature.getToken()
+            .onEach(::provideToken)
+            .safeLaunch(onError = ::observeToken)
+    }
+
+    private fun provideToken(value: String?) {
+        if (value == null) {
+            navigateTo(RootDirection.Login)
+        }
     }
 
     override fun onClose() {

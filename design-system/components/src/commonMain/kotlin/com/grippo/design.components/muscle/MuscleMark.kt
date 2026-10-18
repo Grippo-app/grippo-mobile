@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.muscles.MuscleGroupEnumState
@@ -20,35 +22,52 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
-/** Anatomical identity beside an existing localized muscle or group label. */
+@Immutable
+public enum class MuscleMarkStyle {
+    Standard,
+    Inline,
+}
+
+/** Anatomical zone beside its localized label; measured views may supply their load tint. */
 @Composable
 public fun MuscleMark(
     modifier: Modifier = Modifier,
     group: MuscleGroupEnumState,
+    style: MuscleMarkStyle = MuscleMarkStyle.Standard,
+    color: Color? = null,
 ) {
-    MuscleMarkContent(modifier = modifier, icon = group.icon())
+    MuscleMarkContent(modifier = modifier, icon = group.icon(color ?: group.color()), style = style)
 }
 
 @Composable
 public fun MuscleMark(
     modifier: Modifier = Modifier,
     muscle: MuscleEnumState,
+    style: MuscleMarkStyle = MuscleMarkStyle.Standard,
+    color: Color? = null,
 ) {
-    MuscleMarkContent(modifier = modifier, icon = muscle.icon())
+    MuscleMarkContent(modifier = modifier, icon = muscle.icon(color ?: muscle.color()), style = style)
 }
 
 @Composable
 private fun MuscleMarkContent(
     modifier: Modifier,
     icon: ImageVector,
+    style: MuscleMarkStyle,
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.muscle.markRadius)
+    val markModifier = when (style) {
+        MuscleMarkStyle.Standard -> {
+            val shape = RoundedCornerShape(AppTokens.dp.muscle.markRadius)
+            Modifier
+                .size(AppTokens.dp.muscle.markSize)
+                .clip(shape)
+                .background(AppTokens.colors.background.card)
+                .padding(AppTokens.dp.muscle.markPadding)
+        }
+        MuscleMarkStyle.Inline -> Modifier.size(AppTokens.dp.muscle.inlineMarkSize)
+    }
     Image(
-        modifier = modifier
-            .size(AppTokens.dp.muscle.markSize)
-            .clip(shape)
-            .background(AppTokens.colors.background.card)
-            .padding(AppTokens.dp.muscle.markPadding),
+        modifier = modifier.then(markModifier),
         imageVector = icon,
         contentDescription = null,
     )
@@ -100,6 +119,26 @@ private fun MuscleMarkMusclesPreview() {
                         style = AppTokens.typography.b14Med(),
                     )
                 }
+            }
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleMarkInlinePreview() {
+    PreviewContainer {
+        MuscleGroupEnumState.entries.forEach { group ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            ) {
+                MuscleMark(group = group, style = MuscleMarkStyle.Inline)
+                Text(
+                    text = group.title().text(),
+                    color = AppTokens.colors.text.secondary,
+                    style = AppTokens.typography.b12Med(),
+                )
             }
         }
     }

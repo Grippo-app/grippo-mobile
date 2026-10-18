@@ -27,6 +27,7 @@ internal fun MuscleLoadingItem(
     modifier: Modifier = Modifier,
     entry: MuscleLoadEntryState,
     label: String,
+    color: Color,
     muscle: MuscleEnumState? = null,
     dominant: Boolean = false,
 ) {
@@ -54,9 +55,9 @@ internal fun MuscleLoadingItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (muscle == null) {
-            MuscleMark(group = entry.group)
+            MuscleMark(group = entry.group, color = color)
         } else {
-            MuscleMark(muscle = muscle)
+            MuscleMark(muscle = muscle, color = color)
         }
 
         Column(
@@ -84,7 +85,7 @@ internal fun MuscleLoadingItem(
             LineIndicator(
                 modifier = Modifier.fillMaxWidth(),
                 progress = progress,
-                colors = rememberMuscleLoadIndicatorColors(entry.group.color()),
+                colors = rememberMuscleLoadIndicatorColors(color),
             )
         }
     }
@@ -113,6 +114,7 @@ private fun MuscleLoadingItemPreview() {
         MuscleLoadingItem(
             entry = entry,
             label = entry.group.title().text(),
+            color = summary.perGroup.color(entry),
             dominant = true,
         )
     }
@@ -127,6 +129,7 @@ private fun MuscleLoadingItemLongLabelPreview() {
         MuscleLoadingItem(
             entry = entry,
             label = "Pectoralis major, sternocostal and clavicular portions",
+            color = summary.perGroup.color(entry),
         )
     }
 }

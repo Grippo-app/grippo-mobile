@@ -97,14 +97,20 @@ public interface DialogProvider { public val openings: Flow<DialogConfig> }
 ```
 
 The internal implementation in `:ui-dialog-features:dialog-api` is
-`@Single(binds = [DialogController::class, DialogProvider::class])`, with a conflated
+`@Single(binds = [DialogController::class, DialogProvider::class])`, with a lossless
 `Channel<DialogConfig>` exposed as `openings`. `DialogModule` is the existing public
 `@Module @ComponentScan`, registered through its generated module in shared.
 
 Inject the controller into ordinary caller ViewModels and call
 `dialogController.open(DialogConfig.X(...))` to start a new sheet session. An existing
-session closes before the pending opening starts; `open` never implicitly pushes a step.
+ordinary session closes before the pending opening starts; `open` never implicitly pushes a step.
 There is **no `dismiss()`** on this controller.
+
+Error openings retain their presentation and recovery callbacks from the controller through
+the host. Pending `ErrorDisplay` configs are FIFO and run before the latest pending ordinary
+opening. An active error waits for user dismissal; later openings neither replace it nor
+invoke its callback early. Ordinary pending openings keep latest-wins behavior. These queues
+are live runtime State, discarded on process death like the sessions they contain.
 
 The host supplies `Session` bound to the originating session and active step.
 Use its methods on the UI thread; calls from inactive/removed steps are ignored.
@@ -114,7 +120,7 @@ the previous step or closes at the root, and `close` closes the entire session.
 ## `DialogComponent` / `DialogContentComponent` shape
 
 Two components, both in `:shared/dialog/...` (inspect `DialogComponent.kt`, `content/DialogContentComponent.kt` and `DialogViewModel.kt`):
-1. **`DialogComponent`** owns the **outer** slot: `childSlot(serializer = null, key = "DialogComponent.v3", handleBackButton = false)` over `SlotNavigation<DialogSession>`, holding at most one child (a `DialogContentComponent`). Its retained `DialogViewModel` consumes `DialogProvider.openings` and owns `session`, `stack`, `phase` and `pending`. Reconciliation is state-driven: a collector of `viewModel.state` activates/dismisses the slot and replaces the inner stack; `DialogComponent.eventListener` is a no-op because the host emits no Directions.
+1. **`DialogComponent`** owns the **outer** slot: `childSlot(serializer = null, key = "DialogComponent.v3", handleBackButton = false)` over `SlotNavigation<DialogSession>`, holding at most one child (a `DialogContentComponent`). Its retained `DialogViewModel` consumes `DialogProvider.openings` and owns session/stack/phase and pending openings under the retention policy above. Reconciliation is state-driven: a collector of `viewModel.state` activates/dismisses the slot and replaces the inner stack; `DialogComponent.eventListener` is a no-op because the host emits no Directions.
 2. **`DialogContentComponent`** renders the **inner** stack: `childStack(serializer = null, key = "DialogContentComponent.v3", handleBackButton = false)` over `StackNavigation<DialogStep>`. Each step has a host-owned runtime ID and config; `navigationFor(step)` supplies the session-bound bridge, and the component's own `BackCallback` calls that bridge's `back()`.
 
 The bridge's internal `finish(pendingResult)` passes a result closure to the owning
@@ -157,7 +163,7 @@ Dialogs keep these typed config callbacks. Separate screen results use
 
 ## Dismissal behavior
 
-- **Whole-session release:** after hiding, `DialogViewModel.onRelease(session)` runs in this order: reset the state (`update { DialogState() }`, which invalidates the old session), open a pending next session if one was queued, run the old stack's `onDismiss` callbacks top-to-bottom, then run the top step's pending result. Swipe/scrim or Close supplies no result; `onDismiss` alone does not establish confirmation/cancellation/user exit.
+- **Whole-session release:** after hiding, `DialogViewModel.onRelease(session)` invalidates the old session by publishing the next session with its remaining queue, or empty State when nothing is pending. It then runs the old stack's `onDismiss` callbacks top-to-bottom and the top step's pending result. Reentrant openings see the new state and cannot discard pending errors. Swipe/scrim or Close supplies no result; `onDismiss` alone does not establish confirmation/cancellation/user exit.
 - **Nested Back/result:** the top step is removed, then its `onDismiss` and pending result run in that order; the sheet stays open. `replaceCurrent` dismisses the replaced config after updating the stack and does not create a result.
 - **Caller cleanup:** use `onDismiss` for cleanup or returning an observed dismissal fact to its owning VM. Shared host/config plumbing does not construct telemetry; caller-VM-owned result callbacks may observe accepted results under the analytics skill.
 - **`dismissBySwipe`:** governs swipe/scrim hiding for the active config. Hardware/toolbar Back still follows the stack; toolbar Close closes the session. It does not turn a generic dismissal into a typed outcome.

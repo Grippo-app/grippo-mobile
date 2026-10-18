@@ -9,6 +9,9 @@ Inspect the affected `toolkit/<module>/` implementation and direct consumers.
   on request bodies is described in [DTO/API](../../data-layer/references/dtos-and-api.md#omitted-versus-explicit-null).
 - `logger` owns sinks/categories. AppLogger currently dispatches in all build modes;
   do not assume its onDebug method checks the build variant.
+  File-sink initialization, formatting and writes are best effort: ordinary failures cannot replace
+  the business error being reported or prevent its crash/UI pipeline. Preserve cancellation and
+  fatal errors; keep this isolation in the sink rather than adding consumer catches.
 - `localization` owns locale access (`AppLocale`).
 - `number-utils` owns pure numeric representation with explicit separator inputs.
   Inspect `NumberFormatting.kt` and its callers before adding another numeric helper.
@@ -25,6 +28,13 @@ Inspect the affected `toolkit/<module>/` implementation and direct consumers.
   whose equality filters can suppress an otherwise necessary refresh.
 - Analytics/crash-reporting/messaging API modules expose typed consumer/bootstrap contracts;
   cores own app-lifetime state/policy. SDK transport is app-owned. Do not add data/domain dependencies.
+  Explicit `Messaging.fetchToken` has a caller: provider exceptions and cancellation propagate
+  unchanged; Swift forwards native provider errors through the existing completion error parameter.
+  Returned Unavailable/InvalidToken outcomes retain their typed contract. The independent callback
+  synchronization queue owns each attempt and publishes its coarse Failed status for an ordinary
+  attempt failure or attempt-local timeout; cancellation of the queue's own scope still propagates.
+  Do not confuse that app-lifetime status contract with an explicit fetch or claim it retains an
+  exception object. Keep the existing bounded queue and retry policy.
 - Documented upward dependency exceptions ([module dependency rules](../../../../CLAUDE.md#module-dependency-rules)),
   not to be extended by analogy: `toolkit/http-client` -> `:ui-core:error:error-provider` (the
   validator throws `AppError`), and `toolkit/date-utils` -> `:design-system:core` +

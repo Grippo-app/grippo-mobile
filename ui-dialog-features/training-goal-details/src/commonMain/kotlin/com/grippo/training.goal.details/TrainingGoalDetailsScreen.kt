@@ -1,10 +1,17 @@
 package com.grippo.training.goal.details
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -63,6 +71,8 @@ import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
 
+private const val DisclosureAnimationDurationMillis = 200
+
 @Composable
 internal fun TrainingGoalDetailsScreen(
     state: TrainingGoalDetailsDialogState,
@@ -96,9 +106,6 @@ private fun TrainingGoalDetailsContent(
     val progress = state.progress
     val priorityFindings = state.priorityFindings
     val notice = state.notice()
-    val expansionDescription = AppTokens.strings.res(
-        if (isExpanded) Res.string.goal_options_expanded else Res.string.goal_options_collapsed,
-    )
     val listState = rememberAnchoredLazyListState(behavior = AnchorScrollBehavior.Animated)
 
     LazyColumn(
@@ -143,7 +150,7 @@ private fun TrainingGoalDetailsContent(
             }
         }
 
-        if (!isExpanded && priorityFindings.isNotEmpty()) {
+        if (priorityFindings.isNotEmpty()) {
             item(key = "priority_findings") {
                 GoalAdjustmentSection(
                     modifier = Modifier.fillMaxWidth(),
@@ -154,64 +161,12 @@ private fun TrainingGoalDetailsContent(
 
         if (progress != null) {
             item(key = "disclosure") {
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .semantics { stateDescription = expansionDescription },
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(
-                            if (isExpanded) {
-                                Res.string.goal_details_hide_details
-                            } else {
-                                Res.string.goal_details_show_details
-                            },
-                        ),
-                        endIcon = ButtonIcon.Icon(
-                            value = if (isExpanded) AppTokens.icons.ArrowTop else AppTokens.icons.ArrowDown,
-                        ),
-                    ),
-                    style = ButtonStyle.Tertiary,
-                    onClick = onToggleDetails,
+                GoalAssessmentDisclosure(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = state,
+                    isExpanded = isExpanded,
+                    onToggleDetails = onToggleDetails,
                 )
-            }
-
-            if (isExpanded) {
-                if (progress.score != null) {
-                    if (progress.findings.any { it.severity != GoalFitSeverityState.PASS }) {
-                        item(key = "all_adjustments") {
-                            GoalAdjustmentSection(
-                                modifier = Modifier.fillMaxWidth(),
-                                findings = progress.findings,
-                            )
-                        }
-                    }
-
-                    if (progress.findings.any { it.severity == GoalFitSeverityState.PASS }) {
-                        item(key = "on_track") {
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                            ) {
-                                Text(
-                                    text = AppTokens.strings.res(Res.string.goal_fit_diagnostic_on_track_title),
-                                    style = AppTokens.typography.h4(),
-                                    color = AppTokens.colors.text.primary,
-                                )
-                                GoalFitOnTrackCard(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    findings = progress.findings,
-                                )
-                            }
-                        }
-                    }
-                }
-
-                item(key = "evidence") {
-                    GoalEvidenceDetails(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = progress.evidence,
-                    )
-                }
             }
         }
     }
@@ -271,6 +226,88 @@ private fun GoalAdjustmentSection(
             modifier = Modifier.fillMaxWidth(),
             findings = findings,
         )
+    }
+}
+
+@Composable
+private fun GoalAssessmentDisclosure(
+    modifier: Modifier = Modifier,
+    state: TrainingGoalDetailsDialogState,
+    isExpanded: Boolean,
+    onToggleDetails: () -> Unit,
+) {
+    val progress = state.progress ?: return
+    val additionalFindings = state.additionalFindings
+    val expansionDescription = AppTokens.strings.res(
+        if (isExpanded) Res.string.goal_options_expanded else Res.string.goal_options_collapsed,
+    )
+
+    Column(modifier = modifier) {
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics { stateDescription = expansionDescription },
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(
+                    if (isExpanded) {
+                        Res.string.goal_details_hide_details
+                    } else {
+                        Res.string.goal_details_show_details
+                    },
+                ),
+                endIcon = ButtonIcon.Icon(
+                    value = if (isExpanded) AppTokens.icons.ArrowTop else AppTokens.icons.ArrowDown,
+                ),
+            ),
+            style = ButtonStyle.Tertiary,
+            onClick = onToggleDetails,
+        )
+
+        AnimatedVisibility(
+            visible = isExpanded,
+            enter = expandVertically(
+                animationSpec = tween(DisclosureAnimationDurationMillis),
+                expandFrom = Alignment.Top,
+            ) + fadeIn(animationSpec = tween(DisclosureAnimationDurationMillis)),
+            exit = shrinkVertically(
+                animationSpec = tween(DisclosureAnimationDurationMillis),
+                shrinkTowards = Alignment.Top,
+            ) + fadeOut(animationSpec = tween(DisclosureAnimationDurationMillis)),
+        ) {
+            Column(
+                modifier = Modifier.padding(top = AppTokens.dp.contentPadding.content),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            ) {
+                if (additionalFindings.any { it.severity != GoalFitSeverityState.PASS }) {
+                    GoalFitDriftingCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        findings = additionalFindings,
+                    )
+                }
+
+                if (additionalFindings.any { it.severity == GoalFitSeverityState.PASS }) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                    ) {
+                        Text(
+                            text = AppTokens.strings.res(Res.string.goal_fit_diagnostic_on_track_title),
+                            style = AppTokens.typography.h4(),
+                            color = AppTokens.colors.text.primary,
+                        )
+                        GoalFitOnTrackCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            findings = additionalFindings,
+                        )
+                    }
+                }
+
+                GoalEvidenceDetails(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = progress.evidence,
+                )
+            }
+        }
     }
 }
 

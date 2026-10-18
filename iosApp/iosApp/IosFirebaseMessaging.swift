@@ -20,8 +20,8 @@ final class IosFirebaseMessaging: PushTokenProvider {
             return
         }
         FirebaseMessaging.Messaging.messaging().token { token, error in
-            if error != nil {
-                completionHandler(PushTokenStateFailed(reason: .providerfailure), nil)
+            if let error {
+                completionHandler(nil, error)
             } else if let token {
                 completionHandler(PushTokenParser.shared.parse(rawToken: token), nil)
             } else {

@@ -12,6 +12,7 @@ import com.grippo.core.state.examples.ExerciseExampleComponentsState
 import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.muscles.MuscleState
+import com.grippo.core.state.muscles.stubMuscleGroup
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.ForceTypeEnumState
@@ -27,6 +28,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
 
 @Immutable
@@ -110,6 +112,57 @@ private fun ExerciseExampleCardLargePreview() {
                     ),
                     equipments = persistentListOf(),
                     bundles = persistentListOf(),
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleCardLargeSingleMuscleGroupPreview() {
+    val example = exerciseExampleCardPreviewValue()
+    PreviewContainer {
+        ExerciseExampleCard(
+            modifier = Modifier.fillMaxWidth(),
+            style = ExerciseExampleCardStyle.Large(
+                example.copy(
+                    value = example.value.copy(name = "Згинання рук з гантелями"),
+                    bundles = persistentListOf(
+                        ExerciseExampleBundleState(
+                            id = "biceps-involvement",
+                            muscle = MuscleState(id = "biceps", type = MuscleEnumState.BICEPS),
+                            percentage = PercentageFormatState.of(100),
+                        ),
+                    ),
+                    equipments = persistentListOf(
+                        EquipmentState(id = "dumbbells", type = EquipmentEnumState.DUMBBELLS),
+                    ),
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleCardLargeAllMuscleGroupsPreview() {
+    val example = exerciseExampleCardPreviewValue()
+    PreviewContainer {
+        ExerciseExampleCard(
+            modifier = Modifier.fillMaxWidth(),
+            style = ExerciseExampleCardStyle.Large(
+                example.copy(
+                    value = example.value.copy(
+                        name = "Комплексна вправа з гантелями для всього тіла на регульованій лаві",
+                    ),
+                    bundles = stubMuscleGroup().mapIndexed { index, group ->
+                        ExerciseExampleBundleState(
+                            id = "group-involvement-${group.id}",
+                            muscle = group.muscles.first().value,
+                            percentage = PercentageFormatState.of(if (index == 0) 50 else 10),
+                        )
+                    }.toPersistentList(),
                 ),
             ),
         )
