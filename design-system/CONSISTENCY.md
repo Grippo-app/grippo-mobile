@@ -155,6 +155,11 @@ A compact navigation item and a screen heading do not need the same font size.
   content with contentPadding.block, keeping compact section gaps at content.
   Loading name/email slots derive their heights from the same h3/b13Med line
   heights; HeaderLoading tokens retain their width fractions and corner radius.
+- UserProfileHeader uses role variants: Profile retains the warm avatar/name/email
+  region; Account shows read-only signed-in identity on `background.card`, using
+  the user-card shape and `menu.contentPadding` (16 dp on all sides) to align with
+  adjacent menu sections, `h5` name and secondary `b14Med` email.
+  Name/email wrap completely; absent identity has an explicit neutral explanation.
 - When using a framed presentation under
   [shape and hierarchy](../.claude/skills/brand-design/references/design-language.md#shape-and-hierarchy),
   standalone content cards and framed menu sections use the 20 dp shape
@@ -278,6 +283,12 @@ A compact navigation item and a screen heading do not need the same font size.
   minimum height and 12 dp vertical padding/gaps. Optional leading icons use a
   32 dp card-surface tile with 8 dp corners; caller-supplied channel/destructive
   colors retain their meaning. Dividers align with the text after the tile.
+- MenuActionRow uses the same menu-row icon and spacing family for operations:
+  `b14Semi` verb and attached secondary `b12Med` explanation, with no navigation
+  chevron. One full-row Button target owns enabled/disabled/loading semantics;
+  loading preserves content geometry and uses shared shimmer. Destructive verbs
+  and icons retain semantic error color; helpers stay neutral. Dividers align
+  after the icon tile.
 - Equipment rows retain a 64 dp image slot with 12 dp surface padding on all sides.
   Highlighted controls reserve their indicator space so selection does not shift text.
 - Repeated ToggleSelectableCard rows and Medium CheckSelectableCard controls use
@@ -341,8 +352,10 @@ A compact navigation item and a screen heading do not need the same font size.
   sections use `content` spacing.
 - Standalone profile editors separate toolbar and introduction with `block`;
   explanations meet related choices at `content`, while the anatomy region starts
-  a new section at `block`. Settings consent keeps `text` between title and body
-  and `content` between the text group and its switch.
+  a new section at `block`. Settings and onboarding consent use a primary `h6`
+  title beside Toggle, with `content` between them. Onboarding keeps only this
+  compact row. Settings adds a secondary `b13Med` explanation at `text` spacing,
+  spanning the width below the row so privacy copy does not compete with the switch.
 - Profile screens compose their own toolbar and guidance locally. Editor titles
   use a transparent toolbar with Back. Guidance sits outside the toolbar, uses
   `block` before it, starts at the screen gutter and uses `b14Med` /
@@ -350,7 +363,31 @@ A compact navigation item and a screen heading do not need the same font size.
   Editor copy states the current task, with muscle/equipment copy describing
   enabled choices. Community uses the same quiet guidance without a second hero
   title or logo; the root menu keeps its identity card in the scrolling content.
-  Settings starts with its toolbar and keeps consent in the scrolling body.
+  Settings uses the Account toolbar title to match its menu entry. Signed-in
+  identity, one MenuSection containing the complete Privacy preference, and two
+  open MenuActionRow operations share one scrolling body. General introductory
+  copy and duplicate deletion headings are omitted. Each operation keeps its
+  explanation beside its verb/icon; a text-aligned divider separates Logout from
+  Delete. Account actions mutually disable during work.
+- The goal editor groups primary focus, secondary goal and target date in one
+  cohesive summary/editing card using `menu.radius/contentPadding/borderWidth`,
+  `background.card` and `border.default`. The leading focus has a secondary
+  `b13Med` label, primary `h4` value and secondary chevron; the following
+  MenuValueRow controls share the surface and quiet dividers. Optional status
+  appears only for an empty secondary goal. Invalid dates keep their error label,
+  accessibility error semantics and `b12Med` explanation inside the same card.
+  Routine, preferences and recovery/limitations are independent collapsed
+  summary/editing cards in the same menu geometry. Each header uses a neutral
+  Calendar/Tune/Body icon with `menu.headerIconContainer/headerIconRadius/headerIcon`,
+  a `b14Semi` title, a secondary `b13Med` factual summary and a secondary chevron.
+  A single selected option shows its complete label. Routine additionally
+  summarizes one or two selected schedule/duration values; remaining summaries
+  use a selected-option count. Empty groups omit absence copy.
+  Only one card opens at a time. Routine exposes its three choice groups directly;
+  the larger groups retain category disclosures and complete selected summaries.
+  Quiet dividers and Small CheckSelectableCard choices organize expanded content.
+  One scrolling body keeps the pinned Primary Save action on an opaque screen
+  surface; permanent introductory and field-description copy is omitted.
 - Goal, streak and performance details use `block` before a new section heading
   and `content` from the heading to its card or between related entries. The first
   visible section has no leading separator. Full-width sheet ranges retain

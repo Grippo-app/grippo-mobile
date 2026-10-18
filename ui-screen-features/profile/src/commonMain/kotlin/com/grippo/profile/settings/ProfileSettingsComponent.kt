@@ -15,6 +15,7 @@ internal class ProfileSettingsComponent(
     override val viewModel = componentContext.retainedInstance {
         ProfileSettingsViewModel(
             analytics = getKoin().get(),
+            userFeature = getKoin().get(),
             localSettingsFeature = getKoin().get(),
             logoutUseCase = getKoin().get(),
             deleteProfileUseCase = getKoin().get(),

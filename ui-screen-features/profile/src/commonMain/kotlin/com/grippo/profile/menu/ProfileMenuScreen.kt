@@ -18,6 +18,7 @@ import com.grippo.core.state.profile.stubUser
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.components.user.UserProfileHeader
+import com.grippo.design.components.user.UserProfileHeaderStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -59,7 +60,7 @@ internal fun ProfileMenuScreen(
         item(key = "user", contentType = "user") {
             UserProfileHeader(
                 value = state.user,
-                loading = userLoading,
+                style = UserProfileHeaderStyle.Profile(loading = userLoading),
             )
         }
         item(key = "menu", contentType = "menu") {

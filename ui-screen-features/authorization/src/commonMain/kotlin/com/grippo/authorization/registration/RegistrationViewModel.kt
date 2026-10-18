@@ -27,49 +27,61 @@ internal class RegistrationViewModel(
 
     override fun onEmailChange(value: String) {
         val previousStatus = AuthInputMapping.status(state.value.email)
+
         val input = EmailFormatState.of(value)
+
         update { it.copy(email = input) }
+
         val status = AuthInputMapping.status(input)
+
         if (status != previousStatus) {
-            analytics.trackEvent(AuthEvent.Registration.InputChanged(CredentialField.Email, status))
+            analytics.trackEvent(
+                AuthEvent.Registration.InputChanged(field = CredentialField.Email, status = status)
+            )
         }
     }
 
     override fun onPasswordChange(value: String) {
         val previousStatus = AuthInputMapping.status(state.value.password)
+
         val input = PasswordFormatState.of(value)
+
         update { it.copy(password = input) }
+
         val status = AuthInputMapping.status(input)
+
         if (status != previousStatus) {
-            analytics.trackEvent(AuthEvent.Registration.InputChanged(CredentialField.Password, status))
+            analytics.trackEvent(
+                AuthEvent.Registration.InputChanged(field = CredentialField.Password, status = status)
+            )
         }
     }
 
     override fun onEmailFocused() {
-        analytics.trackEvent(AuthEvent.Registration.InputFocused(CredentialField.Email))
+        analytics.trackEvent(AuthEvent.Registration.InputFocused(field = CredentialField.Email))
     }
 
     override fun onPasswordFocused() {
-        analytics.trackEvent(AuthEvent.Registration.InputFocused(CredentialField.Password))
+        analytics.trackEvent(AuthEvent.Registration.InputFocused(field = CredentialField.Password))
     }
 
     override fun onPasswordVisibilityChange(visible: Boolean) {
-        analytics.trackEvent(AuthEvent.Registration.PasswordVisibilityChanged(visible))
+        analytics.trackEvent(AuthEvent.Registration.PasswordVisibilityChanged(visible = visible))
     }
 
     override fun onEmailCleared() {
-        analytics.trackEvent(AuthEvent.Registration.InputCleared(CredentialField.Email))
+        analytics.trackEvent(AuthEvent.Registration.InputCleared(field = CredentialField.Email))
     }
 
     override fun onEmailKeyboardNext() {
         analytics.trackEvent(
-            AuthEvent.Registration.KeyboardAction(CredentialField.Email, InputKeyboardAction.Next)
+            AuthEvent.Registration.KeyboardAction(field = CredentialField.Email, action = InputKeyboardAction.Next)
         )
     }
 
     override fun onPasswordKeyboardDone() {
         analytics.trackEvent(
-            AuthEvent.Registration.KeyboardAction(CredentialField.Password, InputKeyboardAction.Done)
+            AuthEvent.Registration.KeyboardAction(field = CredentialField.Password, action = InputKeyboardAction.Done)
         )
     }
 
@@ -100,6 +112,7 @@ internal class RegistrationViewModel(
             } else {
                 RegistrationDirection.CreateProfile
             }
+
             navigateTo(destination)
         }
     }

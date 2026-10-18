@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,12 +31,43 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.profile_name_not_set
+import com.grippo.design.resources.provider.profile_settings_identity_unavailable
+import com.grippo.design.resources.provider.profile_settings_signed_in_as
+
+@Immutable
+public sealed interface UserProfileHeaderStyle {
+    @Immutable
+    public data class Profile(val loading: Boolean = false) : UserProfileHeaderStyle
+
+    @Immutable
+    public data object Account : UserProfileHeaderStyle
+}
 
 @Composable
 public fun UserProfileHeader(
     modifier: Modifier = Modifier,
     value: UserState?,
-    loading: Boolean = false,
+    style: UserProfileHeaderStyle = UserProfileHeaderStyle.Profile(),
+) {
+    when (style) {
+        is UserProfileHeaderStyle.Profile -> ProfileHeader(
+            modifier = modifier,
+            value = value,
+            loading = style.loading,
+        )
+
+        UserProfileHeaderStyle.Account -> AccountHeader(
+            modifier = modifier,
+            value = value,
+        )
+    }
+}
+
+@Composable
+private fun ProfileHeader(
+    modifier: Modifier = Modifier,
+    value: UserState?,
+    loading: Boolean,
 ) {
     val nameStyle = AppTokens.typography.h3()
     val emailStyle = AppTokens.typography.b13Med()
@@ -119,6 +151,54 @@ public fun UserProfileHeader(
     }
 }
 
+@Composable
+private fun AccountHeader(
+    modifier: Modifier = Modifier,
+    value: UserState?,
+) {
+    val name = value?.name?.takeIf { it.isNotBlank() }
+    val email = value?.email?.takeIf { it.isNotBlank() }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                color = AppTokens.colors.background.card,
+                shape = RoundedCornerShape(AppTokens.dp.userCard.card.radius),
+            )
+            .padding(AppTokens.dp.menu.contentPadding),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+    ) {
+        Text(
+            text = AppTokens.strings.res(Res.string.profile_settings_signed_in_as),
+            style = AppTokens.typography.b12Med(),
+            color = AppTokens.colors.text.secondary,
+        )
+        if (name == null && email == null) {
+            Text(
+                text = AppTokens.strings.res(Res.string.profile_settings_identity_unavailable),
+                style = AppTokens.typography.b14Med(),
+                color = AppTokens.colors.text.secondary,
+            )
+        } else {
+            if (name != null) {
+                Text(
+                    text = name,
+                    style = AppTokens.typography.h5(),
+                    color = AppTokens.colors.text.primary,
+                )
+            }
+            if (email != null) {
+                Text(
+                    text = email,
+                    style = AppTokens.typography.b14Med(),
+                    color = AppTokens.colors.text.secondary,
+                )
+            }
+        }
+    }
+}
+
 @AppPreview
 @Composable
 private fun UserProfileHeaderPreview() {
@@ -141,7 +221,7 @@ private fun UserProfileHeaderEmptyPreview() {
 @Composable
 private fun UserProfileHeaderLoadingPreview() {
     PreviewContainer {
-        UserProfileHeader(value = null, loading = true)
+        UserProfileHeader(value = null, style = UserProfileHeaderStyle.Profile(loading = true))
     }
 }
 
@@ -163,6 +243,54 @@ private fun UserProfileHeaderLongContentPreview() {
                 name = "Олександр Костянтинович",
                 email = "oleksandr.kostiantynovych@grippo.app",
             ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun UserAccountHeaderPreview() {
+    PreviewContainer {
+        UserProfileHeader(
+            value = stubUser().copy(name = "Alex", email = "alex@grippo.app"),
+            style = UserProfileHeaderStyle.Account,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun UserAccountHeaderUnavailablePreview() {
+    PreviewContainer {
+        UserProfileHeader(value = null, style = UserProfileHeaderStyle.Account)
+    }
+}
+
+@AppPreview
+@Composable
+private fun UserAccountHeaderPartialPreview() {
+    PreviewContainer {
+        UserProfileHeader(
+            value = stubUser().copy(name = "", email = "alex@grippo.app"),
+            style = UserProfileHeaderStyle.Account,
+        )
+        UserProfileHeader(
+            value = stubUser().copy(name = "Alex", email = ""),
+            style = UserProfileHeaderStyle.Account,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun UserAccountHeaderLongContentPreview() {
+    PreviewContainer {
+        UserProfileHeader(
+            value = stubUser().copy(
+                name = "Олександр Костянтинович Петренко",
+                email = "oleksandr.kostiantynovych.petrenko@athlete.grippo.app",
+            ),
+            style = UserProfileHeaderStyle.Account,
         )
     }
 }

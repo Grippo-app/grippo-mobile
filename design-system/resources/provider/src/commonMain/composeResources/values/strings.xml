@@ -567,7 +567,14 @@
     <string name="personalizations_set_method_preferences_section">Set / method preferences</string>
     <string name="personalizations_equipment_preferences_section">Equipment preferences</string>
     <string name="personalizations_training_phase_section">Training phase</string>
-    <string name="goal_intro">Choose your goal and training preferences.</string>
+    <string name="goal_optional">Optional</string>
+    <string name="goal_routine_section">Training routine</string>
+    <string name="goal_training_preferences_section">Training preferences</string>
+    <string name="goal_recovery_section">Recovery and limitations</string>
+    <string name="goal_selected_options">Selected: %1$d</string>
+    <string name="goal_options_expanded">Expanded</string>
+    <string name="goal_options_collapsed">Collapsed</string>
+    <string name="goal_target_date_invalid">Choose a date from %1$s to %2$s.</string>
     <string name="goal_menu">Training goal</string>
 
     <!-- Primary goals -->
@@ -934,6 +941,11 @@
     <string name="profile_name_not_set">Name not specified</string>
     <string name="profile_value_not_set">—</string>
     <string name="profile_account">Account</string>
+    <string name="profile_settings_signed_in_as">Signed in as</string>
+    <string name="profile_settings_identity_unavailable">Account details are unavailable right now.</string>
+    <string name="profile_settings_privacy_title">Privacy</string>
+    <string name="profile_settings_logout_description">Sign out on this device. Your saved workouts stay in your account.</string>
+    <string name="profile_settings_delete_description">Permanently delete your account and training history. This cannot be undone.</string>
     <string name="iteration_picker_last_time">Last time · %1$s</string>
     <string name="iteration_picker_suggestions">Suggestions</string>
     <string name="iteration_picker_weight_range">%1$s–1000 kg</string>
@@ -954,7 +966,6 @@
     <string name="onboarding_progress_description">Follow your strength, consistency and training history.</string>
     <string name="onboarding_setup_title">Train your way</string>
     <string name="onboarding_setup_description">Choose your muscles, equipment and experience level.</string>
-    <string name="onboarding_analytics_consent">Allow usage analytics</string>
     <string name="input_invalid_value">Invalid value</string>
     <string name="accessibility_completed">Completed</string>
     <string name="accessibility_not_completed">Not completed</string>

@@ -563,7 +563,14 @@
     <string name="personalizations_set_method_preferences_section">Стиль виконання</string>
     <string name="personalizations_equipment_preferences_section">Обладнання</string>
     <string name="personalizations_training_phase_section">Фаза циклу</string>
-    <string name="goal_intro">Обери ціль і вподобання для тренувань.</string>
+    <string name="goal_optional">Необов’язково</string>
+    <string name="goal_routine_section">Ритм тренувань</string>
+    <string name="goal_training_preferences_section">Тренувальні вподобання</string>
+    <string name="goal_recovery_section">Відновлення й обмеження</string>
+    <string name="goal_selected_options">Обрано: %1$d</string>
+    <string name="goal_options_expanded">Розгорнуто</string>
+    <string name="goal_options_collapsed">Згорнуто</string>
+    <string name="goal_target_date_invalid">Вибери дату від %1$s до %2$s.</string>
     <string name="goal_menu">Ціль тренувань</string>
 
     <!-- Primary goals -->
@@ -913,6 +920,11 @@
     <string name="profile_name_not_set">Ім’я не вказано</string>
     <string name="profile_value_not_set">—</string>
     <string name="profile_account">Акаунт</string>
+    <string name="profile_settings_signed_in_as">Активний акаунт</string>
+    <string name="profile_settings_identity_unavailable">Дані акаунта зараз недоступні.</string>
+    <string name="profile_settings_privacy_title">Приватність</string>
+    <string name="profile_settings_logout_description">Вийди з акаунта на цьому пристрої. Збережені тренування залишаться у твоєму акаунті.</string>
+    <string name="profile_settings_delete_description">Акаунт та історію тренувань буде видалено назавжди. Цю дію неможливо скасувати.</string>
     <string name="iteration_picker_last_time">Минулого разу · %1$s</string>
     <string name="iteration_picker_suggestions">Підказки</string>
     <string name="iteration_picker_weight_range">%1$s–1000 кг</string>
@@ -933,7 +945,6 @@
     <string name="onboarding_progress_description">Стеж за силою, регулярністю та історією тренувань.</string>
     <string name="onboarding_setup_title">Тренуйся по-своєму</string>
     <string name="onboarding_setup_description">Обери м’язи, обладнання та свій рівень досвіду.</string>
-    <string name="onboarding_analytics_consent">Дозволити аналітику</string>
     <string name="input_invalid_value">Некоректне значення</string>
     <string name="accessibility_completed">Виконано</string>
     <string name="accessibility_not_completed">Не виконано</string>

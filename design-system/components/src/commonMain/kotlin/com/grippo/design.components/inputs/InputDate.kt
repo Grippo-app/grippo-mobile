@@ -12,6 +12,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.select_date
+import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.datetime.LocalDateTime
@@ -23,9 +24,16 @@ public fun InputDate(
     placeholder: String = AppTokens.strings.res(Res.string.select_date),
     onClick: () -> Unit,
 ) {
+    val date = value.value
+    val display = if (date != null) {
+        DateCompose.rememberFormat(value = date, format = value.format)
+    } else {
+        value.display
+    }
+
     Input(
         modifier = modifier,
-        value = value.display,
+        value = display,
         maxLines = 1,
         minLines = 1,
         inputStyle = InputStyle.Clickable(
@@ -57,6 +65,18 @@ private fun InputDatePreview() {
         InputDate(
             value = DateTimeFormatState.Empty(format = DateFormat.DateOnly.DateMmmDdYyyy),
             onClick = {}
+        )
+
+        InputDate(
+            value = DateTimeFormatState.of(
+                value = LocalDateTime(2027, 1, 15, 12, 0),
+                range = DateRange(
+                    from = LocalDateTime(2026, 1, 1, 0, 0),
+                    to = LocalDateTime(2026, 12, 31, 23, 59),
+                ),
+                format = DateFormat.DateOnly.DateMmmDdYyyy,
+            ),
+            onClick = {},
         )
     }
 }

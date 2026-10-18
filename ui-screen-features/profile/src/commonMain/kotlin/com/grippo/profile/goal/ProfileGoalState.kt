@@ -26,33 +26,46 @@ internal data class ProfileGoalState(
 
     @Transient
     val limitations: DateRange = DateTimeUtils.shift(
-        DateTimeUtils.leadingYear(),
-        DatePeriod(days = MIN_GOAL_HORIZON_DAYS)
+        range = DateTimeUtils.leadingYear(),
+        period = DatePeriod(days = MIN_GOAL_HORIZON_DAYS),
     ),
     val selectedTarget: DateTimeFormatState = DateTimeFormatState.Empty(
-        format = DateFormat.DateOnly.DateMmmDdYyyy
+        format = DateFormat.DateOnly.DateMmmDdYyyy,
     ),
 
     @Serializable(with = ImmutableListSerializer::class)
     val selectedPersonalization: ImmutableList<PersonalizationKeyEnumState> = persistentListOf(),
 
     @Transient
-    val personalization: ImmutableList<PersonalizationKeyEnumState> = PersonalizationKeyEnumState.entries.toPersistentList()
+    val personalization: ImmutableList<PersonalizationKeyEnumState> =
+        PersonalizationKeyEnumState.entries.toPersistentList(),
 ) {
+    val targetDate: DateTimeFormatState
+        get() {
+            // An ongoing goal can be closer than the minimum horizon for a new target.
+            val currentPeriod = DateTimeUtils.shift(
+                range = limitations,
+                period = DatePeriod(days = -MIN_GOAL_HORIZON_DAYS),
+            )
+            return DateTimeFormatState.of(
+                value = selectedTarget.value,
+                range = DateRange(from = currentPeriod.from, to = limitations.to),
+                format = selectedTarget.format,
+            )
+        }
+
     internal companion object {
-        // Minimum horizon for a training goal — below 4 weeks no meaningful adaptation occurs
-        // (mesocycle floor: strength neural adaptations ~2-4w, hypertrophy ~4-6w, safe fat-loss pace).
         const val MIN_GOAL_HORIZON_DAYS: Int = 28
 
         fun initial(): ProfileGoalState {
             val state = ProfileGoalState()
-            return state.copy(
-                selectedTarget = DateTimeFormatState.of(
-                    value = state.limitations.from,
-                    range = state.limitations,
-                    format = state.selectedTarget.format,
-                )
+            val target = DateTimeFormatState.of(
+                value = state.limitations.from,
+                range = state.limitations,
+                format = state.selectedTarget.format,
             )
+
+            return state.copy(selectedTarget = target)
         }
     }
 }

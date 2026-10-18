@@ -58,91 +58,113 @@ internal class ProfileGoalViewModel(
 
     private fun provideGoal(goal: Goal) {
         val goalState = goal.toState()
-        update {
-            it.copy(
-                selectedPrimary = it.selectedPrimary ?: goalState.primaryGoal,
-                selectedSecondary = it.selectedSecondary ?: goalState.secondaryGoal,
-                selectedTarget = if (it.selectedTarget.value == it.limitations.from) {
-                    goalState.target
-                } else {
-                    it.selectedTarget
-                },
-                selectedPersonalization = if (it.selectedPersonalization.isEmpty()) {
-                    goalState.personalizations.distinct().toPersistentList()
-                } else {
-                    it.selectedPersonalization
-                },
+
+        val goalPersonalizations = goalState.personalizations.distinct().toPersistentList()
+
+        update { current ->
+            val primary = current.selectedPrimary ?: goalState.primaryGoal
+            val secondary = current.selectedSecondary ?: goalState.secondaryGoal
+            val target = if (current.selectedTarget.value == current.limitations.from) {
+                goalState.target
+            } else {
+                current.selectedTarget
+            }
+            val personalizations = if (current.selectedPersonalization.isEmpty()) {
+                goalPersonalizations
+            } else {
+                current.selectedPersonalization
+            }
+
+            current.copy(
+                selectedPrimary = primary,
+                selectedSecondary = secondary,
+                selectedTarget = target,
+                selectedPersonalization = personalizations,
             )
         }
     }
 
     override fun onSave() {
         safeLaunch(loader = ProfileGoalLoader.SaveButton) {
+            val current = state.value
+            val targetDate = current.targetDate as? DateTimeFormatState.Valid ?: return@safeLaunch
+
+            val primaryGoal = current.selectedPrimary?.toDomain() ?: return@safeLaunch
+
+            val secondaryGoal = current.selectedSecondary?.toDomain()
+
+            val personalizations = current.selectedPersonalization.map { it.toDomain() }
+
             val request = SetGoal(
-                primaryGoal = state.value.selectedPrimary?.toDomain() ?: return@safeLaunch,
-                secondaryGoal = state.value.selectedSecondary?.toDomain(),
-                target = state.value.selectedTarget.value ?: return@safeLaunch,
-                personalizations = state.value.selectedPersonalization.map { it.toDomain() },
+                primaryGoal = primaryGoal,
+                secondaryGoal = secondaryGoal,
+                target = targetDate.value,
+                personalizations = personalizations,
             )
+
             analytics.trackEvent(ProfileEvent.Goal.Save)
             analytics.trackOperation(ProfileOperation.SaveGoal) {
                 goalFeature.setGoal(request).getOrThrow()
             }
+
             navigateTo(ProfileGoalDirection.Back)
         }
     }
 
     override fun onTargetDatePickerClick() {
-        analytics.trackEvent(ProfileEvent.Goal.PickerOpened(GoalPicker.TargetDate))
+        analytics.trackEvent(ProfileEvent.Goal.PickerOpened(field = GoalPicker.TargetDate))
+
         val config = DialogConfig.DatePicker(
             initial = state.value.selectedTarget.value,
             format = state.value.selectedTarget.format,
             limitations = state.value.limitations,
             title = UiText.Res(Res.string.select_date),
             onResult = { result ->
-                update {
-                    it.copy(
-                        selectedTarget = DateTimeFormatState.of(
-                            value = result,
-                            range = it.limitations,
-                            format = it.selectedTarget.format,
-                        ),
-                    )
-                }
-                analytics.trackEvent(
-                    ProfileEvent.Goal.TargetDateConfirmed(
-                        ProfileInputMapping.status(state.value.selectedTarget)
-                    )
+                val current = state.value
+                val target = DateTimeFormatState.of(
+                    value = result,
+                    range = current.limitations,
+                    format = current.selectedTarget.format,
                 )
-            }
+
+                update { it.copy(selectedTarget = target) }
+
+                val status = ProfileInputMapping.status(state.value.selectedTarget)
+
+                analytics.trackEvent(
+                    ProfileEvent.Goal.TargetDateConfirmed(status = status)
+                )
+            },
         )
 
         dialogController.open(config)
     }
 
     override fun onPrimaryGoalPickerClick() {
-        analytics.trackEvent(ProfileEvent.Goal.PickerOpened(GoalPicker.Primary))
+        analytics.trackEvent(ProfileEvent.Goal.PickerOpened(field = GoalPicker.Primary))
+
         val config = DialogConfig.PrimaryGoalPicker(
             initial = state.value.selectedPrimary,
             title = UiText.Res(Res.string.goal_picker_primary_title),
             onResult = { value ->
                 update { it.copy(selectedPrimary = value) }
                 analytics.trackEvent(ProfileEvent.Goal.PrimaryConfirmed)
-            }
+            },
         )
 
         dialogController.open(config)
     }
 
     override fun onSecondaryGoalPickerClick() {
-        analytics.trackEvent(ProfileEvent.Goal.PickerOpened(GoalPicker.Secondary))
+        analytics.trackEvent(ProfileEvent.Goal.PickerOpened(field = GoalPicker.Secondary))
+
         val config = DialogConfig.SecondaryGoalPicker(
             initial = state.value.selectedSecondary,
             title = UiText.Res(Res.string.goal_picker_secondary_title),
             onResult = { value ->
                 update { it.copy(selectedSecondary = value) }
                 analytics.trackEvent(ProfileEvent.Goal.SecondaryConfirmed)
-            }
+            },
         )
 
         dialogController.open(config)
@@ -159,8 +181,15 @@ internal class ProfileGoalViewModel(
 
             current.copy(selectedPersonalization = personalizations)
         }
+
         val selected = state.value.selectedPersonalization
-        analytics.trackEvent(ProfileEvent.Goal.PersonalizationChanged(item in selected, selected.size))
+
+        analytics.trackEvent(
+            ProfileEvent.Goal.PersonalizationChanged(
+                selected = item in selected,
+                selectedCount = selected.size,
+            )
+        )
     }
 
     override fun onBack() {

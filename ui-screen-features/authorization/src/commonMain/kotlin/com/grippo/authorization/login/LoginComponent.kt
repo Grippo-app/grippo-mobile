@@ -27,11 +27,9 @@ internal class LoginComponent(
         )
     }
 
-    private val backCallback = BackCallback(onBack = viewModel::onBack)
-
     init {
         saveState(DRAFT) { viewModel.state.value }
-        backHandler.register(backCallback)
+        backHandler.register(BackCallback(onBack = viewModel::onBack))
     }
 
     override suspend fun eventListener(direction: LoginDirection) {
@@ -47,10 +45,17 @@ internal class LoginComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        LoginScreen(state.value, loaders.value, viewModel)
+        LoginScreen(
+            state = state.value,
+            loaders = loaders.value,
+            contract = viewModel,
+        )
     }
 
     private companion object {
-        val DRAFT = PersistenceKey("LoginDraft", LoginState.serializer())
+        val DRAFT = PersistenceKey(
+            key = "LoginDraft",
+            serializer = LoginState.serializer(),
+        )
     }
 }

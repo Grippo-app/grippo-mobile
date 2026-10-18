@@ -39,10 +39,17 @@ internal class ProfileGoalComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        ProfileGoalScreen(state.value, loaders.value, viewModel)
+        ProfileGoalScreen(
+            state = state.value,
+            loaders = loaders.value,
+            contract = viewModel,
+        )
     }
 
     private companion object {
-        val DRAFT = PersistenceKey("ProfileGoalDraft", ProfileGoalState.serializer())
+        val DRAFT = PersistenceKey(
+            key = "ProfileGoalDraft",
+            serializer = ProfileGoalState.serializer(),
+        )
     }
 }

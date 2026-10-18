@@ -67,7 +67,7 @@ unreleased and every schema is version 1. The historical route-entry reason code
 | Route / rendered surface | Component → ViewModel | AuthScreen / wire identity | Hook |
 |---|---|---|---|
 | `RootRouter.Auth(AuthRouter.Splash)` (Root initial), full-screen BrandSplash with loader | SplashComponent → SplashViewModel | Splash / `auth_splash` | Typed screenPresentation |
-| `AuthRouter.Onboarding`, one-time welcome (intro illustration, three BannerCards, consent checkbox, Get started) | OnboardingComponent → OnboardingViewModel | Onboarding / `auth_onboarding` | Typed screenPresentation |
+| `AuthRouter.Onboarding`, one-time welcome (intro illustration, three BannerCards, compact consent switch row, Get started) | OnboardingComponent → OnboardingViewModel | Onboarding / `auth_onboarding` | Typed screenPresentation |
 | `AuthProcessRouter.Login`, email/password form, Email/Google/Apple buttons, Register link | LoginComponent → LoginViewModel | Login / `auth_login` | Typed screenPresentation |
 | `AuthProcessRouter.Registration(email?)`, email/password form, Create account | RegistrationComponent → RegistrationViewModel | Registration / `auth_registration` | Typed screenPresentation |
 | `ProfileCreationRouter.User`, name input, weight/height pickers, Continue | UserComponent → UserViewModel | User / `profile_creation_user` | Typed screenPresentation |
@@ -158,7 +158,7 @@ the [Live GA4 setup review](../COVERAGE.md#live-ga4-setup-review--2026-10-14).
 No dedicated picker/dialog view or close contract, dismissal or provider-cancel
 reason, error classifier, session-presence/profile-presence result, destination
 or route-entry attribution, group/item ID or transition/funnel event is emitted.
-Catalog loads, direction resolution, retry, error dialogs, consent checkbox
+Catalog loads, direction resolution, retry, error dialogs, consent switch
 toggles, default-consent and shown writes, preparation, programmatic startup,
 restoration, stack replacement and automatic Home navigation fabricate no user
 clicks; rejected (busy, invalid, not-ready) callbacks emit nothing. Get started is
@@ -179,7 +179,7 @@ modes, and that transport change adds no screen, preserved input or payload.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | SplashComponent / SplashViewModel | No editable data (`SplashState` is a data object); catalogs and loading | Runtime only / Rebuild | No DRAFT; `AppContent` loader; Room-backed MuscleFeature/EquipmentFeature | A fresh VM re-runs loadContent; the direction is re-resolved from DataStore, token and user |
-| OnboardingViewModel / OnboardingState | `analyticsConsent: Boolean?` | Rebuild | `observeAnalyticsConsent()` with Processing.Infinity; no DRAFT, State not serializable | Null while pending; checkbox checked unless false, enabled only with a known source and no loaders; accepted toggles commit immediately, so no unfinished draft exists; a failed source read clears the presentation to null before the retry and disables dependent controls; a failed write retains the actual stored value |
+| OnboardingViewModel / OnboardingState | `analyticsConsent: Boolean?` | Rebuild | `observeAnalyticsConsent()` with Processing.Infinity; no DRAFT, State not serializable | Null while pending; switch checked unless false, enabled only with a known source and no loaders; accepted toggles commit immediately, so no unfinished draft exists; a failed source read clears the presentation to null before the retry and disables dependent controls; a failed write retains the actual stored value |
 | OnboardingViewModel | Shown flag read in preparation | Rebuild | `observeOnboardingShown().first()` | A restored route re-runs preparation; writes are skipped when already shown; the screen stays interactive |
 | Onboarding | `Preparation`/`AnalyticsConsent` loaders, error and Back sessions | Runtime only | OnboardingLoader | Not archived |
 | LoginComponent / LoginState | `email: EmailFormatState` (display and value, including invalid/empty) | Preserve | `DRAFT = PersistenceKey("LoginDraft", LoginState.serializer())`; `@JsonIgnoreUnknownKeys` on LoginState | `restoreState(DRAFT) ?: LoginState()` (non-null); `saveState` in init; the removed consent presentation is not archived and old drafts remain readable |
@@ -256,11 +256,10 @@ was part of that audit). Checks recorded for the implementing revisions:
   rendered the standard full-screen EN dark and UK light previews before the
   compact-footer follow-up. The visual-only follow-up that removed the consent
   card and long description changed no persistence, control eligibility, screen
-  hook or event contract. The reusable design-system `Check` component (kept from
-  the earlier explicit request) is reused for the consent checkbox. The current screen composition (intro illustration,
-  title, description, three BannerCards, pinned checkbox row and Get started) is
-  recorded in the surface table; detailed enlarged-text, interactive toggle,
-  process recreation, live app and iOS visual checks remain unverified.
+  hook or event contract. That revision reused the design-system `Check`
+  component for the consent checkbox. The current screen composition is recorded
+  in the surface table; detailed enlarged-text, interactive toggle, process
+  recreation, live app and iOS visual checks were unverified in that pass.
 - Sequential startup revision (2026-10-14, the revision the current code
   matches): source checks covered three destinations with and without onboarding,
   captured route restoration inputs, accepted/busy callbacks, replacement

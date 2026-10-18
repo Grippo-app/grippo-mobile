@@ -38,51 +38,81 @@ internal class LoginViewModel(
         analytics.presentScreen(AuthScreen.Login, reason)
     }
 
+    private fun navigateAfterLogin(hasProfile: Boolean) {
+        val destination = if (hasProfile) {
+            LoginDirection.Home
+        } else {
+            LoginDirection.CreateProfile
+        }
+
+        navigateTo(destination)
+    }
+
+    private fun mapAuthError(error: Throwable): Throwable {
+        return when (error) {
+            is GoogleAuthException -> AppError.Expected(message = error.message, description = null)
+            is AppleAuthException -> AppError.Expected(message = error.message, description = null)
+            else -> error
+        }
+    }
+
     override fun onEmailChange(value: String) {
         val previousStatus = AuthInputMapping.status(state.value.email)
+
         val input = EmailFormatState.of(value)
+
         update { it.copy(email = input) }
+
         val status = AuthInputMapping.status(input)
+
         if (status != previousStatus) {
-            analytics.trackEvent(AuthEvent.Login.InputChanged(CredentialField.Email, status))
+            analytics.trackEvent(
+                AuthEvent.Login.InputChanged(field = CredentialField.Email, status = status)
+            )
         }
     }
 
     override fun onPasswordChange(value: String) {
         val previousStatus = AuthInputMapping.status(state.value.password)
+
         val input = PasswordFormatState.of(value)
+
         update { it.copy(password = input) }
+
         val status = AuthInputMapping.status(input)
+
         if (status != previousStatus) {
-            analytics.trackEvent(AuthEvent.Login.InputChanged(CredentialField.Password, status))
+            analytics.trackEvent(
+                AuthEvent.Login.InputChanged(field = CredentialField.Password, status = status)
+            )
         }
     }
 
     override fun onEmailFocused() {
-        analytics.trackEvent(AuthEvent.Login.InputFocused(CredentialField.Email))
+        analytics.trackEvent(AuthEvent.Login.InputFocused(field = CredentialField.Email))
     }
 
     override fun onPasswordFocused() {
-        analytics.trackEvent(AuthEvent.Login.InputFocused(CredentialField.Password))
+        analytics.trackEvent(AuthEvent.Login.InputFocused(field = CredentialField.Password))
     }
 
     override fun onPasswordVisibilityChange(visible: Boolean) {
-        analytics.trackEvent(AuthEvent.Login.PasswordVisibilityChanged(visible))
+        analytics.trackEvent(AuthEvent.Login.PasswordVisibilityChanged(visible = visible))
     }
 
     override fun onEmailCleared() {
-        analytics.trackEvent(AuthEvent.Login.InputCleared(CredentialField.Email))
+        analytics.trackEvent(AuthEvent.Login.InputCleared(field = CredentialField.Email))
     }
 
     override fun onEmailKeyboardNext() {
         analytics.trackEvent(
-            AuthEvent.Login.KeyboardAction(CredentialField.Email, InputKeyboardAction.Next)
+            AuthEvent.Login.KeyboardAction(field = CredentialField.Email, action = InputKeyboardAction.Next)
         )
     }
 
     override fun onPasswordKeyboardDone() {
         analytics.trackEvent(
-            AuthEvent.Login.KeyboardAction(CredentialField.Password, InputKeyboardAction.Done)
+            AuthEvent.Login.KeyboardAction(field = CredentialField.Password, action = InputKeyboardAction.Done)
         )
     }
 
@@ -99,8 +129,9 @@ internal class LoginViewModel(
         }
 
         safeLaunch(loader = LoginLoader.LoginByEmailButton) {
-            analytics.trackEvent(AuthEvent.Login.Submit(Method.Email))
-            val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Email)) {
+            analytics.trackEvent(AuthEvent.Login.Submit(method = Method.Email))
+
+            val hasProfile = analytics.trackOperation(AuthOperation.Login(method = Method.Email)) {
                 loginUseCase.loginEmail(
                     email = email.value,
                     password = password.value,
@@ -120,12 +151,14 @@ internal class LoginViewModel(
             loader = LoginLoader.LoginByGoogleButton,
             mapError = ::mapAuthError,
         ) {
-            analytics.trackEvent(AuthEvent.Login.Submit(Method.Google))
-            val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Google)) {
+            analytics.trackEvent(AuthEvent.Login.Submit(method = Method.Google))
+
+            val hasProfile = analytics.trackOperation(AuthOperation.Login(method = Method.Google)) {
                 val account = googleAuthProvider
                     .getUiProvider(context)
                     .signIn()
                     .getOrThrow()
+
                 loginUseCase.loginGoogle(token = account.token)
             }
 
@@ -142,12 +175,14 @@ internal class LoginViewModel(
             loader = LoginLoader.LoginByAppleButton,
             mapError = ::mapAuthError,
         ) {
-            analytics.trackEvent(AuthEvent.Login.Submit(Method.Apple))
-            val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Apple)) {
+            analytics.trackEvent(AuthEvent.Login.Submit(method = Method.Apple))
+
+            val hasProfile = analytics.trackOperation(AuthOperation.Login(method = Method.Apple)) {
                 val account = appleAuthProvider
                     .getUiProvider(context)
                     .signIn()
                     .getOrThrow()
+
                 loginUseCase.loginApple(code = account.authorizationCode)
             }
 
@@ -161,27 +196,14 @@ internal class LoginViewModel(
         }
 
         val email = state.value.email.takeIf { it is EmailFormatState.Valid }?.display
+
         analytics.trackEvent(AuthEvent.Login.Register)
-        navigateTo(LoginDirection.Registration(email))
+
+        navigateTo(LoginDirection.Registration(email = email))
     }
 
     override fun onBack() {
         analytics.trackEvent(AuthEvent.Login.DismissRequested)
         navigateTo(LoginDirection.Back)
-    }
-
-    private fun navigateAfterLogin(hasProfile: Boolean) {
-        val destination = if (hasProfile) {
-            LoginDirection.Home
-        } else {
-            LoginDirection.CreateProfile
-        }
-        navigateTo(destination)
-    }
-
-    private fun mapAuthError(error: Throwable): Throwable = when (error) {
-        is GoogleAuthException -> AppError.Expected(error.message, description = null)
-        is AppleAuthException -> AppError.Expected(error.message, description = null)
-        else -> error
     }
 }

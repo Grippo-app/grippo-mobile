@@ -19,10 +19,8 @@ internal class OnboardingComponent(
         )
     }
 
-    private val backCallback = BackCallback(onBack = viewModel::onBack)
-
     init {
-        backHandler.register(backCallback)
+        backHandler.register(BackCallback(onBack = viewModel::onBack))
     }
 
     override suspend fun eventListener(direction: OnboardingDirection) {
@@ -35,6 +33,10 @@ internal class OnboardingComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        OnboardingScreen(state.value, loaders.value, viewModel)
+        OnboardingScreen(
+            state = state.value,
+            loaders = loaders.value,
+            contract = viewModel,
+        )
     }
 }

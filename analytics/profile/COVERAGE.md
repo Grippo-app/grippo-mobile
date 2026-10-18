@@ -60,16 +60,19 @@ synthetic menu or Back clicks.
 |---|---|---|
 | Menu | Profile/Settings menu target → MenuSelected → `profile_menu_selected` {menu_target = body/goal/experience/muscles/equipments/settings/social/debug} | Startup RefreshUser (User loader), RefreshGoal, RefreshMuscles, RefreshEquipments, each wrapping the explicit `get*().getOrThrow()` request; no guards |
 | Body | Height/Weight picker open → Body.PickerOpened → `profile_picker_opened` {input_field = height/weight}; each accepted result → draft update, then Body.PickerConfirmed → `profile_picker_confirmed` {input_field, input_status} using the existing formatter status; Apply → `profile_control_clicked` {apply}; toolbar or system Back → Body.DismissRequested → {dismiss_requested} | Startup RefreshWeightHistory and RefreshUser (no loaders). SaveBody after the guards (weight value, height value and user present, otherwise return before Apply) inside `safeLaunch(ApplyBodyChanges)`: conditional `updateWeightUseCase` and `setHeight` writes with `getOrThrow()`, the existing 500 ms delay and the WeightHistory reminder scheduling; Back follows the block. Apply with unchanged values still completes SaveBody (the UI disables the button) |
-| Goal | TargetDate picker open → `profile_picker_opened` {target_date}; accepted result → Goal.TargetDateConfirmed with the formatter status → `profile_picker_confirmed` {target_date, input_status}; Primary/Secondary picker open → {primary/secondary}; Goal.PrimaryConfirmed / SecondaryConfirmed are parameterless (nonnull results encode `input_status=valid`); personalization toggle → Goal.PersonalizationChanged(selected, count) → `profile_personalization_changed` {selected, selected_count}; Save → {save}; Back → {dismiss_requested} | Startup RefreshGoal. `onSave` runs in `safeLaunch(SaveButton)`, returns when no primary goal or target date is selected (before Save), then SaveGoal wraps `setGoal(request).getOrThrow()`; Back follows the block |
+| Goal | TargetDate picker open → `profile_picker_opened` {target_date}; accepted result → Goal.TargetDateConfirmed with the formatter status → `profile_picker_confirmed` {target_date, input_status}; Primary/Secondary picker open → {primary/secondary}; Goal.PrimaryConfirmed / SecondaryConfirmed are parameterless (nonnull results encode `input_status=valid`); personalization toggle → Goal.PersonalizationChanged(selected, count) → `profile_personalization_changed` {selected, selected_count}; Save → {save}; Back → {dismiss_requested} | Startup RefreshGoal. `onSave` runs in `safeLaunch(SaveButton)`, returns when no primary goal is selected or the target date is Empty/Invalid against the current goal-validity range (before Save), then SaveGoal wraps `setGoal(request).getOrThrow()`; Back follows the block |
 | Experience | Selection → Experience.Selected → `profile_experience_selected` {profile_experience = beginner/intermediate/advanced/pro}, emitted again on re-selection; Apply → {apply}; Back → {dismiss_requested} | Startup RefreshUser. SaveExperience wraps `setExperience(...).getOrThrow()` after `selected ?: return` (before Apply) inside `safeLaunch(ApplyButton)` |
 | Muscles | Group click → Muscles.GroupSelected → `profile_control_clicked` {group_selected}; item toggle → Muscles.SelectionChanged(selected, count) → `profile_selection_changed` {selected, selected_count}; Apply → {apply}; Back → {dismiss_requested} | Startup RefreshMuscles. SaveMuscles wraps `setExcludedMuscles(all - selected).getOrThrow()` after the nonempty-catalog guard (before Apply) |
 | Equipments | Same facts with `interaction_screen=profile_equipments` | Startup RefreshEquipments. SaveEquipments wraps `setExcludedEquipments(all - selected).getOrThrow()` after the nonempty-catalog guard |
-| Settings | Logout click → `profile_control_clicked` {logout}; deletion confirmation open → {delete_opened}; accepted confirmation result → {delete_confirmed}; Back → {dismiss_requested}; the analytics consent toggle emits nothing | Logout wraps the direct-value `logoutUseCase.execute()` in `safeLaunch(LogoutButton)`; DeleteAccount wraps `deleteProfileUseCase.execute()` in `safeLaunch(DeleteAccountButton)` inside the confirmation `onResult`; both use cases unwrap `clearUserSettings()` internally. The consent write `setAnalyticsConsent(granted).getOrThrow()` is not decorated |
+| Settings | Logout click → `profile_control_clicked` {logout}; deletion confirmation open → {delete_opened}; accepted confirmation result → {delete_confirmed}; Back → {dismiss_requested}; the analytics consent toggle emits nothing; read-only account identity has no interaction/event | Logout wraps the direct-value `logoutUseCase.execute()` in `safeLaunch(LogoutButton)`; DeleteAccount wraps `deleteProfileUseCase.execute()` in `safeLaunch(DeleteAccountButton)` inside the confirmation `onResult`; both use cases unwrap `clearUserSettings()` internally. Account action buttons mutually disable while either operation runs. Identity rebuilds from cached `observeUser()` with no new request or analytics payload. The consent write `setAnalyticsConsent(granted).getOrThrow()` is not decorated |
 | Social | Link click → Social.LinkClicked → `profile_link_clicked` {social_channel = instagram/tiktok/youtube/threads}; the synchronous any-URL-opened boolean → Social.LinkResult → `profile_link_result` {social_channel, opened}; Back → {dismiss_requested} | None; the synchronous LinkOpener fallback remains business-owned, with no artificial suspend operation |
 
+Personalization categories are grouped into routine, training preferences and recovery/limitations. Disclosure only changes presentation and deliberately emits no analytics event; the existing typed toggle observations still describe accepted selection changes. The editor introduces no analytics-facing symbol changes: events, parameters, screen hooks, operations, encoders and consent retain their contracts.
+
 Every emission follows its eligibility guard; rejected paths emit neither accepted
-intent nor operation. Existing callbacks have no additional VM busy guards; UI
-loader behavior and repeated callback acceptance are preserved. Refresh operations
+intent nor operation. Existing callbacks have no additional VM busy guards;
+Settings disables both account action buttons while Logout or DeleteAccount is
+active, and other UI loader behavior and direct callback acceptance remain unchanged. Refresh operations
 wrap the original explicit startup requests, not ongoing observations. Every
 Result-returning call unwraps inside the decorator; direct-value use cases keep
 their throwing contracts. Completed means the whole caller block returned,
@@ -156,10 +159,11 @@ Consent, identity and SDK transport remain app/core-owned.
 | Body | `history` | Rebuild | `@Transient`; `observeWeightHistory()` | Default empty list |
 | Body | Height/Weight dialog sessions, ApplyBodyChanges loader, reminder scheduling | Runtime only | DialogConfig built in the VM | Sessions unsaved; the accepted value lives in the draft; the delay and notification inside SaveBody are not restorable |
 | Goal | `selectedPrimary`, `selectedSecondary` | Preserve | `DRAFT = PersistenceKey("ProfileGoalDraft", ProfileGoalState.serializer())`; `@JsonIgnoreUnknownKeys`; nullable initialState with `ProfileGoalState.initial()` default | Fresh seeding from the first nonnull goal only without an archive; a restored null stays null |
-| Goal | `selectedTarget` (DateTimeFormatState) | Preserve | Same draft | Fresh default `limitations.from`, applied only without an archive; seeded from the goal target only while still equal to that default; a restored snapshot keeps its saved formatter as-is (validity was computed against the saving session's limitations) |
+| Goal | `selectedTarget` (DateTimeFormatState) | Preserve | Same draft | Fresh default `limitations.from`, applied only without an archive; seeded from the goal target only while still equal to that default; a restored snapshot keeps its saved formatter/value as-is; the derived `targetDate` is revalidated from the current period’s start through `limitations.to` for display and Save eligibility, including expired targets; an ongoing goal may be closer than the 28-day minimum for a newly picked target. The Screen’s target-date MenuValueRow formats typed dates through DateCompose using the current Compose locale without replacing the raw draft; absent typed values show the localized Select date action |
 | Goal | `selectedPersonalization` | Preserve | Same draft, ImmutableListSerializer | Seeded only when empty on a fresh form; toggles update the draft before the event |
 | Goal | `limitations` (DateRange) | Rebuild | `@Transient`; current date plus the 28-day minimum horizon | Date-dependent default recomputed per construction, excluded from the archive |
 | Goal | `personalization` catalog | Rebuild | `@Transient`; enum entries | Static |
+| Goal Screen | Expanded personalization section and category | Runtime only (presentation) | `rememberSaveable` section identifier and category name in the Screen | All three summary sections start closed; one section at a time, switching or closing resets the inner category. Routine exposes its three categories directly; preferences and recovery allow one inner category at a time. No business draft or analytics event for disclosure; selected values always remain in `selectedPersonalization` |
 | Goal | Date/Primary/Secondary dialog sessions, SaveButton loader | Runtime only | DialogConfig built in the VM | Unsaved; accepted values in the draft |
 | Experience | `selected` | Preserve | `DRAFT = PersistenceKey("ProfileExperienceDraft", ProfileExperienceState.serializer())`; `@JsonIgnoreUnknownKeys`; nullable initialState | Fresh seeding from the first nonnull user experience only while still null and without an archive; a restored null is preserved |
 | Experience | `suggestions` | Rebuild | `@Transient`; enum entries | Static |
@@ -170,6 +174,7 @@ Consent, identity and SDK transport remain app/core-owned.
 | Equipments | `suggestions` | Rebuild | `@Transient`; `combine(observeEquipments(), observeExcludedEquipments())` | Default empty; Apply guard |
 | Muscles / Equipments | ApplyButton loader | Runtime only | None | Not archived |
 | Settings | `analyticsConsent: Boolean?` | Rebuild (durable source, no StateKeeper copy) | `observeAnalyticsConsent()` mapped to Granted, `safeLaunch(processing = Infinity, onError = ::observeAnalyticsConsent)` | Reset to null on every (re)subscription; writes commit immediately through `setAnalyticsConsent(...).getOrThrow()`, so no unfinished draft exists; the control is disabled while null or while the AnalyticsConsent loader is active |
+| Settings | `user` (read-only name/email identity) | Rebuild | `UserFeature.observeUser()` mapped through the existing domain-to-state user mapper | Default null; observes cached profile without a new request; no editable draft or StateKeeper copy; missing identity stays explicit and no identity value enters analytics |
 | Settings | Confirmation dialog; Logout/DeleteAccount/AnalyticsConsent loaders | Runtime only | DialogConfig.Confirmation built in the VM | Unsaved; the accepted result starts the operation inside `onResult` |
 | Social | `ProfileSocialState` | Runtime only (data object) | Link result consumed synchronously | Nothing to restore |
 | All owners | Secrets; restoration flags or caches | None | No credentials or tokens in any profile State; no `var`/`lateinit` member in any profile ViewModel; fresh-vs-restored is decided solely by `initialState == null` | Nothing to exclude |
@@ -224,15 +229,18 @@ implementing revisions (2026-10-13):
   or layout change. Toggle previews include enabled/disabled on/off; Material UI
   fidelity/contrast was not verified.
 
-Not verified: Android/iOS device execution, SDK delivery, reporting-failure
-injection, actual cancellation/lifecycle timing, fresh-process restoration of the
-five drafts (Android shell-supplied saved state; iOS completed compatible
+Scoped Goal and Settings observations do not establish feature-wide runtime
+coverage. Still unverified: other Android flows and iOS device execution, SDK
+delivery, reporting-failure injection, actual cancellation/lifecycle timing,
+remaining fresh-process restoration cases across the five drafts (Android
+shell-supplied saved state; iOS completed compatible
 background checkpoint), the runtime precedence between a leaf BackCallback, the
 container BackCallback and the stack's `handleBackButton` (system Back must emit
 DismissRequested once and pop once), and `clearUserSettings` behavior beyond the
 authorization inventory. iOS compilation does not prove framework linking or
 native runtime behavior; no Firebase sign-in, send or upload was performed. Manual
-scenarios still required: save an unfinished draft in each of the five editors,
+scenarios still required beyond the exercised Goal/Settings paths: save an
+unfinished draft in each of the five editors,
 destroy the old lifecycle/InstanceKeeper, restore through fresh Components and
 confirm selections plus final save arguments, including empty and invalid Body
 formats, accepted picker results, an empty first catalog emission, changed

@@ -12,10 +12,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.grippo.core.foundation.BaseComposeScreen
-import com.grippo.core.foundation.ScreenBackground
 import com.grippo.authorization.onboarding.components.OnboardingAnalyticsConsent
 import com.grippo.authorization.onboarding.components.OnboardingIntro
+import com.grippo.core.foundation.BaseComposeScreen
+import com.grippo.core.foundation.ScreenBackground
 import com.grippo.design.components.banner.BannerCard
 import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.button.Button
@@ -26,16 +26,16 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.onboarding_get_started
-import com.grippo.design.resources.provider.onboarding_workouts_title
-import com.grippo.design.resources.provider.onboarding_workouts_description
-import com.grippo.design.resources.provider.onboarding_progress_title
-import com.grippo.design.resources.provider.onboarding_progress_description
-import com.grippo.design.resources.provider.onboarding_setup_title
-import com.grippo.design.resources.provider.onboarding_setup_description
 import com.grippo.design.resources.provider.icons.Dumbbell
 import com.grippo.design.resources.provider.icons.LineUp
 import com.grippo.design.resources.provider.icons.Tune
+import com.grippo.design.resources.provider.onboarding_get_started
+import com.grippo.design.resources.provider.onboarding_progress_description
+import com.grippo.design.resources.provider.onboarding_progress_title
+import com.grippo.design.resources.provider.onboarding_setup_description
+import com.grippo.design.resources.provider.onboarding_setup_title
+import com.grippo.design.resources.provider.onboarding_workouts_description
+import com.grippo.design.resources.provider.onboarding_workouts_title
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -45,7 +45,13 @@ internal fun OnboardingScreen(
     loaders: ImmutableSet<OnboardingLoader>,
     contract: OnboardingContract,
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
+    val benefitStyle = BannerCardStyle.Custom(
+        tint = AppTokens.colors.icon.secondary,
+        surface = AppTokens.colors.bannerCard.mutedBackground,
+    )
+
     val enabled = state.analyticsConsent != null && loaders.isEmpty()
+
     Column(
         modifier = Modifier
             .weight(1f)
@@ -62,30 +68,21 @@ internal fun OnboardingScreen(
         Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)) {
             BannerCard(
                 modifier = Modifier.fillMaxWidth(),
-                style = BannerCardStyle.Custom(
-                    tint = AppTokens.colors.icon.secondary,
-                    surface = AppTokens.colors.bannerCard.mutedBackground,
-                ),
+                style = benefitStyle,
                 icon = AppTokens.icons.Dumbbell,
                 title = AppTokens.strings.res(Res.string.onboarding_workouts_title),
                 description = AppTokens.strings.res(Res.string.onboarding_workouts_description),
             )
             BannerCard(
                 modifier = Modifier.fillMaxWidth(),
-                style = BannerCardStyle.Custom(
-                    tint = AppTokens.colors.icon.secondary,
-                    surface = AppTokens.colors.bannerCard.mutedBackground,
-                ),
+                style = benefitStyle,
                 icon = AppTokens.icons.LineUp,
                 title = AppTokens.strings.res(Res.string.onboarding_progress_title),
                 description = AppTokens.strings.res(Res.string.onboarding_progress_description),
             )
             BannerCard(
                 modifier = Modifier.fillMaxWidth(),
-                style = BannerCardStyle.Custom(
-                    tint = AppTokens.colors.icon.secondary,
-                    surface = AppTokens.colors.bannerCard.mutedBackground,
-                ),
+                style = benefitStyle,
                 icon = AppTokens.icons.Tune,
                 title = AppTokens.strings.res(Res.string.onboarding_setup_title),
                 description = AppTokens.strings.res(Res.string.onboarding_setup_description),

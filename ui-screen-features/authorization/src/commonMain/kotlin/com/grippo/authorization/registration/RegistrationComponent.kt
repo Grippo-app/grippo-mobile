@@ -26,11 +26,9 @@ internal class RegistrationComponent(
         )
     }
 
-    private val backCallback = BackCallback(onBack = viewModel::onBack)
-
     init {
         saveState(DRAFT) { viewModel.state.value }
-        backHandler.register(backCallback)
+        backHandler.register(BackCallback(onBack = viewModel::onBack))
     }
 
     override suspend fun eventListener(direction: RegistrationDirection) {
@@ -45,10 +43,17 @@ internal class RegistrationComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        RegistrationScreen(state.value, loaders.value, viewModel)
+        RegistrationScreen(
+            state = state.value,
+            loaders = loaders.value,
+            contract = viewModel,
+        )
     }
 
     private companion object {
-        val DRAFT = PersistenceKey("RegistrationDraft", RegistrationState.serializer())
+        val DRAFT = PersistenceKey(
+            key = "RegistrationDraft",
+            serializer = RegistrationState.serializer(),
+        )
     }
 }

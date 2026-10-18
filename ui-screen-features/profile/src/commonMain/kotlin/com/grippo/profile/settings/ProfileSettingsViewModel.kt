@@ -10,16 +10,20 @@ import com.grippo.data.features.api.authorization.DeleteProfileUseCase
 import com.grippo.data.features.api.authorization.LogoutUseCase
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
 import com.grippo.data.features.api.local.settings.models.AnalyticsConsent
+import com.grippo.data.features.api.user.UserFeature
+import com.grippo.data.features.api.user.models.User
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.account_deletion
 import com.grippo.design.resources.provider.account_deletion_description
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
+import com.grippo.domain.state.user.toState
 import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.coroutines.flow.onEach
 
 internal class ProfileSettingsViewModel(
     private val analytics: ProfileAnalytics,
+    userFeature: UserFeature,
     private val localSettingsFeature: LocalSettingsFeature,
     private val deleteProfileUseCase: DeleteProfileUseCase,
     private val logoutUseCase: LogoutUseCase,
@@ -33,7 +37,17 @@ internal class ProfileSettingsViewModel(
     }
 
     init {
+        userFeature.observeUser()
+            .onEach(::provideUser)
+            .safeLaunch()
+
         observeAnalyticsConsent()
+    }
+
+    private fun provideUser(value: User?) {
+        val user = value?.toState()
+
+        update { it.copy(user = user) }
     }
 
     private fun observeAnalyticsConsent() {

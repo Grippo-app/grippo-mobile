@@ -12,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -44,16 +43,12 @@ import kotlinx.collections.immutable.persistentSetOf
 internal fun RegistrationScreen(
     state: RegistrationState,
     loaders: ImmutableSet<RegistrationLoader>,
-    contract: RegistrationContract
-) = BaseComposeScreen(
-    ScreenBackground.Color(
-        value = AppTokens.colors.background.screen
-    )
-) {
+    contract: RegistrationContract,
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         leading = Leading.Back(contract::onBack),
-        style = ToolbarStyle.Transparent
+        style = ToolbarStyle.Transparent,
     )
 
     Column(
@@ -62,9 +57,8 @@ internal fun RegistrationScreen(
             .weight(1f)
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
             .imePadding(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -84,7 +78,7 @@ internal fun RegistrationScreen(
                 onFocused = contract::onEmailFocused,
                 onClear = contract::onEmailCleared,
                 onNext = contract::onEmailKeyboardNext,
-                onValueChange = contract::onEmailChange
+                onValueChange = contract::onEmailChange,
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
@@ -94,7 +88,7 @@ internal fun RegistrationScreen(
                 onFocused = contract::onPasswordFocused,
                 onVisibilityChange = contract::onPasswordVisibilityChange,
                 onDone = contract::onPasswordKeyboardDone,
-                onValueChange = contract::onPasswordChange
+                onValueChange = contract::onPasswordChange,
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
@@ -104,21 +98,17 @@ internal fun RegistrationScreen(
                 text = state.password.hint(),
                 style = AppTokens.typography.b12Semi(),
                 color = AppTokens.colors.text.tertiary,
-                textAlign = TextAlign.End
+                textAlign = TextAlign.End,
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
         }
 
-        val buttonState = remember(loaders, state.email, state.password) {
-            when {
-                loaders.contains(RegistrationLoader.RegisterButton) -> ButtonState.Loading
-                state.email is EmailFormatState.Invalid -> ButtonState.Disabled
-                state.email is EmailFormatState.Empty -> ButtonState.Disabled
-                state.password is PasswordFormatState.Empty -> ButtonState.Disabled
-                state.password is PasswordFormatState.Invalid -> ButtonState.Disabled
-                else -> ButtonState.Enabled
-            }
+        val buttonState = when {
+            loaders.contains(RegistrationLoader.RegisterButton) -> ButtonState.Loading
+            state.email !is EmailFormatState.Valid -> ButtonState.Disabled
+            state.password !is PasswordFormatState.Valid -> ButtonState.Disabled
+            else -> ButtonState.Enabled
         }
 
         Button(
@@ -128,7 +118,7 @@ internal fun RegistrationScreen(
             ),
             state = buttonState,
             style = ButtonStyle.Primary,
-            onClick = contract::onNextClick
+            onClick = contract::onNextClick,
         )
 
         Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
@@ -144,10 +134,10 @@ private fun ScreenPreviewEmpty() {
         RegistrationScreen(
             state = RegistrationState(
                 email = EmailFormatState.Empty(),
-                password = PasswordFormatState.Empty()
+                password = PasswordFormatState.Empty(),
             ),
             loaders = persistentSetOf(),
-            contract = RegistrationContract.Empty
+            contract = RegistrationContract.Empty,
         )
     }
 }
@@ -159,10 +149,10 @@ private fun ScreenPreviewFilled() {
         RegistrationScreen(
             state = RegistrationState(
                 email = EmailFormatState.of("user@email.com"),
-                password = PasswordFormatState.of("qwerty123")
+                password = PasswordFormatState.of("qwerty123"),
             ),
             loaders = persistentSetOf(),
-            contract = RegistrationContract.Empty
+            contract = RegistrationContract.Empty,
         )
     }
 }
@@ -174,10 +164,10 @@ private fun ScreenPreviewLoading() {
         RegistrationScreen(
             state = RegistrationState(
                 email = EmailFormatState.of("user@email.com"),
-                password = PasswordFormatState.of("qwerty123")
+                password = PasswordFormatState.of("qwerty123"),
             ),
             loaders = persistentSetOf(RegistrationLoader.RegisterButton),
-            contract = RegistrationContract.Empty
+            contract = RegistrationContract.Empty,
         )
     }
 }
@@ -189,10 +179,10 @@ private fun ScreenPreviewInvalid() {
         RegistrationScreen(
             state = RegistrationState(
                 email = EmailFormatState.of("user@"),
-                password = PasswordFormatState.of("123")
+                password = PasswordFormatState.of("123"),
             ),
             loaders = persistentSetOf(),
-            contract = RegistrationContract.Empty
+            contract = RegistrationContract.Empty,
         )
     }
 }

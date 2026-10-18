@@ -30,21 +30,30 @@ internal class OnboardingViewModel(
                 localSettingsFeature.setDefaultAnalyticsConsent(granted = true).getOrThrow()
                 localSettingsFeature.setOnboardingShown().getOrThrow()
             }
+
             observeAnalyticsConsent()
         }
     }
 
     private fun observeAnalyticsConsent() {
         update { it.copy(analyticsConsent = null) }
+
         localSettingsFeature.observeAnalyticsConsent()
-            .onEach { consent -> update { it.copy(analyticsConsent = consent == AnalyticsConsent.Granted) } }
+            .onEach(::provideAnalyticsConsent)
             .safeLaunch(processing = Processing.Infinity, onError = ::observeAnalyticsConsent)
+    }
+
+    private fun provideAnalyticsConsent(value: AnalyticsConsent) {
+        val analyticsConsent = value == AnalyticsConsent.Granted
+
+        update { it.copy(analyticsConsent = analyticsConsent) }
     }
 
     override fun onAnalyticsConsentChange(granted: Boolean) {
         if (loaders.value.isNotEmpty()) return
         val current = state.value.analyticsConsent ?: return
         if (current == granted) return
+
         safeLaunch(loader = OnboardingLoader.AnalyticsConsent) {
             localSettingsFeature.setAnalyticsConsent(granted).getOrThrow()
         }
@@ -52,14 +61,17 @@ internal class OnboardingViewModel(
 
     override fun onGetStarted() {
         if (state.value.analyticsConsent == null || loaders.value.isNotEmpty()) return
+
         analytics.trackEvent(AuthEvent.Onboarding.GetStarted)
+
         navigateTo(OnboardingDirection.Login)
     }
 
     override fun onBack() {
         if (state.value.analyticsConsent == null || loaders.value.isNotEmpty()) return
+
         analytics.trackEvent(AuthEvent.Onboarding.DismissRequested)
+
         navigateTo(OnboardingDirection.Login)
     }
-
 }
