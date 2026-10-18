@@ -28,7 +28,8 @@ internal fun ToggleSelectableCardSmall(
     modifier: Modifier,
     style: ToggleSelectableCardStyle.Small,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    leading: (@Composable () -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.toggleSelectableCard.small.radius)
 
@@ -56,6 +57,8 @@ internal fun ToggleSelectableCardSmall(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
+        leading?.invoke()
+
         Text(
             modifier = Modifier.weight(1f),
             text = style.title,

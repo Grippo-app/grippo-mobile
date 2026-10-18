@@ -32,7 +32,8 @@ internal fun ToggleSelectableCardMedium(
     modifier: Modifier,
     style: ToggleSelectableCardStyle.Medium,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    leading: (@Composable () -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.toggleSelectableCard.medium.radius)
 
@@ -60,15 +61,19 @@ internal fun ToggleSelectableCardMedium(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        Image(
-            imageVector = style.icon,
-            contentDescription = null,
-            modifier = Modifier.size(AppTokens.dp.toggleSelectableCard.medium.icon),
-            colorFilter = when (isSelected) {
-                true -> null
-                false -> ColorFilter.tint(color = AppTokens.colors.icon.secondary)
-            },
-        )
+        if (leading != null) {
+            leading()
+        } else {
+            Image(
+                imageVector = style.icon,
+                contentDescription = null,
+                modifier = Modifier.size(AppTokens.dp.toggleSelectableCard.medium.icon),
+                colorFilter = when (isSelected) {
+                    true -> null
+                    false -> ColorFilter.tint(color = AppTokens.colors.icon.secondary)
+                },
+            )
+        }
 
         Text(
             modifier = Modifier.weight(1f),

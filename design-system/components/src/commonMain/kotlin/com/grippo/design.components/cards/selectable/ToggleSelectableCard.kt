@@ -34,21 +34,24 @@ public fun ToggleSelectableCard(
     modifier: Modifier = Modifier,
     style: ToggleSelectableCardStyle,
     isSelected: Boolean,
-    onSelect: () -> Unit
+    onSelect: () -> Unit,
+    leading: (@Composable () -> Unit)? = null,
 ) {
     when (style) {
         is ToggleSelectableCardStyle.Small -> ToggleSelectableCardSmall(
             modifier = modifier,
             style = style,
             isSelected = isSelected,
-            onClick = onSelect
+            onClick = onSelect,
+            leading = leading,
         )
 
         is ToggleSelectableCardStyle.Medium -> ToggleSelectableCardMedium(
             modifier = modifier,
             style = style,
             isSelected = isSelected,
-            onClick = onSelect
+            onClick = onSelect,
+            leading = leading,
         )
     }
 }

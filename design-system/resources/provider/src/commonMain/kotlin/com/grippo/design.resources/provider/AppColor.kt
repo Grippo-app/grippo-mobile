@@ -247,6 +247,12 @@ public interface AppColor {
     }
 
     public interface MuscleColors {
+        public val chest: Color
+        public val back: Color
+        public val abdominal: Color
+        public val legs: Color
+        public val arms: Color
+        public val shoulders: Color
         public val active: Color
         public val inactive: Color
         public val background: Color

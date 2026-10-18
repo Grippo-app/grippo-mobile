@@ -67,6 +67,7 @@ public data object AppDp {
     val contentPadding: ContentPadding = ContentPadding
     val screen: Screen = Screen
     val muscleSelection: MuscleSelection = MuscleSelection
+    public val muscle: Muscle = Muscle
     val dialog: Dialog = Dialog
     val input: Input = Input
     val button: Button = Button
@@ -143,6 +144,12 @@ public data object AppDp {
         val heroMinHeight: Dp = 0.dp
         val listMinHeight: Dp = size.xLarge
         val heroHeightFraction: Float = 0.4f
+    }
+
+    public data object Muscle {
+        public val markSize: Dp = size.small
+        public val markRadius: Dp = radius.small
+        public val markPadding: Dp = padding.tiny
     }
 
     public data object Screen {

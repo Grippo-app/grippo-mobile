@@ -41,28 +41,32 @@ public fun CheckSelectableCard(
     modifier: Modifier = Modifier,
     style: CheckSelectableCardStyle,
     isSelected: Boolean,
-    onSelect: () -> Unit
+    onSelect: () -> Unit,
+    leading: (@Composable () -> Unit)? = null,
 ) {
     when (style) {
         is CheckSelectableCardStyle.Large -> CheckSelectableCardLarge(
             modifier = modifier,
             style = style,
             isSelected = isSelected,
-            onClick = onSelect
+            onClick = onSelect,
+            leading = leading,
         )
 
         is CheckSelectableCardStyle.Medium -> CheckSelectableCardMedium(
             modifier = modifier,
             style = style,
             isSelected = isSelected,
-            onClick = onSelect
+            onClick = onSelect,
+            leading = leading,
         )
 
         is CheckSelectableCardStyle.Small -> CheckSelectableCardSmall(
             modifier = modifier,
             style = style,
             isSelected = isSelected,
-            onClick = onSelect
+            onClick = onSelect,
+            leading = leading,
         )
     }
 }

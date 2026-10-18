@@ -33,7 +33,8 @@ internal fun CheckSelectableCardLarge(
     modifier: Modifier,
     style: CheckSelectableCardStyle.Large,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    leading: (@Composable () -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.checkSelectableCard.large.radius)
 
@@ -73,12 +74,16 @@ internal fun CheckSelectableCardLarge(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.checkSelectableCard.large.horizontalPadding)
         ) {
-            Icon(
-                imageVector = style.icon,
-                contentDescription = null,
-                modifier = Modifier.size(AppTokens.dp.checkSelectableCard.large.icon),
-                tint = AppTokens.colors.icon.tertiary
-            )
+            if (leading != null) {
+                leading()
+            } else {
+                Icon(
+                    imageVector = style.icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(AppTokens.dp.checkSelectableCard.large.icon),
+                    tint = AppTokens.colors.icon.tertiary
+                )
+            }
 
             Text(
                 modifier = Modifier.weight(1f),

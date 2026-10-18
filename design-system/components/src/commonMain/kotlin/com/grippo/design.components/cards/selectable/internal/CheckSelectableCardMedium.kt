@@ -29,7 +29,8 @@ internal fun CheckSelectableCardMedium(
     modifier: Modifier,
     style: CheckSelectableCardStyle.Medium,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    leading: (@Composable () -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.checkSelectableCard.medium.radius)
 
@@ -65,6 +66,8 @@ internal fun CheckSelectableCardMedium(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.checkSelectableCard.medium.horizontalPadding)
     ) {
+        leading?.invoke()
+
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)

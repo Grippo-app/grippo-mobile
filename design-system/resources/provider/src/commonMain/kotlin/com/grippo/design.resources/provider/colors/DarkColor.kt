@@ -253,6 +253,12 @@ public object DarkColor : AppColor {
     }
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
+        override val chest = AppPalette.DarkAccent.Coral
+        override val back = AppPalette.DarkAccent.Sky
+        override val abdominal = AppPalette.DarkAccent.Copper
+        override val legs = AppPalette.DarkAccent.Teal
+        override val arms = AppPalette.DarkAccent.Purple
+        override val shoulders = AppPalette.DarkAccent.Indigo
         override val active = AppPalette.DarkAccent.Green
         override val inactive = AppPalette.NeutralDark.N400.copy(alpha = 0.90f)
         override val background = AppPalette.NeutralDark.N300

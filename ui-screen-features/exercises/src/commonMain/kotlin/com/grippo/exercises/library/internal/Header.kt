@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import com.grippo.design.components.cards.selectable.CheckSelectableCard
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.inputs.InputSearch
+import com.grippo.design.components.muscle.MuscleMark
+import com.grippo.core.state.muscles.stubMuscleGroup
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -95,7 +97,8 @@ internal fun Header(
                         title = item.type.title().text()
                     ),
                     isSelected = value.filter is QueryFilter.Group && value.filter.id == item.id,
-                    onSelect = clickProvider
+                    onSelect = clickProvider,
+                    leading = { MuscleMark(group = item.type) },
                 )
             }
         }
@@ -109,7 +112,8 @@ private fun HeaderPreview() {
         Header(
             value = Queries(
                 name = "Bench",
-                filter = QueryFilter.Suggestions,
+                filter = QueryFilter.Group(stubMuscleGroup().first().id),
+                muscleGroups = stubMuscleGroup(),
             ),
             canShowSuggestions = true,
             contract = ExerciseLibraryContract.Empty,

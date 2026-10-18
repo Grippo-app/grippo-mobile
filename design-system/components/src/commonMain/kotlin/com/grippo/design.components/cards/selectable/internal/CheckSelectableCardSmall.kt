@@ -3,6 +3,7 @@ package com.grippo.design.components.cards.selectable.internal
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,7 +27,8 @@ internal fun CheckSelectableCardSmall(
     modifier: Modifier,
     style: CheckSelectableCardStyle.Small,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    leading: (@Composable () -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.checkSelectableCard.small.radius)
 
@@ -59,8 +61,11 @@ internal fun CheckSelectableCardSmall(
                 horizontal = AppTokens.dp.checkSelectableCard.small.horizontalPadding,
                 vertical = AppTokens.dp.checkSelectableCard.small.verticalPadding,
             ),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
+        leading?.invoke()
+
         Text(
             text = style.title,
             style = AppTokens.typography.h6(),
