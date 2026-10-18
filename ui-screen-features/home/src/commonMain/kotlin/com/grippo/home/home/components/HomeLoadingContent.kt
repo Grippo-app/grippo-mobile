@@ -2,30 +2,21 @@ package com.grippo.home.home.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -33,6 +24,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
 import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.modifiers.shimmer
 import com.grippo.design.core.AppTokens
@@ -100,6 +92,7 @@ internal fun HomeLoadingContent(
                 HomeLoadingText(
                     modifier = Modifier.fillMaxWidth(0.8f),
                     style = AppTokens.typography.b13Med(),
+                    animated = state.range.value != null && (lifetimeTrainingCount ?: 0) > 0,
                 )
             }
         }
@@ -138,22 +131,11 @@ internal fun HomeLoadingContent(
                             .fillMaxWidth(0.6f),
                         style = AppTokens.typography.h4(),
                     )
-                    Row(
+                    HomeLoadingSpotlight(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState())
-                            .height(IntrinsicSize.Min)
-                            .padding(horizontal = horizontalPadding),
-                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                    ) {
-                        repeat(2) {
-                            HomeLoadingSpotlight(
-                                modifier = Modifier
-                                    .width(AppTokens.dp.metrics.overview.insightCardWidth)
-                                    .fillMaxHeight(),
-                            )
-                        }
-                    }
+                            .padding(horizontal = horizontalPadding)
+                            .fillMaxWidth(),
+                    )
                 }
             }
         }
@@ -202,181 +184,76 @@ internal fun HomeLoadingContent(
 
 @Composable
 private fun HomeLoadingRecap(modifier: Modifier) {
-    HomeLoadingPanel(modifier = modifier) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            ) {
-                Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
-                    HomeLoadingText(modifier = Modifier.fillMaxWidth(), style = AppTokens.typography.h5())
-                    HomeLoadingText(modifier = Modifier.fillMaxWidth(0.7f), style = AppTokens.typography.b13Med())
-                }
-                Row(horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)) {
-                    HomeLoadingFact(modifier = Modifier.weight(1f))
-                    HomeLoadingFact(modifier = Modifier.weight(1f))
-                }
-            }
-            HomeLoadingBone(modifier = Modifier.size(AppTokens.dp.illustration.compact))
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            HomeLoadingFact(modifier = Modifier.weight(1f))
-            HomeLoadingBone(
-                modifier = Modifier
-                    .width(AppTokens.dp.illustration.compact)
-                    .height(AppTokens.dp.button.small.height),
-                shape = RoundedCornerShape(AppTokens.dp.button.small.radius),
-            )
-        }
-    }
+    val titleHeight = AppTokens.typography.h5().lineHeightDp()
+    val factHeight = titleHeight + AppTokens.typography.b11Med().lineHeightDp() +
+        AppTokens.dp.contentPadding.text
+    val summaryHeight = titleHeight + AppTokens.typography.b13Med().lineHeightDp() +
+        AppTokens.dp.contentPadding.text + AppTokens.dp.contentPadding.content + factHeight
+    HomeLoadingPanel(
+        modifier = modifier,
+        contentHeight = maxOf(AppTokens.dp.illustration.compact, summaryHeight) +
+            AppTokens.dp.metrics.panel.large.spacer +
+            maxOf(factHeight, AppTokens.dp.button.small.height),
+    )
 }
 
 @Composable
 private fun HomeLoadingGoal(modifier: Modifier) {
-    HomeLoadingPanel(modifier = modifier) {
-        HomeLoadingCardHeader()
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-            ) {
-                HomeLoadingText(modifier = Modifier.fillMaxWidth(), style = AppTokens.typography.h4())
-                HomeLoadingText(modifier = Modifier.fillMaxWidth(0.7f), style = AppTokens.typography.b11Semi())
-                Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
-                    HomeLoadingText(modifier = Modifier.fillMaxWidth(), style = AppTokens.typography.b12Med())
-                    HomeLoadingText(modifier = Modifier.fillMaxWidth(0.6f), style = AppTokens.typography.b12Med())
-                    HomeLoadingText(modifier = Modifier.fillMaxWidth(0.9f), style = AppTokens.typography.b12Med())
-                }
-            }
-            Column(
-                modifier = Modifier.width(AppTokens.dp.metrics.profile.goal.chart),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-            ) {
-                HomeLoadingBone(
-                    modifier = Modifier.size(AppTokens.dp.metrics.profile.goal.chart),
-                    shape = CircleShape,
-                )
-                HomeLoadingText(modifier = Modifier.fillMaxWidth(), style = AppTokens.typography.b11Med())
-            }
-        }
-        HomeLoadingText(modifier = Modifier.fillMaxWidth(0.8f), style = AppTokens.typography.b13Med())
-    }
+    val factsHeight = AppTokens.typography.h4().lineHeightDp() +
+        AppTokens.typography.b11Semi().lineHeightDp() +
+        AppTokens.typography.b12Med().lineHeightDp() * 3 +
+        AppTokens.dp.contentPadding.text * 2 + AppTokens.dp.contentPadding.subContent * 2
+    val chartHeight = AppTokens.dp.metrics.profile.goal.chart +
+        AppTokens.typography.b11Med().lineHeightDp() + AppTokens.dp.contentPadding.text
+    HomeLoadingPanel(
+        modifier = modifier,
+        contentHeight = AppTokens.typography.h5().lineHeightDp() +
+            maxOf(factsHeight, chartHeight) + AppTokens.typography.b13Med().lineHeightDp() +
+            AppTokens.dp.metrics.panel.large.spacer * 2,
+    )
 }
 
 @Composable
 private fun HomeLoadingMuscle(modifier: Modifier) {
-    HomeLoadingPanel(modifier = modifier) {
-        Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
-            HomeLoadingCardHeader()
-            HomeLoadingText(modifier = Modifier.fillMaxWidth(0.8f), style = AppTokens.typography.b12Med())
-        }
-        HomeLoadingText(modifier = Modifier.fillMaxWidth(0.7f), style = AppTokens.typography.b12Med())
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            HomeLoadingBone(
-                modifier = Modifier
-                    .width(AppTokens.dp.metrics.overview.muscleImageWidth)
-                    .height(AppTokens.dp.metrics.overview.muscleImageHeight),
-            )
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-            ) {
-                repeat(3) {
-                    Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
-                        HomeLoadingText(modifier = Modifier.fillMaxWidth(0.8f), style = AppTokens.typography.b13Semi())
-                        HomeLoadingBone(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(AppTokens.dp.metrics.charts.indicator.height),
-                        )
-                    }
-                }
-            }
-        }
-        HomeLoadingText(modifier = Modifier.fillMaxWidth(0.65f), style = AppTokens.typography.b12Med())
-    }
+    val distributionHeight = (
+        AppTokens.typography.b13Semi().lineHeightDp() + AppTokens.dp.contentPadding.text +
+            AppTokens.dp.metrics.charts.indicator.height
+        ) * 3 + AppTokens.dp.contentPadding.subContent * 2
+    HomeLoadingPanel(
+        modifier = modifier,
+        contentHeight = AppTokens.typography.h5().lineHeightDp() +
+            AppTokens.typography.b12Med().lineHeightDp() * 3 + AppTokens.dp.contentPadding.text +
+            maxOf(AppTokens.dp.metrics.overview.muscleImageHeight, distributionHeight) +
+            AppTokens.dp.metrics.panel.large.spacer * 3,
+    )
 }
 
 @Composable
 private fun HomeLoadingStreak(modifier: Modifier) {
-    HomeLoadingPanel(modifier = modifier) {
-        HomeLoadingCardHeader()
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(
-                modifier = Modifier.weight(2.5f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    HomeLoadingBone(modifier = Modifier.size(AppTokens.dp.metrics.overview.rhythmIcon))
-                    HomeLoadingText(modifier = Modifier.weight(1f), style = AppTokens.typography.h4())
-                }
-                HomeLoadingText(modifier = Modifier.fillMaxWidth(0.85f), style = AppTokens.typography.b13Med())
-            }
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-                horizontalAlignment = Alignment.End,
-            ) {
-                HomeLoadingText(modifier = Modifier.fillMaxWidth(0.5f), style = AppTokens.typography.h3())
-                HomeLoadingText(modifier = Modifier.fillMaxWidth(), style = AppTokens.typography.b12Med())
-            }
-        }
-        HomeLoadingBone(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(AppTokens.dp.metrics.charts.indicator.height),
-        )
-    }
+    val headlineHeight = maxOf(
+        AppTokens.dp.metrics.overview.rhythmIcon,
+        AppTokens.typography.h4().lineHeightDp(),
+    ) + AppTokens.typography.b13Med().lineHeightDp()
+    val activeDaysHeight = AppTokens.typography.h3().lineHeightDp() +
+        AppTokens.typography.b12Med().lineHeightDp()
+    HomeLoadingPanel(
+        modifier = modifier,
+        contentHeight = AppTokens.typography.h5().lineHeightDp() +
+            maxOf(headlineHeight, activeDaysHeight) + AppTokens.dp.contentPadding.text +
+            AppTokens.dp.metrics.charts.indicator.height + AppTokens.dp.metrics.panel.large.spacer * 2,
+    )
 }
 
 @Composable
 private fun HomeLoadingSpotlight(modifier: Modifier) {
-    HomeLoadingPanel(modifier = modifier) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            HomeLoadingBone(
-                modifier = Modifier.size(AppTokens.dp.exerciseExampleImage.medium.size),
-                shape = RoundedCornerShape(AppTokens.dp.exerciseExampleImage.medium.radius),
-            )
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-            ) {
-                HomeLoadingCardHeader()
-                HomeLoadingText(modifier = Modifier.fillMaxWidth(0.6f), style = AppTokens.typography.b11Semi())
-            }
-        }
-        HomeLoadingText(modifier = Modifier.fillMaxWidth(0.6f), style = AppTokens.typography.h4())
-        HomeLoadingText(modifier = Modifier.fillMaxWidth(), style = AppTokens.typography.b12Med())
-        HomeLoadingText(modifier = Modifier.fillMaxWidth(0.8f), style = AppTokens.typography.b12Med())
-    }
+    val identityHeight = AppTokens.typography.h5().lineHeightDp() +
+        AppTokens.dp.contentPadding.subContent + AppTokens.typography.b11Semi().lineHeightDp()
+    HomeLoadingPanel(
+        modifier = modifier,
+        contentHeight = maxOf(AppTokens.dp.exerciseExampleImage.medium.size, identityHeight) +
+            AppTokens.typography.h4().lineHeightDp() + AppTokens.typography.b12Med().lineHeightDp() * 2 +
+            AppTokens.dp.metrics.panel.large.spacer * 3,
+    )
 }
 
 @Composable
@@ -384,47 +261,23 @@ private fun HomeLoadingPerformance(
     modifier: Modifier,
     compact: Boolean = false,
 ) {
-    HomeLoadingPanel(modifier = modifier, small = true) {
-        HomeLoadingCardHeader()
-        HomeLoadingText(modifier = Modifier.fillMaxWidth(0.75f), style = AppTokens.typography.h2())
-        if (!compact) {
-            HomeLoadingText(modifier = Modifier.fillMaxWidth(0.5f), style = AppTokens.typography.b11Semi())
-        }
-        HomeLoadingText(modifier = Modifier.fillMaxWidth(), style = AppTokens.typography.b12Med())
-        if (!compact) {
-            HomeLoadingText(modifier = Modifier.fillMaxWidth(0.4f), style = AppTokens.typography.b13Semi())
-        }
+    val summaryHeight = AppTokens.typography.h5().lineHeightDp() +
+        AppTokens.typography.h2().lineHeightDp() + AppTokens.typography.b12Med().lineHeightDp() +
+        AppTokens.dp.metrics.panel.small.spacer * 2
+    val contentHeight = if (compact) {
+        summaryHeight
+    } else {
+        summaryHeight + AppTokens.typography.b11Semi().lineHeightDp() +
+            AppTokens.typography.b13Semi().lineHeightDp() + AppTokens.dp.metrics.panel.small.spacer * 2
     }
-}
-
-@Composable
-private fun HomeLoadingCardHeader() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        HomeLoadingText(modifier = Modifier.weight(1f), style = AppTokens.typography.h5())
-        HomeLoadingBone(modifier = Modifier.size(AppTokens.dp.metrics.overview.detailsIcon))
-    }
-}
-
-@Composable
-private fun HomeLoadingFact(modifier: Modifier) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-    ) {
-        HomeLoadingText(modifier = Modifier.fillMaxWidth(0.65f), style = AppTokens.typography.h5())
-        HomeLoadingText(modifier = Modifier.fillMaxWidth(0.8f), style = AppTokens.typography.b11Med())
-    }
+    HomeLoadingPanel(modifier = modifier, contentHeight = contentHeight, small = true)
 }
 
 @Composable
 private fun HomeLoadingPanel(
     modifier: Modifier,
+    contentHeight: Dp,
     small: Boolean = false,
-    content: @Composable ColumnScope.() -> Unit,
 ) {
     val radius = if (small) AppTokens.dp.metrics.panel.small.radius else AppTokens.dp.metrics.panel.large.radius
     val horizontalPadding = if (small) {
@@ -437,9 +290,8 @@ private fun HomeLoadingPanel(
     } else {
         AppTokens.dp.metrics.panel.large.verticalPadding
     }
-    val spacer = if (small) AppTokens.dp.metrics.panel.small.spacer else AppTokens.dp.metrics.panel.large.spacer
     val shape = RoundedCornerShape(radius)
-    Column(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
@@ -450,30 +302,33 @@ private fun HomeLoadingPanel(
                 shape = shape,
             )
             .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-        verticalArrangement = Arrangement.spacedBy(spacer),
-        content = content,
-    )
+    ) {
+        HomeLoadingBone(modifier = Modifier.fillMaxWidth().height(contentHeight))
+    }
 }
 
 @Composable
 private fun HomeLoadingText(
     modifier: Modifier,
     style: TextStyle,
+    animated: Boolean = false,
 ) {
-    val height = with(LocalDensity.current) { style.lineHeight.toDp() }
-    HomeLoadingBone(modifier = modifier.height(height))
+    HomeLoadingBone(modifier = modifier.height(style.lineHeightDp()), animated = animated)
 }
+
+@Composable
+private fun TextStyle.lineHeightDp(): Dp = with(LocalDensity.current) { lineHeight.toDp() }
 
 @Composable
 private fun HomeLoadingBone(
     modifier: Modifier,
-    shape: Shape = RoundedCornerShape(AppTokens.dp.metrics.status.radius),
+    animated: Boolean = true,
 ) {
     Box(
         modifier = modifier
-            .clip(shape)
+            .clip(RoundedCornerShape(AppTokens.dp.metrics.status.radius))
             .background(AppTokens.colors.divider.default)
-            .shimmer(),
+            .shimmer(enabled = animated),
     )
 }
 

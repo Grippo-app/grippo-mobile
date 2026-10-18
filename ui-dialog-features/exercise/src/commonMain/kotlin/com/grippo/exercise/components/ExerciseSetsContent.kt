@@ -84,6 +84,7 @@ internal fun ExerciseSetsContent(
                 when {
                     isHistoryLoading -> ExerciseComparisonBone(
                         modifier = Modifier.fillMaxWidth().height(contextHeight),
+                        animated = true,
                     )
 
                     previous != null -> {
@@ -169,12 +170,15 @@ private fun ExerciseSetComparison(
 }
 
 @Composable
-private fun ExerciseComparisonBone(modifier: Modifier = Modifier) {
+private fun ExerciseComparisonBone(
+    modifier: Modifier = Modifier,
+    animated: Boolean = false,
+) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(AppTokens.dp.metrics.status.radius))
             .background(AppTokens.colors.divider.default)
-            .shimmer()
+            .shimmer(enabled = animated)
             .clearAndSetSemantics {},
     )
 }
@@ -299,6 +303,14 @@ private fun ExerciseSetsContentLoadingPreviousPreview() {
         repetitions = RepetitionsFormatState.of(8),
     )
     PreviewContainer {
-        ExerciseSetsContent(value = persistentListOf(iteration), previous = null, isHistoryLoading = true)
+        ExerciseSetsContent(
+            value = persistentListOf(
+                iteration,
+                iteration.copy(id = "loading-previous-set-2"),
+                iteration.copy(id = "loading-previous-set-3"),
+            ),
+            previous = null,
+            isHistoryLoading = true,
+        )
     }
 }

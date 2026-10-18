@@ -113,7 +113,6 @@ private fun ProfileHeader(
                         .height(nameHeight)
                         .clip(RoundedCornerShape(AppTokens.dp.userCard.headerLoading.radius))
                         .background(AppTokens.colors.divider.default)
-                        .shimmer()
                         .semantics {
                             progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
                         },
@@ -123,8 +122,7 @@ private fun ProfileHeader(
                         .fillMaxWidth(AppTokens.dp.userCard.headerLoading.emailWidthFraction)
                         .height(emailHeight)
                         .clip(RoundedCornerShape(AppTokens.dp.userCard.headerLoading.radius))
-                        .background(AppTokens.colors.divider.default)
-                        .shimmer(),
+                        .background(AppTokens.colors.divider.default),
                 )
             } else {
                 val name = value?.name?.takeIf { it.isNotBlank() }

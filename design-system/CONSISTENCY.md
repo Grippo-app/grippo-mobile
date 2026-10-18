@@ -155,6 +155,7 @@ A compact navigation item and a screen heading do not need the same font size.
   content with contentPadding.block, keeping compact section gaps at content.
   Loading name/email slots derive their heights from the same h3/b13Med line
   heights; HeaderLoading tokens retain their width fractions and corner radius.
+  Only the avatar slot shimmers; supporting name/email placeholders stay static.
 - UserProfileHeader uses role variants: Profile retains the warm avatar/name/email
   region; Account shows read-only signed-in identity on `background.card`, using
   the user-card shape and `menu.contentPadding` (16 dp on all sides) to align with
@@ -234,8 +235,12 @@ A compact navigation item and a screen heading do not need the same font size.
   right of the heading. Calendar and Update remain their existing explicit buttons.
 - Home's initial loading and an active refresh without period content use
   noninteractive skeleton cards with the dashboard's toolbar, gutters and geometry.
-  Neutral `divider.default` slots use the shared shimmer after clip/background;
-  text slots follow typography line heights. One localized indeterminate loading
+  Each card uses one broad `divider.default` block with shared clipped shimmer,
+  without simulated facts, icons or chart details. Panel geometry derives from
+  the existing typography, image and spacing slots; section text placeholders
+  retain typography line heights and stay static. The highlights header keeps
+  one animated slot; the spotlight gallery uses one coarse panel without a
+  nested loading scroll. One localized indeterminate loading
   node describes the skeleton; the real period picker remains independently
   accessible for returning users once the range resolves. Known goal/unlock
   availability controls those slots.
@@ -464,8 +469,10 @@ A compact navigation item and a screen heading do not need the same font size.
   history uses a quiet `b12Med` heading, neutral signed percentage and one short
   prior-volume/date caption. The percentage has no status fill or success meaning.
   Both caption and chart retain reserved geometry while history loads, is empty
-  or contains unsupported tonnage. Skeletons use `divider.default`, shared clipped
-  shimmer and typography-derived text slots; the card exposes one localized
+  or contains unsupported tonnage. Skeletons use `divider.default` and
+  typography-derived text slots. Shared clipped shimmer animates only the
+  previous-date header and chart region; per-set and caption slots stay static
+  regardless of set count. The card exposes one localized
   indeterminate node while individual bones remain decorative. No minimum loading
   duration or business animation is added.
   Chronological stored-volume entries use the existing blue growth palette: P300

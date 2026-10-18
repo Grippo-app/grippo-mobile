@@ -52,8 +52,7 @@ internal fun ExerciseHistoryShimmer(
                     .fillMaxWidth()
                     .height(captionMinHeight / 2)
                     .clip(shape)
-                    .background(AppTokens.colors.divider.default)
-                    .shimmer(),
+                    .background(AppTokens.colors.divider.default),
             )
         }
 
