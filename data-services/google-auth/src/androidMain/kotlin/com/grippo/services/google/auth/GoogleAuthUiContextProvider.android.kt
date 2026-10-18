@@ -10,12 +10,14 @@ import androidx.compose.ui.platform.LocalContext
 @Composable
 public actual fun rememberGoogleAuthUiContext(): GoogleAuthUiContext? {
     val context = LocalContext.current
-    val activity = remember(context) { context.findActivity() }
+    val activity = remember(context) { findActivity(context) }
     return remember(activity) { activity?.let { googleAuthUiContext(it) } }
 }
 
-private tailrec fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
+private tailrec fun findActivity(context: Context): Activity? {
+    return when (context) {
+        is Activity -> context
+        is ContextWrapper -> findActivity(context.baseContext)
+        else -> null
+    }
 }

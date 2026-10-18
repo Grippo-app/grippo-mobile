@@ -450,10 +450,12 @@ A compact navigation item and a screen heading do not need the same font size.
   Quiet dividers and Small CheckSelectableCard choices organize expanded content.
   One scrolling body keeps the pinned Primary Save action on an opaque screen
   surface; permanent introductory and field-description copy is omitted.
-- Goal, streak and performance details use `block` before a new section heading
-  and `content` from the heading to its card or between related entries. The first
-  visible section has no leading separator. Full-width sheet ranges retain
-  `dialog.horizontalPadding`; body content starts once at `dialog.top`.
+- Streak and performance details use `block` before a new section heading and
+  `content` from the heading to its card or between related entries. Compact goal
+  details use `content` between their summary, diagnostic and disclosure blocks,
+  and from a diagnostic heading to its card. The first visible section has no
+  leading separator. Full-width sheet ranges retain `dialog.horizontalPadding`;
+  body content starts once at `dialog.top`.
 - Optional descriptions, suggestions, equipment and history leave no separator
   when absent. Present sections own the gap between them; text groups use `text`.
   Equipment galleries use `content` between cards, keeping image and card sizes.

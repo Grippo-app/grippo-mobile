@@ -2,6 +2,7 @@ package com.grippo.services.google.auth
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Bundle
 import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import com.grippo.toolkit.context.NativeContext
@@ -21,20 +22,14 @@ public actual class GoogleAuthProvider actual constructor(
 
     private val applicationContext: Context = nativeContext.context
     private val credentialManager: CredentialManager = CredentialManager.create(applicationContext)
-    private val serverClientId: String? = readMetaValue(META_SERVER_CLIENT_ID)
 
     public actual val isSupported: Boolean
-        get() = !serverClientId.isNullOrBlank()
+        get() = readMetaData()?.containsKey(META_SERVER_CLIENT_ID) == true
 
     public actual fun getUiProvider(context: GoogleAuthUiContext): GoogleAuthUiProvider {
         val activityContext = context.asAndroidContext()
 
-        val clientId = serverClientId
-            ?.trim()
-            ?.takeIf { it.isNotEmpty() }
-            ?: throw GoogleAuthException.ProviderMisconfigured(
-                message = "Google server client id is missing. Add meta-data '$META_SERVER_CLIENT_ID' to AndroidManifest.",
-            )
+        val clientId = readServerClientId()
 
         if (!clientId.endsWith(CLIENT_ID_SUFFIX)) {
             throw GoogleAuthException.InvalidServerClientId(
@@ -67,15 +62,34 @@ public actual class GoogleAuthProvider actual constructor(
         }
     }
 
-    private fun readMetaValue(key: String): String? {
+    private fun readServerClientId(): String {
+        val metadata = readMetaData()
+        if (metadata == null || !metadata.containsKey(META_SERVER_CLIENT_ID)) {
+            throw GoogleAuthException.ProviderMisconfigured(
+                message = "Google server client id is missing. Add meta-data '$META_SERVER_CLIENT_ID' to AndroidManifest.",
+            )
+        }
+
+        val rawClientId = metadata.getString(META_SERVER_CLIENT_ID)
+            ?: throw GoogleAuthException.ProviderMisconfigured(
+                message = "Google server client id must be a string.",
+            )
+        val clientId = rawClientId.trim()
+        if (clientId.isEmpty()) {
+            throw GoogleAuthException.ProviderMisconfigured(
+                message = "Google server client id is empty.",
+            )
+        }
+
+        return clientId
+    }
+
+    private fun readMetaData(): Bundle? {
         val info = applicationContext.packageManager.getApplicationInfo(
             applicationContext.packageName,
             PackageManager.GET_META_DATA,
         )
 
         return info.metaData
-            ?.getString(key)
-            ?.trim()
-            ?.takeIf { it.isNotEmpty() }
     }
 }

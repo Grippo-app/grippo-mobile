@@ -261,33 +261,62 @@ public actual class GoogleAuthProvider actual constructor(
     private val httpClient: HttpClient,
     private val json: Json,
 ) {
-    private val configuration: GoogleAuthConfiguration? = loadConfiguration()
-
     public actual val isSupported: Boolean
-        get() = configuration != null
+        get() = NSBundle.mainBundle.objectForInfoDictionaryKey("GIDClientID") != null
 
     public actual fun getUiProvider(context: GoogleAuthUiContext): GoogleAuthUiProvider {
-        val config = configuration ?: throw GoogleAuthException.ProviderMisconfigured(
-            "Google auth is not configured on iOS",
+        val config = loadConfiguration()
+        return GoogleAuthUiProvider(
+            configuration = config,
+            httpClient = httpClient,
+            json = json,
         )
-        return GoogleAuthUiProvider(config, httpClient, json)
     }
 
     public actual suspend fun signOut() {
         clearGoogleCookies()
     }
 
-    private fun loadConfiguration(): GoogleAuthConfiguration? {
-        val iosClientId = infoValue("GIDClientID") ?: return null
-        val redirectUri =
-            infoValue("GIDRedirectURI") ?: defaultRedirectUri(iosClientId) ?: return null
-        val redirectScheme = redirectScheme(redirectUri) ?: return null
+    private fun loadConfiguration(): GoogleAuthConfiguration {
+        val iosClientId = infoValue("GIDClientID")
+            ?: throw GoogleAuthException.ProviderMisconfigured("Google auth is not configured on iOS")
+        if (!iosClientId.endsWith(CLIENT_ID_SUFFIX)) {
+            throw GoogleAuthException.InvalidServerClientId(
+                "Google auth misconfigured: iosClientId must end with .apps.googleusercontent.com",
+            )
+        }
+
+        val redirectUri = infoValue("GIDRedirectURI") ?: defaultRedirectUri(iosClientId)
+        val redirectScheme = redirectScheme(redirectUri)
 
         return GoogleAuthConfiguration(
             iosClientId = iosClientId,
             redirectUri = redirectUri,
             redirectScheme = redirectScheme,
         )
+    }
+
+    private fun infoValue(key: String): String? {
+        val raw = NSBundle.mainBundle.objectForInfoDictionaryKey(key) ?: return null
+        val value = raw as? String ?: throw GoogleAuthException.ProviderMisconfigured(
+            "Google auth configuration '$key' must be a string",
+        )
+        val trimmed = value.trim()
+        if (trimmed.isEmpty()) {
+            throw GoogleAuthException.ProviderMisconfigured("Google auth configuration '$key' is empty")
+        }
+        return trimmed
+    }
+
+    private fun defaultRedirectUri(clientId: String): String {
+        val identifier = clientId.removeSuffix(CLIENT_ID_SUFFIX)
+        return "com.googleusercontent.apps.$identifier:/oauthredirect"
+    }
+
+    private fun redirectScheme(uri: String): String {
+        val url = NSURL(string = uri)
+        return NSURLComponents(url, false).scheme?.takeIf { it.isNotBlank() }
+            ?: throw GoogleAuthException.ProviderMisconfigured("Google auth redirect URI must contain a scheme")
     }
 }
 
@@ -638,23 +667,6 @@ private object Sha256 {
     private fun bigSigma1(x: UInt): UInt = rotr(x, 6) xor rotr(x, 11) xor rotr(x, 25)
     private fun smallSigma0(x: UInt): UInt = rotr(x, 7) xor rotr(x, 18) xor (x shr 3)
     private fun smallSigma1(x: UInt): UInt = rotr(x, 17) xor rotr(x, 19) xor (x shr 10)
-}
-
-private fun infoValue(key: String): String? {
-    val raw = NSBundle.mainBundle.objectForInfoDictionaryKey(key) as? String ?: return null
-    val trimmed = raw.trim()
-    return trimmed.takeIf { it.isNotEmpty() }
-}
-
-private fun defaultRedirectUri(clientId: String): String? {
-    if (!clientId.endsWith(CLIENT_ID_SUFFIX)) return null
-    val identifier = clientId.removeSuffix(CLIENT_ID_SUFFIX)
-    return "com.googleusercontent.apps.$identifier:/oauthredirect"
-}
-
-private fun redirectScheme(uri: String): String? {
-    val url = NSURL(string = uri)
-    return NSURLComponents(url, false).scheme
 }
 
 private fun clearGoogleCookies() {
