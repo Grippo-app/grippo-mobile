@@ -4,39 +4,32 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun MuscleLoadingPerGroup(
     modifier: Modifier = Modifier,
     summary: MuscleLoadSummaryState,
 ) {
-    val palette = AppTokens.colors.muscle.palette6MuscleCalm
-
-    val entries = remember(summary, palette) {
-        colorizeEntries(
-            entries = summary.perGroup.entries,
-            palette = palette,
-        )
-    }
+    val entries = summary.perGroup.entries
+    val highestShare = entries.maxOfOrNull { it.value }
 
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
-        entries.forEachIndexed { index, colored ->
-            key(colored.entry.group) {
+        entries.forEach { entry ->
+            key(entry.group) {
                 MuscleLoadingItem(
-                    entry = colored.entry,
-                    label = colored.entry.group.title().text(),
-                    indicatorColors = rememberMuscleLoadIndicatorColors(colored.color),
-                    dominant = index == 0,
+                    entry = entry,
+                    label = entry.group.title().text(),
+                    dominant = entry.value == highestShare,
                 )
             }
         }
@@ -49,6 +42,34 @@ private fun MuscleLoadingPerGroupPreview() {
     PreviewContainer {
         MuscleLoadingPerGroup(
             summary = stubMuscleLoadSummary(),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingPerGroupReorderedPreview() {
+    PreviewContainer {
+        val summary = stubMuscleLoadSummary()
+        MuscleLoadingPerGroup(
+            summary = summary.copy(
+                perGroup = summary.perGroup.copy(entries = summary.perGroup.entries.reversed().toPersistentList()),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingPerGroupTiedPreview() {
+    PreviewContainer {
+        val summary = stubMuscleLoadSummary()
+        MuscleLoadingPerGroup(
+            summary = summary.copy(
+                perGroup = summary.perGroup.copy(
+                    entries = summary.perGroup.entries.take(2).map { it.copy(value = 50f) }.toPersistentList(),
+                ),
+            ),
         )
     }
 }

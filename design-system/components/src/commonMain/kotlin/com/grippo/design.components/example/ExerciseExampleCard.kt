@@ -7,7 +7,11 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.state.equipments.EquipmentEnumState
 import com.grippo.core.state.equipments.EquipmentState
 import com.grippo.core.state.examples.CategoryEnumState
+import com.grippo.core.state.examples.ExerciseExampleBundleState
 import com.grippo.core.state.examples.ExerciseExampleComponentsState
+import com.grippo.core.state.formatters.PercentageFormatState
+import com.grippo.core.state.muscles.MuscleEnumState
+import com.grippo.core.state.muscles.MuscleState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.ForceTypeEnumState
@@ -105,6 +109,7 @@ private fun ExerciseExampleCardLargePreview() {
                         lastUsed = DateTimeFormatState.Empty(DateFormat.DateOnly.DateDdMmm),
                     ),
                     equipments = persistentListOf(),
+                    bundles = persistentListOf(),
                 ),
             ),
         )
@@ -173,7 +178,18 @@ private fun exerciseExampleCardPreviewValue(): ExerciseExampleState {
             ),
         ),
         components = ExerciseExampleComponentsState.External(required = true),
-        bundles = persistentListOf(),
+        bundles = persistentListOf(
+            ExerciseExampleBundleState(
+                id = "chest-involvement",
+                muscle = MuscleState(id = "chest", type = MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL),
+                percentage = PercentageFormatState.of(70),
+            ),
+            ExerciseExampleBundleState(
+                id = "triceps-involvement",
+                muscle = MuscleState(id = "triceps", type = MuscleEnumState.TRICEPS),
+                percentage = PercentageFormatState.of(30),
+            ),
+        ),
         equipments = persistentListOf(
             EquipmentState(id = "dumbbells", type = EquipmentEnumState.DUMBBELLS),
             EquipmentState(id = "flat-bench", type = EquipmentEnumState.FLAT_BENCH),

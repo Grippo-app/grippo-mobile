@@ -24,13 +24,16 @@ The module provides everything required to start and consume the Google Sign-In 
   sheet.
 
 `GoogleAccount` contains the ID token and optional profile data (display name + avatar URL).
-`GoogleAuthUiProvider.signIn()` returns `Result<GoogleAccount>` so UI code can differentiate between
-user cancellations and actual errors. Check `googleAuthProvider.isSupported` before rendering a
+`GoogleAuthUiProvider.signIn()` returns `GoogleAccount` and throws on failure. User cancellation
+retains `GoogleAuthException.Cancelled`; coroutine cancellation and fatal errors propagate unchanged.
+SDK classification retains the original Kotlin exception as its cause; native errors retain
+their available domain, code and description.
+Check `googleAuthProvider.isSupported` before rendering a
 "Continue with Google" button – the provider reports `false` when the platform is missing the
 required identifiers.
 
 When configured, the UI layer simply calls `googleAuthProvider.getUiProvider(context).signIn()` and
-handles the `Result`.
+uses the existing `safeLaunch` error pipeline.
 
 ---
 
@@ -170,19 +173,21 @@ FilledTonalButton(
 `onGoogleClick` should accept a `GoogleAuthUiContext` and delegate to the state holder or ViewModel
 running your authentication flow.
 
-Example ViewModel function:
+The LoginViewModel's provider operation stays inside its existing `safeLaunch` and analytics block:
 
 ```kotlin
-suspend fun handleGoogleLogin(context: GoogleAuthUiContext) {
-    val result = googleAuthProvider
-        .getUiProvider(context)
-        .signIn()
+safeLaunch(
+    loader = LoginLoader.LoginByGoogleButton,
+    mapError = ::mapAuthError,
+) {
+    analytics.trackEvent(AuthEvent.Login.Submit(method = Method.Google))
 
-    result.onSuccess { account ->
-        // Use account.token in your domain layer (exchange for backend session, etc.)
-    }.onFailure { error ->
-        // Show an error message / report to analytics
+    val hasProfile = analytics.trackOperation(AuthOperation.Login(method = Method.Google)) {
+        val account = googleAuthProvider.getUiProvider(context).signIn()
+        loginUseCase.loginGoogle(token = account.token)
     }
+
+    navigateAfterLogin(hasProfile)
 }
 ```
 

@@ -38,7 +38,7 @@ internal class ExcludedEquipmentsRepositoryImpl(
             )
         val response = api.getExcludedEquipments()
         val ids = response.mapNotNull { it.id }
-        if (ids.size != response.size) {
+        if (ids.size != response.size || ids.toSet().size != ids.size) {
             throw AppError.Network.IncompleteResponse()
         }
         userDao.insertOrReplaceExcludedEquipments(profileId, ids)
@@ -54,7 +54,7 @@ internal class ExcludedEquipmentsRepositoryImpl(
 
         val equipments = api.getExcludedEquipments()
         val savedIds = equipments.mapNotNull { it.id }
-        if (savedIds.size != equipments.size) {
+        if (savedIds.size != equipments.size || savedIds.toSet().size != savedIds.size) {
             throw AppError.Network.IncompleteResponse()
         }
         userDao.insertOrReplaceExcludedEquipments(profileId, savedIds)

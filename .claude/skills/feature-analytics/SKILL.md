@@ -130,8 +130,8 @@ behavior and reports to the owning ViewModel, which decides what to observe.
   ```
 
   All required work belongs inside that block. Never reshape a use case to fit
-  telemetry. Platform credential adapters still return Result; their existing
-  `getOrThrow()` stays inside the decorated credential operation.
+  telemetry. Direct throwing credential adapter calls stay inside the decorated
+  credential operation.
 - Keep whole use cases. Do not expose preparation steps or stages for timing. Do
   not add a coroutine, job, dispatcher or retry solely for analytics. Submit intent
   (the user asked) and operation start (the business block began) are different

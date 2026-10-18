@@ -1,8 +1,12 @@
 package com.grippo.core.state.muscles
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.UiText
+import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.muscle_abductors
 import com.grippo.design.resources.provider.muscle_adductors
@@ -26,6 +30,10 @@ import com.grippo.design.resources.provider.muscle_teres_major
 import com.grippo.design.resources.provider.muscle_trapezius
 import com.grippo.design.resources.provider.muscle_triceps
 import com.grippo.design.resources.provider.muscles.MuscleColorPreset
+import com.grippo.design.resources.provider.muscles.bodyBack
+import com.grippo.design.resources.provider.muscles.bodyFront
+import com.grippo.design.resources.provider.muscles.bodySplit
+import com.grippo.design.resources.provider.muscles.legsSplit
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -63,6 +71,83 @@ public enum class MuscleEnumState {
     BICEPS,
     TRICEPS,
     FOREARM;
+
+    public fun group(): MuscleGroupEnumState = when (this) {
+        PECTORALIS_MAJOR_CLAVICULAR,
+        PECTORALIS_MAJOR_STERNOCOSTAL,
+        PECTORALIS_MAJOR_ABDOMINAL -> MuscleGroupEnumState.CHEST_MUSCLES
+
+        TRAPEZIUS,
+        LATISSIMUS_DORSI,
+        RHOMBOIDS,
+        TERES_MAJOR -> MuscleGroupEnumState.BACK_MUSCLES
+
+        RECTUS_ABDOMINIS,
+        OBLIQUES -> MuscleGroupEnumState.ABDOMINAL_MUSCLES
+
+        CALF,
+        GLUTEAL,
+        HAMSTRINGS,
+        QUADRICEPS,
+        ADDUCTORS,
+        ABDUCTORS -> MuscleGroupEnumState.LEGS
+
+        ANTERIOR_DELTOID,
+        LATERAL_DELTOID,
+        POSTERIOR_DELTOID -> MuscleGroupEnumState.SHOULDER_MUSCLES
+
+        BICEPS,
+        TRICEPS,
+        FOREARM -> MuscleGroupEnumState.ARMS_AND_FOREARMS
+    }
+
+    @Composable
+    public fun color(): Color = group().color()
+
+    @Composable
+    public fun icon(): ImageVector {
+        val colors = AppTokens.colors.muscle
+        val identity = color()
+        val preset = remember(this, colors, identity) {
+            colorPreset(
+                fallback = colors.inactive,
+                outline = colors.outline,
+                background = colors.background,
+                colorFor = { muscle -> if (muscle == this) identity else colors.inactive },
+            )
+        }
+        return image(preset)
+    }
+
+    @Composable
+    public fun image(preset: MuscleColorPreset): ImageVector = remember(this, preset) {
+        when (this) {
+            PECTORALIS_MAJOR_CLAVICULAR,
+            PECTORALIS_MAJOR_STERNOCOSTAL,
+            PECTORALIS_MAJOR_ABDOMINAL,
+            RECTUS_ABDOMINIS,
+            OBLIQUES,
+            ANTERIOR_DELTOID,
+            BICEPS -> bodyFront(preset)
+
+            TRAPEZIUS,
+            LATISSIMUS_DORSI,
+            RHOMBOIDS,
+            TERES_MAJOR,
+            POSTERIOR_DELTOID,
+            TRICEPS -> bodyBack(preset)
+
+            LATERAL_DELTOID,
+            FOREARM -> bodySplit(preset)
+
+            CALF,
+            GLUTEAL,
+            HAMSTRINGS,
+            QUADRICEPS,
+            ADDUCTORS,
+            ABDUCTORS -> legsSplit(preset)
+        }
+    }
 
     public fun color(preset: MuscleColorPreset): Color {
         return when (this) {
@@ -106,6 +191,41 @@ public enum class MuscleEnumState {
     public companion object {
         public fun front(): ImmutableList<MuscleEnumState> = FRONT
         public fun back(): ImmutableList<MuscleEnumState> = BACK
+
+        public fun colorPreset(
+            fallback: Color,
+            outline: Color,
+            background: Color,
+            colorFor: (MuscleEnumState) -> Color,
+        ): MuscleColorPreset = MuscleColorPreset(
+            biceps = colorFor(BICEPS),
+            triceps = colorFor(TRICEPS),
+            forearm = colorFor(FOREARM),
+            forearmFront = colorFor(FOREARM),
+            forearmBack = colorFor(FOREARM),
+            lateralDeltoid = colorFor(LATERAL_DELTOID),
+            anteriorDeltoid = colorFor(ANTERIOR_DELTOID),
+            posteriorDeltoid = colorFor(POSTERIOR_DELTOID),
+            pectoralisMajorAbdominal = colorFor(PECTORALIS_MAJOR_ABDOMINAL),
+            pectoralisMajorClavicular = colorFor(PECTORALIS_MAJOR_CLAVICULAR),
+            pectoralisMajorSternocostal = colorFor(PECTORALIS_MAJOR_STERNOCOSTAL),
+            rectusAbdominis = colorFor(RECTUS_ABDOMINIS),
+            obliquesAbdominis = colorFor(OBLIQUES),
+            rhomboids = colorFor(RHOMBOIDS),
+            latissimus = colorFor(LATISSIMUS_DORSI),
+            trapezius = colorFor(TRAPEZIUS),
+            teresMajor = colorFor(TERES_MAJOR),
+            gluteal = colorFor(GLUTEAL),
+            hamstrings = colorFor(HAMSTRINGS),
+            calf = colorFor(CALF),
+            quadriceps = colorFor(QUADRICEPS),
+            adductors = colorFor(ADDUCTORS),
+            abductors = colorFor(ABDUCTORS),
+            other = fallback,
+            outline = outline,
+            backgroundFront = background,
+            backgroundBack = background,
+        )
 
         private val FRONT: ImmutableList<MuscleEnumState> = persistentListOf(
             PECTORALIS_MAJOR_CLAVICULAR,

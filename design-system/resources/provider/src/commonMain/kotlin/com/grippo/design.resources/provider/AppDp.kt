@@ -377,24 +377,14 @@ public data object AppDp {
             val goal: Goal = Goal
 
             public data object Goal {
-                val timelineMarker: Dp = 10.dp
                 val statusMarker: Dp = 6.dp
                 val breakdown: Breakdown = Breakdown
-                val insight: Insight = Insight
 
                 public data object Breakdown {
                     val radius: Dp = Panel.Small.radius
                     val horizontalPadding: Dp = Panel.Small.horizontalPadding
                     val verticalPadding: Dp = Panel.Small.verticalPadding
                     val severityDot: Dp = padding.small
-                }
-
-                public data object Insight {
-                    val radius: Dp = Panel.Small.radius
-                    val horizontalPadding: Dp = Panel.Small.horizontalPadding
-                    val verticalPadding: Dp = Panel.Small.verticalPadding
-                    val textSpacing: Dp = padding.extraSmall
-                    val actionIcon: Dp = icon.small
                 }
             }
         }

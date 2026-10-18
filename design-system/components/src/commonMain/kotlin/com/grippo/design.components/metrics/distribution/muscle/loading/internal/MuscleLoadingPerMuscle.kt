@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
@@ -17,26 +16,21 @@ internal fun MuscleLoadingPerMuscle(
     modifier: Modifier = Modifier,
     summary: MuscleLoadSummaryState,
 ) {
-    val palette = AppTokens.colors.muscle.palette6MuscleCalm
-
-    val muscleEntries = remember(summary, palette) {
-        colorizeEntries(
-            entries = summary.perMuscle.entries,
-            palette = palette
-        )
-    }
+    val entries = summary.perMuscle.entries
+    val highestShare = entries.maxOfOrNull { it.value }
 
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
-        muscleEntries.forEachIndexed { index, colored ->
-            key(colored.entry.group, colored.entry.muscles) {
+        entries.forEach { entry ->
+            key(entry.group, entry.muscles) {
+                val muscle = entry.muscles.firstOrNull()
                 MuscleLoadingItem(
-                    entry = colored.entry,
-                    label = colored.entry.muscles.firstOrNull()?.title()?.text() ?: "-",
-                    indicatorColors = rememberMuscleLoadIndicatorColors(colored.color),
-                    dominant = index == 0,
+                    entry = entry,
+                    label = muscle?.title()?.text() ?: "-",
+                    muscle = muscle,
+                    dominant = entry.value == highestShare,
                 )
             }
         }
@@ -47,9 +41,6 @@ internal fun MuscleLoadingPerMuscle(
 @Composable
 private fun MuscleLoadingPerMusclePreview() {
     PreviewContainer {
-        MuscleLoadingPerMuscle(
-            summary = stubMuscleLoadSummary(),
-        )
         MuscleLoadingPerMuscle(
             summary = stubMuscleLoadSummary(),
         )

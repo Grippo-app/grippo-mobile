@@ -133,9 +133,8 @@ Screen-result rules are defined in the ui-feature skill,
   including private helpers and extensions. Use `safeLaunch` → `ErrorProvider`.
   Private suspend helpers propagate original errors through the same pipeline;
   request isolation follows the [error pipeline](../../ui-feature/references/error-pipeline.md#requests-driven-by-a-long-lived-source), with no new scopes, recovery wrappers or stage flags.
-  Business commands throw directly. A required platform credential Result MUST
-  be unwrapped with `getOrThrow()` inside the owned error pipeline or propagated
-  to a caller that handles it; failure MUST NOT be silently discarded.
+  Business and credential-adapter commands throw directly inside the owned error
+  pipeline; failure MUST NOT be silently discarded.
 - **Impure `safeLaunch.mapError`** or replacing original errors before analytics,
   logging or crash reporting. Mapping only supplies a standard dialog representation
   for known exceptions; return unknown errors unchanged and preserve cancellation/fatal errors.
@@ -143,8 +142,8 @@ Screen-result rules are defined in the ui-feature skill,
   dialog is dismissed, not when the exception is thrown, and does not suppress the dialog.
 - **Custom error dialogs** outside `DialogConfig.ErrorDisplay`.
 - **Recording exceptions to Firebase manually.** Pipeline does it.
-- **Required credential Result converted to fallback success** through `getOrNull()`,
-  `getOrElse` or an early return, even when the fallback value is handled. Apply the
+- **Required credential failure converted to an absent account or fallback success**
+  through a recovery wrapper or an early return. Apply the
   [error pipeline](../../ui-feature/references/error-pipeline.md); preserve the original failure.
 - **Consuming `CancellationException`.** Must propagate; shared error dispatch excludes it.
 - **Throwing raw `Throwable` from `validateResponse`.** Throw `AppError` subtypes. *(Reviewer-only.)*

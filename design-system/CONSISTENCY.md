@@ -55,9 +55,34 @@ A compact navigation item and a screen heading do not need the same font size.
 - Sparkline extrema use `charts.sparkline.minimumMarker` and `maximumMarker`
   data colors. A minimum or maximum alone does not imply warning or success,
   including in bodyweight history.
-- Detailed muscle-distribution rows keep the same calm data hues as the map;
-  rank alone carries no success/warning/error meaning. Goal diagnostic markers
-  use their severity accent directly while their explanatory text stays neutral.
+- Muscles share the “Body Map” motif across exercise-library filters and rows,
+  exercise anatomy, onboarding/profile muscle selection, training summaries,
+  Home and statistics/details. The anatomical zone is the primary cue; complete
+  localized group/muscle labels accompany it. `MuscleMark` uses
+  `muscle.markSize/markPadding/markRadius` (32/2/8 dp), with the existing front,
+  back, split torso or split legs projection. Individual muscles highlight their
+  exact zone and inherit their group's identity hue.
+- Fixed categorical muscle roles use the corresponding LightAccent/DarkAccent
+  values in both themes: `muscle.chest` = Coral, `muscle.back` = Sky,
+  `muscle.abdominal` = Copper, `muscle.legs` = Teal, `muscle.arms` = Purple,
+  `muscle.shoulders` = Indigo. `MuscleEnumState.group()/color()/icon()` and
+  `MuscleGroupEnumState.color()/icon()/image(preset)` own these identity mappings;
+  components own geometry. Identity never depends on share, rank, sorting or
+  breakdown mode. `muscle.inactive/background/outline` frame absent anatomy;
+  a neutral area alone is not a zero or a fatigue/recovery assessment.
+- Distribution maps and row indicators share the fixed group hue. Bar length
+  remains a linear 0–100% share, with the exact existing formatted value outside
+  the bar. This is the estimated distribution of recorded sets weighted by
+  exercise involvement, not volume, muscle size, recovery or a score; exercise
+  anatomy retains its separate involvement explanation. Existing exclusions and
+  missing-data notices remain visible. Tied leaders receive equal emphasis.
+- Group identity stays visible in selection headers and muscle rows regardless of
+  choice. Existing neutral choice-card borders, Segment selection and Switch
+  state retain selection ownership; the selected zones of the large anatomy
+  illustration use the group's hue. An identity mark never indicates selection,
+  exclusion severity or success. Suggestions remain a separate filter role.
+  Goal diagnostic markers use their severity accent directly while their
+  explanatory text stays neutral.
 - Goals share the “Course” motif: direction, training alignment and calendar
   time are separate facts. `goal.accent/background` supplies a restrained copper
   identity pair in both themes; it does not indicate selection or success.
@@ -178,7 +203,7 @@ A compact navigation item and a screen heading do not need the same font size.
   standalone content cards and framed menu sections use the 20 dp shape
   and a thin neutral outline. A standalone card is its own section; rows repeated
   inside a list are compact. Compact metric panels, repeated framed rows, input
-  fields and focus frames use 16 dp corners, including goal insights, diagnostic
+  fields and focus frames use 16 dp corners, including goal diagnostic
   breakdown panels and weight history rows. Chips, set cells and thumbnails retain
   their size-specific shapes. Open sections and journal rows remain unframed.
 - Training recording places duration, tonnage and repetitions directly on
@@ -270,10 +295,12 @@ A compact navigation item and a screen heading do not need the same font size.
   Its compact image row removes the generic weighted outer spacers, uses two
   equal image slots with an 8 dp gap and centers the complete bodies vertically.
   The muscle-details image layout retains its original default spacing.
-  Map and bars share colors derived from the full calm muscle palette before
-  selecting rows. Percentages are labelled as estimated-load shares; the context
-  counts selected-period workouts/sets. A single group names its most-loaded
-  individual muscle when that fact exists. Missing groups are not invented zeros.
+  Map and bars retain each group's fixed Body Map hue before and after choosing
+  the three visible rows. Percentages remain labelled as estimated recorded-set
+  shares; the context counts selected-period workouts/sets. Useful anatomy and
+  values precede methodology and missing-data notes. A single group names its
+  uniquely leading individual muscle when that fact exists. Missing groups are
+  not invented zeros.
 - The training-rhythm overview has the common heading/chevron and a compact row:
   the existing streak headline and cadence on the left, active-day count on the
   right, with its short localized caption. Both columns wrap naturally; the
@@ -282,14 +309,19 @@ A compact navigation item and a screen heading do not need the same font size.
   is a neutral numerical percentage with an explicit caption and a separate
   semantic status; no completion ring suggests an achieved outcome. Missing
   scores show an unavailable value, and partial evidence retains its notice.
-  A separate calendar route shows the actual target and remaining time; Details
-  also shows start/target dates and elapsed days. Time uses the copper identity
-  accent, never inferred success at expiry. The analyzed-workout count is scoped
+  A separate compact calendar row shows the actual target and remaining time in
+  Overview and Details; no second progress scale competes with alignment. Expiry
+  never implies success. The analyzed-workout count is scoped
   to the selected period: only eligible sessions contribute, not lifetime totals.
   Overview content determines its own height without filler spacers; the existing
   remaining/overdue message and Update eligibility are preserved.
-  Details puts the training summary and actionable diagnostic values before
-  evidence and methodology, retaining the complete explanation and data limits.
+  Details shows at most two non-passing diagnostic facts first, in the existing
+  severity/rule order. One disclosure reveals every criterion, evidence counts
+  and a short explanation of the estimate. Titles sit above actual/target values
+  so both retain their full width. Repeated introductions and score/deadline
+  summaries are omitted; unavailable assessments stay neutral, and partial-data
+  limitations remain visible. The score describes training alignment, not goal
+  achievement.
   Weekly training-day diagnostics use compact localized day/week units; their
   criterion heading carries the training context instead of each value repeating it.
   Status wording describes a course to follow or adjust without judging the user.

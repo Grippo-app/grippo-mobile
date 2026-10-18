@@ -40,16 +40,6 @@ public fun MuscleLoading(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
-        if (entries.isNotEmpty() || summary.meta.trainingsCount > 0) {
-            Text(
-                text = AppTokens.strings.res(
-                    if (summary.meta.trainingsCount == 0) Res.string.muscle_load_anatomy_note
-                    else Res.string.muscle_load_set_share_note
-                ),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-            )
-        }
         if (entries.isEmpty()) {
             Text(
                 text = AppTokens.strings.res(Res.string.muscle_load_no_data),
@@ -66,6 +56,16 @@ public fun MuscleLoading(
             MuscleLoadingMode.PerMuscle -> MuscleLoadingPerMuscle(
                 modifier = Modifier.fillMaxWidth(),
                 summary = summary,
+            )
+        }
+        if (entries.isNotEmpty() || summary.meta.trainingsCount > 0) {
+            Text(
+                text = AppTokens.strings.res(
+                    if (summary.meta.trainingsCount == 0) Res.string.muscle_load_anatomy_note
+                    else Res.string.muscle_load_set_share_note
+                ),
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.secondary,
             )
         }
         MuscleLoadingDataNotice(summary = summary)

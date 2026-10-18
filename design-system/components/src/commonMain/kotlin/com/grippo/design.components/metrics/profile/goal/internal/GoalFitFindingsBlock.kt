@@ -161,18 +161,21 @@ private fun FindingValueRow(
     ) {
         SeverityDot(color = finding.dotColor())
 
-        Text(
+        Column(
             modifier = Modifier.weight(1f),
-            text = title,
-            style = titleStyle,
-            color = AppTokens.colors.text.primary,
-        )
-        Text(
-            modifier = Modifier.weight(1f, fill = false),
-            text = finding.valueTargetText(),
-            style = AppTokens.typography.b13Med(),
-            color = finding.valueColor(),
-        )
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+        ) {
+            Text(
+                text = title,
+                style = titleStyle,
+                color = AppTokens.colors.text.primary,
+            )
+            Text(
+                text = finding.valueTargetText(),
+                style = AppTokens.typography.b13Med(),
+                color = finding.valueColor(),
+            )
+        }
     }
 }
 

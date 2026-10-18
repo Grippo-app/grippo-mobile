@@ -70,8 +70,8 @@ actual signatures; an existing deviation does not weaken a rule.
   a manual `CoroutineExceptionHandler` or `async { }.await()` for a single task.
 - Call throwing commands directly inside `safeLaunch`; no local `try/catch`,
   `runCatching`, `onFailure`, `recover`, `fold` or `getOrElse` that hides or
-  presents an unhandled failure in a ViewModel. Credential-adapter Result handling
-  and the shared failure path live in the
+  presents an unhandled failure in a ViewModel. Direct credential-adapter calls
+  and the shared failure path follow the
   [UI error pipeline](../../ui-feature/references/error-pipeline.md).
 - Collections in `@Immutable` State and Loaders: only `kotlinx-collections-immutable`
   (`ImmutableList`, `ImmutableSet`, `PersistentList`). `List`/`Set`/`Map` and
@@ -123,10 +123,10 @@ statements are allowed there:
 - a Flow chain ending in `.safeLaunch()`: the source call on the first line,
   one operator per line below it, the value handed to a handler by method
   reference (`.onEach(::provideNote)`);
-- a `safeLaunch { }` block for a startup load: it wraps the business call in
-  `analytics.trackOperation(...) { }` and either binds the returned value to
-  a local and passes it to a handler, or discards it when a Flow chain in the
-  same `init` delivers the data (cache refresh);
+- a `safeLaunch { }` block for a startup load: it either binds the returned
+  value to a local and passes it to a handler, or discards it when a Flow chain
+  in the same `init` delivers the data (cache refresh). Instrumentation follows
+  the [analytics observation boundary](../../feature-analytics/SKILL.md#observation-boundary-must);
 - a call to the private startup method shared with `onError`
   ([Kotlin blocks](#kotlin-blocks));
 - an `if (initialState == null)` or a `when` over a caller-supplied input whose
@@ -135,7 +135,7 @@ statements are allowed there:
   a dialog config with several modes);
 - a `val` holding a source Flow that two or more chains share.
 
-No conversion, use-case call or state assembly happens in `init`: a
+Keep data-to-State conversion and assembly out of `init`: a
 `.map { it.toState() }` inside an `init` chain is the conversion this rule
 forbids; the mapper call belongs in the handler.
 

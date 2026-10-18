@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
@@ -17,6 +18,7 @@ import com.grippo.design.components.chart.internal.RingChart
 import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
+import com.grippo.design.components.muscle.MuscleMark
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -33,14 +35,7 @@ public fun MuscleLoadingFocusCard(
     summary: MuscleLoadSummaryState,
 ) {
     val topEntry = summary.perGroup.entries.maxByOrNull { it.value }
-    val leadingGroups = if (topEntry != null) {
-        summary.perGroup.entries
-            .filter { it.value == topEntry.value }
-            .map { it.group.title().text() }
-            .joinToString()
-    } else {
-        AppTokens.strings.res(Res.string.muscle_load_no_data)
-    }
+    val leadingEntries = summary.perGroup.entries.filter { it.value == topEntry?.value }
 
     MetricSectionPanel(
         modifier = modifier,
@@ -60,11 +55,30 @@ public fun MuscleLoadingFocusCard(
                     style = AppTokens.typography.b14Med(),
                     color = AppTokens.colors.text.secondary,
                 )
-                Text(
-                    text = leadingGroups,
-                    style = AppTokens.typography.h5(),
-                    color = AppTokens.colors.text.primary,
-                )
+                if (leadingEntries.isEmpty()) {
+                    Text(
+                        text = AppTokens.strings.res(Res.string.muscle_load_no_data),
+                        style = AppTokens.typography.h5(),
+                        color = AppTokens.colors.text.primary,
+                    )
+                } else {
+                    leadingEntries.forEach { entry ->
+                        key(entry.group) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                MuscleMark(group = entry.group)
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    text = entry.group.title().text(),
+                                    style = AppTokens.typography.h5(),
+                                    color = AppTokens.colors.text.primary,
+                                )
+                            }
+                        }
+                    }
+                }
             }
             if (topEntry != null) {
                 ShareRing(

@@ -24,14 +24,13 @@ The module provides everything required to start and consume the Apple Sign-In U
   sheet.
 
 `AppleAccount` contains the authorization code only. `AppleAuthUiProvider.signIn()` returns
-`Result<AppleAccount>` for provider/user outcomes. A user cancellation has
-`AppleAuthFailureReason.Cancelled`; coroutine cancellation propagates as
-`CancellationException` rather than being wrapped in `Result.failure`.
+`AppleAccount` and throws on failure. A user cancellation throws `AppleAuthException` with
+`AppleAuthFailureReason.Cancelled`; coroutine cancellation and fatal errors propagate unchanged.
 Check `appleAuthProvider.isSupported` before rendering a "Continue with Apple" button – the
 provider reports `false` on Android and `true` on iOS.
 
 When configured, the UI layer simply calls `appleAuthProvider.getUiProvider(context).signIn()` and
-handles the `Result`.
+uses the existing `safeLaunch` error pipeline.
 
 ---
 
@@ -96,19 +95,21 @@ FilledTonalButton(
 `onAppleClick` should accept a `AppleAuthUiContext` and delegate to the state holder or ViewModel
 running your authentication flow.
 
-Example ViewModel function:
+The LoginViewModel's provider operation stays inside its existing `safeLaunch` and analytics block:
 
 ```kotlin
-suspend fun handleAppleLogin(context: AppleAuthUiContext) {
-    val result = appleAuthProvider
-        .getUiProvider(context)
-        .signIn()
+safeLaunch(
+    loader = LoginLoader.LoginByAppleButton,
+    mapError = ::mapAuthError,
+) {
+    analytics.trackEvent(AuthEvent.Login.Submit(method = Method.Apple))
 
-    result.onSuccess { account ->
-        // Use account.authorizationCode in your domain layer.
-    }.onFailure { error ->
-        // Route the provider error through the existing UI error handler.
+    val hasProfile = analytics.trackOperation(AuthOperation.Login(method = Method.Apple)) {
+        val account = appleAuthProvider.getUiProvider(context).signIn()
+        loginUseCase.loginApple(code = account.authorizationCode)
     }
+
+    navigateAfterLogin(hasProfile)
 }
 ```
 

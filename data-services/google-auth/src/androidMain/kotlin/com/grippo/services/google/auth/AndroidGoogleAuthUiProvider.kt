@@ -23,20 +23,19 @@ public class AndroidGoogleAuthUiProvider(
     private val credentialManager: CredentialManager,
     private val serverClientId: String,
 ) {
-    public suspend fun signIn(): Result<GoogleAccount> {
-        return runCatching {
+    public suspend fun signIn(): GoogleAccount {
+        return try {
             requireValidServerClientId(serverClientId)
 
             val credential = requestCredentialStable()
 
             handleCredential(credential)
-        }.fold(
-            onSuccess = { Result.success(it) },
-            onFailure = { error ->
-                if (error is CancellationException || error !is Exception) throw error
-                Result.failure(error.asGoogleAuthException())
-            },
-        )
+        } catch (error: Exception) {
+            if (error is CancellationException) {
+                throw error
+            }
+            throw asGoogleAuthException(error)
+        }
     }
 
     private fun requireValidServerClientId(clientId: String) {
@@ -54,7 +53,7 @@ public class AndroidGoogleAuthUiProvider(
     }
 
     private suspend fun requestCredentialStable(): Credential {
-        val a = runCatching {
+        val authorizedCredential = try {
             credentialManager.getCredential(
                 context = activityContext,
                 request = requestGoogleId(
@@ -62,14 +61,18 @@ public class AndroidGoogleAuthUiProvider(
                     autoSelectEnabled = true,
                 ),
             ).credential
-        }.getOrElse { error ->
-            if (!shouldFallbackToNextStrategy(error)) throw error
+        } catch (error: GetCredentialException) {
+            if (!shouldFallbackToNextStrategy(error)) {
+                throw error
+            }
             null
         }
 
-        if (a != null) return a
+        if (authorizedCredential != null) {
+            return authorizedCredential
+        }
 
-        val b = runCatching {
+        val availableCredential = try {
             credentialManager.getCredential(
                 context = activityContext,
                 request = requestGoogleId(
@@ -77,19 +80,23 @@ public class AndroidGoogleAuthUiProvider(
                     autoSelectEnabled = false,
                 ),
             ).credential
-        }.getOrElse { error ->
-            if (!shouldFallbackToNextStrategy(error)) throw error
+        } catch (error: GetCredentialException) {
+            if (!shouldFallbackToNextStrategy(error)) {
+                throw error
+            }
             null
         }
 
-        if (b != null) return b
+        if (availableCredential != null) {
+            return availableCredential
+        }
 
-        val c = credentialManager.getCredential(
+        val signInCredential = credentialManager.getCredential(
             context = activityContext,
             request = requestSiwgButton(),
         )
 
-        return c.credential
+        return signInCredential.credential
     }
 
     private fun shouldFallbackToNextStrategy(error: Throwable): Boolean {
@@ -168,7 +175,9 @@ public class AndroidGoogleAuthUiProvider(
         } catch (error: GoogleAuthException) {
             throw error
         } catch (error: Exception) {
-            if (error is CancellationException) throw error
+            if (error is CancellationException) {
+                throw error
+            }
             throw GoogleAuthException.TokenParseFailed(
                 message = "Unexpected error while parsing Google credential",
                 cause = error,
@@ -176,38 +185,40 @@ public class AndroidGoogleAuthUiProvider(
         }
     }
 
-    private fun Throwable.asGoogleAuthException(): GoogleAuthException {
-        if (this is GoogleAuthException) return this
+    private fun asGoogleAuthException(error: Exception): GoogleAuthException {
+        if (error is GoogleAuthException) {
+            return error
+        }
 
-        return when (this) {
+        return when (error) {
             is NoCredentialException -> GoogleAuthException.NoCredential(
                 message = "No available Google credentials on this device",
-                cause = this,
+                cause = error,
             )
 
             is GetCredentialCancellationException -> GoogleAuthException.Cancelled(
                 message = "Google sign-in cancelled",
-                cause = this,
+                cause = error,
             )
 
             is GetCredentialInterruptedException -> GoogleAuthException.Interrupted(
                 message = "Google sign-in interrupted",
-                cause = this,
+                cause = error,
             )
 
             is GetCredentialProviderConfigurationException -> GoogleAuthException.ProviderMisconfigured(
                 message = "Credential provider misconfigured or unavailable",
-                cause = this,
+                cause = error,
             )
 
             is GetCredentialException -> GoogleAuthException.CredentialManagerFailed(
                 message = "Unable to retrieve Google credential",
-                cause = this,
+                cause = error,
             )
 
             else -> GoogleAuthException.Unknown(
                 message = "Google sign-in failed",
-                cause = this,
+                cause = error,
             )
         }
     }

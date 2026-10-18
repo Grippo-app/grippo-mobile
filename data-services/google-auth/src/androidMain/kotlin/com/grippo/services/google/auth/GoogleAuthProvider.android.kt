@@ -50,12 +50,14 @@ public actual class GoogleAuthProvider actual constructor(
     }
 
     public actual suspend fun signOut() {
-        if (!isSupported) return
+        if (!isSupported) {
+            return
+        }
 
-        runCatching {
+        try {
             credentialManager.clearCredentialState(ClearCredentialStateRequest())
-        }.getOrElse { error ->
-            if (error is CancellationException || error !is Exception) {
+        } catch (error: Exception) {
+            if (error is CancellationException) {
                 throw error
             }
             throw GoogleAuthException.CredentialManagerFailed(
@@ -66,16 +68,14 @@ public actual class GoogleAuthProvider actual constructor(
     }
 
     private fun readMetaValue(key: String): String? {
-        return runCatching {
-            val info = applicationContext.packageManager.getApplicationInfo(
-                applicationContext.packageName,
-                PackageManager.GET_META_DATA,
-            )
+        val info = applicationContext.packageManager.getApplicationInfo(
+            applicationContext.packageName,
+            PackageManager.GET_META_DATA,
+        )
 
-            info.metaData
-                ?.getString(key)
-                ?.trim()
-                ?.takeIf { it.isNotEmpty() }
-        }.getOrNull()
+        return info.metaData
+            ?.getString(key)
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
     }
 }

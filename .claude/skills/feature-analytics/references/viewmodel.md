@@ -96,7 +96,7 @@ observe facts already available to the owning VM.
 ```kotlin
 analytics.trackEvent(AuthEvent.Login.Submit(Method.Google))
 val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Google)) {
-    val credential = googleAuthProvider.getUiProvider(context).signIn().getOrThrow()
+    val credential = googleAuthProvider.getUiProvider(context).signIn()
     loginUseCase.loginGoogle(token = credential.token)
 }
 
@@ -107,8 +107,8 @@ analytics.trackEvent(AuthEvent.User.PickerConfirmed(field = ProfilePicker.Height
 ```
 
 The current [LoginUseCase](../../../../data-features/feature-api/src/commonMain/kotlin/com/grippo/data.features.api/authorization/LoginUseCase.kt)
-returns Boolean and throws on failure; the credential provider returns Result.
-The credential unwrap stays inside its decorator. Feature/UseCase commands follow the
+returns Boolean and throws on failure; credential providers return their account and throw on failure.
+Credential acquisition stays inside its decorator. Feature/UseCase commands follow the
 [throwing suspend contract](../../data-layer/references/operation-outcomes.md#throwing-suspend-contracts-canonical)
 and are called directly inside the decorator:
 

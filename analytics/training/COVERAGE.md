@@ -80,7 +80,9 @@ Seven typed operations decorate complete throwing Feature/UseCase calls inside t
   SaveTraining loader skips the write when a saved ID is already present, calls
   `setTrainingUseCase` when the stage has no ID or `updateTrainingUseCase`
   otherwise. The repository succeeds only after a nonnull ID, readback of that
-  same training and complete transactional cache hydration. The UseCase also
+  same training and complete transactional cache hydration. Create/update verify
+  the cached active profile required by the cache's foreign key before the remote
+  mutation. The UseCase also
   requires its user refresh to confirm an existing profile before returning the
   saved ID; a false profile result fails the UseCase. Mutation/readback
   failures retain their original errors; missing IDs or incomplete/mismatched

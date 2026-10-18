@@ -5,7 +5,7 @@ A successful return establishes the complete operation outcome, not just an acce
 
 ## Throwing suspend contracts (canonical)
 
-- `GrippoApi`, Repository, Feature and command UseCase methods MUST be ordinary `suspend`
+- `GrippoApi`, platform credential adapters, Repository, Feature and command UseCase methods MUST be ordinary `suspend`
   functions returning their success value `T` or `Unit`. They MUST NOT return `kotlin.Result`
   or convert exceptions into success values. Observations keep `Flow<Domain>`; pure calculators
   keep their direct return types.
@@ -13,8 +13,9 @@ A successful return establishes the complete operation outcome, not just an acce
   storage and required follow-up work propagate unchanged to the caller. MUST NOT add local
   `try/catch`, `runCatching`, Result composition or generic execution/recovery wrappers in this
   chain. `try/finally` remains valid for existing resource/Job cleanup. Infrastructure-owned
-  transport classification, auth refresh/retry and platform credential adapters keep their
-  separately documented boundaries; do not copy them into business operations.
+  transport classification, auth refresh/retry and
+  [platform credential error translation](auth-session.md#credential-adapters-canonical) keep
+  their separately documented boundaries; do not copy them into business operations.
 - Required payload validation, hydration (loading and storing the related data a record needs,
   for example a training's exercises and iterations) and cleanup complete before success.
   A save returns its required non-null ID only after those steps. Never turn a missing ID,
@@ -24,7 +25,9 @@ A successful return establishes the complete operation outcome, not just an acce
   Distinguish an absent profile or goal from a malformed non-null response before mapping. A
   mapper returning null does not establish that the domain entity is absent. A missing local
   prerequisite for a requested mutation fails before the remote write, using an existing error
-  meaning; it is not a malformed server response. Consumers MUST inspect Boolean/nullable
+  meaning; it is not a malformed server response. When hydration requires a cached owner through
+  a foreign key, resolve that owner before the remote mutation; an active-session ID alone does
+  not establish its presence. Consumers MUST inspect Boolean/nullable
   outcomes when their operation requires that entity to exist. A required profile refresh
   returning false fails the composing operation; presence checks for routing keep that false.
 - Preserve the caller's `CancellationException` and fatal `Error` through the chain. Direct
@@ -32,8 +35,7 @@ A successful return establishes the complete operation outcome, not just an acce
   [canonical coroutine rules](../../validation-gates/references/forbidden-patterns.md#coroutines).
 - UI calls commands directly inside its existing `safeLaunch`, preserving any existing
   `analytics.trackOperation` around the complete operation. The existing ErrorProvider owns
-  presentation. Platform credential adapters that still return `Result` are unwrapped at their
-  existing UI boundary inside that same error/analytics block; this is not a business command contract.
+  presentation. Credential commands run directly inside that same error/analytics block.
 - A failed operation after an accepted server mutation does not imply rollback or safe replay.
   Preserve existing transaction boundaries and add no automatic retry or fallback.
 

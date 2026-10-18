@@ -88,8 +88,11 @@ consumed date, and reject duplicate primary IDs before transactionally replacing
 that user's snapshot. A confirmed empty snapshot clears
 only that user's rows, so deleted weights do not remain cached. Request, required
 readback and storage failures propagate through the existing operation block.
-Missing local owners fail required refreshes/mutations before their requests;
-goal absence remains a Boolean read outcome, while goal writes return Unit.
+Exclusion requests require the cached active profile; their refresh/readback rejects
+missing or duplicate IDs before replacing membership rows. Weight-history refresh
+requires an active user ID; goal and weight-history mutations additionally require
+the cached active user before their remote writes. Goal absence remains a Boolean
+read outcome, while goal writes return Unit.
 Nonnull goals must map without losing required enum/personalization data before
 cache writes. Equipment/muscle catalogs reject invalid domain rows, wrong group
 ownership and duplicate primary IDs before replacing their snapshots.

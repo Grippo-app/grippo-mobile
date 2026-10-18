@@ -607,34 +607,11 @@
 
     <!-- Training goal details dialog -->
     <string name="goal_details_title">Goal details</string>
-    <string name="goal_details_subtitle">A closer look at how your training matches the goal you picked.</string>
-    <string name="goal_details_insights_title">Training summary</string>
-
-    <!-- Training goal details: reason headlines -->
-    <string name="goal_details_reason_no_data_title">Not enough data yet</string>
-    <string name="goal_details_reason_no_data_detail">There are not enough valid recorded sets or evaluated criteria in this period to score the training pattern.</string>
-    <string name="goal_details_reason_too_early_title">It's still early</string>
+    <string name="goal_details_show_details">About this assessment</string>
+    <string name="goal_details_hide_details">Hide details</string>
+    <!-- Training goal details: unavailable assessment -->
+    <string name="goal_details_reason_no_data_detail">There are not enough recorded sets or available criteria to assess this period.</string>
     <string name="goal_details_reason_too_early_detail">At least seven observed days are needed to assess weekly training patterns.</string>
-    <string name="goal_details_reason_overdue_title">Target date has passed</string>
-    <string name="goal_details_reason_overdue_detail">You're past the original target. Consider extending the deadline or wrapping the goal up.</string>
-    <string name="goal_details_reason_almost_done_title">Target date is near</string>
-    <string name="goal_details_reason_almost_done_detail">The target date is approaching. Review your training and next steps.</string>
-    <string name="goal_details_reason_on_track_title">On course</string>
-    <string name="goal_details_reason_on_track_detail">Most evaluated training criteria are met in the analyzed period.</string>
-    <string name="goal_details_reason_drifting_title">Room to improve</string>
-    <string name="goal_details_reason_drifting_detail">Some evaluated training criteria need attention. Compare the values and targets for each criterion.</string>
-    <string name="goal_details_reason_off_track_title">Adjust your course</string>
-    <string name="goal_details_reason_off_track_detail">Several evaluated training criteria are below their targets. Review the recorded period and each criterion.</string>
-
-    <!-- Training goal details: per-axis reasons -->
-
-
-
-
-
-
-    <!-- Training goal details: actionable tips -->
-    <string name="goal_details_tip_review_deadline">Revisit the target date — either extend it or close the goal and start a fresh one.</string>
 
     <!-- Goal-fit diagnostic sections -->
     <string name="goal_fit_diagnostic_drifting_title">What to adjust</string>
@@ -923,7 +900,7 @@
     <string name="goal_details_analysis_excluded">Excluded sets with invalid or incomplete entries: %1$d</string>
     <string name="goal_details_analysis_missing_metadata">Muscle diagnostics unavailable: exercise data missing for %1$d sets.</string>
     <string name="goal_details_analysis_unavailable">The selected period does not overlap the goal history available today.</string>
-    <string name="goal_details_analysis_method">Training-pattern estimate, not a measure of results. Each evaluated criterion has equal weight: met 100, partly met 50, unmet 0; muscle-group rows are averaged within their criterion. Unknown criteria are omitted. Recorded sets may include warm-ups; effort, recovery, nutrition and activity outside Grippo are unknown. Fat-loss goals assess training support, not fat lost. Muscle-group set counts are estimates weighted by involvement.</string>
+    <string name="goal_details_analysis_method">Compares your recorded training with reference patterns for this goal. This estimates training alignment, not whether the goal has been achieved.</string>
     <string name="training_streak_partial_period">Partially observed period</string>
     <string name="goal_fit_rule_build_muscle_weekly_frequency_title">Training frequency</string>
     <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Training frequency</string>

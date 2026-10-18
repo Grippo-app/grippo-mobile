@@ -12,6 +12,7 @@ import platform.AuthenticationServices.ASAuthorizationControllerPresentationCont
 import platform.AuthenticationServices.ASAuthorizationErrorCanceled
 import platform.AuthenticationServices.ASAuthorizationErrorDomain
 import platform.AuthenticationServices.ASPresentationAnchor
+import platform.Foundation.NSData
 import platform.Foundation.NSError
 import platform.Foundation.NSString
 import platform.Foundation.NSThread
@@ -29,10 +30,8 @@ public actual class AppleAuthUiProvider internal constructor(
     private var currentController: ASAuthorizationController? = null
     private var currentDelegate: AppleAuthorizationDelegate? = null
 
-    public actual suspend fun signIn(): Result<AppleAccount> {
-        return runCatching { beginSignIn() }.onFailure { error ->
-            if (error is CancellationException || error !is Exception) throw error
-        }
+    public actual suspend fun signIn(): AppleAccount {
+        return beginSignIn()
     }
 
     private suspend fun beginSignIn(): AppleAccount =
@@ -57,38 +56,46 @@ public actual class AppleAuthUiProvider internal constructor(
                     return@runOnMain
                 }
 
-                val request = ASAuthorizationAppleIDProvider().createRequest()
-                request.requestedScopes = listOf(platform.AuthenticationServices.ASAuthorizationScopeEmail)
-                val controller = ASAuthorizationController(listOf(request))
-                val delegate = AppleAuthorizationDelegate(
-                    anchorProvider = anchorProvider,
-                    onSuccess = { account ->
-                        runOnMain {
-                            if (currentController === controller) {
-                                currentController = null
-                                currentDelegate = null
+                try {
+                    val request = ASAuthorizationAppleIDProvider().createRequest()
+                    request.requestedScopes = listOf(platform.AuthenticationServices.ASAuthorizationScopeEmail)
+                    val controller = ASAuthorizationController(listOf(request))
+                    val delegate = AppleAuthorizationDelegate(
+                        anchorProvider = anchorProvider,
+                        onSuccess = { account ->
+                            runOnMain {
+                                if (currentController === controller) {
+                                    currentController = null
+                                    currentDelegate = null
+                                }
+                                complete(Result.success(account))
                             }
-                            complete(Result.success(account))
-                        }
-                    },
-                    onFailure = { error ->
-                        runOnMain {
-                            if (currentController === controller) {
-                                currentController = null
-                                currentDelegate = null
+                        },
+                        onFailure = { error ->
+                            runOnMain {
+                                if (currentController === controller) {
+                                    currentController = null
+                                    currentDelegate = null
+                                }
+                                complete(Result.failure(error))
                             }
-                            complete(Result.failure(error))
-                        }
-                    },
-                )
+                        },
+                    )
 
-                currentController = controller
-                currentDelegate = delegate
-                createdController = controller
+                    currentController = controller
+                    currentDelegate = delegate
+                    createdController = controller
 
-                controller.delegate = delegate
-                controller.presentationContextProvider = delegate
-                controller.performRequests()
+                    controller.delegate = delegate
+                    controller.presentationContextProvider = delegate
+                    controller.performRequests()
+                } catch (error: Throwable) {
+                    if (currentController === createdController) {
+                        currentController = null
+                        currentDelegate = null
+                    }
+                    complete(Result.failure(error))
+                }
             }
             continuation.invokeOnCancellation {
                 runOnMain {
@@ -118,7 +125,7 @@ public actual class AppleAuthProvider actual constructor() {
 private class AppleAuthorizationDelegate(
     private val anchorProvider: () -> ASPresentationAnchor?,
     private val onSuccess: (AppleAccount) -> Unit,
-    private val onFailure: (AppleAuthException) -> Unit,
+    private val onFailure: (Throwable) -> Unit,
 ) : NSObject(),
     ASAuthorizationControllerDelegateProtocol,
     ASAuthorizationControllerPresentationContextProvidingProtocol {
@@ -134,50 +141,62 @@ private class AppleAuthorizationDelegate(
         controller: ASAuthorizationController,
         didCompleteWithAuthorization: ASAuthorization,
     ) {
-        runCatching {
-            val credential =
-                didCompleteWithAuthorization.credential as? ASAuthorizationAppleIDCredential
-                    ?: throw AppleAuthException("Unsupported Apple credential")
+        val account = try {
+            parseAccount(didCompleteWithAuthorization)
+        } catch (error: Throwable) {
+            onFailure(asAppleAuthException(error))
+            return
+        }
 
-            val authorizationCode = credential.authorizationCode?.toUtf8String()
-                ?: throw AppleAuthException("Apple authorization code is missing")
-
-            AppleAccount(
-                authorizationCode = authorizationCode,
-            )
-        }.fold(onSuccess = onSuccess, onFailure = { error ->
-            onFailure(error.asAppleAuthException())
-        })
+        onSuccess(account)
     }
 
     override fun authorizationController(
         controller: ASAuthorizationController,
         didCompleteWithError: NSError,
     ) {
-        if (didCompleteWithError.domain == ASAuthorizationErrorDomain &&
+        val reason = if (
+            didCompleteWithError.domain == ASAuthorizationErrorDomain &&
             didCompleteWithError.code == ASAuthorizationErrorCanceled.toLong()
         ) {
-            onFailure(AppleAuthException("Apple sign-in was cancelled", reason = AppleAuthFailureReason.Cancelled))
-            return
+            AppleAuthFailureReason.Cancelled
+        } else {
+            AppleAuthFailureReason.ProviderFailure
         }
-
         val description = didCompleteWithError.localizedDescription ?: "Apple sign-in failed"
-        onFailure(AppleAuthException(description))
+
+        onFailure(
+            AppleAuthException(
+                message = "$description (domain=${didCompleteWithError.domain}, code=${didCompleteWithError.code})",
+                reason = reason,
+            )
+        )
     }
 
-}
+    private fun parseAccount(authorization: ASAuthorization): AppleAccount {
+        val credential = authorization.credential as? ASAuthorizationAppleIDCredential
+            ?: throw AppleAuthException("Unsupported Apple credential")
+        val authorizationCode = credential.authorizationCode?.let(::toUtf8String)
+            ?.takeIf { it.isNotBlank() }
+            ?: throw AppleAuthException("Apple authorization code is missing")
 
-private fun Throwable.asAppleAuthException(): AppleAuthException {
-    if (this !is Exception) throw this
-    return this as? AppleAuthException ?: AppleAuthException(
-        message ?: "Apple sign-in failed",
-        cause = this
-    )
-}
+        return AppleAccount(authorizationCode = authorizationCode)
+    }
 
-@OptIn(BetaInteropApi::class)
-private fun platform.Foundation.NSData.toUtf8String(): String? {
-    return NSString.create(data = this, encoding = NSUTF8StringEncoding)?.toString()
+    private fun asAppleAuthException(error: Throwable): Throwable {
+        if (error is CancellationException || error !is Exception) {
+            return error
+        }
+        return error as? AppleAuthException ?: AppleAuthException(
+            message = error.message ?: "Apple sign-in failed",
+            cause = error,
+        )
+    }
+
+    @OptIn(BetaInteropApi::class)
+    private fun toUtf8String(value: NSData): String? {
+        return NSString.create(data = value, encoding = NSUTF8StringEncoding)?.toString()
+    }
 }
 
 private fun runOnMain(block: () -> Unit) {

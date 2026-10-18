@@ -2,17 +2,20 @@ package com.grippo.design.components.example.internal
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
+import com.grippo.design.components.muscle.MuscleMark
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_example_last_used_value
@@ -28,6 +31,17 @@ internal fun ExerciseExampleCardLarge(
         .map { it.type.title().text() }
         .joinToString(separator = " · ")
         .ifBlank { value.value.weightType.title().text() }
+
+    val muscleGroups = remember(value.bundles) {
+        if (value.bundles.any { (it.percentage.value ?: 0) < 0 }) {
+            emptyList()
+        } else {
+            value.bundles
+                .filter { (it.percentage.value ?: 0) > 0 }
+                .map { it.muscle.type.group() }
+                .distinct()
+        }
+    }
 
     Row(
         modifier = modifier
@@ -56,6 +70,27 @@ internal fun ExerciseExampleCardLarge(
                 style = AppTokens.typography.b13Med(),
                 color = AppTokens.colors.text.secondary,
             )
+
+            if (muscleGroups.isNotEmpty()) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+                ) {
+                    muscleGroups.forEach { group ->
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            MuscleMark(group = group)
+                            Text(
+                                text = group.title().text(),
+                                style = AppTokens.typography.b12Med(),
+                                color = AppTokens.colors.text.secondary,
+                            )
+                        }
+                    }
+                }
+            }
 
             val lastUsed = value.value.lastUsed
             if (lastUsed !is DateTimeFormatState.Empty) {

@@ -10,6 +10,7 @@ import com.grippo.entity.domain.user.toDomain
 import com.grippo.services.backend.GrippoApi
 import com.grippo.services.database.dao.GoalDao
 import com.grippo.services.database.dao.UserActiveDao
+import com.grippo.services.database.dao.UserDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -22,6 +23,7 @@ internal class GoalRepositoryImpl(
     private val api: GrippoApi,
     private val goalDao: GoalDao,
     private val userActiveDao: UserActiveDao,
+    private val userDao: UserDao,
 ) : GoalRepository {
 
     override fun observeGoal(): Flow<Goal?> {
@@ -57,8 +59,9 @@ internal class GoalRepositoryImpl(
 
     override suspend fun setGoal(goal: SetGoal): Unit {
         val userId = userActiveDao.get().firstOrNull()
+            ?.let { userDao.getById(it).firstOrNull()?.id }
             ?: throw AppError.Expected(
-                message = "An active user is required to save a goal",
+                message = "An active user profile is required to save a goal",
                 description = null,
             )
         val response = api.setGoal(goal.toBody())

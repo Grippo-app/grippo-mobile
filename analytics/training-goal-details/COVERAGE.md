@@ -19,6 +19,7 @@ No screen enum or separate dialog presentation contract is introduced.
 | HomeViewModel.onOpenGoalDetails | HomeEvent.GoalDetailsClicked | Existing valid-range guard; parent-owned open intent |
 | HomeViewModel config onAddGoal closure | HomeEvent.AddGoalClicked | Parent observes its accepted navigation callback, separate from dialog click intent |
 | Training/goal/catalog observation and adherence calculation | Deliberate omission | Reactive presentation rebuilding, no finite command or submission |
+| Local assessment disclosure | Deliberate omission | Presentation-only expand/collapse; no domain command, navigation or submission |
 
 The leaf `onBack` callback records `DismissRequested`, not completed dismissal.
 The shared host handles toolbar Back/Close, Compose/system Back and swipe/outside
@@ -39,9 +40,10 @@ navigation directions retain their current owners.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | TrainingGoalDetailsComponent / VM | Immutable range seed | Runtime only | Caller range, retainedInstance | Reopening receives the current caller range; retained recreation reuses the VM |
-| TrainingGoalDetailsViewModel | progress; presentation insights derive from it | Rebuild | Combined TrainingFeature.observeTrainings, GoalFeature.observeGoal and currentDateFlow; relevant ExerciseExampleFeature.observeExerciseExamples IDs trigger recalculation; GoalFollowingUseCase with explicit range/current goal/current time | Fresh VM starts with null progress and derived NoData insights; goal removal clears progress; an existing goal with empty period retains its card and a null score; latest source updates cancel obsolete computation |
+| TrainingGoalDetailsViewModel | progress; attention findings and unavailable-assessment copy derive from it | Rebuild | Combined TrainingFeature.observeTrainings, GoalFeature.observeGoal and currentDateFlow; relevant ExerciseExampleFeature.observeExerciseExamples IDs trigger recalculation; GoalFollowingUseCase with explicit range/current goal/current time | Fresh VM starts with null progress and a neutral NoData explanation; goal removal clears progress; an existing goal with empty period retains its card and a null score; latest source updates cancel obsolete computation |
 | GoalProgressState in dialog | grouped GoalAnalysisEvidenceState (range and valid/excluded/metadata-missing set counts), derived days/timeline, findings and prepared optional domain score | Rebuild | Domain adherence mapped through domain-to-state | Only observations since goal creation and inside the selected range are represented; insufficient observations have no numeric score |
-| Rendered content | Localized dates, evidence, reasons, tips and goal presentation | Rebuild | Typed date endpoints rendered with DateCompose; current resources and rebuilt progress | Locale changes resolve period endpoints and copy again; no resolved-label cache or saved business snapshot |
+| Rendered content | Localized dates, evidence, unavailable-assessment copy and goal presentation | Rebuild | Typed date endpoints rendered with DateCompose; current resources and rebuilt progress | Locale changes resolve period endpoints and copy again; no resolved-label cache or saved business snapshot |
+| TrainingGoalDetailsScreen | Assessment disclosure | Runtime only | Local rememberSaveable keyed by goal primary/creation date | Collapsed for a fresh goal/session; survives recomposition/configuration within the current in-memory dialog; no process-death archive |
 | Dialog host | Session, callbacks, pending directions | Runtime only | DialogComponent slot and DialogContentComponent stack use serializer = null | Process death closes the dialog; callbacks are never archived |
 | Foundation / widgets | Jobs, loaders, scroll state and telemetry provenance | Runtime only | Existing foundation/widget ownership | No new persistence owner or synthetic interaction replay |
 
@@ -53,20 +55,23 @@ unchanged. Parent Home drafts and shell restoration retain their own inventories
 
 ## Calculation presentation
 
-The score summary follows the optional domain score. A null score shows TooEarly
-only when valid sets exist in a period shorter than `MIN_ANALYSIS_DAYS`; otherwise
-it shows NoData. Numeric summaries use the shared score thresholds. Diagnostic
-cards render the same findings that supply the score. The sheet does not infer
-share-based training prescriptions, overtraining, achieved outcomes or completion
-from a deadline. Overdue/almost-due timeline notes are independent of score.
+The shared GoalCard renders the optional domain score and its status once. A
+null score shows TooEarly only when valid sets exist in a period shorter than
+`MIN_ANALYSIS_DAYS`; otherwise it shows NoData, or the existing no-overlap
+explanation for an unavailable analysis range. No corrective findings are
+presented as an evaluated assessment without a numeric score.
 
-A static localized caption scopes the score, evidence and findings to available
-mapped exercise details; it does not claim complete history or retain a
-completeness flag. Analyzed days and goal timeline values derive from their
-existing dates rather than independent constructor fields.
-Evidence displays the actual analysis period, analyzed days, counted sets and
-conditional excluded/metadata-missing set counts. Method copy explains the
-heuristic scope. The goal remains editable through its existing card action.
+The collapsed sheet shows at most two non-PASS findings in the existing
+severity/rule order. Disclosure exposes all scored non-PASS and PASS findings,
+actual analysis dates, analyzed days, counted sets and conditional excluded or
+metadata-missing set counts. Findings preserve their existing units, bounds and
+formatting. No new priority formula, prescription or coaching is calculated.
+
+The analyzed period and short method distinguish training alignment from goal
+achievement. The shared card keeps its partial-data notice. Deadline and remaining
+time retain their independent calendar meaning; no achievement or completion is
+inferred from expiry. The existing overdue Update action still opens the goal
+editor. Source observations, domain scoring and navigation owners are unchanged.
 
 ## Admin synchronization impact
 

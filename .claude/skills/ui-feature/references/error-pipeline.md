@@ -91,8 +91,8 @@ safeLaunch {
 Do not hide, replace or present unhandled failures through local catches,
 `runCatching`, `Result.onFailure`, `recover`, `fold` or `getOrElse` in a ViewModel
 or its helpers. Call throwing Feature/UseCase commands directly inside `safeLaunch`.
-Keep all required work inside the decorated business block. Credential adapters that return
-`Result` still need `getOrThrow()` inside that block; ignoring a failed Result loses its error. Use pure
+Keep all required work inside the decorated business block, including direct throwing credential
+adapter calls ([platform ownership](../../data-layer/references/auth-session.md#credential-adapters-canonical)). Use pure
 `mapError` only for dialog presentation and `onError` only after dismissal.
 Foundation's loader cleanup via `try/finally` and documented infrastructure boundaries
 remain valid. Business contracts follow
@@ -143,9 +143,8 @@ before dismissal or an analytics retry policy.
 ## Anti-patterns (MUST avoid)
 
 - **Local catches that hide or present failures** — call throwing commands inside the shared pipeline, including private suspend helpers; request isolation follows the source contract above.
-- **Discarding a required credential Result failure through `getOrNull()`, `getOrElse`
-  or an early-success return.** Unwrap it with `getOrThrow()` inside the existing owned
-  error/analytics block; handling the fallback value does not preserve the failure.
+- **Converting a required credential failure into an absent account or early-success return.**
+  Call the adapter directly inside the existing owned error/analytics block.
 - **Adding Flow<Result<T>> for ordinary cached observations** instead of preserving Flow<Domain>. Observation failures still propagate through Flow.safeLaunch; cached data does not guarantee a successful stream.
 - **Showing custom error dialogs** — use `DialogConfig.ErrorDisplay` via the pipeline.
 - **Consuming `CancellationException`** — it must propagate; the shared dispatcher excludes it.

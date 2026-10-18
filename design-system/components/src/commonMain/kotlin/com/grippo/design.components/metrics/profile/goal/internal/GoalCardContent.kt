@@ -25,7 +25,6 @@ import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.goal.GoalMark
-import com.grippo.design.components.indicators.LineIndicator
 import com.grippo.design.components.metrics.MetricCardPresentation
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
@@ -64,15 +63,16 @@ internal fun GoalCardContent(
 
     GoalCalendarPeriod(
         value = value,
-        presentation = presentation,
         onUpdateClick = onUpdateClick,
     )
 
-    Text(
-        text = AppTokens.strings.res(Res.string.available_training_details_notice),
-        style = AppTokens.typography.b12Med(),
-        color = AppTokens.colors.text.secondary,
-    )
+    if (presentation == MetricCardPresentation.Overview) {
+        Text(
+            text = AppTokens.strings.res(Res.string.available_training_details_notice),
+            style = AppTokens.typography.b12Med(),
+            color = AppTokens.colors.text.secondary,
+        )
+    }
 }
 
 @Composable
@@ -207,7 +207,6 @@ private fun GoalStatusLabel(
 @Composable
 private fun GoalCalendarPeriod(
     value: GoalProgressState,
-    presentation: MetricCardPresentation,
     onUpdateClick: () -> Unit,
 ) {
     val target = value.goal.target
@@ -239,54 +238,12 @@ private fun GoalCalendarPeriod(
                 style = AppTokens.typography.b12Semi(),
                 color = AppTokens.colors.text.secondary,
             )
-            if (presentation == MetricCardPresentation.Overview) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = targetText,
-                    style = AppTokens.typography.b12Med(),
-                    color = AppTokens.colors.text.primary,
-                    textAlign = TextAlign.End,
-                )
-            }
-        }
-
-        if (presentation == MetricCardPresentation.Detailed) {
-            val createdAt = value.goal.createdAt
-            val createdAtValue = createdAt.value
-            val createdAtText = if (createdAtValue != null) {
-                DateCompose.rememberFormat(value = createdAtValue, format = createdAt.format)
-            } else {
-                createdAt.display
-            }
-
-            LineIndicator(
-                modifier = Modifier.fillMaxWidth(),
-                progress = value.progressFraction,
-                colors = AppTokens.colors.charts.indicator.muted,
-                labelSpacing = AppTokens.dp.contentPadding.subContent,
-                startLabel = {
-                    Text(
-                        text = createdAtText,
-                        style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-                },
-                endLabel = {
-                    Text(
-                        text = targetText,
-                        style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.secondary,
-                        textAlign = TextAlign.End,
-                    )
-                },
-                marker = {
-                    Box(
-                        modifier = Modifier
-                            .size(AppTokens.dp.metrics.profile.goal.timelineMarker)
-                            .clip(CircleShape)
-                            .background(AppTokens.colors.goal.accent),
-                    )
-                },
+            Text(
+                modifier = Modifier.weight(1f),
+                text = targetText,
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.primary,
+                textAlign = TextAlign.End,
             )
         }
 
@@ -296,27 +253,16 @@ private fun GoalCalendarPeriod(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             val isOverdue = value.daysRemaining < 0
-            Column(
+            Text(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-            ) {
-                Text(
-                    text = value.remainingLine(),
-                    style = AppTokens.typography.b13Med(),
-                    color = if (isOverdue) {
-                        AppTokens.colors.semantic.warning
-                    } else {
-                        AppTokens.colors.text.secondary
-                    },
-                )
-                if (presentation == MetricCardPresentation.Detailed && !isOverdue) {
-                    Text(
-                        text = value.progressLine(),
-                        style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-                }
-            }
+                text = value.remainingLine(),
+                style = AppTokens.typography.b13Med(),
+                color = if (isOverdue) {
+                    AppTokens.colors.semantic.warning
+                } else {
+                    AppTokens.colors.text.secondary
+                },
+            )
 
             if (isOverdue) {
                 Button(

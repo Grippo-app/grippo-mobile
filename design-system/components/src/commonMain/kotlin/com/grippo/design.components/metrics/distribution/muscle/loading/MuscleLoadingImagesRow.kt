@@ -15,14 +15,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
+import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummaryEmpty
+import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummarySingleGroup
 import com.grippo.core.state.muscles.MuscleEnumState
-import com.grippo.design.components.metrics.distribution.muscle.loading.internal.ColoredEntry
-import com.grippo.design.components.metrics.distribution.muscle.loading.internal.colorizeEntries
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.AppColor
-import com.grippo.design.resources.provider.muscles.MuscleColorPreset
 import com.grippo.design.resources.provider.muscles.fullBack
 import com.grippo.design.resources.provider.muscles.fullFront
 
@@ -40,24 +39,17 @@ public fun MuscleLoadingImagesRow(
     compact: Boolean = false,
 ) {
     val muscleColors = AppTokens.colors.muscle
-    val palette = AppTokens.colors.muscle.palette6MuscleCalm
-
-    val muscleEntries = remember(summary, palette, mode) {
-        when (mode) {
-            MuscleLoadingImagesMode.PerGroup -> colorizeEntries(
-                entries = summary.perGroup.entries,
-                palette = palette,
-            )
-
-            MuscleLoadingImagesMode.PerMuscle -> colorizeEntries(
-                entries = summary.perMuscle.entries,
-                palette = palette,
-            )
-        }
+    val entries = when (mode) {
+        MuscleLoadingImagesMode.PerGroup -> summary.perGroup.entries
+        MuscleLoadingImagesMode.PerMuscle -> summary.perMuscle.entries
     }
+    val colorMap = entries.flatMap { entry ->
+        val color = entry.group.color()
+        entry.muscles.map { muscle -> muscle to color }
+    }.toMap()
 
-    val images = remember(muscleEntries, muscleColors) {
-        generateMuscleImages(muscleEntries, muscleColors)
+    val images = remember(colorMap, muscleColors) {
+        generateMuscleImages(colorMap, muscleColors)
     }
 
     if (compact) {
@@ -102,63 +94,18 @@ public fun MuscleLoadingImagesRow(
 }
 
 private fun generateMuscleImages(
-    entries: List<ColoredEntry>,
+    colorMap: Map<MuscleEnumState, Color>,
     muscleColors: AppColor.MuscleColors,
 ): MuscleLoadingImages {
-    val preset = buildPreset(
-        sources = entries,
+    val preset = MuscleEnumState.colorPreset(
         fallback = muscleColors.inactive,
         outline = muscleColors.outline,
         background = muscleColors.background,
+        colorFor = { muscle -> colorMap[muscle] ?: muscleColors.inactive },
     )
     return MuscleLoadingImages(
         front = fullFront(preset),
         back = fullBack(preset),
-    )
-}
-
-private fun buildPreset(
-    sources: List<ColoredEntry>,
-    fallback: Color,
-    outline: Color,
-    background: Color,
-): MuscleColorPreset {
-    val colorMap: Map<MuscleEnumState, Color> = sources
-        .flatMap { source -> source.entry.muscles.map { muscle -> muscle to source.color } }
-        .toMap()
-
-    val resolve: (MuscleEnumState) -> Color = { muscle ->
-        colorMap[muscle] ?: fallback
-    }
-
-    return MuscleColorPreset(
-        biceps = resolve(MuscleEnumState.BICEPS),
-        triceps = resolve(MuscleEnumState.TRICEPS),
-        forearm = resolve(MuscleEnumState.FOREARM),
-        forearmFront = resolve(MuscleEnumState.FOREARM),
-        forearmBack = resolve(MuscleEnumState.FOREARM),
-        lateralDeltoid = resolve(MuscleEnumState.LATERAL_DELTOID),
-        anteriorDeltoid = resolve(MuscleEnumState.ANTERIOR_DELTOID),
-        posteriorDeltoid = resolve(MuscleEnumState.POSTERIOR_DELTOID),
-        pectoralisMajorAbdominal = resolve(MuscleEnumState.PECTORALIS_MAJOR_ABDOMINAL),
-        pectoralisMajorClavicular = resolve(MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR),
-        pectoralisMajorSternocostal = resolve(MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL),
-        rectusAbdominis = resolve(MuscleEnumState.RECTUS_ABDOMINIS),
-        obliquesAbdominis = resolve(MuscleEnumState.OBLIQUES),
-        rhomboids = resolve(MuscleEnumState.RHOMBOIDS),
-        latissimus = resolve(MuscleEnumState.LATISSIMUS_DORSI),
-        trapezius = resolve(MuscleEnumState.TRAPEZIUS),
-        teresMajor = resolve(MuscleEnumState.TERES_MAJOR),
-        gluteal = resolve(MuscleEnumState.GLUTEAL),
-        hamstrings = resolve(MuscleEnumState.HAMSTRINGS),
-        calf = resolve(MuscleEnumState.CALF),
-        quadriceps = resolve(MuscleEnumState.QUADRICEPS),
-        adductors = resolve(MuscleEnumState.ADDUCTORS),
-        abductors = resolve(MuscleEnumState.ABDUCTORS),
-        other = fallback,
-        outline = outline,
-        backgroundFront = background,
-        backgroundBack = background,
     )
 }
 
@@ -195,6 +142,28 @@ private fun MuscleLoadingImagesRowCompactPreview() {
             summary = stubMuscleLoadSummary(),
             mode = MuscleLoadingImagesMode.PerGroup,
             compact = true,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingImagesRowEmptyPreview() {
+    PreviewContainer {
+        MuscleLoadingImagesRow(
+            summary = stubMuscleLoadSummaryEmpty(),
+            mode = MuscleLoadingImagesMode.PerGroup,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingImagesRowSingleGroupPreview() {
+    PreviewContainer {
+        MuscleLoadingImagesRow(
+            summary = stubMuscleLoadSummarySingleGroup(),
+            mode = MuscleLoadingImagesMode.PerMuscle,
         )
     }
 }

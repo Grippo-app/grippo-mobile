@@ -157,7 +157,6 @@ internal class LoginViewModel(
                 val account = googleAuthProvider
                     .getUiProvider(context)
                     .signIn()
-                    .getOrThrow()
 
                 loginUseCase.loginGoogle(token = account.token)
             }
@@ -181,7 +180,6 @@ internal class LoginViewModel(
                 val account = appleAuthProvider
                     .getUiProvider(context)
                     .signIn()
-                    .getOrThrow()
 
                 loginUseCase.loginApple(code = account.authorizationCode)
             }

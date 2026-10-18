@@ -92,6 +92,7 @@ internal class TrainingRepositoryImpl(
     }
 
     override suspend fun updateTraining(id: String, training: SetTraining): String {
+        requireActiveProfileId()
         api.updateTraining(
             id = id,
             body = training.toBody(),
@@ -106,6 +107,7 @@ internal class TrainingRepositoryImpl(
     }
 
     override suspend fun setTraining(training: SetTraining): String {
+        requireActiveProfileId()
         val response = api.setTraining(
             body = training.toBody(),
         )
@@ -154,13 +156,7 @@ internal class TrainingRepositoryImpl(
     }
 
     override suspend fun setDraftTraining(draft: DraftTraining): Unit {
-        val profileId = userActiveDao.get()
-            .firstOrNull()
-            ?.let { userDao.getById(it).firstOrNull()?.profileId }
-            ?: throw AppError.Expected(
-                message = "An active profile is required to save a training draft",
-                description = null,
-            )
+        val profileId = requireActiveProfileId()
 
         val draftId = Uuid.random().toString()
         val draftExercises = draft.exercises.map { exercise ->
@@ -184,5 +180,15 @@ internal class TrainingRepositoryImpl(
 
     override suspend fun deleteDraftTraining(): Unit {
         draftTrainingDao.delete()
+    }
+
+    private suspend fun requireActiveProfileId(): String {
+        return userActiveDao.get()
+            .firstOrNull()
+            ?.let { userDao.getById(it).firstOrNull()?.profileId }
+            ?: throw AppError.Expected(
+                message = "An active profile is required to save a training",
+                description = null,
+            )
     }
 }

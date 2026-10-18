@@ -4,6 +4,28 @@ Inspect `data-features/authorization/`, `data-services/backend/.../client/TokenP
 the credential adapters (`data-services/google-auth`, `data-services/apple-auth`), `TokenDao`,
 `UserActiveDao` and the actual Login/Register/Logout UseCases before changing session behavior.
 
+## Credential adapters (canonical)
+
+`GoogleAuthUiProvider.signIn` and `AppleAuthUiProvider.signIn` follow the
+[throwing suspend contract](operation-outcomes.md#throwing-suspend-contracts-canonical).
+Inspect both platform implementations and all callers when changing either adapter.
+
+- Keep each adapter's existing failure classification at the platform boundary. A translation
+  uses the existing typed Google/Apple auth errors and retains the original exception as `cause`.
+  Preserve existing typed errors, coroutine `CancellationException` and fatal `Error` unchanged. A provider's
+  user-cancel result retains its existing typed cancellation meaning.
+- Native callback bridges use `suspendCancellableCoroutine`: complete at most once, resume
+  failures exceptionally and retain main-thread ownership and cancellation cleanup. A standard
+  `Result` used only by `Continuation.resumeWith` is callback plumbing, not an operation outcome.
+- Required configuration lookup, credential acquisition, token exchange/decoding and sign-out
+  failures propagate. Confirmed missing configuration may keep the existing `isSupported`
+  absence contract. Missing optional account display fields keep their declared defaults;
+  malformed required credentials do not become an account with fallback values.
+- Preserve the existing provider strategy and its explicit fallback eligibility. Retry/fallback
+  belongs to that SDK boundary; it is not a recovery wrapper for callers or a successful account
+  after all strategies fail. Credentials remain inside the complete login operation's existing
+  UI error/analytics boundary.
+
 ## TokenProvider (verified shape)
 
 `@Single internal class TokenProvider(tokenDao, userActiveDao) : AuthProvider`; bearer scheme;

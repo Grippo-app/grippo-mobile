@@ -604,34 +604,11 @@
 
     <!-- Training goal details dialog -->
     <string name="goal_details_title">Детали цели</string>
-    <string name="goal_details_subtitle">Смотрим внимательнее, насколько твои тренировки совпадают с выбранной целью.</string>
-    <string name="goal_details_insights_title">Итоги тренировок</string>
-
-    <!-- Training goal details: reason headlines -->
-    <string name="goal_details_reason_no_data_title">Пока мало данных</string>
-    <string name="goal_details_reason_no_data_detail">В этом периоде недостаточно корректно записанных подходов или доступных критериев для оценки тренировок.</string>
-    <string name="goal_details_reason_too_early_title">Ещё слишком рано</string>
-    <string name="goal_details_reason_too_early_detail">Для оценки недельной структуры тренировок нужен период наблюдения не короче семи дней.</string>
-    <string name="goal_details_reason_overdue_title">Дата финиша прошла</string>
-    <string name="goal_details_reason_overdue_detail">Ты прошёл исходный дедлайн. Продли срок или закрой цель.</string>
-    <string name="goal_details_reason_almost_done_title">Целевая дата близко</string>
-    <string name="goal_details_reason_almost_done_detail">Целевая дата приближается. Оцените свои тренировки и дальнейшие шаги.</string>
-    <string name="goal_details_reason_on_track_title">На верном курсе</string>
-    <string name="goal_details_reason_on_track_detail">Большинство доступных критериев тренировок выполнено в периоде анализа.</string>
-    <string name="goal_details_reason_drifting_title">Есть что улучшить</string>
-    <string name="goal_details_reason_drifting_detail">Часть доступных критериев тренировок требует внимания. Сравните значения и ориентиры для каждого критерия.</string>
-    <string name="goal_details_reason_off_track_title">Скорректируйте курс</string>
-    <string name="goal_details_reason_off_track_detail">Несколько доступных критериев тренировок ниже ориентиров. Проверьте записи за период и каждый критерий.</string>
-
-    <!-- Training goal details: per-axis reasons -->
-
-
-
-
-
-
-    <!-- Training goal details: actionable tips -->
-    <string name="goal_details_tip_review_deadline">Пересмотри дату финиша — продли её или закрой цель и начни новую.</string>
+    <string name="goal_details_show_details">Подробнее об оценке</string>
+    <string name="goal_details_hide_details">Скрыть подробности</string>
+    <!-- Training goal details: unavailable assessment -->
+    <string name="goal_details_reason_no_data_detail">Для оценки этого периода недостаточно записанных подходов или доступных критериев.</string>
+    <string name="goal_details_reason_too_early_detail">Для оценки недельного ритма тренировок нужно наблюдать хотя бы семь дней.</string>
 
     <!-- Goal-fit diagnostic sections -->
     <string name="goal_fit_diagnostic_drifting_title">Что настроить</string>
@@ -911,7 +888,7 @@
     <string name="goal_details_analysis_excluded">Исключено подходов с ошибочными или неполными данными: %1$d</string>
     <string name="goal_details_analysis_missing_metadata">Диагностика мышц недоступна: нет данных об упражнениях для %1$d подходов.</string>
     <string name="goal_details_analysis_unavailable">В выбранном периоде нет доступной истории этой цели.</string>
-    <string name="goal_details_analysis_method">Ориентир по структуре тренировок, а не оценка достигнутого результата. У каждого доступного критерия равный вес: выполнен — 100, частично — 50, не выполнен — 0; строки мышечных групп усредняются внутри критерия. Неизвестные критерии пропускаются. В записи могут входить разминки; усилие, восстановление, питание и активность вне Grippo неизвестны. Для снижения жира оценивается поддерживающая роль тренировок, а не потеря жира. Подходы по группам мышц — приблизительная оценка с учётом доли участия мышц.</string>
+    <string name="goal_details_analysis_method">Сравниваем записанные тренировки с ориентирами выбранной цели. Оценка показывает соответствие тренировок, а не достижение цели.</string>
     <string name="training_streak_partial_period">Неполный период наблюдения</string>
     <string name="goal_fit_rule_build_muscle_weekly_frequency_title">Регулярность тренировок</string>
     <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Регулярность тренировок</string>

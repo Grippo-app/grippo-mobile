@@ -38,7 +38,7 @@ internal class ExcludedMusclesRepositoryImpl(
             )
         val response = api.getExcludedMuscles()
         val ids = response.mapNotNull { it.id }
-        if (ids.size != response.size) {
+        if (ids.size != response.size || ids.toSet().size != ids.size) {
             throw AppError.Network.IncompleteResponse()
         }
         userDao.insertOrReplaceExcludedMuscles(profileId, ids)
@@ -54,7 +54,7 @@ internal class ExcludedMusclesRepositoryImpl(
 
         val muscles = api.getExcludedMuscles()
         val savedIds = muscles.mapNotNull { it.id }
-        if (savedIds.size != muscles.size) {
+        if (savedIds.size != muscles.size || savedIds.toSet().size != savedIds.size) {
             throw AppError.Network.IncompleteResponse()
         }
         userDao.insertOrReplaceExcludedMuscles(profileId, savedIds)

@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.core.state.formatters.PercentageFormatState
+import com.grippo.core.state.metrics.distribution.MuscleLoadEntryState
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummaryEmpty
@@ -22,10 +24,7 @@ import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummarySingleGro
 import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.design.components.indicators.LineIndicator
 import com.grippo.design.components.metrics.MetricCardPresentation
-import com.grippo.design.components.metrics.distribution.muscle.loading.internal.ColoredEntry
-import com.grippo.design.components.metrics.distribution.muscle.loading.internal.colorizeEntries
 import com.grippo.design.components.metrics.distribution.muscle.loading.internal.rememberMuscleLoadIndicatorColors
-import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
@@ -78,12 +77,8 @@ public fun MuscleLoadingCard(
 
 @Composable
 private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
-    val palette = AppTokens.colors.muscle.palette6MuscleCalm
-    val entries = remember(summary.perGroup, palette) {
-        colorizeEntries(
-            entries = summary.perGroup.entries,
-            palette = palette,
-        ).sortedByDescending { it.entry.value }.take(3)
+    val entries = remember(summary.perGroup.entries) {
+        summary.perGroup.entries.sortedByDescending { it.value }.take(3)
     }
     val emptyLabel = AppTokens.strings.res(Res.string.muscle_load_no_data)
     val imageDescription = summary.perGroup.entries.map { entry ->
@@ -91,11 +86,11 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
     }.joinToString(separator = ", ").ifEmpty { emptyLabel }
     val singleGroup = summary.perGroup.entries.singleOrNull()?.group
     val primaryMuscle = if (singleGroup != null) {
-        summary.perMuscle.entries
-            .filter { it.group == singleGroup && it.muscles.isNotEmpty() }
-            .maxByOrNull { it.value }
-            ?.muscles
-            ?.firstOrNull()
+        val muscleEntries = summary.perMuscle.entries.filter {
+            it.group == singleGroup && it.muscles.isNotEmpty()
+        }
+        val highestShare = muscleEntries.maxOfOrNull { it.value }
+        muscleEntries.singleOrNull { it.value == highestShare }?.muscles?.firstOrNull()
     } else {
         null
     }
@@ -114,12 +109,6 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
             color = AppTokens.colors.text.secondary,
         )
     }
-
-    Text(
-        text = AppTokens.strings.res(Res.string.muscle_load_set_share_note),
-        style = AppTokens.typography.b12Med(),
-        color = AppTokens.colors.text.secondary,
-    )
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -147,9 +136,9 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
                     color = AppTokens.colors.text.secondary,
                 )
             } else {
-                entries.forEach { colored ->
-                    key(colored.entry.group) {
-                        MuscleLoadingOverviewRow(colored = colored)
+                entries.forEach { entry ->
+                    key(entry.group) {
+                        MuscleLoadingOverviewRow(entry = entry)
                     }
                 }
             }
@@ -167,6 +156,12 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
         }
     }
 
+    Text(
+        text = AppTokens.strings.res(Res.string.muscle_load_set_share_note),
+        style = AppTokens.typography.b12Med(),
+        color = AppTokens.colors.text.secondary,
+    )
+
     MuscleLoadingDataNotice(summary = summary)
 
     Text(
@@ -177,8 +172,8 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
 }
 
 @Composable
-private fun MuscleLoadingOverviewRow(colored: ColoredEntry) {
-    val indicatorColors = rememberMuscleLoadIndicatorColors(colored.color)
+private fun MuscleLoadingOverviewRow(entry: MuscleLoadEntryState) {
+    val indicatorColors = rememberMuscleLoadIndicatorColors(entry.group.color())
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -191,19 +186,19 @@ private fun MuscleLoadingOverviewRow(colored: ColoredEntry) {
         ) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = colored.entry.group.title().text(),
+                text = entry.group.title().text(),
                 style = AppTokens.typography.b13Semi(),
                 color = AppTokens.colors.text.primary,
             )
             Text(
-                text = PercentageFormatState.shortShare(colored.entry.value),
+                text = PercentageFormatState.shortShare(entry.value),
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,
             )
         }
         LineIndicator(
             modifier = Modifier.fillMaxWidth(),
-            progress = (colored.entry.value / 100f).coerceIn(0f, 1f),
+            progress = (entry.value / 100f).coerceIn(0f, 1f),
             colors = indicatorColors,
         )
     }
@@ -282,6 +277,28 @@ private fun MuscleLoadingCardOverviewSingleGroupWithoutMusclePreview() {
             modifier = Modifier.fillMaxWidth(),
             summary = summary.copy(
                 perMuscle = summary.perMuscle.copy(entries = persistentListOf()),
+            ),
+            presentation = MetricCardPresentation.Overview,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingCardOverviewSingleGroupTiedMusclesPreview() {
+    PreviewContainer {
+        val summary = stubMuscleLoadSummary()
+        val entry = summary.perGroup.entries.first().copy(value = 100f)
+        MuscleLoadingCard(
+            modifier = Modifier.fillMaxWidth(),
+            summary = summary.copy(
+                perGroup = summary.perGroup.copy(entries = persistentListOf(entry)),
+                perMuscle = summary.perMuscle.copy(
+                    entries = summary.perMuscle.entries
+                        .filter { it.group == entry.group }
+                        .map { it.copy(value = 50f) }
+                        .toPersistentList(),
+                ),
             ),
             presentation = MetricCardPresentation.Overview,
         )
