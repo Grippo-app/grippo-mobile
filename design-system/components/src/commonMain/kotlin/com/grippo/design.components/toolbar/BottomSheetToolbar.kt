@@ -52,14 +52,18 @@ public fun BottomSheetToolbar(
             .heightIn(min = AppTokens.dp.bottomSheet.toolbar.height),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(modifier = Modifier.size(AppTokens.dp.bottomSheet.toolbar.actionSize), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier,
+            contentAlignment = Alignment.Center
+        ) {
             androidx.compose.animation.AnimatedVisibility(
                 visible = allowBack,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
                 Button(
-                    modifier = Modifier.size(AppTokens.dp.bottomSheet.toolbar.actionSize).semantics { contentDescription = backLabel },
+                    modifier = Modifier
+                        .semantics { contentDescription = backLabel },
                     content = ButtonContent.Icon(
                         icon = ButtonIcon.Icon(AppTokens.icons.ArrowLeft),
                     ),
@@ -86,7 +90,8 @@ public fun BottomSheetToolbar(
         Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
         Button(
-            modifier = Modifier.size(AppTokens.dp.bottomSheet.toolbar.actionSize).semantics { contentDescription = closeLabel },
+            modifier = Modifier
+                .semantics { contentDescription = closeLabel },
             content = ButtonContent.Icon(
                 icon = ButtonIcon.Icon(AppTokens.icons.Cancel),
             ),
