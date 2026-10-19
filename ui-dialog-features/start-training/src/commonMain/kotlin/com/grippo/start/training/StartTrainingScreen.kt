@@ -85,9 +85,10 @@ private fun StartTrainingContent(
 ) = BaseComposeScreen(
     background = ScreenBackground.Color(AppTokens.colors.background.dialog),
 ) {
-    val isLoading = StartTrainingLoader.Options in loaders
     val preset = state.options.filterIsInstance<StartTrainingOption.Preset>().firstOrNull()
     val recents = state.options.filterIsInstance<StartTrainingOption.Recent>().toPersistentList()
+    val isRefreshing = StartTrainingLoader.Options in loaders
+    val isLoading = isRefreshing && preset == null && recents.isEmpty()
     val selectedRecent = recents.firstOrNull { it.key == selectedRecentKey } ?: recents.firstOrNull()
     val option = when (selectedChoice) {
         StartTrainingChoice.Empty -> StartTrainingOption.Empty

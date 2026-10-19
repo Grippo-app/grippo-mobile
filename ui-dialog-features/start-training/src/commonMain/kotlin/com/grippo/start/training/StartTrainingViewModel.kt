@@ -23,38 +23,73 @@ import kotlin.time.Duration.Companion.days
 import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDateTime
 
 public class StartTrainingViewModel(
     private val analytics: StartTrainingAnalytics,
-    trainingFeature: TrainingFeature,
-    generatePresetTrainingUseCase: GeneratePresetTrainingUseCase,
+    private val trainingFeature: TrainingFeature,
+    private val generatePresetTrainingUseCase: GeneratePresetTrainingUseCase,
 ) : BaseViewModel<StartTrainingState, StartTrainingDirection, StartTrainingLoader>(
     StartTrainingState()
 ), StartTrainingContract {
 
     init {
-        safeLaunch(loader = StartTrainingLoader.Options) {
-            val now = DateTimeUtils.now()
-            val recentRangeStart = DateTimeUtils.minus(
-                value = now,
-                minus = RECENT_TRAININGS_WINDOW_DAYS.days,
-            )
+        val now = DateTimeUtils.now()
+        val recentRangeStart = DateTimeUtils.minus(
+            value = now,
+            minus = RECENT_TRAININGS_WINDOW_DAYS.days,
+        )
 
-            trainingFeature.getTrainings(start = recentRangeStart, end = now)
+        safeLaunch { refreshTrainings(start = recentRangeStart, end = now) }
 
-            analytics.trackOperation(StartTrainingOperation.BuildOptions) {
-                val recents = trainingFeature.observeTrainings(start = recentRangeStart, end = now)
-                    .first()
+        observeOptions(start = recentRangeStart, end = now)
+            .onEach(::provideOptions)
+            .safeLaunch()
+    }
 
-                val preset = generatePresetTrainingUseCase.execute()
+    private suspend fun refreshTrainings(start: LocalDateTime, end: LocalDateTime) {
+        withLoader(StartTrainingLoader.Options) {
+            val refresh = safeLaunch {
+                trainingFeature.getTrainings(start = start, end = end)
+            }
 
-                provideOptions(recents = recents, preset = preset)
+            try {
+                refresh.join()
+            } finally {
+                // A handled request failure must leave the options subscription alive.
+                withContext(NonCancellable) {
+                    refresh.cancelAndJoin()
+                }
             }
         }
     }
 
-    private fun provideOptions(recents: List<Training>, preset: PresetTraining?) {
+    private fun observeOptions(
+        start: LocalDateTime,
+        end: LocalDateTime,
+    ): Flow<Pair<List<Training>, PresetTraining?>> = flow {
+        val preset = analytics.trackOperation(StartTrainingOperation.BuildOptions) {
+            generatePresetTrainingUseCase.execute()
+        }
+
+        val recents = trainingFeature
+            .observeTrainings(start = start, end = end)
+            .map { recents -> recents to preset }
+
+        emitAll(recents)
+    }
+
+    private fun provideOptions(value: Pair<List<Training>, PresetTraining?>) {
+        val (recents, preset) = value
+
         val recentOptions = recents
             .filter { it.exercises.isNotEmpty() }
             .sortedByDescending { it.createdAt }
