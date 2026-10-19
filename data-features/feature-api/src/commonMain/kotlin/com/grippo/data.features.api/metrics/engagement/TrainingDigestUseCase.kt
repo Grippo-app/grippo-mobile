@@ -12,7 +12,7 @@ public class TrainingDigestUseCase {
      * without prorating their duration across days.
      * Saved totals remain authoritative even when an exercise relation is unavailable.
      * Every selected record counts as a training; sets count the supplied exercise details.
-     * An empty selection has zero totals and no average; an inverted range is invalid.
+     * An empty selection has zero totals; an inverted range is invalid.
      * An invalid saved duration or volume makes that metric unavailable, never a partial total.
      */
     public fun digest(
@@ -38,12 +38,6 @@ public class TrainingDigestUseCase {
         val totalSets = selected.sumOf { training ->
             training.exercises.sumOf { it.iterations.size }
         }
-        val activeDays = selected.mapTo(mutableSetOf()) { it.createdAt.date }.size
-        val avgVolumePerTraining = if (trainingsCount > 0 && volume != null) {
-            (volume / trainingsCount).toFloat().takeIf { it.isFinite() }
-        } else {
-            null
-        }
 
         return TrainingDigestResult(
             range = range,
@@ -51,8 +45,6 @@ public class TrainingDigestUseCase {
             duration = duration,
             totalVolume = totalVolume,
             totalSets = totalSets,
-            activeDays = activeDays,
-            avgVolumePerTraining = avgVolumePerTraining,
         )
     }
 }

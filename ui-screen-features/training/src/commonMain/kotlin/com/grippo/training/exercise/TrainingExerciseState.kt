@@ -37,10 +37,13 @@ internal data class TrainingExerciseValidationContext(
     val value: ExerciseValidationContext,
 )
 
-/** Retains the source snapshot so delayed flow emissions cannot highlight a different edit. */
+/**
+ * Retains the source snapshot so delayed flow emissions cannot highlight a different edit.
+ * The defaults describe a cleared validation for a source without a matching context.
+ */
 internal data class TrainingExerciseValidation(
     val source: ExerciseState,
-    val volumeIds: ImmutableSet<String>,
-    val repetitionIds: ImmutableSet<String>,
+    val volumeIds: ImmutableSet<String> = persistentSetOf(),
+    val repetitionIds: ImmutableSet<String> = persistentSetOf(),
     val previousIterations: ImmutableList<IterationState> = persistentListOf(),
 )

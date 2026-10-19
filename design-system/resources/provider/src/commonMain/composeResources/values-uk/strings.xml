@@ -863,10 +863,7 @@
     <string name="performance_status_stable">У звичному діапазоні</string>
     <string name="performance_best_value">Максимум періоду на той момент %1$s</string>
 
-    <string name="digest_title">Підсумок тренувань</string>
-    <string name="digest_total_volume">Загальний обсяг</string>
-    <string name="digest_active_days">Дні тренувань</string>
-    <string name="digest_volume_per_workout">Середній обсяг / тренування</string>
+    <string name="digest_title">Підсумок місяця</string>
     <string name="digest_unavailable">—</string>
     <string name="digest_zero_duration">0 хв</string>
     <string name="goal_card_status_not_evaluated">Поки немає оцінки</string>

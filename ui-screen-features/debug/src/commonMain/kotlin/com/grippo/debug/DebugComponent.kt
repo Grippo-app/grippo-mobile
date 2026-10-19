@@ -5,6 +5,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
+import com.grippo.core.foundation.models.PersistenceKey
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
 public class DebugComponent(
@@ -17,13 +18,15 @@ public class DebugComponent(
             analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
             generateTrainingUseCase = getKoin().get(),
-            authorizationFeature = getKoin().get()
+            authorizationFeature = getKoin().get(),
+            initialState = restoreState(DRAFT) ?: DebugState(),
         )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)
 
     init {
+        saveState(DRAFT) { viewModel.state.value }
         backHandler.register(backCallback)
     }
 
@@ -38,5 +41,9 @@ public class DebugComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
         DebugScreen(state.value, loaders.value, viewModel)
+    }
+
+    private companion object {
+        val DRAFT = PersistenceKey("DebugDraft", DebugState.serializer())
     }
 }

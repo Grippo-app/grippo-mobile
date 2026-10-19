@@ -2,7 +2,6 @@ package com.grippo.trainings.trainings
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateFormatState
-import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.metrics.engagement.DigestState
 import com.grippo.core.state.trainings.TimelineState
@@ -86,9 +85,7 @@ internal sealed interface TrainingsTimelinePeriod {
     @Serializable
     data class Monthly(
         @Transient val monthReference: DateFormatState = defaultMonthReference(),
-        @Transient val digest: DigestState = DigestState.Empty(
-            range = DateRangeFormatState.of(DateRangePresets.monthly()),
-        ),
+        @Transient val digest: DigestState = DigestState.Empty,
         @Transient val weeks: ImmutableList<ImmutableList<MonthlyCalendarDayState>> = persistentListOf(),
     ) : TrainingsTimelinePeriod {
         @Transient override val id: String = ID
@@ -177,8 +174,7 @@ internal sealed interface TrainingsTimelinePeriod {
                         range = DateRangePresets.infinity(),
                         format = DateFormat.DateOnly.MmmYyyy,
                     ),
-                    digest = digestEntry?.summary
-                        ?: DigestState.Empty(range = DateRangeFormatState.of(range)),
+                    digest = digestEntry?.summary ?: DigestState.Empty,
                     weeks = weeks,
                 )
             }

@@ -18,6 +18,7 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -26,7 +27,7 @@ import kotlinx.coroutines.flow.onEach
 internal class ExerciseLibraryViewModel(
     mode: ExerciseLibraryMode,
     private val analytics: ExercisesAnalytics,
-    userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
+    private val userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
     exerciseExampleFeature: ExerciseExampleFeature,
     muscleFeature: MuscleFeature,
     initialState: ExerciseLibraryState?,
@@ -62,11 +63,15 @@ internal class ExerciseLibraryViewModel(
         state
             .map(::buildParams)
             .distinctUntilChanged()
-            .flatMapLatest { params ->
-                userExerciseExamplesUseCase.execute(params).map { results -> params to results }
-            }
-            .onEach { (params, results) -> provideExerciseExamples(params, results) }
+            .flatMapLatest(::observeExerciseExamples)
+            .onEach(::provideExerciseExamples)
             .safeLaunch()
+    }
+
+    private fun observeExerciseExamples(params: ExampleParams): Flow<Pair<ExampleParams, List<ExerciseExample>>> {
+        return userExerciseExamplesUseCase
+            .execute(params)
+            .map { results -> params to results }
     }
 
     private fun buildParams(current: ExerciseLibraryState): ExampleParams {
@@ -129,11 +134,10 @@ internal class ExerciseLibraryViewModel(
         }
     }
 
-    private fun provideExerciseExamples(
-        emittedParams: ExampleParams,
-        value: List<ExerciseExample>
-    ) {
-        val incoming = value.toState()
+    private fun provideExerciseExamples(value: Pair<ExampleParams, List<ExerciseExample>>) {
+        val (emittedParams, results) = value
+
+        val incoming = results.toState()
 
         update { current ->
             if (buildParams(current) != emittedParams) return@update current
@@ -145,7 +149,7 @@ internal class ExerciseLibraryViewModel(
                     current.mode is ExerciseLibraryMode.SimilarTo
 
             // Auto-switch: empty Suggestions on first page → fall back to All, hide chip
-            if (isSuggestionsActive && isFirstPage && value.isEmpty()) {
+            if (isSuggestionsActive && isFirstPage && results.isEmpty()) {
                 return@update current.copy(
                     queries = current.queries.copy(filter = QueryFilter.All),
                     exerciseExamples = persistentListOf(),
@@ -161,7 +165,7 @@ internal class ExerciseLibraryViewModel(
             }
 
             val nextHasSuggestionsResults =
-                if (isSuggestionsActive && isFirstPage) value.isNotEmpty()
+                if (isSuggestionsActive && isFirstPage) results.isNotEmpty()
                 else current.hasSuggestionsResults
 
             current.copy(
@@ -171,7 +175,7 @@ internal class ExerciseLibraryViewModel(
                     page = pagination.page,
                     limit = pagination.limit,
                     isLoadingNextPage = false,
-                    isEndReached = value.size < pagination.limit,
+                    isEndReached = results.size < pagination.limit,
                 ),
             )
         }

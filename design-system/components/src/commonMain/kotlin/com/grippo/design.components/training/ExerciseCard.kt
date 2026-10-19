@@ -1,18 +1,22 @@
 package com.grippo.design.components.training
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.formatters.DateTimeFormatState
+import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.metrics.volume.TrainingTotalState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.training.internal.ExerciseCardRow
 import com.grippo.design.components.training.internal.ExerciseCardSmall
 import com.grippo.design.components.training.internal.ExercisePlanSummary
+import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.toolkit.date.utils.DateFormat
@@ -32,8 +36,14 @@ public sealed interface ExerciseCardStyle {
         public val onClick: (() -> Unit)? = null,
     ) : ExerciseCardStyle
 
-    @Immutable
-    public data object Small : ExerciseCardStyle
+    /**
+     * Exercise-details history entry: the date and the recorded sets of one session.
+     * [trailing] is a neutral caller-owned slot in the header's trailing position.
+     */
+    @Stable
+    public data class Small(
+        public val trailing: (@Composable () -> Unit)? = null,
+    ) : ExerciseCardStyle
 
     @Immutable
     public data object Planned : ExerciseCardStyle
@@ -57,6 +67,7 @@ public fun ExerciseCard(
         is ExerciseCardStyle.Small -> ExerciseCardSmall(
             modifier = modifier,
             value = value,
+            style = style,
         )
 
         is ExerciseCardStyle.Medium -> ExerciseCardRow(
@@ -108,7 +119,15 @@ private fun ExerciseCardPreview() {
 
         ExerciseCard(
             value = exercise,
-            style = ExerciseCardStyle.Small
+            style = ExerciseCardStyle.Small(
+                trailing = {
+                    Text(
+                        text = "+8%",
+                        style = AppTokens.typography.b12Semi(),
+                        color = AppTokens.colors.text.secondary,
+                    )
+                },
+            ),
         )
         ExerciseCard(
             value = exercise,
@@ -200,6 +219,11 @@ private fun exercisePreviewValue(): ExerciseState {
             value = LocalDateTime(2026, 10, 16, 10, 0),
             range = DateRangePresets.infinity(),
             format = DateFormat.DateOnly.DateMmmDdYyyy,
+        ),
+        total = TrainingTotalState(
+            volume = VolumeFormatState.of(640f),
+            repetitions = RepetitionsFormatState.of(8),
+            intensity = IntensityFormatState.of(80f),
         ),
     )
 }

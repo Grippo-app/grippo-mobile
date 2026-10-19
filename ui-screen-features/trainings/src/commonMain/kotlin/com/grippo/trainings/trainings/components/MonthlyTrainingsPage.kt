@@ -60,10 +60,9 @@ internal fun MonthlyTrainingsPage(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
     ) {
         DigestCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .scalableClick(role = Role.Button, onClick = onDigestClick),
+            modifier = Modifier.fillMaxWidth(),
             value = period.digest,
+            onClick = onDigestClick,
         )
 
         MonthCalendar(

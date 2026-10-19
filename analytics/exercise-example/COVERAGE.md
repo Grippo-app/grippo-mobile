@@ -77,12 +77,21 @@ remain unchanged; source observation retains its existing lifecycle policy.
 Recent records are explicitly sorted by creation time and stable ID: newest-first
 for history cards and oldest-first for volume and estimated 1RM. Remote response
 order does not define the latest value or align dates by accident.
-The history tab uses the shared flat volume bar style with exact tooltip units
-and a complete series accessibility description. Its existing chronological
-series uses each recent record's formatted session date as the presentation label;
-dates are formatted in composition so locale changes update tooltip labels and
-the compact history cards. The
-categorical workout-statistics series retains exercise-name labels.
+The history tab uses the shared flat volume bar style with exact tooltip units,
+adaptive day-and-month X-axis labels and a complete series accessibility
+description. Its existing chronological series uses each recent record's
+formatted session date as the presentation label; dates are formatted in
+composition so locale changes update the axis labels, tooltip labels and the
+history entry cards. The categorical workout-statistics series retains
+exercise-name labels. Each history entry (`ExerciseCardStyle.Small`) shows the
+session date, the recorded sets as one wrapping line of load × reps results
+(effective load for bodyweight sets; a missing value as a dash, a recorded zero
+as 0kg; an entry without sets shows the existing no-sets caption) and, through
+a neutral caller-owned slot, the signed tonnage change against the next older
+record (`ExerciseState.volumeDeltaPercent`) as a labelled percentage; the oldest
+entry and a zero baseline show no comparison. These values derive in
+composition from the rebuilt `recent` records; no State field, callback, event
+or operation is added.
 Compact and row summaries exclude pending sets from their maximum as before,
 but withhold that maximum when a completed set has an unknown recorded load.
 For a bodyweight exercise, both recorded body weight and coefficient are required

@@ -32,8 +32,9 @@ them in `@Immutable` state.
   both themes; components may apply that coefficient without replacing the hue.
   Static colors use Color slots. Components may assemble gradients from token
   colors; MUST NOT create a parallel consumer palette.
-- Keep the existing nested-group structure. Prefer shallow semantic paths; inspect
-  current deeper chart groups rather than flattening or inventing signatures.
+- Keep the existing nested-group structure; sub-element and variant nesting follows
+  the [hierarchy rule in dimension tokens](dp.md). Inspect current chart groups
+  rather than inventing signatures.
 - Both themes MUST implement the same interface. ProvideResources owns selection;
   components MUST NOT branch on theme to replace that ownership.
 

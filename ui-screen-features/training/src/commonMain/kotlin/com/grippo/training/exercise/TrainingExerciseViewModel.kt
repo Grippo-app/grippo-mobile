@@ -44,10 +44,9 @@ import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
@@ -89,12 +88,9 @@ internal class TrainingExerciseViewModel(
                 )
             }
             .distinctUntilChanged()
-            .onEach {
-                clearValidation()
-            }
             .flatMapLatest { target ->
                 val performedAt = target.performedAt
-                    ?: return@flatMapLatest emptyFlow<TrainingExerciseValidationContext>()
+                    ?: return@flatMapLatest flowOf<TrainingExerciseValidationContext?>(null)
 
                 exerciseValidatorUseCase.observeContext(
                     exampleId = target.exampleId,
@@ -109,18 +105,20 @@ internal class TrainingExerciseViewModel(
             .map { it.exercise }
             .distinctUntilChanged()
 
+        // Findings are cleared only when the observed context belongs to another example or date.
+        // The lifecycle-bound subscription restarts on every resume; re-emitting the same context
+        // then reproduces the same findings instead of blanking them until the refetch completes.
         return combine(flow = exercises, flow2 = validationContexts) { source, snapshot ->
             val target = TrainingExerciseValidationTarget(
                 exampleId = source.exerciseExample.id,
                 performedAt = source.createdAt.value,
             )
-            if (snapshot.target != target) {
-                return@combine null
+            if (snapshot == null || snapshot.target != target) {
+                TrainingExerciseValidation(source = source)
+            } else {
+                validateTrainingExercise(source = source, context = snapshot.value)
             }
-
-            validateTrainingExercise(source = source, context = snapshot.value)
         }
-            .filterNotNull()
     }
 
     private fun clearValidation() {

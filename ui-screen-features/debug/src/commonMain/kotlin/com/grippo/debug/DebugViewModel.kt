@@ -18,7 +18,8 @@ public class DebugViewModel(
     private val trainingFeature: TrainingFeature,
     private val authorizationFeature: AuthorizationFeature,
     private val generateTrainingUseCase: GenerateTrainingUseCase,
-) : BaseViewModel<DebugState, DebugDirection, DebugLoader>(DebugState()),
+    initialState: DebugState,
+) : BaseViewModel<DebugState, DebugDirection, DebugLoader>(initialState),
     DebugContract {
 
     override val screenPresentation: (NavigationReason) -> ScreenPresentation = { reason ->

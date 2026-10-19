@@ -295,7 +295,6 @@ public data object AppDp {
         val status: Status = Status
         val overview: Overview = Overview
 
-        val engagement: Engagement = Engagement
         val distribution: Distribution = Distribution
         val performance: Performance = Performance
         val profile: Profile = Profile
@@ -333,16 +332,6 @@ public data object AppDp {
             val detailsIcon: Dp = Icon.small
             val rhythmIcon: Dp = icon.xLarge
             val insightCardWidth: Dp = 320.dp
-        }
-
-        public data object Engagement {
-            val digest: Digest = Digest
-
-            public data object Digest {
-                val iconContainer: Dp = size.small
-                val iconRadius: Dp = AppDp.radius.small
-                val icon: Dp = AppDp.icon.medium
-            }
         }
 
         public data object Distribution {
@@ -759,6 +748,7 @@ public data object AppDp {
             val verticalPadding: Dp = padding.small
             val horizontalPadding: Dp = padding.large
             public val radius: Dp = AppDp.radius.medium
+            val leadingIcon: Dp = AppDp.icon.medium
         }
     }
 

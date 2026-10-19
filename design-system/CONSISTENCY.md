@@ -89,7 +89,11 @@ A compact navigation item and a screen heading do not need the same font size.
   tile or padding, preserving the same 28 dp anatomical drawing. Summary uses
   `muscle.summaryMarkSize` (32 dp) without a tile or padding, matching the library
   metadata row's height. Library filters and exercise-group labels keep Inline
-  to avoid repeated nested tiles. The exercise list keeps the photo on the left
+  to avoid repeated nested tiles; the library's Suggested filter chip pairs its
+  label with `icons.Sparkle` at `checkSelectableCard.small.leadingIcon` (22 dp) tinted `icon.secondary`,
+  centered in a `muscle.inlineMarkSize` slot without a tile, so every filter chip
+  shares the Inline chips' height and baseline while selection stays on the
+  CheckSelectableCard Small surface. The exercise list keeps the photo on the left
   and a complete title, image-only
   metadata and optional date in the right column, in that order. Equipment uses
   Compact images alongside 32 dp Summary anatomy drawings. A single upper-body
@@ -297,13 +301,16 @@ A compact navigation item and a screen heading do not need the same font size.
   Its load descriptor uses `training.exerciseLoadTypeIcon` (20 dp), `icon.secondary`
   and secondary `b12Med` text; the UI model owns its icon and localized title.
   `IterationCard.Editable` renders compact open journal rows on the same opaque
-  screen surface; the list owns `divider.subtle` separators. A passive 32 dp
+  screen surface; the list owns `divider.subtle` separators, drawn below the
+  swipe-reveal content inside the draggable item and inset by the screen gutters,
+  so the revealed delete action matches only the row height. A passive 32 dp
   number badge reuses `iterationCard.numberSize`, `iterationCard.radius`,
   `background.card` and secondary `b12Semi` from Recorded iterations. Two equal
   metric actions use standalone secondary `b12Med` labels and neutral `h5` values,
   with `iterationCard.editor.minActionHeight` targets and no filled or outlined
-  field shape. Body-load calculations and caller-owned previous-set context sit
-  below the values as secondary `b12Med` captions, aligned with the metric content.
+  field shape. Body-load calculations sit below the values as secondary `b12Med`
+  captions; the caller-owned previous-set context uses tertiary `b12Med`, both
+  aligned with the metric content.
   Warnings use `semantic.warning` only for the affected value and icon;
   actionable explanatory text stays neutral without a filled warning panel.
   Save keeps the primary button; Add Set keeps the secondary button.
@@ -327,9 +334,8 @@ A compact navigation item and a screen heading do not need the same font size.
   the glyph retains its supplied tint. Context icon colors keep their meaning.
   The enclosing section owns the grouping surface; Subtle stays unframed with a
   secondary heading. Header gaps use `content`; values stay neutral.
-- DigestHeader retains its neutral 32 dp icon tile with 8 dp corners and the
-  `context.volume` glyph; working metric panels carry no decorative illustration
-  spot. Home's welcome and last-workout recap own the warm illustration regions.
+- Working metric panels carry no decorative illustration spot or icon tile;
+  Home's welcome and last-workout recap own the warm illustration regions.
 - Training history uses compact Medium exercise rows: a 48 dp Compact image,
   `b14Semi` full wrapping title and `subContent` gaps. Completed/total sets and
   recorded maximum keep their existing summary semantics. Large recording rows
@@ -337,11 +343,18 @@ A compact navigation item and a screen heading do not need the same font size.
   and completion rely on the open row's own `subContent` vertical padding, without
   another list gap or vertical wrapper. Timeline time uses `b14Semi` and duration
   uses secondary `b12Med` text.
-- The monthly training digest uses the Small MetricSectionPanel with an inline
-  `h4` total volume and tertiary `b12Med` label. Its date and training-summary
-  heading precede workouts, duration and sets; populated content adds training
-  days and average volume per workout. Empty values retain their dimmed treatment,
-  while recorded zero and unavailable duration have distinct labels.
+- The monthly training digest is a statistics entry point in the common
+  detail-entry family: a Large MetricSectionPanel with the `MetricOverviewHeader`
+  "Month summary" title and decorative chevron, owning its `scalableClick`. The
+  toolbar's month picker owns the period, so the card shows no date range; the
+  calendar below owns the training days; the title avoids repeating the toolbar's
+  "Workouts" wording above the hero label. One primary `h3` workout count with a secondary `b13Med`
+  "Workouts" label leads, a `ContentDivider` follows, and one `MetricBreakdownRow`
+  shows duration (`duration`), tonnage (`tonnage`) and sets; the digest labels
+  sets with the plain `sets` key, while the completed-session summary keeps
+  `available_sets_label`. An empty month, an unavailable value and a recorded zero use the
+  dimmed `text.tertiary` treatment; unavailable duration shows "—" and recorded
+  zero shows "0 min". Average volume per workout is not shown.
   The history toolbar uses `divider.subtle` to separate controls from records.
 - Home uses `MetricCardPresentation.Overview` for goal, muscle, streak and
   performance summaries; goal, streak and performance dialogs retain `Detailed`,
@@ -561,8 +574,9 @@ A compact navigation item and a screen heading do not need the same font size.
   with one navigation inset. A footer-only lazy item must not add an item gap to
   that margin. The actionless library uses `screen.verticalPadding` at its end;
   pinned actions still reserve their measured height through BottomOverlayContainer.
-- Editable set rows own their vertical padding and optional divider; the list omits it
-  for the final or only row. Their list adds no second row gap; the Sets heading
+- Editable set rows own their vertical padding; the list draws the optional divider
+  below the swipe-reveal content and omits it for the final or only row. Their list
+  adds no second row gap; the Sets heading
   keeps `text` bottom padding beside the first row's
   `subContent` top padding. Exercise sheets scroll long content rather than
   compressing text, images, sets or the final action.
@@ -648,6 +662,22 @@ A compact navigation item and a screen heading do not need the same font size.
   lacks calculable load; the summary does not present a partial maximum as complete. The existing
   secondary details action remains last. Empty records keep identity and details
   without fabricated sets or summary.
+- Exercise-details history entries (`ExerciseCardStyle.Small`) are repeated framed
+  rows on the dialog surface: `background.card`, `border.default`,
+  `exerciseCard.small.radius` (16 dp) and medium padding, with no image, name,
+  tonnage or completion counter because the sheet header already identifies the
+  exercise and the entry exists to show what was done. The `h6` session date
+  leads; a neutral caller-owned trailing slot beside it carries the
+  session-over-session tonnage change as a secondary `b12Semi` labelled signed
+  percentage ("+8% volume"), omitted for the oldest entry or a zero baseline and
+  without a status color. The recorded sets follow as one wrapping line of
+  primary `b14Semi` "load × reps" results, each followed by a tertiary middle
+  dot inside the same text so a wrapped line never starts with a separator, with
+  no nested cells or frames; a missing value shows "—" and a recorded zero shows
+  "0kg", and an entry without sets shows the secondary `b12Med` no-sets caption
+  instead of the line. The chart axis uses the same day-and-month `DateDdMmm` vocabulary as
+  the completed-exercise sheet; the tonnage history chart above the entries
+  keeps the shared flat bar style with adaptive X labels.
 - Keep control heights as minimums when content depends on font size. Chips, set
   cells, selectors and segmented labels must grow instead of clipping text.
 - Keep one layout across system font scales: single-line button labels, centered

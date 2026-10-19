@@ -26,6 +26,16 @@ are the elevation steps.
   still a product dimension requiring a token.
 - Reuse a slot only when its meaning matches. Add a demanded slot in the owning
   group when needed; do not borrow an unrelated icon/card token merely for its number.
+- Groups are hierarchical. A leaf names a property of the group it sits in
+  (`radius`, `horizontalPadding`, `borderWidth`); a sub-element or a variant is a
+  nested `data object` exposed through a `val` of the same name:
+  `iterationCard.editor.minActionHeight`,
+  `metrics.panel.large.radius`, `screen.toolbar`, `bottomSheet.toolbar`,
+  `checkSelectableCard.small.leadingIcon`. MUST NOT flatten a sub-element into
+  prefixed leaves such as `setRadius`, `editorIcon` or `toolbarHeight`. The
+  private base scales stay the producers behind the leaves. The same rule holds
+  for every `AppTokens` producer with groups (`AppColor`:
+  `colors.charts.tooltip.background`).
 - Producers reuse private scales where their meaning fits. An isolated demanded
   dimension may have a literal inside its semantic group. A new base-scale entry
   requires an authorized design-grid change with concrete consumers.

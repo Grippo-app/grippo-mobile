@@ -7,6 +7,10 @@ import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.exercise_history_set_result
+import com.grippo.design.resources.provider.kg
 import kotlinx.serialization.Serializable
 import kotlin.random.Random
 import kotlin.uuid.Uuid
@@ -58,6 +62,19 @@ public data class IterationState(
                 append(externalWeight.short())
             }
         }
+    }
+
+    /** "load × reps" of a recorded set: a missing value is a dash and a recorded zero stays visible. */
+    @Composable
+    public fun recordedResult(): String {
+        val volume = recordedVolume()?.let { VolumeFormatState.of(it) }
+        val load = when {
+            volume == null -> "—"
+            volume.value == null -> "0${AppTokens.strings.res(Res.string.kg)}"
+            else -> volume.short()
+        }
+        val repetitions = repetitions.value?.toString() ?: "—"
+        return AppTokens.strings.res(Res.string.exercise_history_set_result, load, repetitions)
     }
 
     @Composable

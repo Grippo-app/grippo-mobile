@@ -2,7 +2,6 @@ package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateFormatState
-import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
@@ -219,13 +218,10 @@ public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
         format = DateFormat.DateOnly.MmmYyyy,
     )
     val digest = DigestState.Content(
-        range = DateRangeFormatState.of(monthRange),
         trainingsCount = 5,
-        duration = DurationFormatState.of(225.minutes),
-        total = VolumeFormatState.of(9_600f),
-        avgVolume = VolumeFormatState.of(1_920f),
+        duration = DurationFormatState.ofTotal(225.minutes),
+        total = VolumeFormatState.ofTotal(9_600f),
         totalSets = 20,
-        activeDays = 4,
     )
     val values = mutableListOf<TimelineState>()
 

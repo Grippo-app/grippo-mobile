@@ -24,6 +24,8 @@ values outside composition. [Theme](theme.md) owns provider/locale behavior;
 
 Reuse the existing semantic slot when its meaning matches. Add a demanded slot
 inside its owning group when a real consumer needs a different semantic value.
+Where the slot sits inside that group (own leaf, nested sub-element or variant
+object) follows the [hierarchy rule in dimension tokens](dp.md) for every category.
 Update every theme implementation and actual caller. Do not create unused slots
 or refuse a needed token merely because only one consumer currently needs it.
 Product color/dimension/style literals still do not belong in consumers.

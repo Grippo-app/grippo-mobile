@@ -242,7 +242,7 @@ private fun IterationCardEditableExternalPreview() {
                             RepetitionsFormatState.of(10).value.toString(),
                         ),
                         style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.secondary,
+                        color = AppTokens.colors.text.tertiary,
                     )
                 },
             ),
@@ -468,7 +468,7 @@ private fun IterationCardEditableWarningContextPreview() {
                             RepetitionsFormatState.of(10).value.toString(),
                         ),
                         style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.secondary,
+                        color = AppTokens.colors.text.tertiary,
                     )
                 },
             ),

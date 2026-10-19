@@ -32,8 +32,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.exercise_history_set_result
-import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.set_value
 
 @Stable
@@ -124,15 +122,7 @@ private fun RecordedIterationCard(
     value: IterationState,
     style: IterationCardStyle.Recorded,
 ) {
-    val recordedVolume = value.recordedVolume()
-    val volume = recordedVolume?.let { VolumeFormatState.of(it) }
-    val load = when {
-        volume == null -> "—"
-        volume.value == null -> "0${AppTokens.strings.res(Res.string.kg)}"
-        else -> volume.short()
-    }
-    val repetitions = value.repetitions.value?.toString() ?: "—"
-    val result = AppTokens.strings.res(Res.string.exercise_history_set_result, load, repetitions)
+    val result = value.recordedResult()
     val calculation = value.volumeCalculation()
     val description = listOf(
         AppTokens.strings.res(Res.string.set_value, style.number),

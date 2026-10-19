@@ -9,6 +9,4 @@ public data class TrainingDigestResult(
     val duration: Duration?,
     val totalVolume: Float?,
     val totalSets: Int,
-    val activeDays: Int,
-    val avgVolumePerTraining: Float?,
 )

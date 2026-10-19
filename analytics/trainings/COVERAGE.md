@@ -73,9 +73,7 @@ transition events and programmatic restore clicks are not tracked. Digest select
 is inclusive by `createdAt`; every selected saved session counts, even when its
 exercise relations are unavailable. Saved duration and volume supply the totals;
 invalid negative/nonfinite source values make that metric unavailable instead of
-producing a partial sum. Sets count only available mapped exercise details and are labelled Available sets, including zero; no raw relation count or completeness flag is retained; active days count distinct creation dates. Average volume is the
-Double-precision sum divided by session count and is absent for an empty selection.
-The exact `DateRange` survives mapping; read-only total formatters preserve recorded
+producing a partial sum. Sets count only available mapped exercise details and are labelled Sets, including zero; no raw relation count or completeness flag is retained. The use case no longer derives active days or an average volume; the state mapper drops the range, so the card presents only the workout count, duration, tonnage and sets, and the toolbar's month picker owns the period. Read-only total formatters preserve recorded
 zero and multi-day durations. No raw dates, inputs, lengths,
 entity IDs, measurements, secrets, exception messages or request bodies are sent.
 Monthly's effective range ignores the limitations while Daily coerces its request
@@ -105,7 +103,7 @@ owns the verified consumer mapping and delivery limits.
 | Same | `limitations` | Rebuild | `@Transient`; `DateTimeUtils.trailingYear()` | Recomputed per construction |
 | Same | Daily `items` | Rebuild | `@Transient`; `observeTrainings` plus digest/timeline use cases | Cleared by `selectRange` |
 | Same | Monthly `monthReference`, `digest`, `weeks` | Rebuild | `@Transient`; `Monthly.from(range, timeline)` | `selectRange` builds the saved-month grid before DAO data arrives; the observed effective range rebuilds matching digest and calendar counts, including saved sessions without attached exercises; none of these values is archived |
-| Monthly calendar / DigestCard | Weekday and digest range labels | Rebuild in composition | `DateCompose.rememberWeekDayShortLabels()` and `DateRangeFormatState.short()` from existing typed dates | Current locale updates retained content without rebuilding the VM; weekday labels are no longer stored in Monthly state. Date bounds, archived fields and callback owners are unchanged |
+| Monthly calendar / DigestCard | Weekday labels and digest metric labels | Rebuild in composition | `DateCompose.rememberWeekDayShortLabels()` from existing typed dates; digest labels and formatted values from `DigestState` (`trainingsCount`, `duration`, `total`, `totalSets`; no range, training-day or average-volume fields) | Current locale updates retained content without rebuilding the VM; weekday labels are no longer stored in Monthly state. The month picker in the toolbar owns the displayed period. Date bounds, archived fields and callback owners are unchanged |
 | Same | Period `id`, `text` (localized) | Rebuild | `@Transient` | Rebuilt from the current locale |
 | Same | Trainings loader, Flow jobs, dialog sessions/callbacks | Runtime only | Outer `withLoader`, range-driven `mapLatest`, per-request `safeLaunch`, DialogController | A failed refresh leaves the range subscription available for later selections. Range replacement, lifecycle suspension or VM destruction cancels and joins its request before releasing the loader; jobs are never archived. Live pickers are unsaved; the accepted date/month lands in `state.date` |
 | TrainingsRootComponent | Child stack | Preserve (navigation) | `TrainingsRouter.serializer()`, key `TrainingsRootComponent` | Data-object root state: no root draft and nothing to seed a re-entered child; fresh entry without an archive uses the current-month Monthly default |

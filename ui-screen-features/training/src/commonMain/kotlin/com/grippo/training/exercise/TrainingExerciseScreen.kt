@@ -219,19 +219,19 @@ internal fun TrainingExerciseScreen(
                                 items = state.exercise.iterations,
                                 key = { _, item -> item.id },
                             ) { index, iteration ->
+                                val previousIteration = state.previousIterations.getOrNull(index)
                                 DraggableItem(state = dragDropState, key = iteration.id) {
-                                    SwipeToReveal(
-                                        horizontalPadding = AppTokens.dp.screen.horizontalPadding,
-                                        actions = {
-                                            SwipeRevealAction(
-                                                label = AppTokens.strings.res(Res.string.delete_btn),
-                                                icon = AppTokens.icons.Trash,
-                                                onClick = { contract.onDeleteIteration(iteration.id) },
-                                            )
-                                        },
-                                    ) {
-                                        val previousIteration = state.previousIterations.getOrNull(index)
-                                        Column(modifier = Modifier.fillMaxWidth()) {
+                                    Column(modifier = Modifier.fillMaxWidth()) {
+                                        SwipeToReveal(
+                                            horizontalPadding = AppTokens.dp.screen.horizontalPadding,
+                                            actions = {
+                                                SwipeRevealAction(
+                                                    label = AppTokens.strings.res(Res.string.delete_btn),
+                                                    icon = AppTokens.icons.Trash,
+                                                    onClick = { contract.onDeleteIteration(iteration.id) },
+                                                )
+                                            },
+                                        ) {
                                             IterationCard(
                                                 modifier = Modifier.fillMaxWidth(),
                                                 value = iteration,
@@ -250,7 +250,7 @@ internal fun TrainingExerciseScreen(
                                                                     previousIteration.repetitions.value?.toString() ?: "—",
                                                                 ),
                                                                 style = AppTokens.typography.b12Med(),
-                                                                color = AppTokens.colors.text.secondary,
+                                                                color = AppTokens.colors.text.tertiary,
                                                             )
                                                         }
                                                     } else {
@@ -258,9 +258,13 @@ internal fun TrainingExerciseScreen(
                                                     },
                                                 ),
                                             )
-                                            if (index < state.exercise.iterations.lastIndex) {
-                                                ContentDivider()
-                                            }
+                                        }
+                                        if (index < state.exercise.iterations.lastIndex) {
+                                            ContentDivider(
+                                                modifier = Modifier.padding(
+                                                    horizontal = AppTokens.dp.screen.horizontalPadding,
+                                                ),
+                                            )
                                         }
                                     }
                                 }

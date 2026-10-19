@@ -11,14 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.achievements.stubAchievements
-import com.grippo.core.state.formatters.RepetitionsFormatState
-import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.formatters.DateTimeFormatState
+import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.metrics.performance.stubEstimatedOneRepMax
 import com.grippo.core.state.metrics.volume.VolumeSeriesEntryState
 import com.grippo.core.state.metrics.volume.VolumeSeriesState
-import com.grippo.core.state.metrics.volume.stubVolumeSeries
-import com.grippo.core.state.trainings.stubExercises
-import com.grippo.core.state.trainings.stubPendingIteration
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.stubExerciseHistory
 import com.grippo.design.components.achievement.AchievementsCard
 import com.grippo.design.components.chart.internal.BarChartXAxisLabels
 import com.grippo.design.components.metrics.performance.EstimatedOneRepMaxCard
@@ -29,11 +28,14 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.exercise_history_volume_delta
 import com.grippo.design.resources.provider.history
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleDetailsLoader
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleDetailsState
+import com.grippo.toolkit.date.utils.DateCompose
+import com.grippo.toolkit.date.utils.DateFormat
 import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 
@@ -85,7 +87,7 @@ internal fun ExerciseExampleDetailsAchievementsContent(
             state.exerciseVolume?.let { series ->
                 val chronological = state.recent.asReversed()
                 val entries = series.entries.mapIndexed { index, entry ->
-                    entry.copy(label = chronological[index].createdAt.short())
+                    entry.copy(label = rememberHistoryDateLabel(chronological[index].createdAt))
                 }.toPersistentList()
                 val data = series.copy(entries = entries)
 
@@ -94,20 +96,28 @@ internal fun ExerciseExampleDetailsAchievementsContent(
                         .fillMaxWidth()
                         .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                     value = data,
-                    xAxisLabels = BarChartXAxisLabels.WithoutLabels
+                    xAxisLabels = BarChartXAxisLabels.WithLabels
                 )
 
                 Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
             }
 
             state.recent.forEachIndexed { index, item ->
+                val previous = state.recent.getOrNull(index + 1)
+                val delta = previous?.let(item::volumeDeltaPercent)
+                val trailing: (@Composable () -> Unit)? = if (delta != null) {
+                    { ExerciseHistoryVolumeDelta(delta = delta) }
+                } else {
+                    null
+                }
+
                 key(item.id) {
                     ExerciseCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                         value = item,
-                        style = ExerciseCardStyle.Small,
+                        style = ExerciseCardStyle.Small(trailing = trailing),
                     )
                 }
 
@@ -119,20 +129,75 @@ internal fun ExerciseExampleDetailsAchievementsContent(
     }
 }
 
+/** Tonnage change against the next older record, labelled so the number has a visible referent. */
+@Composable
+private fun ExerciseHistoryVolumeDelta(
+    modifier: Modifier = Modifier,
+    delta: Double,
+) {
+    val percent = PercentageFormatState.shortDelta(delta)
+
+    Text(
+        modifier = modifier,
+        text = AppTokens.strings.res(Res.string.exercise_history_volume_delta, percent),
+        style = AppTokens.typography.b12Semi(),
+        color = AppTokens.colors.text.secondary,
+    )
+}
+
+/** Day-and-month label shared by the chart axis and the comparison caption, as on the completed-exercise sheet. */
+@Composable
+private fun rememberHistoryDateLabel(value: DateTimeFormatState): String {
+    val date = value.value ?: return value.display
+    return DateCompose.rememberFormat(value = date, format = DateFormat.DateOnly.DateDdMmm)
+}
+
 @AppPreview
 @Composable
 private fun ExerciseExampleDetailsAchievementsContentPreview() {
     PreviewContainer {
-        val recent = stubExercises()
-        val volume = stubVolumeSeries()
         ExerciseExampleDetailsAchievementsContent(
             modifier = Modifier.fillMaxWidth(),
-            state = ExerciseExampleDetailsState(
-                recent = recent,
+            state = historyPreviewState(stubExerciseHistory().take(2).toPersistentList()).copy(
                 estimatedOneRepMax = stubEstimatedOneRepMax(),
                 achievements = stubAchievements(),
-                exerciseVolume = volume.copy(entries = volume.entries.take(recent.size).toPersistentList()),
             ),
+            loaders = persistentSetOf(),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleDetailsAchievementsContentHistoryPreview() {
+    PreviewContainer {
+        ExerciseExampleDetailsAchievementsContent(
+            modifier = Modifier.fillMaxWidth(),
+            state = historyPreviewState(stubExerciseHistory()),
+            loaders = persistentSetOf(),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleDetailsAchievementsContentSingleEntryPreview() {
+    PreviewContainer {
+        ExerciseExampleDetailsAchievementsContent(
+            modifier = Modifier.fillMaxWidth(),
+            state = historyPreviewState(stubExerciseHistory().take(1).toPersistentList()),
+            loaders = persistentSetOf(),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleDetailsAchievementsContentZeroTonnagePreview() {
+    PreviewContainer {
+        ExerciseExampleDetailsAchievementsContent(
+            modifier = Modifier.fillMaxWidth(),
+            state = historyPreviewState(stubExerciseHistory().drop(2).toPersistentList()),
             loaders = persistentSetOf(),
         )
     }
@@ -162,29 +227,13 @@ private fun EstimatedMaxOnlyPreview() {
     }
 }
 
-@AppPreview
-@Composable
-private fun HistoryOnlyPreview() {
-    val exercise = stubExercises().first().copy(
-        id = "history-only",
-        iterations = persistentListOf(
-            stubPendingIteration().copy(
-                id = "history-set",
-                externalWeight = VolumeFormatState.of(80f),
-                repetitions = RepetitionsFormatState.of(10),
-            ),
-        ),
+private fun historyPreviewState(entries: PersistentList<ExerciseState>): ExerciseExampleDetailsState {
+    val series = entries.asReversed().map { entry ->
+        VolumeSeriesEntryState(label = entry.createdAt.display, value = entry.total.volume.value ?: 0f)
+    }.toPersistentList()
+
+    return ExerciseExampleDetailsState(
+        recent = entries,
+        exerciseVolume = VolumeSeriesState(entries = series),
     )
-    PreviewContainer {
-        ExerciseExampleDetailsAchievementsContent(
-            modifier = Modifier.fillMaxWidth(),
-            state = ExerciseExampleDetailsState(
-                recent = persistentListOf(exercise),
-                exerciseVolume = VolumeSeriesState(
-                    entries = persistentListOf(VolumeSeriesEntryState(label = exercise.name, value = 800f)),
-                ),
-            ),
-            loaders = persistentSetOf(),
-        )
-    }
 }
