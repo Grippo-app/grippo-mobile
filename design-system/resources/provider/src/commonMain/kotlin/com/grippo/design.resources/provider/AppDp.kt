@@ -512,6 +512,7 @@ public data object AppDp {
         val horizontalPadding: Dp = padding.medium
         val verticalPadding: Dp = padding.small
         val textSpacing: Dp = padding.tiny
+        public val exerciseLoadTypeIcon: Dp = 20.dp
 
         val startTraining: StartTraining = StartTraining
 
@@ -602,12 +603,11 @@ public data object AppDp {
     public data object IterationCard {
         val borderWidth: Dp = 1.dp
         val radius: Dp = AppDp.radius.small
-        val historyNumberSize: Dp = size.small
+        public val numberSize: Dp = size.small
         val historyContextWidth: Dp = 112.dp
         public val editor: Editor = Editor
 
         public data object Editor {
-            public val numberMinWidth: Dp = size.large
             public val minActionHeight: Dp = 48.dp
             public val icon: Dp = 20.dp
         }

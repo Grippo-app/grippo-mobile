@@ -224,6 +224,7 @@ public interface AppColor {
     }
 
     public interface ExampleColors {
+        public val equipmentCompactHighlight: Color
         public val category: CategoryColors
         public val weightType: WeightTypeColors
         public val forceType: ForceTypeColors
@@ -247,16 +248,14 @@ public interface AppColor {
     }
 
     public interface MuscleColors {
-        public val chest: Color
-        public val back: Color
-        public val abdominal: Color
-        public val legs: Color
-        public val arms: Color
-        public val shoulders: Color
+        public val highlight: Color
         public val active: Color
         public val inactive: Color
         public val background: Color
         public val outline: Color
+        public val compactBackground: Color
+        public val compactInactive: Color
+        public val summaryHighlight: Color
         public val palette6MuscleCalm: List<Color>
     }
 

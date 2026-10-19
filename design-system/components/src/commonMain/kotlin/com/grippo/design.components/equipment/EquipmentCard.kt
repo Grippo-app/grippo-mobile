@@ -13,8 +13,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.VectorGroup
+import androidx.compose.ui.graphics.vector.VectorPath
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
@@ -71,6 +78,11 @@ private fun EquipmentCardCompact(
     value: EquipmentState,
 ) {
     val title = value.type.title().text()
+    val sourceIcon = value.type.icon()
+    val highlight = AppTokens.colors.example.equipmentCompactHighlight
+    val icon = remember(sourceIcon, highlight) {
+        compactEquipmentImage(source = sourceIcon, highlight = highlight)
+    }
     val opticalPadding = when (value.type) {
         EquipmentEnumState.DUMBBELLS,
         EquipmentEnumState.BARBELL,
@@ -87,10 +99,86 @@ private fun EquipmentCardCompact(
                 text = AnnotatedString(title)
             }
             .padding(opticalPadding),
-        imageVector = value.type.icon(),
+        imageVector = icon,
         contentDescription = null,
         contentScale = ContentScale.Fit,
     )
+}
+
+private fun compactEquipmentImage(source: ImageVector, highlight: Color): ImageVector {
+    if (highlight == Color.White) {
+        return source
+    }
+
+    val builder = ImageVector.Builder(
+        name = source.name,
+        defaultWidth = source.defaultWidth,
+        defaultHeight = source.defaultHeight,
+        viewportWidth = source.viewportWidth,
+        viewportHeight = source.viewportHeight,
+        tintColor = source.tintColor,
+        tintBlendMode = source.tintBlendMode,
+        autoMirror = source.autoMirror,
+    )
+    appendEquipmentGroup(builder = builder, group = source.root, highlight = highlight)
+    return builder.build()
+}
+
+private fun appendEquipmentGroup(
+    builder: ImageVector.Builder,
+    group: VectorGroup,
+    highlight: Color,
+) {
+    builder.addGroup(
+        name = group.name,
+        rotate = group.rotation,
+        pivotX = group.pivotX,
+        pivotY = group.pivotY,
+        scaleX = group.scaleX,
+        scaleY = group.scaleY,
+        translationX = group.translationX,
+        translationY = group.translationY,
+        clipPathData = group.clipPathData,
+    )
+    group.forEach { node ->
+        when (node) {
+            is VectorGroup -> appendEquipmentGroup(builder = builder, group = node, highlight = highlight)
+            is VectorPath -> builder.addPath(
+                pathData = node.pathData,
+                pathFillType = node.pathFillType,
+                name = node.name,
+                fill = equipmentHighlightBrush(brush = node.fill, highlight = highlight),
+                fillAlpha = node.fillAlpha,
+                stroke = equipmentHighlightBrush(brush = node.stroke, highlight = highlight),
+                strokeAlpha = node.strokeAlpha,
+                strokeLineWidth = node.strokeLineWidth,
+                strokeLineCap = node.strokeLineCap,
+                strokeLineJoin = node.strokeLineJoin,
+                strokeLineMiter = node.strokeLineMiter,
+                trimPathStart = node.trimPathStart,
+                trimPathEnd = node.trimPathEnd,
+                trimPathOffset = node.trimPathOffset,
+            )
+        }
+    }
+    builder.clearGroup()
+}
+
+private fun equipmentHighlightBrush(brush: Brush?, highlight: Color): Brush? {
+    if (brush !is SolidColor) {
+        return brush
+    }
+    val color = brush.value
+    val softened = color.copy(
+        red = minOf(color.red, highlight.red),
+        green = minOf(color.green, highlight.green),
+        blue = minOf(color.blue, highlight.blue),
+    )
+    return if (softened == color) {
+        brush
+    } else {
+        SolidColor(softened)
+    }
 }
 
 @Composable

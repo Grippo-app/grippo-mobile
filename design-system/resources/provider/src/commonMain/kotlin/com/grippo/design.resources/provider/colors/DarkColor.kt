@@ -12,7 +12,7 @@ public object DarkColor : AppColor {
     }
 
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
-        override val default = AppPalette.NeutralDark.N250
+        override val default = AppPalette.NeutralDark.N300
         override val focus = AppPalette.DarkAccent.Orange
     }
 
@@ -217,6 +217,8 @@ public object DarkColor : AppColor {
     }
 
     public override val example: AppColor.ExampleColors = object : AppColor.ExampleColors {
+        override val equipmentCompactHighlight: Color =
+            lerp(AppPalette.NeutralDark.N700, AppPalette.NeutralDark.N800, 0.5f)
         override val category: AppColor.ExampleColors.CategoryColors =
             object : AppColor.ExampleColors.CategoryColors {
                 override val compound: Color = AppPalette.DarkAccent.Red
@@ -253,16 +255,14 @@ public object DarkColor : AppColor {
     }
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
-        override val chest = AppPalette.DarkAccent.Coral
-        override val back = AppPalette.DarkAccent.Sky
-        override val abdominal = AppPalette.DarkAccent.Copper
-        override val legs = AppPalette.DarkAccent.Teal
-        override val arms = AppPalette.DarkAccent.Purple
-        override val shoulders = AppPalette.DarkAccent.Indigo
+        override val highlight = AppPalette.NeutralDark.N700
         override val active = AppPalette.DarkAccent.Green
         override val inactive = AppPalette.NeutralDark.N400.copy(alpha = 0.90f)
         override val background = AppPalette.NeutralDark.N300
         override val outline = Color.Transparent
+        override val compactBackground = AppPalette.NeutralDark.N450
+        override val compactInactive = AppPalette.NeutralDark.N500
+        override val summaryHighlight = AppPalette.NeutralDark.N700
         override val palette6MuscleCalm: List<Color> = AppPalette.Gradient.Palette6MuscleDark
     }
 

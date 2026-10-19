@@ -31,6 +31,9 @@ A compact navigation item and a screen heading do not need the same font size.
   supplies the accent. Custom framed content supplies its tint and background
   explicitly, rather than deriving opacity inside the component.
 - Ordinary weights, counts, dates and instructions use neutral text colors.
+- Neutral boundaries use `border.default`: Light NeutralLight.N250 and Dark
+  NeutralDark.N300. `divider.subtle` and `charts.bar.baseline` keep their existing
+  0.4 and 0.45 alpha derivations; focus, selection and severity retain their own roles.
 - Destructive account outlines use `semantic.errorBorder`; quiet summary dividers
   use the shared `ContentDivider`. Disabled switches use their own
   `toggle.disabledTrack` and `toggle.disabledThumb` roles.
@@ -60,10 +63,10 @@ A compact navigation item and a screen heading do not need the same font size.
   Home and statistics/details. The anatomical zone is the primary recognition
   cue, paired with complete localized muscle/group labels. Individual muscles
   highlight their exact zone through the existing front/back/split projections.
-- Identity contexts (catalogue, library filters and muscle choice) use fixed
-  LightAccent/DarkAccent roles: `muscle.chest` = Coral, `muscle.back` = Sky,
-  `muscle.abdominal` = Copper, `muscle.legs` = Teal, `muscle.arms` = Purple,
-  `muscle.shoulders` = Indigo. Model `group()/color()/icon()/image(preset)`
+- Identity contexts (catalogue, library filters and muscle choice) share one
+  neutral `muscle.highlight`: Light NeutralLight.N550; Dark NeutralDark.N700.
+  Muscle groups are distinguished by their anatomical zones and localized labels,
+  without categorical colors. Model `group()/color()/icon()/image(preset)`
   methods own anatomical identity; group and muscle `icon(color)` accept the
   tint supplied by a measured context without changing their anatomical zone.
 - Measured contexts (Home, exercise involvement, recorded-set statistics and
@@ -93,17 +96,28 @@ A compact navigation item and a screen heading do not need the same font size.
   group keeps its familiar anatomical crop; multiple upper-body groups share one
   existing front/back torso drawing with all involved zones highlighted. Legs
   use their own drawing when present, keeping the summary to at most two marks.
-  The summary uses `icon.secondary` for highlighted zones and `text` gaps. Both
+  Inline filters and Summary marks use `muscle.compactBackground/compactInactive`
+  for their anatomical context: Light NeutralLight.N200/N300; Dark
+  NeutralDark.N450/N500. Summary highlights use `muscle.summaryHighlight`
+  (Light NeutralLight.N550; Dark NeutralDark.N700), matching the shared neutral
+  identity highlight used by Inline and Standard marks. Measured anatomy retains
+  its relative-load paints.
+  The summary keeps `text` gaps. Both
   image types retain complete localized accessibility names without visible captions. This
-  compact recognition treatment is specific to the library summary; filters,
-  choices and measured detail surfaces keep their identity or load colors and labels.
+  compact geometry is specific to the library summary; filters and choices share
+  its neutral identity tone, while measured detail surfaces keep their load colors and labels.
   Equipment and anatomy keep `text` gaps within each group; `content` spacing
   separates the two clusters without a divider or container. The clusters wrap
   with `text` vertical gaps, matching the right column's vertical spacing. List
   dividers follow the content gutters.
+- Compact equipment caps only near-white vector fill/stroke channels through
+  `example.equipmentCompactHighlight`: Light is unchanged (`Color.White`);
+  Dark uses the midpoint of NeutralDark.N700/N800. Native dark and middle shades,
+  path geometry and alpha are preserved. Inline, Detail and Selection equipment
+  keep their original vector colors.
 - MuscleSelection keeps one large hero and existing group tabs, with no duplicate
-  small group mark/title above the hero. Muscle rows keep their own identity cues;
-  the large image highlights chosen zones with the group's hue. Neutral choice
+  small group mark/title above the hero. Muscle rows keep their anatomical identity cues;
+  the large image highlights chosen zones with `muscle.highlight`. Neutral choice
   borders, Segment selection and Switch state retain selection ownership.
   Suggestions remain a separate filter role. Goal diagnostic markers retain
   severity accents and neutral explanatory text.
@@ -280,12 +294,16 @@ A compact navigation item and a screen heading do not need the same font size.
   `contentPadding.subContent` separates its cells. Save/Update keeps the toolbar's
   primary action; Add Exercise keeps the pinned secondary action.
 - Training exercise editing keeps the exercise summary open on `background.screen`.
-  Sets are compact open journal rows on the same opaque screen surface, separated
-  by `divider.subtle`; they have no card outline or filled value fields. The set
-  number sits beside two independent metric actions, using the content-driven
-  `iterationCard.editor.numberMinWidth` minimum. Numbers, labels and previous-set
-  context use secondary `b12Med`; values use neutral `h5`. Metric targets retain
-  `iterationCard.editor.minActionHeight` without a filled or outlined field shape.
+  Its load descriptor uses `training.exerciseLoadTypeIcon` (20 dp), `icon.secondary`
+  and secondary `b12Med` text; the UI model owns its icon and localized title.
+  `IterationCard.Editable` renders compact open journal rows on the same opaque
+  screen surface; the list owns `divider.subtle` separators. A passive 32 dp
+  number badge reuses `iterationCard.numberSize`, `iterationCard.radius`,
+  `background.card` and secondary `b12Semi` from Recorded iterations. Two equal
+  metric actions use standalone secondary `b12Med` labels and neutral `h5` values,
+  with `iterationCard.editor.minActionHeight` targets and no filled or outlined
+  field shape. Body-load calculations and caller-owned previous-set context sit
+  below the values as secondary `b12Med` captions, aligned with the metric content.
   Warnings use `semantic.warning` only for the affected value and icon;
   actionable explanatory text stays neutral without a filled warning panel.
   Save keeps the primary button; Add Set keeps the secondary button.
@@ -589,7 +607,7 @@ A compact navigation item and a screen heading do not need the same font size.
   `h4` name and a secondary `b12Med` session date. Their Sets heading uses
   `subContent` bottom padding before the first row's `subContent` top padding.
   The ordered sets use
-  `IterationCard.Recorded` first: a small passive number badge (`iterationCard.historyNumberSize`),
+  `IterationCard.Recorded` first: a small passive number badge (`iterationCard.numberSize`),
   neutral `h5` load × repetitions and quiet dividers only between rows. Actual ordinal
   prior values belong to the feature-provided trailing slot, using secondary `b12Med` in a fixed `iterationCard.historyContextWidth`
   column, introduced once by a short previous-date header. Each context slot
@@ -642,7 +660,8 @@ A compact navigation item and a screen heading do not need the same font size.
 ## Content dividers
 
 - Neutral horizontal boundaries use `ContentDivider` with `divider.subtle` and
-  `divider.thickness` (1 dp) in both themes. Vertical metric separators share
+  `divider.thickness` (1 dp) in both themes. Its color is fixed by the component
+  and cannot be overridden by callers. Vertical metric separators share
   those color and thickness roles. Selection indicators, timeline connectors,
   chart guides and skeleton fills retain their own roles.
 - Boundaries between fixed headers or controls and scrolling content, including

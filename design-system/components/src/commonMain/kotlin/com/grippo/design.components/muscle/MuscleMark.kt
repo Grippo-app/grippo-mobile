@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,7 +38,24 @@ public fun MuscleMark(
     style: MuscleMarkStyle = MuscleMarkStyle.Standard,
     color: Color? = null,
 ) {
-    MuscleMarkContent(modifier = modifier, icon = group.icon(color ?: group.color()), style = style)
+    val colors = AppTokens.colors.muscle
+    val highlight = color ?: group.color()
+    val icon = if (style == MuscleMarkStyle.Standard) {
+        group.icon(highlight)
+    } else {
+        val preset = remember(group, colors, highlight) {
+            MuscleEnumState.colorPreset(
+                fallback = colors.compactInactive,
+                outline = colors.outline,
+                background = colors.compactBackground,
+                colorFor = { muscle ->
+                    if (muscle.group() == group) highlight else colors.compactInactive
+                },
+            )
+        }
+        group.image(preset)
+    }
+    MuscleMarkContent(modifier = modifier, icon = icon, style = style)
 }
 
 @Composable
@@ -47,7 +65,24 @@ public fun MuscleMark(
     style: MuscleMarkStyle = MuscleMarkStyle.Standard,
     color: Color? = null,
 ) {
-    MuscleMarkContent(modifier = modifier, icon = muscle.icon(color ?: muscle.color()), style = style)
+    val colors = AppTokens.colors.muscle
+    val highlight = color ?: muscle.color()
+    val icon = if (style == MuscleMarkStyle.Standard) {
+        muscle.icon(highlight)
+    } else {
+        val preset = remember(muscle, colors, highlight) {
+            MuscleEnumState.colorPreset(
+                fallback = colors.compactInactive,
+                outline = colors.outline,
+                background = colors.compactBackground,
+                colorFor = { item ->
+                    if (item == muscle) highlight else colors.compactInactive
+                },
+            )
+        }
+        muscle.image(preset)
+    }
+    MuscleMarkContent(modifier = modifier, icon = icon, style = style)
 }
 
 @Composable
@@ -155,7 +190,27 @@ private fun MuscleMarkSummaryPreview() {
                 MuscleMark(
                     group = group,
                     style = MuscleMarkStyle.Summary,
-                    color = AppTokens.colors.icon.secondary,
+                    color = AppTokens.colors.muscle.summaryHighlight,
+                )
+            }
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleMarkCompactArmsPreview() {
+    PreviewContainer {
+        Row(horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)) {
+            MuscleMark(
+                group = MuscleGroupEnumState.ARMS_AND_FOREARMS,
+                style = MuscleMarkStyle.Inline,
+            )
+            listOf(MuscleEnumState.BICEPS, MuscleEnumState.TRICEPS, MuscleEnumState.FOREARM).forEach { muscle ->
+                MuscleMark(
+                    muscle = muscle,
+                    style = MuscleMarkStyle.Summary,
+                    color = AppTokens.colors.muscle.summaryHighlight,
                 )
             }
         }

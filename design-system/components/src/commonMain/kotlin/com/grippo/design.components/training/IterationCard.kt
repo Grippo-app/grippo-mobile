@@ -27,6 +27,7 @@ import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.core.state.trainings.stubPendingIteration
+import com.grippo.design.components.training.internal.EditableIterationCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -45,6 +46,16 @@ public sealed class IterationCardStyle {
         public val number: Int,
         public val trailing: (@Composable () -> Unit)? = null,
     ) : IterationCardStyle()
+
+    @Stable
+    public data class Editable(
+        public val number: Int,
+        public val unusualWeight: Boolean,
+        public val unusualRepetitions: Boolean,
+        public val onVolumeClick: () -> Unit,
+        public val onRepetitionClick: () -> Unit,
+        public val context: (@Composable () -> Unit)? = null,
+    ) : IterationCardStyle()
 }
 
 @Composable
@@ -60,6 +71,12 @@ public fun IterationCard(
         )
 
         is IterationCardStyle.Recorded -> RecordedIterationCard(
+            modifier = modifier,
+            value = value,
+            style = style,
+        )
+
+        is IterationCardStyle.Editable -> EditableIterationCard(
             modifier = modifier,
             value = value,
             style = style,
@@ -140,7 +157,7 @@ private fun RecordedIterationCard(
         ) {
             Box(
                 modifier = Modifier
-                    .size(AppTokens.dp.iterationCard.historyNumberSize)
+                    .size(AppTokens.dp.iterationCard.numberSize)
                     .background(
                         color = AppTokens.colors.background.card,
                         shape = RoundedCornerShape(AppTokens.dp.iterationCard.radius),
@@ -178,7 +195,10 @@ private fun RecordedIterationCard(
 @AppPreview
 @Composable
 private fun IterationCardCompactPreview() {
-    val pending = iterationCardPreviewValue()
+    val pending = stubPendingIteration().copy(
+        id = "iteration-card-compact-preview",
+        repetitions = RepetitionsFormatState.of(8),
+    )
 
     PreviewContainer {
         IterationCard(
@@ -200,7 +220,10 @@ private fun IterationCardCompactPreview() {
 @AppPreview
 @Composable
 private fun IterationCardRecordedPreview() {
-    val pending = iterationCardPreviewValue()
+    val pending = stubPendingIteration().copy(
+        id = "iteration-card-recorded-preview",
+        repetitions = RepetitionsFormatState.of(8),
+    )
     val body = pending.copy(
         bodyWeight = WeightFormatState.of(80f),
         bodyMultiplier = MultiplierFormatState.of(1f),
@@ -226,7 +249,10 @@ private fun IterationCardRecordedPreview() {
 @AppPreview
 @Composable
 private fun IterationCardRecordedPartialPreview() {
-    val pending = iterationCardPreviewValue()
+    val pending = stubPendingIteration().copy(
+        id = "iteration-card-recorded-partial-preview",
+        repetitions = RepetitionsFormatState.of(8),
+    )
 
     PreviewContainer {
         IterationCard(value = pending, style = IterationCardStyle.Recorded(number = 1))
@@ -255,10 +281,12 @@ private fun IterationCardRecordedPartialPreview() {
 @AppPreview
 @Composable
 private fun IterationCardRecordedZeroPreview() {
-    val body = iterationCardPreviewValue().copy(
+    val body = stubPendingIteration().copy(
+        id = "iteration-card-recorded-zero-preview",
         bodyWeight = WeightFormatState.of(80f),
         bodyMultiplier = MultiplierFormatState.of(1f),
         assistWeight = VolumeFormatState.of(80f),
+        repetitions = RepetitionsFormatState.of(8),
     )
 
     PreviewContainer {
@@ -277,7 +305,11 @@ private fun IterationCardRecordedZeroPreview() {
 @AppPreview
 @Composable
 private fun IterationCardRecordedTrailingPreview() {
-    val value = iterationCardPreviewValue().copy(externalWeight = VolumeFormatState.of(80f))
+    val value = stubPendingIteration().copy(
+        id = "iteration-card-recorded-trailing-preview",
+        externalWeight = VolumeFormatState.of(80f),
+        repetitions = RepetitionsFormatState.of(8),
+    )
 
     PreviewContainer {
         IterationCard(
@@ -297,11 +329,4 @@ private fun IterationCardRecordedTrailingPreview() {
             ),
         )
     }
-}
-
-private fun iterationCardPreviewValue(): IterationState {
-    return stubPendingIteration().copy(
-        id = "iteration-card-preview",
-        repetitions = RepetitionsFormatState.of(8),
-    )
 }

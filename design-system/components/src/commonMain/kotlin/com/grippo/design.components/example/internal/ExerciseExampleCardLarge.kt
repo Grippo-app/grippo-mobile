@@ -152,7 +152,7 @@ private fun ExerciseExampleMuscleImages(
     groups: List<MuscleGroupEnumState>,
 ) {
     val upperGroups = groups.filterNot { it == MuscleGroupEnumState.LEGS }
-    val highlightColor = AppTokens.colors.icon.secondary
+    val highlightColor = AppTokens.colors.muscle.summaryHighlight
 
     Row(
         modifier = modifier,
@@ -177,11 +177,11 @@ private fun ExerciseExampleMuscleImages(
                 val muscleColors = AppTokens.colors.muscle
                 val image = remember(upperGroups, muscleColors, highlightColor) {
                     val preset = MuscleEnumState.colorPreset(
-                        fallback = muscleColors.inactive,
+                        fallback = muscleColors.compactInactive,
                         outline = muscleColors.outline,
-                        background = muscleColors.background,
+                        background = muscleColors.compactBackground,
                         colorFor = { muscle ->
-                            if (muscle.group() in upperGroups) highlightColor else muscleColors.inactive
+                            if (muscle.group() in upperGroups) highlightColor else muscleColors.compactInactive
                         },
                     )
                     bodySplit(preset)

@@ -58,6 +58,8 @@ import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
+import com.grippo.design.components.training.IterationCard
+import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -73,7 +75,9 @@ import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.sets_value
 import com.grippo.design.resources.provider.training_first_set_hint
 import com.grippo.design.resources.provider.training_no_sets
+import com.grippo.design.resources.provider.training_previous_set
 import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.datetime.LocalDateTime
@@ -130,7 +134,22 @@ internal fun TrainingExerciseScreen(
                     }
                 }
                 if (example != null) {
-                    TrainingExerciseLoadType(components = example.components)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(AppTokens.dp.training.exerciseLoadTypeIcon),
+                            imageVector = example.components.icon(),
+                            contentDescription = null,
+                            tint = AppTokens.colors.icon.secondary,
+                        )
+                        Text(
+                            text = example.components.title().text(),
+                            style = AppTokens.typography.b12Med(),
+                            color = AppTokens.colors.text.secondary,
+                        )
+                    }
                 }
             }
 
@@ -211,17 +230,38 @@ internal fun TrainingExerciseScreen(
                                             )
                                         },
                                     ) {
-                                        TrainingExerciseSetRow(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            value = iteration,
-                                            number = index + 1,
-                                            previousIteration = state.previousIterations.getOrNull(index),
-                                            unusualWeight = iteration.id in state.volumeArtifactIds,
-                                            unusualRepetitions = iteration.id in state.repetitionArtifactIds,
-                                            showDivider = index < state.exercise.iterations.lastIndex,
-                                            onVolumeClick = { contract.onEditVolume(iteration.id) },
-                                            onRepetitionClick = { contract.onEditRepetition(iteration.id) },
-                                        )
+                                        val previousIteration = state.previousIterations.getOrNull(index)
+                                        Column(modifier = Modifier.fillMaxWidth()) {
+                                            IterationCard(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                value = iteration,
+                                                style = IterationCardStyle.Editable(
+                                                    number = index + 1,
+                                                    unusualWeight = iteration.id in state.volumeArtifactIds,
+                                                    unusualRepetitions = iteration.id in state.repetitionArtifactIds,
+                                                    onVolumeClick = { contract.onEditVolume(iteration.id) },
+                                                    onRepetitionClick = { contract.onEditRepetition(iteration.id) },
+                                                    context = if (previousIteration != null) {
+                                                        {
+                                                            Text(
+                                                                text = AppTokens.strings.res(
+                                                                    Res.string.training_previous_set,
+                                                                    previousIteration.volume().short(),
+                                                                    previousIteration.repetitions.value?.toString() ?: "—",
+                                                                ),
+                                                                style = AppTokens.typography.b12Med(),
+                                                                color = AppTokens.colors.text.secondary,
+                                                            )
+                                                        }
+                                                    } else {
+                                                        null
+                                                    },
+                                                ),
+                                            )
+                                            if (index < state.exercise.iterations.lastIndex) {
+                                                ContentDivider()
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -320,9 +360,9 @@ private fun trainingExercisePreviewState(): TrainingExerciseState {
             name = exerciseExample.value.name,
             exerciseExample = exerciseExample.value,
             iterations = persistentListOf(firstIteration, secondIteration, thirdIteration, fourthIteration),
-            createdAt = DateTimeFormatState.Valid(
-                display = "16 Oct 2026",
-                value = LocalDateTime(2026, 10, 16, 12, 0),
+            createdAt = DateTimeFormatState.of(
+                value = LocalDateTime(year = 2026, month = 10, day = 16, hour = 12, minute = 0),
+                range = DateRangePresets.infinity(),
                 format = DateFormat.DateOnly.DateMmmDdYyyy,
             ),
         ),

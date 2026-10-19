@@ -217,6 +217,7 @@ public object LightColor : AppColor {
     }
 
     public override val example: AppColor.ExampleColors = object : AppColor.ExampleColors {
+        override val equipmentCompactHighlight: Color = Color.White
         override val category: AppColor.ExampleColors.CategoryColors =
             object : AppColor.ExampleColors.CategoryColors {
                 override val compound: Color = AppPalette.LightAccent.Red
@@ -253,16 +254,14 @@ public object LightColor : AppColor {
     }
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
-        override val chest = AppPalette.LightAccent.Coral
-        override val back = AppPalette.LightAccent.Sky
-        override val abdominal = AppPalette.LightAccent.Copper
-        override val legs = AppPalette.LightAccent.Teal
-        override val arms = AppPalette.LightAccent.Purple
-        override val shoulders = AppPalette.LightAccent.Indigo
+        override val highlight = AppPalette.NeutralLight.N550
         override val active = AppPalette.LightAccent.Green
         override val inactive = AppPalette.NeutralLight.N300
         override val background = AppPalette.NeutralLight.N200
         override val outline = AppPalette.NeutralLight.N400
+        override val compactBackground = AppPalette.NeutralLight.N200
+        override val compactInactive = AppPalette.NeutralLight.N300
+        override val summaryHighlight = AppPalette.NeutralLight.N550
         override val palette6MuscleCalm: List<Color> = AppPalette.Gradient.Palette6MuscleLight
     }
 

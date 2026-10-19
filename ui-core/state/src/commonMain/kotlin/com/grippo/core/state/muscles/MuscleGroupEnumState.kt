@@ -33,15 +33,7 @@ public enum class MuscleGroupEnumState {
 
     @Composable
     public fun color(): Color {
-        val colors = AppTokens.colors.muscle
-        return when (this) {
-            CHEST_MUSCLES -> colors.chest
-            BACK_MUSCLES -> colors.back
-            ABDOMINAL_MUSCLES -> colors.abdominal
-            LEGS -> colors.legs
-            ARMS_AND_FOREARMS -> colors.arms
-            SHOULDER_MUSCLES -> colors.shoulders
-        }
+        return AppTokens.colors.muscle.highlight
     }
 
     @Composable
