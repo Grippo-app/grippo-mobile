@@ -3,6 +3,7 @@ package com.grippo.data.features.api.exercise.example.models
 public sealed interface ExampleScope {
 
     public data class All(
+        public val sorting: ExampleSortingEnum,
         public val muscleGroupId: String? = null,
     ) : ExampleScope
 

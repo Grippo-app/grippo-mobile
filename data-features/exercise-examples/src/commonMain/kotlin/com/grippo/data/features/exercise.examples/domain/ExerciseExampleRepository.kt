@@ -2,7 +2,6 @@ package com.grippo.data.features.exercise.examples.domain
 
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleScope
-import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.exercise.example.models.UserExerciseExampleRules
@@ -13,7 +12,6 @@ internal interface ExerciseExampleRepository {
     fun observeExerciseExamples(
         name: String?,
         scope: ExampleScope,
-        sorting: ExampleSortingEnum,
         rules: UserExerciseExampleRules,
         page: ExamplePage,
         experience: ExperienceEnum

@@ -206,8 +206,7 @@ public class GeneratePresetTrainingUseCase(
             exerciseExampleFeature
                 .observeExerciseExamples(
                     name = null,
-                    scope = ExampleScope.All(),
-                    sorting = ExampleSortingEnum.MostlyUsed,
+                    scope = ExampleScope.All(sorting = ExampleSortingEnum.MostlyUsed),
                     rules = rules,
                     page = page,
                     experience = exp,

@@ -116,11 +116,11 @@ register the current VM state through saveState. Restore the parent flow's accep
 data and register its lazy supplier before constructing children that use it. Child ComponentContexts
 have separate StateKeepers, so each screen owns its draft locally.
 
-Orientation (inspect the Components): 17 Components define
+Orientation (inspect the Components): 18 Components define
 `val DRAFT = PersistenceKey("<Feature>Draft", <State>.serializer())` in a private
 companion and call `restoreState(DRAFT)` plus `saveState(DRAFT) { viewModel.state.value }`.
 Seven ViewModels take a nullable `initialState` and receive `restoreState(DRAFT)`
-directly; the other ten take a non-null `initialState`, so their Components pass
+directly; the other eleven take a non-null `initialState`, so their Components pass
 `restoreState(DRAFT) ?: <State>(...)`. `PersistenceKey<T : Any>(key, serializer)` is
 a final class with `internal` properties: a feature constructs it and passes it only
 to `restoreState`/`saveState`. Six draft States and `AuthRouter.Onboarding`/`AuthProcess`

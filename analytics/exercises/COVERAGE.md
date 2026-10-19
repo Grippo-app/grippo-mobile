@@ -38,8 +38,9 @@ The four custom version-1 schemas (`exercises_filter_clicked` with the bounded
 `library_filter`, and three parameterless) are registered through one qualified
 `exercises_analytics` provider; the stateless service is bound once and listed in
 `shared/.../Koin.kt`. Built-in screen schemas are reused. There are no operations:
-the API has no `trackOperation`, and the catalog, target and search sources are
-continuous Flows rebuilt as business subscriptions, not finite operations.
+the API has no `trackOperation`, and the catalog, target, search and
+draft-training sources are continuous Flows rebuilt as business subscriptions,
+not finite operations.
 Ordinary reporting exceptions are isolated; business updates and navigation stay
 independent. No entity IDs, target/group IDs, query text/length, errors or
 request/response bodies enter telemetry.
@@ -47,7 +48,8 @@ request/response bodies enter telemetry.
 ## Omissions and privacy
 
 Focus/IME/clear, scroll position, the programmatic Suggestions → All fallback on
-an empty first SimilarTo page, the vanished-group reset, the target card
+an empty first SimilarTo page (no cached target, or every similar candidate
+already in the draft workout), the vanished-group reset, the target card
 observation, dialog sessions (none exist in this feature) and referrer/flow
 attribution are deliberately outside this contract; filter values are the closed
 `LibraryFilter` enum only.
@@ -57,10 +59,10 @@ attribution are deliberately outside this contract; filter values are the closed
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | ExerciseLibraryComponent / ExerciseLibraryViewModel | `queries.name`, including whitespace and explicitly empty values | Preserve | `DRAFT = PersistenceKey("ExerciseLibraryDraft", ExerciseLibraryState.serializer())`; nullable initialState; `saveState` of the latest VM state | The saved value wins (`initialState?.copy(mode = mode)`); trimming happens only in the request |
-| Same | `queries.filter`: All, Suggestions or Group(id) | Preserve | Serializable sealed QueryFilter | The saved value, including All, wins over route preselection; the fresh default comes from the mode (SimilarTo → Suggestions, Default(group) → Group, else All); a vanished group is dropped only on a nonempty catalog, resetting to All with restartable pagination; an empty first SimilarTo page falls back to All and clears the suggestions flag |
+| Same | `queries.filter`: All, Suggestions or Group(id) | Preserve | Serializable sealed QueryFilter | The saved value, including All, wins over route preselection; the fresh default comes from the mode (SimilarTo → Suggestions, Default(group) → Group, else All); a vanished group is dropped only on a nonempty catalog, resetting to All with restartable pagination; an empty first SimilarTo page (no cached target, or every similar candidate already in the draft workout) falls back to All and clears the suggestions flag |
 | Same | `mode` and target identity | Rebuild from route | `@Transient`; serializable route Mode mapped by the root component | Reapplied on every restore; the target card is observed from ExerciseExampleFeature |
-| Same | `exerciseExamples`, `queries.muscleGroups`, `hasSuggestionsResults`, `canShowSuggestions` | Rebuild | `@Transient` fields (the derived `canShowSuggestions` is a class-body value recomputed by the mode copy); user exercise examples use case under flatMapLatest, MuscleFeature | A stale-params guard drops emissions for superseded parameters |
-| Same | `pagination` (page/limit/loading/end) | Runtime only | `@Transient` default first page (chunk page one, limit 20) | Loading restarts from page one with the restored query/filter; end reached when a page is shorter than the limit; old pages are not replayed |
+| Same | `exerciseExamples`, `queries.muscleGroups`, `hasSuggestionsResults`, `canShowSuggestions` | Rebuild | `@Transient` fields (the derived `canShowSuggestions` is a class-body value recomputed by the mode copy); user exercise examples use case under flatMapLatest — Default mode pages the DAO catalog, SimilarTo mode combines the unpaged similar candidates with the observed target example and the Room draft training (`TrainingFeature.getDraftTraining()`), excludes examples already in the draft workout, ranks in Kotlin (muscle-bundle overlap, load model, prior/recent use, category, force type) keeping the top 10 or overlap ≥ 0.3, and slices the requested page in memory; MuscleFeature | A stale-params guard drops emissions for superseded parameters |
+| Same | `pagination` (page/limit/loading/end) | Runtime only | `@Transient` default first page (chunk page one, limit 20) | Loading restarts from page one with the restored query/filter; end reached when a page is shorter than the limit; old pages are not replayed; in SimilarTo mode the page is an in-memory `ExamplePage.slice` of the ranked shortlist, so pages are still at most `limit` long and a short page ends loading |
 | Same | Loaders (none defined), focus, list position, cached card target | Runtime only | Compose-only state | Not archived |
 | ExerciseExampleCardLarge | Read-only equipment and last-used labels | Rebuild in composition | Distinct equipment types from the existing example; declared weight type when equipment is empty; `DateCompose` with the typed date and `DateTimeFormatState.format` | Equipment names resolve in the current locale. Empty or blank history adds no footer; other date states resolve the current locale when a typed value exists and keep the existing display otherwise. Query, filter and accepted selection are unchanged |
 | ExercisesRootComponent | Stack and `resultKey` | Preserve (navigation) | `ExercisesRouter.serializer()`, key `ExercisesRootComponent`; ResultKey serialized by address | Data-object root state; no parent editable draft |

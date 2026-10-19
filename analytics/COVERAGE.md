@@ -187,7 +187,7 @@ distinct schema qualifiers (Debug registers no schema); DismissRequested declare
 in 28 event files (41 variants) plus the common ControlAction, encoded as 25
 `<feature>_dismiss_requested` schema names, four prefixed `training_interaction`
 action codes and the bare `dismiss_requested` action code of the auth/profile
-control schemas; 17 `DRAFT = PersistenceKey(...)` owners (ten with a non-null
+control schemas; 18 `DRAFT = PersistenceKey(...)` owners (eleven with a non-null
 `?:` fallback, seven passing a nullable initial state); eight
 `@JsonIgnoreUnknownKeys` usages in seven files. Event-name prefixes do not map
 one-to-one to modules (`profile_operation_*` lives in authorization,

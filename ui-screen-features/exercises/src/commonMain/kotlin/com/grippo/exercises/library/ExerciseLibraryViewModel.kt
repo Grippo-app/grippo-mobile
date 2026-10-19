@@ -11,6 +11,7 @@ import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleParams
 import com.grippo.data.features.api.exercise.example.models.ExampleScope
+import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
@@ -78,11 +79,15 @@ internal class ExerciseLibraryViewModel(
         val scope: ExampleScope = when (val filter = current.queries.filter) {
             QueryFilter.Suggestions -> when (val m = current.mode) {
                 is ExerciseLibraryMode.SimilarTo -> ExampleScope.SimilarTo(m.targetExerciseExampleId)
-                is ExerciseLibraryMode.Default -> ExampleScope.All()
+                is ExerciseLibraryMode.Default -> ExampleScope.All(sorting = CATALOG_SORTING)
             }
 
-            is QueryFilter.Group -> ExampleScope.All(muscleGroupId = filter.id)
-            QueryFilter.All -> ExampleScope.All()
+            is QueryFilter.Group -> ExampleScope.All(
+                sorting = CATALOG_SORTING,
+                muscleGroupId = filter.id,
+            )
+
+            QueryFilter.All -> ExampleScope.All(sorting = CATALOG_SORTING)
         }
 
         return ExampleParams(
@@ -263,5 +268,9 @@ internal class ExerciseLibraryViewModel(
                 )
             )
         }
+    }
+
+    private companion object {
+        val CATALOG_SORTING: ExampleSortingEnum = ExampleSortingEnum.RecentlyUsed
     }
 }

@@ -288,33 +288,7 @@ public interface ExerciseExampleDao {
             AND eee.equipmentId IN (:excludedEquipmentIds)
       )
 
-    ORDER BY
-      -- Primary: bundle overlap score (sum of min percentages over shared muscles)
-      (
-          SELECT COALESCE(SUM(MIN(t_eb.percentage, c_eb.percentage)), 0)
-          FROM exercise_example_bundle t_eb
-          INNER JOIN exercise_example_bundle c_eb
-            ON c_eb.exerciseExampleId = ee.id
-           AND c_eb.muscleId = t_eb.muscleId
-          WHERE t_eb.exerciseExampleId = :targetId
-      ) DESC,
-      -- Bonus: shared equipment with target (practical for swap UX)
-      CASE WHEN EXISTS (
-          SELECT 1
-          FROM exercise_example_equipment ce
-          INNER JOIN exercise_example_equipment te ON te.equipmentId = ce.equipmentId
-          WHERE ce.exerciseExampleId = ee.id
-            AND te.exerciseExampleId = :targetId
-      ) THEN 1 ELSE 0 END DESC,
-      -- Bonus: same category as target
-      CASE WHEN ee.category = (SELECT category FROM exercise_example WHERE id = :targetId) THEN 1 ELSE 0 END DESC,
-      -- Bonus: same forceType as target
-      CASE WHEN ee.forceType = (SELECT forceType FROM exercise_example WHERE id = :targetId) THEN 1 ELSE 0 END DESC,
-      -- Tiebreakers
-      CASE WHEN :sorting = 'new_added'     THEN ee.createdAt END DESC,
-      CASE WHEN :sorting = 'recently_used' THEN ee.lastUsed END DESC,
-      CASE WHEN :sorting = 'mostly_used'   THEN ee.usageCount END DESC,
-      ee.name ASC
+    ORDER BY ee.name ASC
     LIMIT CASE WHEN :limits IS NULL THEN -1 ELSE :limits END
     OFFSET CASE
         WHEN :limits IS NULL OR :number IS NULL OR :number <= 1 THEN 0
@@ -328,7 +302,6 @@ public interface ExerciseExampleDao {
         experience: String? = null,
         excludedEquipmentIds: Set<String>,
         excludedMuscleIds: Set<String>,
-        sorting: String,
         limits: Int?,
         number: Int?,
     ): Flow<List<ExerciseExamplePack>>
@@ -412,35 +385,7 @@ public interface ExerciseExampleDao {
     GROUP BY ee.id
     HAVING COUNT(DISTINCT esp.prefix) = :searchTokenCount
 
-    ORDER BY
-      -- Search ranking
-      CASE WHEN LOWER(ee.name) = :searchPhrase THEN 1 ELSE 0 END DESC,
-      CASE WHEN LOWER(ee.name) LIKE :searchPhrase || '%' THEN 1 ELSE 0 END DESC,
-      COUNT(DISTINCT CASE WHEN esp.prefix = esp.token THEN esp.prefix END) DESC,
-      -- Primary similarity: bundle overlap score
-      (
-          SELECT COALESCE(SUM(MIN(t_eb.percentage, c_eb.percentage)), 0)
-          FROM exercise_example_bundle t_eb
-          INNER JOIN exercise_example_bundle c_eb
-            ON c_eb.exerciseExampleId = ee.id
-           AND c_eb.muscleId = t_eb.muscleId
-          WHERE t_eb.exerciseExampleId = :targetId
-      ) DESC,
-      -- Bonus: shared equipment with target (practical for swap UX)
-      CASE WHEN EXISTS (
-          SELECT 1
-          FROM exercise_example_equipment ce
-          INNER JOIN exercise_example_equipment te ON te.equipmentId = ce.equipmentId
-          WHERE ce.exerciseExampleId = ee.id
-            AND te.exerciseExampleId = :targetId
-      ) THEN 1 ELSE 0 END DESC,
-      CASE WHEN ee.category = (SELECT category FROM exercise_example WHERE id = :targetId) THEN 1 ELSE 0 END DESC,
-      CASE WHEN ee.forceType = (SELECT forceType FROM exercise_example WHERE id = :targetId) THEN 1 ELSE 0 END DESC,
-      LENGTH(ee.name) ASC,
-      CASE WHEN :sorting = 'new_added'     THEN ee.createdAt END DESC,
-      CASE WHEN :sorting = 'recently_used' THEN ee.lastUsed END DESC,
-      CASE WHEN :sorting = 'mostly_used'   THEN ee.usageCount END DESC,
-      ee.name ASC
+    ORDER BY ee.name ASC
     LIMIT CASE WHEN :limits IS NULL THEN -1 ELSE :limits END
     OFFSET CASE
         WHEN :limits IS NULL OR :number IS NULL OR :number <= 1 THEN 0
@@ -450,13 +395,11 @@ public interface ExerciseExampleDao {
     )
     public fun searchAllSimilar(
         targetId: String,
-        searchPhrase: String,
         searchTokens: List<String>,
         searchTokenCount: Int,
         experience: String? = null,
         excludedEquipmentIds: Set<String>,
         excludedMuscleIds: Set<String>,
-        sorting: String,
         limits: Int?,
         number: Int?,
     ): Flow<List<ExerciseExamplePack>>

@@ -122,7 +122,8 @@ public class FeatureApiModule {
                 excludedMusclesFeature = get(),
                 excludedEquipmentsFeature = get(),
                 exerciseExampleFeature = get(),
-                userFeature = get()
+                userFeature = get(),
+                trainingFeature = get()
             )
         }
 

@@ -23,6 +23,6 @@ Verification is recorded in the current review section of ../COVERAGE.md.
 |---|---|---|---|---|
 | DebugComponent / DebugViewModel | `selected` (Logger/General tab) | Preserve | `DRAFT = PersistenceKey("DebugDraft", DebugState.serializer())`; `restoreState(DRAFT) ?: DebugState()` (non-null); `saveState(DRAFT) { viewModel.state.value }` | Default `DebugMenu.Logger`; a restored tab renders directly without replaying `onSelect` |
 | DebugViewModel | `logger.selectedCategory` | Preserve | Same draft (`LoggerState` is `@Serializable`) | Default null; `loadLogs` keeps the saved category when the reloaded log file still has it, otherwise falls back to the first category |
-| DebugViewModel | `logger.categories`, `logger.logsByCategory` | Rebuild | `@Transient`; `AppLogger.logFileContentsByCategory()` in `init` and after `clearLogs` | Default empty; `logs` is derived from the map and the selected category |
+| DebugViewModel | `logger.categories`, `logger.logsByCategory` | Rebuild | `@Transient`; `AppLogger.logFileContentsByCategory()` in `init`, after `clearLogs` and on switching to the Logger tab | Default empty; `logs` is derived from the map and the selected category |
 | DebugViewModel | `pushToken` | Runtime only (secret-like device token) | `@Transient`; `AuthorizationFeature.getPushToken()` in `init` | Default null; never archived |
 | DebugViewModel | `DebugLoader.Logs` / `GenerateTraining` jobs | Runtime only | `safeLaunch` | Not saved; log loading restarts on a fresh VM |

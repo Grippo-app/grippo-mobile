@@ -64,8 +64,7 @@ public class GenerateTrainingUseCase(
             exerciseExampleFeature
                 .observeExerciseExamples(
                     name = null,
-                    scope = ExampleScope.All(),
-                    sorting = ExampleSortingEnum.RecentlyUsed,
+                    scope = ExampleScope.All(sorting = ExampleSortingEnum.RecentlyUsed),
                     rules = rules,
                     page = page,
                     experience = experience

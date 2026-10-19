@@ -79,7 +79,7 @@ internal sealed class PaginationState {
     @Immutable
     data class Next(
         override val page: Int = ExamplePage.Chunk.number,
-        override val limit: Int = ExamplePage.Chunk.limits,
+        override val limit: Int = ExamplePage.CHUNK_LIMITS,
         override val isLoadingNextPage: Boolean = false,
         override val isEndReached: Boolean = false,
     ) : PaginationState()
@@ -87,7 +87,7 @@ internal sealed class PaginationState {
     @Immutable
     data class Restartable(
         override val page: Int = ExamplePage.Chunk.number,
-        override val limit: Int = ExamplePage.Chunk.limits,
+        override val limit: Int = ExamplePage.CHUNK_LIMITS,
         override val isLoadingNextPage: Boolean = false,
         override val isEndReached: Boolean = false,
     ) : PaginationState()

@@ -153,9 +153,9 @@ Current shape, verified against the code (re-inspect before relying on it):
 - `PersistenceKey<T>` (`ui-core/foundation/.../models/PersistenceKey.kt`) holds an
   `internal` key and serializer. Features construct keys and pass them only to
   `BaseComponent.restoreState`/`saveState`.
-- 17 Components define `val DRAFT = PersistenceKey("<Feature>Draft", <State>.serializer())`
-  in a private companion object. All 17 call `initialState = restoreState(DRAFT)`
-  and `saveState(DRAFT) { viewModel.state.value }`. Ten Components append
+- 18 Components define `val DRAFT = PersistenceKey("<Feature>Draft", <State>.serializer())`
+  in a private companion object. All 18 call `initialState = restoreState(DRAFT)`
+  and `saveState(DRAFT) { viewModel.state.value }`. Eleven Components append
   `?: <State>(...)` because their ViewModel takes a non-null initial state. The
   other seven ViewModels accept a nullable `initialState` and resolve the default
   themselves.
