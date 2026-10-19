@@ -13,6 +13,7 @@
 		19B4E580717143CBAA477F29 /* IosFirebaseMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F7AD9C81ABB4D679CDC57B2 /* IosFirebaseMessaging.swift */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		4379EAAEF18A41F29EC1BD3A /* MessagingHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61DCB79FAF80499C8E44D39B /* MessagingHandler.swift */; };
+		4D18658CB3B14B73A11604E2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 6EC166DB70A94778A343C891 /* PrivacyInfo.xcprivacy */; };
 		BA393ADD2F11A8AF00DE3DF3 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BA393ADC2F11A8AF00DE3DF3 /* FirebaseAnalytics */; };
 		BA393ADF2F11A8AF00DE3DF3 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = BA393ADE2F11A8AF00DE3DF3 /* FirebaseAnalyticsCore */; };
 		BA393AE12F11A8AF00DE3DF3 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = BA393AE02F11A8AF00DE3DF3 /* FirebaseCore */; };
@@ -49,6 +50,7 @@
 		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		2F7AD9C81ABB4D679CDC57B2 /* IosFirebaseMessaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IosFirebaseMessaging.swift; sourceTree = "<group>"; };
 		61DCB79FAF80499C8E44D39B /* MessagingHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingHandler.swift; sourceTree = "<group>"; };
+		6EC166DB70A94778A343C891 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* Grippo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Grippo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA393AE62F11B00700DE3DF3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -125,6 +127,7 @@
 				BA853F492DC657D300A34846 /* AppDeletage.swift */,
 				058557BA273AAA24004C7B11 /* Assets.xcassets */,
 				7555FF8C242A565B00829871 /* Info.plist */,
+				6EC166DB70A94778A343C891 /* PrivacyInfo.xcprivacy */,
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 			);
@@ -222,6 +225,7 @@
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
 				BA393AE72F11B00700DE3DF3 /* GoogleService-Info.plist in Resources */,
+				4D18658CB3B14B73A11604E2 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,7 +408,7 @@
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosAppDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 5NJAG8U639;
 				ENABLE_PREVIEWS = YES;
@@ -416,7 +420,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lsqlite3",
@@ -437,7 +441,7 @@
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosAppRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 5NJAG8U639;
 				ENABLE_PREVIEWS = YES;
@@ -449,7 +453,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.2;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
