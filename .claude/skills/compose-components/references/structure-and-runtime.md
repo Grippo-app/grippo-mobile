@@ -110,6 +110,42 @@ and shape relationships follow [brand composition](../../brand-design/references
 and animation treatment follows [motion](../../brand-design/references/states-and-motion.md#motion).
 Semantic token selection does not establish a rendered outcome.
 
+## Disclosure transitions
+
+During user-controlled expansion or collapse, expanders and optional detail
+sections MUST reveal and hide content with a coordinated size transition.
+When this changes a content-sized
+popup or sheet, its boundary must follow smoothly. Preserve platform motion
+preferences through the existing animation APIs; disabled system motion may make
+the transition immediate. Apply the same local sizing rule to auxiliary content
+revealed by a user's focus change when it changes the container's measured size;
+distinguish that change from IME movement. Arbitrary loading, validation and
+navigation changes are assessed at their own owners, not automatically treated
+as disclosures.
+
+Keep the trigger and unchanged neighboring content in stable identity/order.
+Animate the whole changing region, including a summary that disappears and its
+spacing; fading the new body alone cannot smooth an immediate height change
+elsewhere. Intentional content replacement belongs inside its transition rather
+than being removed before the exit runs.
+
+Choose the mechanism from the actual layout: vertical expand/shrink with fade for
+a finite conditional body, or a measured-size transition for changing text limits.
+Check its placement: a wrapper can still lay out descendants at their target
+positions. Animate the changing child's measurement when a sibling trigger must
+follow that intermediate size instead of jumping or being clipped.
+Inspect the component and enclosing size owner, lazy identity, viewport cap,
+scroll anchoring and insets. A child transition may not change an already capped
+viewport. Do not use stacked size animations, whole-host animation or a fixed
+reserved height as a blanket fix for a local sizing defect.
+
+Repeated toggles must retarget the current transition; controls, dismissal and
+navigation remain available. Keep existing state/callback ownership and expansion
+semantics, without timers, measurement caches, duplicate scroll owners or
+animation-completion gates. Timing and easing follow
+[motion](../../brand-design/references/states-and-motion.md#motion); verification
+follows [visual evidence](../../design-system/references/visual-consistency.md#evidence).
+
 ## Stability and recomposition
 
 `@Immutable` promises deeply immutable observable data, including nested fields;

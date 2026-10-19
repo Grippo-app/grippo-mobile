@@ -91,5 +91,7 @@ decoration; a product timer (rest, countdown) is feature state owned by its View
 Inspect current specs before choosing timing/easing. Keep technical constants at
 the established presentation owner; shared motion tokens require real shared demand.
 Use existing Compose/lifecycle ownership and preserve platform motion preferences.
+Expanders and content-sized popup changes follow
+[disclosure transitions](../../compose-components/references/structure-and-runtime.md#disclosure-transitions).
 Motion needs runtime evidence, not static previews
 ([visual evidence](../../design-system/references/visual-consistency.md#evidence)).

@@ -31,7 +31,7 @@ internal data class DialogEntry(
     val id: String = Uuid.random().toString(),
     val pendingResult: (() -> Unit)? = null,
 ) {
-    fun asStep(): DialogStep = DialogStep(id, config)
+    fun asStep(): DialogStep = DialogStep(id = id, config = config)
 }
 
 @Immutable

@@ -33,7 +33,8 @@ public fun EquipmentsCard(
     ) {
         items(items = value, key = { it.id }) { item ->
             EquipmentCard(
-                value = item
+                value = item,
+                style = EquipmentCardStyle.Detail,
             )
         }
     }
@@ -49,6 +50,8 @@ private fun EquipmentsCardPreview() {
                 EquipmentState(id = "barbell", type = EquipmentEnumState.BARBELL),
                 EquipmentState(id = "smith", type = EquipmentEnumState.SMITH_MACHINES),
                 EquipmentState(id = "bench", type = EquipmentEnumState.DECLINE_BENCH_WITH_RACK),
+                EquipmentState(id = "rope", type = EquipmentEnumState.ROPE),
+                EquipmentState(id = "cord-handles", type = EquipmentEnumState.CORD_HANDLES),
             )
         )
     }

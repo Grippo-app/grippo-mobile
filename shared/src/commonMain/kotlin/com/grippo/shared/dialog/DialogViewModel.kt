@@ -3,6 +3,7 @@ package com.grippo.shared.dialog
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogProvider
+import com.grippo.shared.dialog.internal.SessionDialogNavigation
 import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -21,25 +22,30 @@ internal class DialogViewModel(
     private fun open(config: DialogConfig) {
         update { current ->
             if (current.phase == SheetPhase.Released) {
+                val session = DialogSession(id = Uuid.random().toString())
+                val entry = DialogEntry(config = config)
+                val stack = persistentListOf(entry)
+
                 current.copy(
-                    session = DialogSession(id = Uuid.random().toString()),
-                    stack = persistentListOf(DialogEntry(config)),
+                    session = session,
+                    stack = stack,
                     phase = SheetPhase.Present,
                 )
             } else {
-                val pending = if (config is DialogConfig.ErrorDisplay) current.pending else config
-                val pendingErrors = if (config is DialogConfig.ErrorDisplay) {
-                    current.pendingErrors.add(config)
-                } else {
-                    current.pendingErrors
-                }
                 val phase = if (current.stack.lastOrNull()?.config is DialogConfig.ErrorDisplay) {
                     current.phase
                 } else {
                     SheetPhase.Dismissing
                 }
 
-                current.copy(pending = pending, pendingErrors = pendingErrors, phase = phase)
+                when (config) {
+                    is DialogConfig.ErrorDisplay -> current.copy(
+                        pendingErrors = current.pendingErrors.adding(config),
+                        phase = phase,
+                    )
+
+                    else -> current.copy(pending = config, phase = phase)
+                }
             }
         }
     }
@@ -93,7 +99,7 @@ internal class DialogViewModel(
         val pendingErrors = if (nextError == null) {
             current.pendingErrors
         } else {
-            current.pendingErrors.removeAt(0)
+            current.pendingErrors.removingAt(0)
         }
         val nextState = if (nextConfig == null) {
             DialogState()

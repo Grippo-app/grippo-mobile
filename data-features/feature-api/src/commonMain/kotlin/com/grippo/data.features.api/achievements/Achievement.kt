@@ -30,7 +30,6 @@ public sealed class Achievement(public open val exerciseExampleId: String) {
         override val exerciseExampleId: String,
         val exerciseId: String,
         val iterationId: String,
-        val totalVolume: Int,
         val repetitions: Int
     ) : Achievement(
         exerciseExampleId = exerciseExampleId,

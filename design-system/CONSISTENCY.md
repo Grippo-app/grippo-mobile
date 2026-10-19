@@ -85,8 +85,8 @@ A compact navigation item and a screen heading do not need the same font size.
   (32/2/8 dp). Inline uses `muscle.inlineMarkSize` (28 dp) without a background
   tile or padding, preserving the same 28 dp anatomical drawing. Library filters
   and exercise-group labels use Inline to avoid repeated nested tiles. The
-  exercise list keeps image/name/equipment/date together and shows all actual
-  muscle groups in a full-width wrapping row below; dividers follow those gutters.
+  exercise list keeps image/name/date in its header, with equipment and all actual
+  muscle groups in separate full-width wrapping rows below; dividers follow those gutters.
 - MuscleSelection keeps one large hero and existing group tabs, with no duplicate
   small group mark/title above the hero. Muscle rows keep their own identity cues;
   the large image highlights chosen zones with the group's hue. Neutral choice
@@ -144,8 +144,8 @@ A compact navigation item and a screen heading do not need the same font size.
   in both states, with the permanently reserved switch slot conveying availability.
   Checked tracks are graphite in light theme and light neutral in dark theme;
   the contrasting thumb and its position distinguish on from off.
-  Unselected equipment uses icon.secondary
-  rather than disabled styling. Labels wrap in full; Small uses 16 dp horizontal
+  Concrete equipment retains its original image colors in both switch states;
+  the switch alone conveys availability. Labels wrap in full; Small uses 16 dp horizontal
   and 12 dp vertical padding, while Medium retains its 64 dp image and 12 dp padding.
 - Use `ButtonStyle.Primary` for starting or resuming a workout. Reserve
   `ButtonStyle.Error` for destructive actions and explicit error acknowledgement.
@@ -164,6 +164,47 @@ A compact navigation item and a screen heading do not need the same font size.
 - Chart series, muscle maps, validation and diagnostic severity retain meaningful
   colors. Use theme-aware palettes in previews as well as production.
 
+## Equipment recognition
+
+- Equipment is recognized by its characteristic silhouette and complete localized
+  name. `EquipmentEnumState.icon()` is the single exhaustive identity mapping for
+  all 45 types, using the existing graphite equipment vectors without tint or a
+  per-item color palette. Sorting, popularity, selection and exclusions do not
+  change that mapping. Theme text and surfaces retain their existing neutral roles.
+- Concrete apparatus, bench/rack variants and cable attachments keep their own
+  images: `BARBELL` / `EZ_BAR` / `TRAP_BAR` use Barbell / EzBar / TrapBar;
+  `FLAT_BENCH` / `ADJUSTABLE_BENCH` / `DECLINE_BENCH` and the three
+  `*_BENCH_WITH_RACK` types use their corresponding bench vectors. `CABLE`,
+  `CABLE_CROSSOVER`, `LAT_PULLDOWN` and `ROW_CABLE` use Cable, Crossover,
+  LatPulldown and RowCable. Rope, StraightBar, VBar, WideGripHandle,
+  CloseGripHandle and CordHandles remain six distinct attachment identities.
+  Existing aliases stay intentional: DUMBBELLS → Dumbbell, AB_MACHINES →
+  AbMachine, BICEPS_MACHINES → BicepsMachine, SMITH_MACHINES → SmithMachine,
+  LEG_EXTENSION_MACHINES → LegExtensionMachine, LEG_CURL_MACHINES → LegCurlMachine,
+  DIP_BARS → DipBar and ROMAIN_CHAIR → RomanChair. Other machine/station types
+  retain their corresponding named vectors. The containing server group owns
+  membership; the UI does not infer a group or apparatus from weight type,
+  exercise name, image or position.
+- The `EquipmentCard` family owns three explicit compositions:
+
+  | Role | Image and geometry | Label and state |
+  | --- | --- | --- |
+  | Inline library metadata | `equipmentCard.inlineIcon` (32 dp), no tile or border; wraps with other equipment below the exercise header | Full `b13Med`, `text.secondary`; one entry per distinct type in source order |
+  | Detail information gallery | `equipmentCard.icon` (64 dp), `equipmentCard.width` (144 dp), unframed; `content` gap and caller edge gutters | Full centered `b14Semi`, `text.primary`; horizontal scrolling retains every supplied item |
+  | Availability/exclusion selection | Existing ToggleSelectableCard Medium geometry: 64 dp image, 12 dp padding, 16 dp neutral frame and reserved passive switch | Full `h5`, `text.primary`; existing Switch action/state at the row, image unchanged when excluded |
+
+- Profile and onboarding share the same selection variant and bottom-overlay
+  padding. Selected IDs and their inverse exclusions remain caller-owned.
+  Equipment identity does not indicate selection, recommendation, severity or
+  disabled state. Group tabs keep their full localized group labels and existing
+  selection treatment. Category/count summaries may use the existing equipment
+  context icon and `context.equipment`; they do not substitute for concrete types.
+- Missing exercise equipment data produces no apparatus image or inferred
+  “no equipment” claim. The existing declared weight-type fallback remains useful
+  metadata under the explicit localized “Weight type” label. Exercise-image
+  loading/missing-image treatment remains with ExerciseExampleImage. Muscle
+  markers, measured load scales and recommendation filters keep their own meanings.
+
 ## Shape family
 
 - Product corner radii follow the private 8 / 12 / 16 / 20 / 28 dp scale in AppDp;
@@ -173,7 +214,8 @@ A compact navigation item and a screen heading do not need the same font size.
   chips, Small text buttons, compact filters and 48 dp thumbnails.
 - 16 dp: Medium text buttons, inputs, compact metric panels, repeated framed rows,
   focus frames, wheel selections and swipe actions. 20 dp: standalone content,
-  menu, profile, recap, equipment, achievement and gallery cards.
+  menu, profile, recap, achievement and gallery cards. Equipment detail images
+  are unframed; its selection variant uses the repeated-row shape.
 - 28 dp is reserved for BrandHeader, the onboarding hero and bottom-sheet top
   corners. Warm card fills alone do not change a card's radius.
 - Filled segments use a 16 dp outer shape and a 12 dp selection shape with 4 dp
@@ -400,9 +442,10 @@ A compact navigation item and a screen heading do not need the same font size.
   Medium history/read-only exercise rows use `COMPACT` (48 dp); small inline
   exercise references may use `SMALL` (32 dp).
 - Exercise-library results use open `ExerciseExampleCardStyle.Large` rows with
-  regular 64 dp thumbnails, complete `h5` names, neutral `b13Med` equipment names
-  and `b12Med` last-used dates only when present. Missing equipment falls back to
-  the declared weight type. Quiet dividers align with the text; repeated taxonomy
+  regular 64 dp thumbnails, complete `h5` names and `b12Med` last-used dates only
+  when present. Equipment uses the shared Inline image/name treatment below that
+  header; missing equipment keeps an explicitly labelled declared weight type.
+  Quiet dividers follow the content gutters; repeated taxonomy
   chips, outer card frames and never-used footers do not compete with selection.
 - Replacement-library targets use the passive Small reference with a complete
   `b14Semi` name and a 32 dp image inside a neutral `FocusFrame`

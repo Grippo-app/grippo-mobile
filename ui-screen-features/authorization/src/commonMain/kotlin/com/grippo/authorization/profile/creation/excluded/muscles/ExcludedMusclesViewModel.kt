@@ -25,23 +25,23 @@ internal class ExcludedMusclesViewModel(
     }
 
     init {
-        muscleFeature
-            .observeMuscles()
+        muscleFeature.observeMuscles()
             .onEach(::provideMuscles)
             .safeLaunch()
     }
 
     private fun provideMuscles(list: List<MuscleGroup>) {
         val suggestions = list.toState()
-        if (suggestions.isEmpty()) {
-            update { it.copy(suggestions = suggestions) }
-            return
-        }
+
         val allIds = suggestions
             .flatMap { it.muscles }
             .map { it.value.id }
 
         update { previous ->
+            if (allIds.isEmpty()) {
+                return@update previous.copy(suggestions = suggestions)
+            }
+
             val knownIds = previous.knownMuscleIds.toSet()
             val selectedIds = previous.selectedMuscleIds.toSet()
             val selectedMuscleIds = allIds

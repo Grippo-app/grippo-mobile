@@ -8,10 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.SaveableStateHolder
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.Child
@@ -21,6 +18,7 @@ import com.arkivanov.decompose.keyHashString
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.design.core.AppTokens
+import com.grippo.shared.dialog.content.internal.RetainDialogContentStates
 
 @OptIn(InternalDecomposeApi::class)
 @Composable
@@ -32,7 +30,10 @@ internal fun DialogContentScreen(
     val active = stackState.active
 
     val holder = rememberSaveableStateHolder()
-    holder.RetainStates(stackState.items.mapTo(HashSet(), Child<*, *>::keyHashString))
+    RetainDialogContentStates(
+        holder = holder,
+        currentKeys = stackState.items.mapTo(HashSet(), Child<*, *>::keyHashString),
+    )
 
     AnimatedContent(
         modifier = Modifier.fillMaxWidth(),
@@ -47,30 +48,3 @@ internal fun DialogContentScreen(
         }
     }
 }
-
-/**
- * Retains and removes saveable states based on current ChildStack keys.
- * Prevents memory leaks by cleaning up obsolete child screen states.
- * Used in conjunction with Decompose ChildStack + SaveableStateHolder.
- */
-@Composable
-private fun SaveableStateHolder.RetainStates(currentKeys: Set<String>) {
-    val keys = remember(this) { Keys(currentKeys) }
-
-    DisposableEffect(this, currentKeys) {
-        keys.set.forEach {
-            if (it !in currentKeys) {
-                removeState(it)
-            }
-        }
-
-        keys.set = currentKeys
-
-        onDispose {}
-    }
-}
-
-// Mutable holder for the list of keys to track state retention
-private class Keys(
-    var set: Set<Any>
-)

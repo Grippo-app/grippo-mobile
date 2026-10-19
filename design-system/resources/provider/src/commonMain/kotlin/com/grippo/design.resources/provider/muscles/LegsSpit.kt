@@ -11,6 +11,7 @@ public fun legsSplit(
 ): ImageVector {
     val outlineColor: Color = colors.outline
     val backgroundFront: Color = colors.backgroundFront
+    val backgroundBack: Color = colors.backgroundBack
     val quadriceps: Color = colors.quadriceps
     val gluteal: Color = colors.gluteal
     val hamstrings: Color = colors.hamstrings
@@ -361,6 +362,7 @@ public fun legsSplit(
             close()
         }
         path(
+            fill = SolidColor(backgroundBack),
             stroke = SolidColor(outlineColor),
             strokeLineWidth = 1f
         ) {

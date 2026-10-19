@@ -170,7 +170,7 @@
     <string name="registration_experience_description">Grippo адаптується під будь-який рівень.</string>
 
     <string name="registration_muscles_title">Хочеш щось пропустити?</string>
-    <string name="registration_muscles_description">Вимкни групи м’язів, які не хочеш тренувати.</string>
+    <string name="registration_muscles_description">Вимкни м’язи, які не хочеш тренувати.</string>
 
     <string name="registration_equipment_title">Чого немає у твоєму залі?</string>
     <string name="registration_equipment_description">Вимкни недоступне обладнання — ми приберемо вправи, яким воно потрібне.</string>
@@ -338,6 +338,7 @@
     <string name="peak_intensity">Пікова інтенсивність</string>
 
     <string name="exercise_example_last_used_value">Останнє використання: %1$s</string>
+    <string name="exercise_example_weight_type_value">Тип ваги: %1$s</string>
     <string name="exercise_library_replace_target">Вправа для заміни</string>
 
 
@@ -448,11 +449,6 @@
     <string name="muscle_group_legs">Ноги</string>
     <string name="muscle_group_arms_and_forearms">Руки</string>
     <string name="muscle_group_shoulder_muscles">Плечі</string>
-
-    <!-- MuscleLoadEnumState -->
-    <string name="muscle_load_high">Високе</string>
-    <string name="muscle_load_medium">Середнє</string>
-    <string name="muscle_load_low">Низьке</string>
 
     <!-- IterationFocus -->
     <string name="iteration_focus_volume">Обсяг</string>

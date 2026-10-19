@@ -82,10 +82,7 @@ public class RootComponent(
     override suspend fun eventListener(direction: RootDirection) {
         when (direction) {
             RootDirection.Login -> {
-                val authorization = childStack.value.active.instance as? Authorization
-                if (authorization != null) {
-                    authorization.component.onSessionLost()
-                } else {
+                if (childStack.value.active.configuration !is Auth) {
                     navigation.replaceAll(Auth(AuthRouter.AuthProcess()))
                 }
             }

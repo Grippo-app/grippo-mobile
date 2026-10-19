@@ -67,8 +67,6 @@ public data class MaxRepetitions(
     val exerciseId: String? = null,
     @SerialName("iterationId")
     val iterationId: String? = null,
-    @SerialName("totalVolume")
-    val totalVolume: Int? = null,
     @SerialName("repetitions")
     val repetitions: Int? = null
 )

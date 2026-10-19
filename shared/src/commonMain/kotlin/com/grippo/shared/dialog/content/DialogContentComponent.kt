@@ -39,7 +39,7 @@ import com.grippo.period.picker.PeriodPickerComponent
 import com.grippo.primary.goal.picker.PrimaryGoalPickerComponent
 import com.grippo.secondary.goal.picker.SecondaryGoalPickerComponent
 import com.grippo.shared.dialog.DialogStep
-import com.grippo.shared.dialog.SessionDialogNavigation
+import com.grippo.shared.dialog.internal.SessionDialogNavigation
 import com.grippo.start.training.StartTrainingComponent
 import com.grippo.statistics.StatisticsComponent
 import com.grippo.training.goal.details.TrainingGoalDetailsComponent

@@ -123,7 +123,6 @@ private fun achievementCardPreviewValues(): ImmutableList<AchievementState> {
                 exerciseExampleId = "example",
                 exerciseId = "exercise",
                 iterationId = "iteration",
-                totalVolume = VolumeFormatState.of(2_400f),
                 repetitions = RepetitionsFormatState.of(20),
             )
             is AchievementState.PeakIntensity -> value.copy(

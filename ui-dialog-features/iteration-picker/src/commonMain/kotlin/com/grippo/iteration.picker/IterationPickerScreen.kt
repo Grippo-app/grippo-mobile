@@ -1,5 +1,11 @@
 package com.grippo.iteration.picker
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -77,6 +83,8 @@ import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 
+private const val SuggestionsAnimationDurationMillis = 200
+
 @Composable
 internal fun IterationPickerScreen(
     state: IterationPickerState,
@@ -130,67 +138,83 @@ internal fun IterationPickerScreen(
                         state.previousIteration?.suggestionKey(state.example.components)
                 }
         }
-        if (repetitionsFocused || state.previousIteration != null || iterationSuggestions.isNotEmpty()) {
-            Text(
-                modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                text = AppTokens.strings.res(
-                    if (repetitionsFocused) Res.string.repetitions_placeholder
-                    else Res.string.iteration_picker_suggestions
-                ),
-                style = AppTokens.typography.b12Semi(),
-                color = AppTokens.colors.text.tertiary
-            )
-            Spacer(Modifier.size(AppTokens.dp.contentPadding.text))
+        AnimatedContent(
+            modifier = Modifier.fillMaxWidth(),
+            targetState = repetitionsFocused,
+            contentAlignment = Alignment.TopStart,
+            transitionSpec = {
+                fadeIn(tween(SuggestionsAnimationDurationMillis)) togetherWith
+                    fadeOut(tween(SuggestionsAnimationDurationMillis)) using SizeTransform(
+                        clip = true,
+                        sizeAnimationSpec = { _, _ -> tween(SuggestionsAnimationDurationMillis) },
+                    )
+            },
+            label = "Iteration suggestions",
+        ) { showRepetitionSuggestions ->
+            Column(modifier = Modifier.fillMaxWidth()) {
+                if (showRepetitionSuggestions || state.previousIteration != null || iterationSuggestions.isNotEmpty()) {
+                    Text(
+                        modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                        text = AppTokens.strings.res(
+                            if (showRepetitionSuggestions) Res.string.repetitions_placeholder
+                            else Res.string.iteration_picker_suggestions
+                        ),
+                        style = AppTokens.typography.b12Semi(),
+                        color = AppTokens.colors.text.tertiary
+                    )
+                    Spacer(Modifier.size(AppTokens.dp.contentPadding.text))
 
-            key(repetitionsFocused) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-                ) {
-                    if (repetitionsFocused) {
-                        state.repetitionSuggestions.forEach { repetitions ->
-                            SuggestionChip(
-                                value = repetitions.toString(),
-                                isSelected = state.value.repetitions.value == repetitions,
-                                onClick = { contract.onRepetitionSuggestionClick(repetitions) }
-                            )
-                        }
-                    } else {
-                        state.previousIteration?.let { previous ->
-                            SuggestionChip(
-                                value = AppTokens.strings.res(
-                                    Res.string.iteration_picker_last_time,
-                                    previous.suggestionLabel(state.example.components),
-                                ),
-                                isSelected = previous.suggestionKey(state.example.components) ==
-                                    state.value.suggestionKey(state.example.components),
-                                onClick = contract::onPreviousIterationClick,
-                            )
-                        }
-                        iterationSuggestions.forEach { item ->
-                            key(item.id) {
-                                val clickProvider = remember(item.id, contract) {
-                                    { contract.onIterationClick(item.id) }
+                    key(showRepetitionSuggestions) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState())
+                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                        ) {
+                            if (showRepetitionSuggestions) {
+                                state.repetitionSuggestions.forEach { repetitions ->
+                                    SuggestionChip(
+                                        value = repetitions.toString(),
+                                        isSelected = state.value.repetitions.value == repetitions,
+                                        onClick = { contract.onRepetitionSuggestionClick(repetitions) }
+                                    )
                                 }
+                            } else {
+                                state.previousIteration?.let { previous ->
+                                    SuggestionChip(
+                                        value = AppTokens.strings.res(
+                                            Res.string.iteration_picker_last_time,
+                                            previous.suggestionLabel(state.example.components),
+                                        ),
+                                        isSelected = previous.suggestionKey(state.example.components) ==
+                                            state.value.suggestionKey(state.example.components),
+                                        onClick = contract::onPreviousIterationClick,
+                                    )
+                                }
+                                iterationSuggestions.forEach { item ->
+                                    key(item.id) {
+                                        val clickProvider = remember(item.id, contract) {
+                                            { contract.onIterationClick(item.id) }
+                                        }
 
-                                val isSelected = item.suggestionKey(state.example.components) ==
-                                    state.value.suggestionKey(state.example.components)
+                                        val isSelected = item.suggestionKey(state.example.components) ==
+                                            state.value.suggestionKey(state.example.components)
 
-                                SuggestionChip(
-                                    value = item.suggestionLabel(state.example.components),
-                                    isSelected = isSelected,
-                                    onClick = clickProvider
-                                )
+                                        SuggestionChip(
+                                            value = item.suggestionLabel(state.example.components),
+                                            isSelected = isSelected,
+                                            onClick = clickProvider
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
+
+                    Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
                 }
             }
-
-            Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
         }
 
         when (state.example.components) {
@@ -431,6 +455,7 @@ private fun WithoutSuggestionsPreview() {
                 ),
                 number = 1,
                 iterationSuggestions = persistentListOf(),
+                repetitionSuggestions = persistentListOf(6, 8, 10, 12),
                 focus = IterationFocusState.UNIDENTIFIED,
                 example = example.copy(
                     value = example.value.copy(id = "without-suggestions"),

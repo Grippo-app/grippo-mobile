@@ -171,7 +171,7 @@
     <string name="registration_experience_description">Grippo adapts to any level.</string>
 
     <string name="registration_muscles_title">Anything you want to skip?</string>
-    <string name="registration_muscles_description">Turn off muscle groups you don’t want to train.</string>
+    <string name="registration_muscles_description">Turn off muscles you don’t want to train.</string>
 
     <string name="registration_equipment_title">What’s missing from your gym?</string>
     <string name="registration_equipment_description">Turn off unavailable equipment and we’ll hide exercises that need it.</string>
@@ -340,6 +340,7 @@
     <string name="peak_intensity">Peak intensity</string>
 
     <string name="exercise_example_last_used_value">Last used: %1$s</string>
+    <string name="exercise_example_weight_type_value">Weight type: %1$s</string>
     <string name="exercise_library_replace_target">Exercise to replace</string>
 
 
@@ -450,11 +451,6 @@
     <string name="muscle_group_legs">Legs</string>
     <string name="muscle_group_arms_and_forearms">Arms</string>
     <string name="muscle_group_shoulder_muscles">Shoulders</string>
-
-    <!-- MuscleLoadEnumState -->
-    <string name="muscle_load_high">High</string>
-    <string name="muscle_load_medium">Medium</string>
-    <string name="muscle_load_low">Low</string>
 
     <!-- IterationFocus -->
     <string name="iteration_focus_volume">Volume</string>

@@ -83,10 +83,12 @@ public fun EquipmentSelection(
                             key = { it.id },
                             contentType = { "equipment" }
                         ) { equipment ->
-                            EquipmentRow(
-                                equipment = equipment,
-                                isSelected = equipment.id in selectedIds,
-                                onSelect = { onEquipmentSelect(equipment.id) },
+                            EquipmentCard(
+                                value = equipment,
+                                style = EquipmentCardStyle.Selection(
+                                    isSelected = equipment.id in selectedIds,
+                                    onSelect = { onEquipmentSelect(equipment.id) },
+                                ),
                             )
                         }
                     }
@@ -107,6 +109,25 @@ private fun EquipmentSelectionPreview() {
             groups = groups,
             selectedGroupId = groups.first().id,
             selectedEquipmentIds = groups.first().equipments.take(3).map { it.id }.toPersistentList(),
+            onGroupSelect = {},
+            onEquipmentSelect = {},
+            bottom = {},
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun EquipmentSelectionEmptyGroupPreview() {
+    PreviewContainer {
+        val catalog = stubEquipments()
+        val emptyGroup = catalog.first().copy(equipments = persistentListOf())
+        val groups = catalog.toPersistentList().replacingAt(index = 0, element = emptyGroup)
+        EquipmentSelection(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            groups = groups,
+            selectedGroupId = emptyGroup.id,
+            selectedEquipmentIds = persistentListOf(),
             onGroupSelect = {},
             onEquipmentSelect = {},
             bottom = {},

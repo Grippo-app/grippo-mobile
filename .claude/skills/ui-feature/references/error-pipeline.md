@@ -126,8 +126,9 @@ Onboarding/AuthProcess first; only an existing session reaches `hasProfile()`.
 `hasProfile()` decorates its cached-user read and required remote `getUser()` with
 SessionCheck. Its Boolean selects Home or ProfileCreation. Lookup failures use the
 shared log/crash/dialog pipeline and do not become an absent profile. Closing the
-error dialog retries the complete startup sequence; Root independently owns
-navigation after token loss. No recovery wrapper or second launch is needed.
+error dialog retries the complete startup sequence; session-loss navigation follows
+its [owning session observer](navigation.md#direction--navigation-translation).
+No recovery wrapper or second launch is needed.
 
 ## Only emits, not retries
 
@@ -140,10 +141,10 @@ after the user dismisses the dialog. Relaunch the complete required sequence thr
 `safeLaunch` in the existing ViewModel scope; do not add a new scope, a retry loop
 before dismissal or an analytics retry policy.
 
-Root's session-token observation is a long-lived routing source. Inspect
-`RootViewModel.observeToken`: an observation error uses the shared pipeline and restarts that
-subscription only from its dismissal callback. A terminated subscription must not permanently
-disable token-loss navigation. Session-loss destinations follow
+Session-token observations are long-lived routing sources. Inspect
+`RootViewModel.observeToken` and `ProfileCreationViewModel.observeToken`: each owning ViewModel
+uses the shared pipeline and restarts its subscription only from its dismissal callback.
+A terminated subscription must not permanently disable token-loss navigation. Destinations follow
 [navigation ownership](navigation.md#direction--navigation-translation).
 Error delivery and dismissal callbacks follow the
 [dialog host retention policy](dialogs.md#dialogcontroller--dialogprovider); a later opening must

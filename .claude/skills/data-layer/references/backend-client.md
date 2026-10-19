@@ -19,7 +19,7 @@ on a detail below.
   type and `Accept-Language = AppLocale.current()` on every request.
   `invoke(method, path, body, queryParams): HttpResponse` runs inside `withContext(Dispatchers.IO)`.
 - `ClientLogger` forwards every Ktor log line to `AppLogger.Network`, auth requests included; there
-  is no sanitation and no request marker. Do not widen logging or add bodies
+  is no auth-specific log sanitation or redaction marker. Do not widen logging or add bodies
   ([secrets and configuration](../../platform-build-toolkit/references/secrets-and-config.md)).
 - `GrippoApi` is `@Single public class GrippoApi internal constructor(client: BackendClient)` with
   32 public throwing suspend endpoints and one private `request` helper; its sections,

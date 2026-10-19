@@ -23,6 +23,8 @@ Domain entity visual semantics follow brand-design's
 
 Compose implementation and source review apply
 [compose-components](../compose-components/SKILL.md).
+Expandable content follows its
+[disclosure transition contract](../compose-components/references/structure-and-runtime.md#disclosure-transitions).
 
 Product artwork creation, refinement and style review MUST apply
 [illustrations](../illustrations/SKILL.md). Resource/UI integration remains here;

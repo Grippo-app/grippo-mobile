@@ -58,7 +58,7 @@ internal class DialogComponent(
         lifecycle.doOnCreate {
             viewModel.state
                 .onEach { backCallback.isEnabled = it.phase == SheetPhase.Present }
-                .map { ReconcileTarget(it.session, it.stack.map { entry -> entry.asStep() }) }
+                .map { ReconcileTarget(session = it.session, steps = it.stack.map { entry -> entry.asStep() }) }
                 .distinctUntilChanged()
                 .onEach(::reconcile)
                 .launchIn(reconcileScope)
@@ -87,21 +87,25 @@ internal class DialogComponent(
             }
         }
 
-        if (target.session == null) return
+        if (target.session == null) {
+            return
+        }
         val active = childSlot.value.child?.instance ?: return
-        applyStack(active, target.steps)
+        applyStack(active = active, target = target.steps)
     }
 
     private fun applyStack(active: DialogContentComponent, target: List<DialogStep>) {
         val current = active.childStack.value.items.map { it.configuration }
-        if (current == target || target.isEmpty()) return
+        if (current == target || target.isEmpty()) {
+            return
+        }
         active.navigation.replaceAll(*target.toTypedArray())
     }
 
     private fun createChild(router: DialogSession, context: ComponentContext): DialogContentComponent =
         DialogContentComponent(
             initial = viewModel.state.value.stack.first().asStep(),
-            navigationFor = { owner -> viewModel.navigation(router, owner) },
+            navigationFor = { owner -> viewModel.navigation(session = router, owner = owner) },
             componentContext = context,
         )
 
@@ -109,7 +113,12 @@ internal class DialogComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        DialogScreen(this, state.value, loaders.value, viewModel)
+        DialogScreen(
+            component = this,
+            state = state.value,
+            loaders = loaders.value,
+            contract = viewModel,
+        )
     }
 
     private data class ReconcileTarget(

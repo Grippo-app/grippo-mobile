@@ -97,10 +97,6 @@ private fun MaxRepetitions.toDomainOrNull(): Achievement.MaxRepetitions? {
         "MaxRepetitions.iterationId is null for example $exerciseExampleId"
     } ?: return null
 
-    val totalVolume = AppLogger.Mapping.log(this.totalVolume) {
-        "MaxRepetitions.totalVolume is null for example $exerciseExampleId"
-    } ?: return null
-
     val repetitions = AppLogger.Mapping.log(this.repetitions) {
         "MaxRepetitions.repetitions is null for example $exerciseExampleId"
     } ?: return null
@@ -109,7 +105,6 @@ private fun MaxRepetitions.toDomainOrNull(): Achievement.MaxRepetitions? {
         exerciseExampleId = exampleId,
         exerciseId = exerciseId,
         iterationId = iterationId,
-        totalVolume = totalVolume,
         repetitions = repetitions
     )
 }

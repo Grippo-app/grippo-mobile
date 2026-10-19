@@ -46,9 +46,12 @@ unreleased and every schema is version 1. The historical route-entry reason code
 - AuthProcess starts at Login; Registration is pushed with the optional valid
   email seed. Alternative entry: `RootDirection.Login` opens
   `Auth(AuthRouter.AuthProcess())` from Root's token-null observer when the active
-  child is not Authorization. An active AuthComponent redirects only ProfileCreation
-  on session loss; Splash, Onboarding and an existing AuthProcess remain in place.
-  A failed Root token observation restarts after its error dialog is dismissed;
+  Root route is not Auth. ProfileCreationViewModel observes its own session prerequisite
+  and emits the existing ToLogin direction when the token is null, including a restored
+  ProfileCreation route; the existing Component callback chain reaches AuthProcess.
+  Root does not inspect the Auth child's internal routes. Splash, Onboarding and an existing
+  AuthProcess remain in place on the initial null token.
+  Each failed token observation restarts after its error dialog is dismissed;
   the host retains pending errors and their callbacks FIFO, and a later opening does not close an active error.
   queued deeplinks still resolve at Home. Login and
   Registration use ordinary push/pop.
@@ -135,10 +138,17 @@ invalid, blank or wrong-type configuration fails inside the existing Login opera
 an absent optional iOS redirect still uses the established derived URI.
 
 Refresh ownership and waiter attachment are selected together under a short mutex.
-Each waiter retains its attempt's completion and rejected-access value; a later attempt
+Incomplete attempts are keyed by the captured credential snapshot; a delayed old-session
+request cannot displace a running refresh and permit a duplicate request for its token.
+Each waiter retains its attempt's completion and rejected token snapshot; a later attempt
 cannot overwrite that failure. The owner publishes success only after its timeout block returns.
 Refresh waiters return true only for a new nonblank token with no recorded failure;
 failed owners complete that captured attempt exceptionally with the original failure.
+Requests pin their original session locally; refresh and Ktor's header replay cannot bind
+an old request to another account. Conditional DAO update/delete matches the captured
+credentials and active owner atomically, preserving replacement credentials across logout/login.
+No updated row means refresh failed. A same-owner changed nonblank access already stored
+before Ktor's version publication needs no second refresh.
 Ordinary cleanup errors remain suppressed on that failure, while cleanup cancellation
 or fatal errors remain primary. Cleanup targets the captured failing session, not a
 new active account. Caller/owner-timeout cancellation does not initiate token deletion.
@@ -213,7 +223,7 @@ transport remain app/core-owned. Payloads contain only bounded codes, booleans,
 counts and durations: no raw input or length, email, name, measurements,
 credentials/tokens, entity IDs, exception messages, URLs or request/response
 bodies. The transport layer no longer applies auth-specific response sanitation
-or request markers (explicit user decision); logging stays enabled in all build
+or diagnostic/redaction request markers (explicit user decision); logging stays enabled in all build
 modes, and that transport change adds no screen, preserved input or payload.
 
 ## Preservation inventory
@@ -234,15 +244,16 @@ modes, and that transport change adds no screen, preserved input or payload.
 | UserViewModel | Weight/height picker sessions, `Logout` loader | Runtime only | DialogConfig.WeightPicker/HeightPicker; host slot and step stack `serializer = null` | Unsaved; only the accepted result lands in UserDraft |
 | ExperienceComponent / ExperienceState | `selected` | Preserve | `DRAFT = PersistenceKey("ExperienceDraft", ExperienceState.serializer())` | `restoreState(DRAFT) ?: ExperienceState(selected = parent experience)`; re-entry after pop seeds from the accepted parent value |
 | ExperienceState | `suggestions` | Rebuild | `@Transient`, enum entries | Static |
-| ExcludedMusclesComponent / ExcludedMusclesState | `selectedMuscleIds`, `knownMuscleIds`, `selectedGroupId` | Preserve | `DRAFT = PersistenceKey("ExcludedMusclesDraft", ExcludedMusclesState.serializer())`; ImmutableListSerializer | `restoreState(DRAFT) ?: ExcludedMusclesState(knownMuscleIds = parent exclusions)`; the first nonempty catalog emission keeps selected known IDs, selects new IDs, drops absent IDs and re-validates the group; empty emissions update only suggestions; Next sends known minus selected |
+| ExcludedMusclesComponent / ExcludedMusclesState | `selectedMuscleIds`, `knownMuscleIds`, `selectedGroupId` | Preserve | `DRAFT = PersistenceKey("ExcludedMusclesDraft", ExcludedMusclesState.serializer())`; ImmutableListSerializer | `restoreState(DRAFT) ?: ExcludedMusclesState(knownMuscleIds = parent exclusions)`; a catalog with muscle IDs keeps selected known IDs, selects new IDs, drops absent IDs and re-validates the group; emissions with no muscle IDs update only suggestions, preserving known/selected IDs and the selected group; Next sends known minus selected |
 | ExcludedMusclesState | `suggestions` | Rebuild | `@Transient`; `observeMuscles()` | Re-subscribed in init |
-| MissingEquipmentsComponent / MissingEquipmentsState | `selectedEquipmentIds`, `knownEquipmentIds`, `selectedGroupId` | Preserve | `DRAFT = PersistenceKey("MissingEquipmentsDraft", MissingEquipmentsState.serializer())` | Same pattern as muscles |
+| MissingEquipmentsComponent / MissingEquipmentsState | `selectedEquipmentIds`, `knownEquipmentIds`, `selectedGroupId` | Preserve | `DRAFT = PersistenceKey("MissingEquipmentsDraft", MissingEquipmentsState.serializer())` | A nonempty flattened equipment catalog keeps selected known IDs, selects new IDs, drops absent IDs and re-validates the group; empty flattened catalogs update only suggestions, preserving known/selected IDs and the selected group; Next sends known minus selected |
 | MissingEquipmentsState | `suggestions` | Rebuild | `@Transient`; `observeEquipments()` | Re-subscribed in init |
 | ProfileCompletedComponent | Name/weight/height/experience/exclusion inputs | Rebuild from parent | Constructor arguments from ProfileCreationState; no DRAFT; data-object State | A fresh VM re-runs CreateProfile from init, including after restoration; the `ProfileCreation` loader is runtime only |
 | AuthComponent stack | `AuthRouter` (Splash, Onboarding, AuthProcess(flowId), ProfileCreation) | Preserve (navigation) | `childStack(serializer = AuthRouter.serializer(), key = "AuthComponent")`; Onboarding and AuthProcess carry `@JsonIgnoreUnknownKeys`; `flowId` is `@EncodeDefault` | Initial stack from `RootRouter.Auth(value)`; mutated only by replaceAll; the AuthProcess serializer ignores the obsolete `entryPoint` field of older archives |
 | AuthProcessComponent stack | `AuthProcessRouter` (Login, Registration(email)) | Preserve (navigation plus nonsecret seed) | `AuthProcessRouter.serializer()`, key `AuthProcessComponent` | Initial Login; Registration pushed with the email seed |
 | ProfileCreationComponent stack | `ProfileCreationRouter` (five objects) | Preserve (navigation) | `ProfileCreationRouter.serializer()`, key `ProfileCreationComponent` | Initial User; push/pop |
 | RootComponent stack | `RootRouter.Auth(AuthRouter)` | Preserve (navigation) | `RootRouter.serializer()`, key `RootComponent` | Initial `Auth(AuthRouter.Splash)` |
+| RootViewModel / ProfileCreationViewModel | Session prerequisite and token observation | Rebuild / Runtime | Existing AuthorizationFeature.getToken source; no token in State, routes or drafts | Each retained owner observes its own prerequisite and retries only after error dismissal; a fresh restored ProfileCreation rechecks the source |
 | LocalSettingsRepository (DataStore) | `onboarding_shown` | Durable installation preference | `booleanPreferencesKey("onboarding_shown")` | Absent → false; one-way true write; `clearUserSettings` clears account preferences and restores it atomically with `analytics_consent` across logout/delete |
 | LocalSettingsRepository (DataStore) | `analytics_consent` | Durable installation preference | `booleanPreferencesKey("analytics_consent")` | Absent/false → Denied, true → Granted; `setDefaultAnalyticsConsent` writes only when absent; `setAnalyticsConsent` writes unconditionally; preserved across `clearUserSettings`, which LogoutUseCase and DeleteProfileUseCase call; applied to collection by ApplicationBootstrap |
 | All authorization VMs | Restoration flags, previous-source caches | None | No `var`/`lateinit` member in any authorization ViewModel | Conditions derive from State |

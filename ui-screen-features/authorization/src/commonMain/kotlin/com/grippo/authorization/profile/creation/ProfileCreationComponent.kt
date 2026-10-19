@@ -29,6 +29,7 @@ internal class ProfileCreationComponent(
 
     override val viewModel = componentContext.retainedInstance {
         ProfileCreationViewModel(
+            authorizationFeature = getKoin().get(),
             initialState = restoreState(DRAFT)
                 ?: ProfileCreationState(),
         )

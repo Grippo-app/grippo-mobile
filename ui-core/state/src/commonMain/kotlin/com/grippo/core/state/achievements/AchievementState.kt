@@ -70,7 +70,6 @@ public sealed interface AchievementState {
         override val exerciseExampleId: String,
         val exerciseId: String,
         val iterationId: String,
-        val totalVolume: VolumeFormatState,
         val repetitions: RepetitionsFormatState
     ) : AchievementState {
         override val key: String get() = KEY
@@ -176,7 +175,6 @@ private fun stubMaxRepetitionsAchievement(): AchievementState.MaxRepetitions {
         exerciseExampleId = Uuid.random().toString(),
         exerciseId = Uuid.random().toString(),
         iterationId = Uuid.random().toString(),
-        totalVolume = VolumeFormatState.of(Random.nextInt(500, 10_000).toFloat()),
         repetitions = RepetitionsFormatState.of(Random.nextInt(3, 25))
     )
 }

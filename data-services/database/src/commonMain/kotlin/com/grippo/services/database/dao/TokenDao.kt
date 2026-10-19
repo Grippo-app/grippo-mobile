@@ -34,8 +34,36 @@ public interface TokenDao {
     @Update
     public suspend fun update(value: TokenEntity)
 
+    @Query(
+        """
+        UPDATE token SET access = :access, refresh = :refresh
+        WHERE id = :id AND access IS :expectedAccess AND refresh IS :expectedRefresh
+        AND EXISTS (SELECT 1 FROM user_active WHERE id = 0 AND userId = :id)
+        """
+    )
+    public suspend fun updateIfCurrent(
+        id: String,
+        expectedAccess: String?,
+        expectedRefresh: String?,
+        access: String,
+        refresh: String,
+    ): Int
+
     // ────────────── DELETE ──────────────
 
     @Query("DELETE FROM token WHERE id = :id")
     public suspend fun delete(id: String)
+
+    @Query(
+        """
+        DELETE FROM token
+        WHERE id = :id AND access IS :expectedAccess AND refresh IS :expectedRefresh
+        AND EXISTS (SELECT 1 FROM user_active WHERE id = 0 AND userId = :id)
+        """
+    )
+    public suspend fun deleteIfCurrent(
+        id: String,
+        expectedAccess: String?,
+        expectedRefresh: String?,
+    )
 }

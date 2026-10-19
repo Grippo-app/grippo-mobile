@@ -170,7 +170,7 @@
     <string name="registration_experience_description">Grippo адаптируется под любой уровень.</string>
 
     <string name="registration_muscles_title">Хочешь что-то пропустить?</string>
-    <string name="registration_muscles_description">Отключи группы мышц, которые не хочешь тренировать.</string>
+    <string name="registration_muscles_description">Отключи мышцы, которые не хочешь тренировать.</string>
 
     <string name="registration_equipment_title">Чего нет в твоём зале?</string>
     <string name="registration_equipment_description">Отключи недоступное оборудование — мы уберём упражнения, где оно нужно.</string>
@@ -339,6 +339,7 @@
     <string name="peak_intensity">Пиковая интенсивность</string>
 
     <string name="exercise_example_last_used_value">Последнее использование: %1$s</string>
+    <string name="exercise_example_weight_type_value">Тип веса: %1$s</string>
     <string name="exercise_library_replace_target">Упражнение для замены</string>
 
 
@@ -449,11 +450,6 @@
     <string name="muscle_group_legs">Ноги</string>
     <string name="muscle_group_arms_and_forearms">Руки</string>
     <string name="muscle_group_shoulder_muscles">Плечи</string>
-
-    <!-- MuscleLoadEnumState -->
-    <string name="muscle_load_high">Высокая</string>
-    <string name="muscle_load_medium">Средняя</string>
-    <string name="muscle_load_low">Низкая</string>
 
     <!-- IterationFocus -->
     <string name="iteration_focus_volume">Объём</string>

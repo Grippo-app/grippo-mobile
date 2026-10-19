@@ -35,7 +35,6 @@ public fun Achievement.toState(): AchievementState {
             exerciseExampleId = exerciseExampleId,
             exerciseId = exerciseId,
             iterationId = iterationId,
-            totalVolume = VolumeFormatState.of(totalVolume.toFloat()),
             repetitions = RepetitionsFormatState.of(repetitions)
         )
 

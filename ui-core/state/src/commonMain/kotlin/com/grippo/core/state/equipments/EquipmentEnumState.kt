@@ -1,8 +1,54 @@
 package com.grippo.core.state.equipments
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.equipment.AbMachine
+import com.grippo.design.resources.provider.equipment.AbductorMachine
+import com.grippo.design.resources.provider.equipment.AdductorMachine
+import com.grippo.design.resources.provider.equipment.AdjustableBench
+import com.grippo.design.resources.provider.equipment.Barbell
+import com.grippo.design.resources.provider.equipment.BicepsMachine
+import com.grippo.design.resources.provider.equipment.Butterfly
+import com.grippo.design.resources.provider.equipment.ButterflyReverse
+import com.grippo.design.resources.provider.equipment.Cable
+import com.grippo.design.resources.provider.equipment.CalfRaiseMachines
+import com.grippo.design.resources.provider.equipment.ChestPressMachines
+import com.grippo.design.resources.provider.equipment.CloseGripHandle
+import com.grippo.design.resources.provider.equipment.CordHandles
+import com.grippo.design.resources.provider.equipment.Crossover
+import com.grippo.design.resources.provider.equipment.DeadliftMachines
+import com.grippo.design.resources.provider.equipment.DeclineBench
+import com.grippo.design.resources.provider.equipment.DeclineBenchWithRack
+import com.grippo.design.resources.provider.equipment.DipBar
+import com.grippo.design.resources.provider.equipment.Dumbbell
+import com.grippo.design.resources.provider.equipment.EzBar
+import com.grippo.design.resources.provider.equipment.FlatBench
+import com.grippo.design.resources.provider.equipment.FlatBenchWithRack
+import com.grippo.design.resources.provider.equipment.GluteHamRaiseBench
+import com.grippo.design.resources.provider.equipment.GluteMachines
+import com.grippo.design.resources.provider.equipment.HackSquatMachines
+import com.grippo.design.resources.provider.equipment.InclineBenchWithRack
+import com.grippo.design.resources.provider.equipment.LatPulldown
+import com.grippo.design.resources.provider.equipment.LateralRaiseMachines
+import com.grippo.design.resources.provider.equipment.LegCurlMachine
+import com.grippo.design.resources.provider.equipment.LegExtensionMachine
+import com.grippo.design.resources.provider.equipment.LegPressMachine
+import com.grippo.design.resources.provider.equipment.PreacherCurlBench
+import com.grippo.design.resources.provider.equipment.PullUpBar
+import com.grippo.design.resources.provider.equipment.RomanChair
+import com.grippo.design.resources.provider.equipment.Rope
+import com.grippo.design.resources.provider.equipment.RowBench
+import com.grippo.design.resources.provider.equipment.RowCable
+import com.grippo.design.resources.provider.equipment.ShoulderPressMachines
+import com.grippo.design.resources.provider.equipment.SmithMachine
+import com.grippo.design.resources.provider.equipment.SquatRack
+import com.grippo.design.resources.provider.equipment.StraightBar
+import com.grippo.design.resources.provider.equipment.TrapBar
+import com.grippo.design.resources.provider.equipment.TricepsMachines
+import com.grippo.design.resources.provider.equipment.VBar
+import com.grippo.design.resources.provider.equipment.WideGripHandle
 import com.grippo.design.resources.provider.equipment_ab_machines
 import com.grippo.design.resources.provider.equipment_abductor_machine
 import com.grippo.design.resources.provider.equipment_adductor_machine
@@ -150,6 +196,60 @@ public enum class EquipmentEnumState {
     public fun title(): UiText = TITLES.getValue(this)
     public fun hint(): UiText = HINTS.getValue(this)
     public fun hintRes(): StringResource = HINT_RES.getValue(this)
+
+    public fun icon(): ImageVector {
+        return when (this) {
+            DUMBBELLS -> Dumbbell
+            BARBELL -> Barbell
+            V_BAR -> VBar
+            WIDE_GRIP_HANDLE -> WideGripHandle
+            CLOSE_GRIP_HANDLE -> CloseGripHandle
+            EZ_BAR -> EzBar
+            TRAP_BAR -> TrapBar
+            ROPE -> Rope
+            STRAIGHT_BAR -> StraightBar
+            CORD_HANDLES -> CordHandles
+
+            AB_MACHINES -> AbMachine
+            BUTTERFLY -> Butterfly
+            BUTTERFLY_REVERSE -> ButterflyReverse
+            LEG_EXTENSION_MACHINES -> LegExtensionMachine
+            LEG_CURL_MACHINES -> LegCurlMachine
+            CHEST_PRESS_MACHINES -> ChestPressMachines
+            BICEPS_MACHINES -> BicepsMachine
+            SMITH_MACHINES -> SmithMachine
+            HACK_SQUAT_MACHINES -> HackSquatMachines
+            LEG_PRESS_MACHINE -> LegPressMachine
+            DEADLIFT_MACHINES -> DeadliftMachines
+            SHOULDER_PRESS_MACHINES -> ShoulderPressMachines
+            LATERAL_RAISE_MACHINES -> LateralRaiseMachines
+            TRICEPS_MACHINES -> TricepsMachines
+            CALF_RAISE_MACHINES -> CalfRaiseMachines
+            GLUTE_MACHINES -> GluteMachines
+
+            LAT_PULLDOWN -> LatPulldown
+            CABLE -> Cable
+            CABLE_CROSSOVER -> Crossover
+            ROW_CABLE -> RowCable
+
+            PULL_UP_BAR -> PullUpBar
+            DIP_BARS -> DipBar
+            ROMAIN_CHAIR -> RomanChair
+            GLUTE_HAM_RAISE_BENCH -> GluteHamRaiseBench
+
+            FLAT_BENCH -> FlatBench
+            ADJUSTABLE_BENCH -> AdjustableBench
+            ADDUCTOR_MACHINE -> AdductorMachine
+            ABDUCTOR_MACHINE -> AbductorMachine
+            DECLINE_BENCH -> DeclineBench
+            FLAT_BENCH_WITH_RACK -> FlatBenchWithRack
+            INCLINE_BENCH_WITH_RACK -> InclineBenchWithRack
+            DECLINE_BENCH_WITH_RACK -> DeclineBenchWithRack
+            SQUAT_RACK -> SquatRack
+            PREACHER_CURL_BENCH -> PreacherCurlBench
+            ROW_BENCH -> RowBench
+        }
+    }
 
     public companion object {
         private val TITLE_RES: Map<EquipmentEnumState, StringResource> =

@@ -9,7 +9,7 @@ stack changes.
 Current contracts: [DialogController / DialogProvider](../../../../ui-dialog-features/dialog-api/src/commonMain/kotlin/com/grippo/dialog.api/DialogController.kt)
 and [DialogConfig](../../../../ui-dialog-features/dialog-api/src/commonMain/kotlin/com/grippo/dialog.api/DialogConfig.kt).
 The host [DialogViewModel](../../../../shared/src/commonMain/kotlin/com/grippo/shared/dialog/DialogViewModel.kt)
-and [session bridge](../../../../shared/src/commonMain/kotlin/com/grippo/shared/dialog/SessionDialogNavigation.kt)
+and [session bridge](../../../../shared/src/commonMain/kotlin/com/grippo/shared/dialog/internal/SessionDialogNavigation.kt)
 own session changes and callback ordering.
 
 ## Two parallel navigators
@@ -128,6 +128,11 @@ The bridge's internal `finish(pendingResult)` passes a result closure to the own
 for a nested step it pops that step while the sheet remains visible. In both cases
 the removed config's `onDismiss` runs before the pending result. The dialog feature
 does not resolve or construct this bridge.
+
+Inspect `shared/.../dialog/content/DialogContentScreen.kt`: its `AnimatedContent`
+targets the active stack child, so local expansion does not trigger that step
+transition. Local content follows
+[disclosure transitions](../../compose-components/references/structure-and-runtime.md#disclosure-transitions).
 
 ## In-sheet navigation
 

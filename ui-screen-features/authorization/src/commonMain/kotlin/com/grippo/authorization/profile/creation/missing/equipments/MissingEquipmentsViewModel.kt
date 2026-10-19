@@ -33,15 +33,16 @@ internal class MissingEquipmentsViewModel(
 
     private fun provideEquipments(list: List<EquipmentGroup>) {
         val suggestions = list.toState()
-        if (suggestions.isEmpty()) {
-            update { it.copy(suggestions = suggestions) }
-            return
-        }
+
         val allIds = suggestions
             .flatMap { it.equipments }
             .map { it.id }
 
         update { previous ->
+            if (allIds.isEmpty()) {
+                return@update previous.copy(suggestions = suggestions)
+            }
+
             val knownIds = previous.knownEquipmentIds.toSet()
             val selectedIds = previous.selectedEquipmentIds.toSet()
             val selectedEquipmentIds = allIds

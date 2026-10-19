@@ -44,16 +44,18 @@ internal class ProfileMusclesViewModel(
 
     private fun provideMuscles(list: List<MuscleGroup>, excluded: List<Muscle>) {
         val suggestions = list.toState()
+
         val allIds = suggestions
             .flatMap { it.muscles }
             .map { it.value.id }
-        if (allIds.isEmpty()) {
-            update { it.copy(suggestions = suggestions) }
-            return
-        }
+
         val excludedIds = excluded.map { it.id }.toSet()
 
         update { previous ->
+            if (allIds.isEmpty()) {
+                return@update previous.copy(suggestions = suggestions)
+            }
+
             val knownIds = previous.knownMuscleIds.toSet()
             val selectedIds = previous.selectedMuscleIds.toSet()
             val selectedMuscleIds = allIds.filter { id ->

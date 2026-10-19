@@ -70,11 +70,19 @@ What counts as visual evidence, how it is distinguished and how it is reported.
 - For a supplied design, inspect the authoritative node/artifact through the
   available supported tools. Name the exact content/state compared, preserve
   declared variant axes and leave missing design facts explicit.
-- Use existing previews or authorized app screenshots. Capture the intended state
-  after layout settles and inspect actual title/content, scale and system overlays.
+- Use existing previews or authorized app screenshots. For endpoint/layout captures,
+  wait for layout to settle and inspect actual title/content, scale and system overlays.
   A successful capture command is not evidence of a current frame; reacquire stale
   transition captures and avoid competing resource-heavy work that invalidates them.
   Restore device locale, font scale, viewport and theme changed for checks.
+- For changed disclosures, exercise expansion, collapse and rapid reversal in the
+  actual host, plus collapse after scrolling and dismissal/reopening when those
+  actions are supported by the inventoried host. Motion claims need
+  a real recording or intermediate captures showing content and container size
+  through the transition; settled endpoints and animation API names do not prove
+  smoothness. Reacquire sparse/stale captures before drawing a motion conclusion,
+  and report unavailable states or recording limits without inferring a pass or
+  a UI defect from missing frames.
 - Note observations for the final revision, fix material mismatches and
   re-inspect affected groups after corrections. Distinguish source review, static
   renders (component render versus whole-screen render, which variants, which

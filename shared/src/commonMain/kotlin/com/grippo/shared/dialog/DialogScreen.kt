@@ -87,7 +87,11 @@ private fun BottomSheet(
 
     ModalBottomSheet(
         modifier = Modifier.statusBarsPadding(),
-        onDismissRequest = { if (isSwipeRef.value) onReleasedRef.value() }, // latest flag
+        onDismissRequest = {
+            if (isSwipeRef.value) {
+                onReleasedRef.value()
+            }
+        },
         sheetState = sheetState,
         sheetGesturesEnabled = !programmaticDismiss,
         contentWindowInsets = { WindowInsets() },

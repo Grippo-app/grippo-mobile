@@ -49,11 +49,11 @@ public fun ExampleDescriptionText(
         modifier = modifier
             .background(AppTokens.colors.background.card, shape)
             .border(AppTokens.dp.exerciseExampleCard.borderWidth, AppTokens.colors.border.default, shape)
-            .padding(AppTokens.dp.exerciseExampleCard.contentPadding)
-            .animateContentSize(),
+            .padding(AppTokens.dp.exerciseExampleCard.contentPadding),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
         Text(
+            modifier = Modifier.animateContentSize(),
             text = text,
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,

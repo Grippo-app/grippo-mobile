@@ -91,15 +91,18 @@ internal class ExerciseLibraryViewModel(
     }
 
     private fun provideTarget(value: ExerciseExample?) {
+        val target = value?.toState()?.value
+
         update { current ->
             if (current.mode !is ExerciseLibraryMode.SimilarTo) return@update current
 
-            current.copy(mode = current.mode.copy(target = value?.toState()?.value))
+            current.copy(mode = current.mode.copy(target = target))
         }
     }
 
     private fun provideMuscles(list: List<MuscleGroup>) {
         val suggestions = list.toState()
+
         update { current ->
             val filter = current.queries.filter
             val groupVanished =
@@ -130,6 +133,8 @@ internal class ExerciseLibraryViewModel(
         emittedParams: ExampleParams,
         value: List<ExerciseExample>
     ) {
+        val incoming = value.toState()
+
         update { current ->
             if (buildParams(current) != emittedParams) return@update current
 
@@ -149,7 +154,6 @@ internal class ExerciseLibraryViewModel(
                 )
             }
 
-            val incoming = value.toState()
             val items = if (isFirstPage) {
                 incoming.toPersistentList()
             } else {

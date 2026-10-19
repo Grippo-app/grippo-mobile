@@ -21,6 +21,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.auth.AuthScheme
 import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.http.path
+import io.ktor.util.AttributeKey
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CompletableDeferred
@@ -37,10 +38,11 @@ internal class TokenProvider(
     private val userActiveDao: UserActiveDao,
 ) : AuthProvider {
     private val refreshMutex = Mutex()
-    private var ongoingRefresh: CompletableDeferred<String?>? = null
+    private val refreshAttempts = mutableMapOf<TokenEntity, CompletableDeferred<TokenEntity?>>()
 
     private companion object {
         private const val REFRESH_WAIT_TIMEOUT_MS = 10_000L
+        private val REQUEST_SESSION_KEY = AttributeKey<RequestSession>("GrippoRequestSession")
     }
 
     @Deprecated("Use sendWithoutRequest(request) instead", level = DeprecationLevel.ERROR)
@@ -57,6 +59,11 @@ internal class TokenProvider(
         authHeader: HttpAuthHeader?
     ) {
         val token = getCurrentToken()
+        val session = request.attributes.getOrNull(REQUEST_SESSION_KEY)
+            ?: RequestSession(token).also {
+                request.attributes.put(REQUEST_SESSION_KEY, it)
+            }
+        check(session.token?.id == token?.id) { "Authentication session changed" }
         val accessToken = token?.access
 
         request.headers {
@@ -70,58 +77,77 @@ internal class TokenProvider(
     }
 
     override suspend fun refreshToken(response: HttpResponse): Boolean {
+        val token = response.call.request.attributes.getOrNull(REQUEST_SESSION_KEY)?.token
+            ?: return false
         val (completion, ownsRefresh) = refreshMutex.withLock {
-            val current = ongoingRefresh
-            if (current != null && !current.isCompleted) {
+            refreshAttempts.entries.removeAll { it.value.isCompleted }
+            val current = refreshAttempts[token]
+            if (current != null) {
                 current to false
             } else {
-                val next = CompletableDeferred<String?>()
-                ongoingRefresh = next
+                val next = CompletableDeferred<TokenEntity?>()
+                refreshAttempts[token] = next
                 next to true
             }
         }
 
         return if (ownsRefresh) {
-            performTokenRefreshBlock(response = response, completion = completion)
+            performTokenRefreshBlock(response = response, token = token, completion = completion)
         } else {
             waitForOngoingRefresh(completion)
         }
     }
 
-    private suspend fun waitForOngoingRefresh(completion: CompletableDeferred<String?>): Boolean {
+    private suspend fun waitForOngoingRefresh(completion: CompletableDeferred<TokenEntity?>): Boolean {
         return withTimeout(REFRESH_WAIT_TIMEOUT_MS.milliseconds) {
-            val rejectedAccess = completion.await() ?: return@withTimeout false
+            val rejected = completion.await() ?: return@withTimeout false
+            val token = getCurrentToken() ?: return@withTimeout false
+            check(token.id == rejected.id) { "Authentication session changed" }
 
-            val access = getCurrentToken()?.access?.takeIf { it.isNotBlank() }
-            access != null && access != rejectedAccess
+            val access = token.access?.takeIf { it.isNotBlank() }
+            access != null && access != rejected.access
         }
     }
 
     private suspend fun performTokenRefreshBlock(
         response: HttpResponse,
-        completion: CompletableDeferred<String?>,
+        token: TokenEntity,
+        completion: CompletableDeferred<TokenEntity?>,
     ): Boolean {
         return try {
-            val rejectedAccess = withTimeout(REFRESH_WAIT_TIMEOUT_MS.milliseconds) {
-                refreshCurrentSession(response)
+            val rejected = withTimeout(REFRESH_WAIT_TIMEOUT_MS.milliseconds) {
+                refreshCurrentSession(response = response, token = token)
             }
-            completion.complete(rejectedAccess)
-            rejectedAccess != null
+            completion.complete(rejected)
+            rejected != null
         } catch (e: Throwable) {
             completion.completeExceptionally(e)
             throw e
         }
     }
 
-    /** Returns the rejected access token after storing its replacement, or null for an AuthProvider failure. */
-    private suspend fun refreshCurrentSession(response: HttpResponse): String? {
-        val token = getCurrentToken() ?: return null
-        val accessToken = requireAccess(token)
-        val refreshToken = requireRefresh(token)
+    /** Returns the rejected snapshot after storing its replacement, or null for an AuthProvider failure. */
+    private suspend fun refreshCurrentSession(response: HttpResponse, token: TokenEntity): TokenEntity? {
+        val current = getCurrentToken() ?: return null
+        check(current.id == token.id) { "Authentication session changed" }
+        if (current != token) {
+            // Storage can advance before Ktor publishes the new provider version.
+            return token.takeIf { !current.access.isNullOrBlank() && current.access != token.access }
+        }
+        check(!token.access.isNullOrBlank()) { "Access token is missing" }
+        val refreshToken = token.refresh?.takeIf { it.isNotBlank() }
+            ?: throw IllegalStateException("Refresh token is missing")
 
         return try {
             val refresh = retryWithBackoff {
-                performTokenRefresh(client = response.call.client, refreshToken = refreshToken)
+                if (getCurrentToken() != token) {
+                    throw RefreshSessionChangedException()
+                }
+                performTokenRefresh(
+                    client = response.call.client,
+                    token = token,
+                    refreshToken = refreshToken,
+                )
             }
 
             val newId = refresh.id ?: return null
@@ -131,28 +157,33 @@ internal class TokenProvider(
                 throw AppError.Network.IncompleteResponse()
             }
 
-            tokenDao.insertOrUpdate(
-                TokenEntity(
-                    id = newId,
-                    access = refresh.accessToken,
-                    refresh = refresh.refreshToken,
-                )
+            val updated = tokenDao.updateIfCurrent(
+                id = token.id,
+                expectedAccess = token.access,
+                expectedRefresh = token.refresh,
+                access = refresh.accessToken,
+                refresh = refresh.refreshToken,
             )
-            accessToken
+            if (updated == 0) {
+                return null
+            }
+            token
         } catch (e: Throwable) {
             if (e is CancellationException || e !is Exception) {
                 throw e
             }
-            handleRefreshFailure(e = e, userId = token.id)
+            handleRefreshFailure(e = e, token = token)
         }
     }
 
     private suspend fun performTokenRefresh(
         client: HttpClient,
+        token: TokenEntity,
         refreshToken: String
     ): TokenResponse {
         return client.submitForm {
             attributes.put(AuthCircuitBreaker, Unit)
+            attributes.put(REQUEST_SESSION_KEY, RequestSession(token))
             url {
                 method = HttpMethod.Post
                 path("/auth/refresh")
@@ -169,9 +200,13 @@ internal class TokenProvider(
         }
     }
 
-    private suspend fun handleRefreshFailure(e: Throwable, userId: String): Nothing {
+    private suspend fun handleRefreshFailure(e: Throwable, token: TokenEntity): Nothing {
         try {
-            tokenDao.delete(userId)
+            tokenDao.deleteIfCurrent(
+                id = token.id,
+                expectedAccess = token.access,
+                expectedRefresh = token.refresh,
+            )
         } catch (cleanupError: Throwable) {
             if (cleanupError is CancellationException || cleanupError !is Exception) {
                 if (cleanupError !== e) {
@@ -191,16 +226,6 @@ internal class TokenProvider(
         return userActiveDao.get().firstOrNull()?.let { tokenDao.getById(it).firstOrNull() }
     }
 
-    private fun requireAccess(token: TokenEntity): String {
-        return token.access?.takeIf { it.isNotBlank() }
-            ?: throw IllegalStateException("Access token is missing")
-    }
-
-    private fun requireRefresh(token: TokenEntity): String {
-        return token.refresh?.takeIf { it.isNotBlank() }
-            ?: throw IllegalStateException("Refresh token is missing")
-    }
-
     private suspend fun <T> retryWithBackoff(
         maxAttempts: Int = 3,
         initialDelay: Long = 500,
@@ -212,10 +237,10 @@ internal class TokenProvider(
             try {
                 return block()
             } catch (e: Throwable) {
-                if (e is CancellationException || e is Error) {
+                if (e is CancellationException || e !is Exception) {
                     throw e
                 }
-                if (e is RefreshUnauthorizedException) {
+                if (e is RefreshUnauthorizedException || e is RefreshSessionChangedException) {
                     throw e
                 }
             }
@@ -226,4 +251,6 @@ internal class TokenProvider(
     }
 
     private class RefreshUnauthorizedException(message: String) : IllegalStateException(message)
+
+    private class RefreshSessionChangedException : IllegalStateException("Authentication session changed")
 }

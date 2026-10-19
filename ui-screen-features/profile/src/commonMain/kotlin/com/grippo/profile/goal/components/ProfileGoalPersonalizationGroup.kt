@@ -1,6 +1,11 @@
 package com.grippo.profile.goal.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -34,6 +39,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
+private const val DisclosureAnimationDurationMillis = 200
+
 @Composable
 internal fun ProfileGoalPersonalizationGroup(
     modifier: Modifier = Modifier,
@@ -57,6 +64,15 @@ internal fun ProfileGoalPersonalizationGroup(
     } else {
         Modifier.fillMaxWidth()
     }
+    val selectedLabels = items.filter { it in selected }.map { it.label() }
+    val disclosureEnter = expandVertically(
+        animationSpec = tween(DisclosureAnimationDurationMillis),
+        expandFrom = Alignment.Top,
+    ) + fadeIn(animationSpec = tween(DisclosureAnimationDurationMillis))
+    val disclosureExit = shrinkVertically(
+        animationSpec = tween(DisclosureAnimationDurationMillis),
+        shrinkTowards = Alignment.Top,
+    ) + fadeOut(animationSpec = tween(DisclosureAnimationDurationMillis))
 
     Column(modifier = modifier) {
         Row(
@@ -66,22 +82,23 @@ internal fun ProfileGoalPersonalizationGroup(
         ) {
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
             ) {
                 Text(
                     text = category.label(),
                     style = AppTokens.typography.b14Semi(),
                     color = AppTokens.colors.text.primary,
                 )
-                if (!isExpanded) {
-                    val selectedLabels = items.filter { it in selected }.map { it.label() }
-                    if (selectedLabels.isNotEmpty()) {
-                        Text(
-                            text = selectedLabels.joinToString(separator = ", "),
-                            style = AppTokens.typography.b13Med(),
-                            color = AppTokens.colors.text.secondary,
-                        )
-                    }
+                AnimatedVisibility(
+                    visible = !isExpanded && selectedLabels.isNotEmpty(),
+                    enter = disclosureEnter,
+                    exit = disclosureExit,
+                ) {
+                    Text(
+                        modifier = Modifier.padding(top = AppTokens.dp.contentPadding.text),
+                        text = selectedLabels.joinToString(separator = ", "),
+                        style = AppTokens.typography.b13Med(),
+                        color = AppTokens.colors.text.secondary,
+                    )
                 }
             }
             if (isExpandable) {
@@ -94,7 +111,11 @@ internal fun ProfileGoalPersonalizationGroup(
             }
         }
 
-        AnimatedVisibility(visible = isExpanded) {
+        AnimatedVisibility(
+            visible = isExpanded,
+            enter = disclosureEnter,
+            exit = disclosureExit,
+        ) {
             FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()

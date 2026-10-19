@@ -132,10 +132,7 @@ ViewModels **never** call `navigation.push(...)` directly. They emit `Direction`
 override suspend fun eventListener(direction: RootDirection) {
     when (direction) {
         RootDirection.Login -> {
-            val authorization = childStack.value.active.instance as? Child.Authorization
-            if (authorization != null) {
-                authorization.component.onSessionLost()
-            } else {
+            if (childStack.value.active.configuration !is RootRouter.Auth) {
                 navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess()))
             }
         }
@@ -155,11 +152,12 @@ override suspend fun eventListener(direction: RootDirection) {
 dead Home/Profile directions were removed).
 
 Two patterns:
-- **Session-loss ownership**: `RootDirection.Login` replaces a non-Authorization root with AuthProcess.
-  An active `AuthComponent` handles that signal itself: only ProfileCreation redirects to
-  AuthProcess; Splash, Onboarding and an existing AuthProcess remain in place. The initial null
-  token must not bypass startup/onboarding, and token loss must not leave an authenticated
-  profile-creation flow active.
+- **Session-loss ownership**: Root checks only its own route; `RootDirection.Login` replaces
+  a non-Auth root with AuthProcess. ProfileCreation's retained ViewModel observes its own
+  session prerequisite and emits the existing `ToLogin` direction through constructor callbacks.
+  Parent Components do not inspect a child's internal stack or expose forwarding methods to
+  enforce that prerequisite. Initial null tokens preserve Splash, Onboarding and AuthProcess;
+  restored ProfileCreation also leaves through `ToLogin` when its session is absent.
 - **Most `RootDirection` subtypes are `data object`**, not `data class`. They name a destination and the Component picks the concrete sub-route. `Training` carries a `StageState` payload (`Add`, `Edit(id)`, `Draft`) because the same destination opens different stages.
 
 For sub-feature components, `eventListener` handles two kinds of directions:

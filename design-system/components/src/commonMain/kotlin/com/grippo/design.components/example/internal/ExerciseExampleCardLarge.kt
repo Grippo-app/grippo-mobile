@@ -11,27 +11,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.equipments.EquipmentEnumState
+import com.grippo.core.state.equipments.EquipmentState
 import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.examples.WeightTypeEnumState
+import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.formatters.DateTimeFormatState
+import com.grippo.design.components.equipment.EquipmentCard
+import com.grippo.design.components.equipment.EquipmentCardStyle
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.components.muscle.MuscleMark
 import com.grippo.design.components.muscle.MuscleMarkStyle
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_example_last_used_value
+import com.grippo.design.resources.provider.exercise_example_weight_type_value
 import com.grippo.toolkit.date.utils.DateCompose
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun ExerciseExampleCardLarge(
     modifier: Modifier,
     value: ExerciseExampleState,
 ) {
-    val equipmentText = value.equipments
-        .distinctBy { it.type }
-        .map { it.type.title().text() }
-        .joinToString(separator = " · ")
-        .ifBlank { value.value.weightType.title().text() }
+    val equipments = remember(value.equipments) {
+        value.equipments.distinctBy { it.type }
+    }
 
     val muscleGroups = remember(value.bundles) {
         if (value.bundles.any { (it.percentage.value ?: 0) < 0 }) {
@@ -70,12 +78,6 @@ internal fun ExerciseExampleCardLarge(
                     color = AppTokens.colors.text.primary,
                 )
 
-                Text(
-                    text = equipmentText,
-                    style = AppTokens.typography.b13Med(),
-                    color = AppTokens.colors.text.secondary,
-                )
-
                 val lastUsed = value.value.lastUsed
                 if (lastUsed !is DateTimeFormatState.Empty) {
                     val lastUsedValue = lastUsed.value
@@ -94,6 +96,27 @@ internal fun ExerciseExampleCardLarge(
                     }
                 }
             }
+        }
+
+        if (equipments.isNotEmpty()) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+            ) {
+                equipments.forEach { equipment ->
+                    EquipmentCard(value = equipment, style = EquipmentCardStyle.Inline)
+                }
+            }
+        } else {
+            Text(
+                text = AppTokens.strings.res(
+                    Res.string.exercise_example_weight_type_value,
+                    value.value.weightType.title().text(),
+                ),
+                style = AppTokens.typography.b13Med(),
+                color = AppTokens.colors.text.secondary,
+            )
         }
 
         if (muscleGroups.isNotEmpty()) {
@@ -117,5 +140,51 @@ internal fun ExerciseExampleCardLarge(
                 }
             }
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleEquipmentSummaryPreview() {
+    val example = stubExerciseExample()
+    PreviewContainer {
+        ExerciseExampleCardLarge(
+            modifier = Modifier.fillMaxWidth(),
+            value = example.copy(
+                value = example.value.copy(
+                    id = "equipment-summary",
+                    name = "Тяга верхнього блока широким хватом з довгою рукояткою",
+                    imageUrl = null,
+                    lastUsed = DateTimeFormatState.Empty(format = example.value.lastUsed.format),
+                ),
+                equipments = persistentListOf(
+                    EquipmentState(id = "pulldown", type = EquipmentEnumState.LAT_PULLDOWN),
+                    EquipmentState(id = "wide-handle", type = EquipmentEnumState.WIDE_GRIP_HANDLE),
+                    EquipmentState(id = "duplicate-handle", type = EquipmentEnumState.WIDE_GRIP_HANDLE),
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleMissingEquipmentPreview() {
+    val example = stubExerciseExample()
+    PreviewContainer {
+        ExerciseExampleCardLarge(
+            modifier = Modifier.fillMaxWidth(),
+            value = example.copy(
+                value = example.value.copy(
+                    id = "equipment-missing",
+                    name = "Віджимання від підлоги",
+                    imageUrl = null,
+                    weightType = WeightTypeEnumState.BODY_WEIGHT,
+                    lastUsed = DateTimeFormatState.Empty(format = example.value.lastUsed.format),
+                ),
+                equipments = persistentListOf(),
+                bundles = persistentListOf(),
+            ),
+        )
     }
 }
