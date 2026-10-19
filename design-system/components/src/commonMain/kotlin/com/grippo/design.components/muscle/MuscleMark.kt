@@ -26,6 +26,7 @@ import com.grippo.design.preview.PreviewContainer
 public enum class MuscleMarkStyle {
     Standard,
     Inline,
+    Summary,
 }
 
 /** Anatomical zone beside its localized label; measured views may supply their load tint. */
@@ -65,6 +66,7 @@ private fun MuscleMarkContent(
                 .padding(AppTokens.dp.muscle.markPadding)
         }
         MuscleMarkStyle.Inline -> Modifier.size(AppTokens.dp.muscle.inlineMarkSize)
+        MuscleMarkStyle.Summary -> Modifier.size(AppTokens.dp.muscle.summaryMarkSize)
     }
     Image(
         modifier = modifier.then(markModifier),
@@ -138,6 +140,22 @@ private fun MuscleMarkInlinePreview() {
                     text = group.title().text(),
                     color = AppTokens.colors.text.secondary,
                     style = AppTokens.typography.b12Med(),
+                )
+            }
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleMarkSummaryPreview() {
+    PreviewContainer {
+        Row(horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
+            MuscleGroupEnumState.entries.forEach { group ->
+                MuscleMark(
+                    group = group,
+                    style = MuscleMarkStyle.Summary,
+                    color = AppTokens.colors.icon.secondary,
                 )
             }
         }

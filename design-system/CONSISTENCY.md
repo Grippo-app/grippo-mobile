@@ -83,10 +83,24 @@ A compact navigation item and a screen heading do not need the same font size.
   The leading-share ring retains `charts.ring.info`, with no status thresholds.
 - `MuscleMark` Standard uses `muscle.markSize/markPadding/markRadius`
   (32/2/8 dp). Inline uses `muscle.inlineMarkSize` (28 dp) without a background
-  tile or padding, preserving the same 28 dp anatomical drawing. Library filters
-  and exercise-group labels use Inline to avoid repeated nested tiles. The
-  exercise list keeps image/name/date in its header, with equipment and all actual
-  muscle groups in separate full-width wrapping rows below; dividers follow those gutters.
+  tile or padding, preserving the same 28 dp anatomical drawing. Summary uses
+  `muscle.summaryMarkSize` (32 dp) without a tile or padding, matching the library
+  metadata row's height. Library filters and exercise-group labels keep Inline
+  to avoid repeated nested tiles. The exercise list keeps the photo on the left
+  and a complete title, image-only
+  metadata and optional date in the right column, in that order. Equipment uses
+  Compact images alongside 32 dp Summary anatomy drawings. A single upper-body
+  group keeps its familiar anatomical crop; multiple upper-body groups share one
+  existing front/back torso drawing with all involved zones highlighted. Legs
+  use their own drawing when present, keeping the summary to at most two marks.
+  The summary uses `icon.secondary` for highlighted zones and `text` gaps. Both
+  image types retain complete localized accessibility names without visible captions. This
+  compact recognition treatment is specific to the library summary; filters,
+  choices and measured detail surfaces keep their identity or load colors and labels.
+  Equipment and anatomy keep `text` gaps within each group; `content` spacing
+  separates the two clusters without a divider or container. The clusters wrap
+  with `text` vertical gaps, matching the right column's vertical spacing. List
+  dividers follow the content gutters.
 - MuscleSelection keeps one large hero and existing group tabs, with no duplicate
   small group mark/title above the hero. Muscle rows keep their own identity cues;
   the large image highlights chosen zones with the group's hue. Neutral choice
@@ -185,11 +199,12 @@ A compact navigation item and a screen heading do not need the same font size.
   retain their corresponding named vectors. The containing server group owns
   membership; the UI does not infer a group or apparatus from weight type,
   exercise name, image or position.
-- The `EquipmentCard` family owns three explicit compositions:
+- The `EquipmentCard` family owns four explicit compositions:
 
   | Role | Image and geometry | Label and state |
   | --- | --- | --- |
-  | Inline library metadata | `equipmentCard.inlineIcon` (32 dp), no tile or border; wraps with other equipment below the exercise header | Full `b13Med`, `text.secondary`; one entry per distinct type in source order |
+  | Compact library metadata | `equipmentCard.compactIcon` (32 dp) cell, no tile or border; dense dumbbell/barbell/EZ-bar/trap-bar artwork uses `compactFreeWeightPadding` (2 dp) inside the cell; other types retain the full fit | Image only, with complete localized text semantics; one entry per distinct type in source order; full silhouettes keep their aspect ratio |
+  | Inline labelled metadata | `equipmentCard.inlineIcon` (32 dp), no tile or border | Full `b13Med`, `text.secondary` name beside its image |
   | Detail information gallery | `equipmentCard.icon` (64 dp), `equipmentCard.width` (144 dp), unframed; `content` gap and caller edge gutters | Full centered `b14Semi`, `text.primary`; horizontal scrolling retains every supplied item |
   | Availability/exclusion selection | Existing ToggleSelectableCard Medium geometry: 64 dp image, 12 dp padding, 16 dp neutral frame and reserved passive switch | Full `h5`, `text.primary`; existing Switch action/state at the row, image unchanged when excluded |
 
@@ -442,9 +457,16 @@ A compact navigation item and a screen heading do not need the same font size.
   Medium history/read-only exercise rows use `COMPACT` (48 dp); small inline
   exercise references may use `SMALL` (32 dp).
 - Exercise-library results use open `ExerciseExampleCardStyle.Large` rows with
-  regular 64 dp thumbnails, complete `h5` names and `b12Med` last-used dates only
-  when present. Equipment uses the shared Inline image/name treatment below that
-  header; missing equipment keeps an explicitly labelled declared weight type.
+  regular 64 dp thumbnails on the left. The right column has complete `h5` names,
+  image-only metadata immediately below, then `b12Med` last-used dates only when
+  present. Equipment uses the shared Compact treatment; missing equipment keeps
+  an explicitly labelled declared weight type between the images and date.
+  All muscle groups are represented by one upper-body mark and, when needed,
+  one legs mark at `muscle.summaryMarkSize` (32 dp), with neutral `icon.secondary`
+  highlights and complete localized accessibility names. The equipment and
+  anatomy clusters stay in the right
+  column with `content` spacing between them and `text` wrapping gaps. Missing
+  groups leave no empty row.
   Quiet dividers follow the content gutters; repeated taxonomy
   chips, outer card frames and never-used footers do not compete with selection.
 - Replacement-library targets use the passive Small reference with a complete

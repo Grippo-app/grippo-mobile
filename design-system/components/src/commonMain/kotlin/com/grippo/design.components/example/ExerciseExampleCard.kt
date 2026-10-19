@@ -115,6 +115,20 @@ private fun ExerciseExampleCardLargePreview() {
                 ),
             ),
         )
+
+        ExerciseExampleCard(
+            modifier = Modifier.fillMaxWidth(),
+            style = ExerciseExampleCardStyle.Large(
+                example.copy(
+                    value = example.value.copy(
+                        id = "exercise-example-without-equipment-data",
+                        name = "Push-up",
+                        weightType = WeightTypeEnumState.BODY_WEIGHT,
+                    ),
+                    equipments = persistentListOf(),
+                ),
+            ),
+        )
     }
 }
 
@@ -141,6 +155,28 @@ private fun ExerciseExampleCardLargeSingleMuscleGroupPreview() {
                 ),
             ),
         )
+
+        ExerciseExampleCard(
+            modifier = Modifier.fillMaxWidth(),
+            style = ExerciseExampleCardStyle.Large(
+                example.copy(
+                    value = example.value.copy(
+                        id = "exercise-example-leg-extension",
+                        name = "Розгинання ніг у тренажері",
+                    ),
+                    bundles = persistentListOf(
+                        ExerciseExampleBundleState(
+                            id = "quadriceps-involvement",
+                            muscle = MuscleState(id = "quadriceps", type = MuscleEnumState.QUADRICEPS),
+                            percentage = PercentageFormatState.of(100),
+                        ),
+                    ),
+                    equipments = persistentListOf(
+                        EquipmentState(id = "leg-extension", type = EquipmentEnumState.LEG_EXTENSION_MACHINES),
+                    ),
+                ),
+            ),
+        )
     }
 }
 
@@ -154,7 +190,7 @@ private fun ExerciseExampleCardLargeAllMuscleGroupsPreview() {
             style = ExerciseExampleCardStyle.Large(
                 example.copy(
                     value = example.value.copy(
-                        name = "Комплексна вправа з гантелями для всього тіла на регульованій лаві",
+                        name = "Комплексна вправа на блочному тренажері зі змінними рукоятками",
                     ),
                     bundles = stubMuscleGroup().mapIndexed { index, group ->
                         ExerciseExampleBundleState(
@@ -163,6 +199,79 @@ private fun ExerciseExampleCardLargeAllMuscleGroupsPreview() {
                             percentage = PercentageFormatState.of(if (index == 0) 50 else 10),
                         )
                     }.toPersistentList(),
+                    equipments = persistentListOf(
+                        EquipmentState(id = "pulldown", type = EquipmentEnumState.LAT_PULLDOWN),
+                        EquipmentState(id = "wide-handle", type = EquipmentEnumState.WIDE_GRIP_HANDLE),
+                        EquipmentState(id = "rope", type = EquipmentEnumState.ROPE),
+                        EquipmentState(id = "cord-handles", type = EquipmentEnumState.CORD_HANDLES),
+                    ),
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleCardLargeWrappedImageGroupsPreview() {
+    val example = exerciseExampleCardPreviewValue()
+    PreviewContainer {
+        ExerciseExampleCard(
+            modifier = Modifier.fillMaxWidth(),
+            style = ExerciseExampleCardStyle.Large(
+                example.copy(
+                    value = example.value.copy(name = "Вправа з різним обладнанням"),
+                    bundles = persistentListOf(
+                        example.bundles.first().copy(percentage = PercentageFormatState.of(40)),
+                        example.bundles.last(),
+                        ExerciseExampleBundleState(
+                            id = "quadriceps-involvement",
+                            muscle = MuscleState(id = "quadriceps", type = MuscleEnumState.QUADRICEPS),
+                            percentage = PercentageFormatState.of(30),
+                        ),
+                    ),
+                    equipments = listOf(
+                        EquipmentEnumState.DUMBBELLS,
+                        EquipmentEnumState.BARBELL,
+                        EquipmentEnumState.ADJUSTABLE_BENCH,
+                        EquipmentEnumState.ROPE,
+                        EquipmentEnumState.WIDE_GRIP_HANDLE,
+                        EquipmentEnumState.CLOSE_GRIP_HANDLE,
+                        EquipmentEnumState.CORD_HANDLES,
+                        EquipmentEnumState.LAT_PULLDOWN,
+                    ).map { type ->
+                        EquipmentState(id = type.name, type = type)
+                    }.toPersistentList(),
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleCardLargeUnavailableMuscleGroupsPreview() {
+    val example = exerciseExampleCardPreviewValue()
+    PreviewContainer {
+        ExerciseExampleCard(
+            modifier = Modifier.fillMaxWidth(),
+            style = ExerciseExampleCardStyle.Large(
+                example.copy(
+                    bundles = example.bundles.map { bundle ->
+                        bundle.copy(percentage = PercentageFormatState.of(0))
+                    }.toPersistentList(),
+                ),
+            ),
+        )
+
+        ExerciseExampleCard(
+            modifier = Modifier.fillMaxWidth(),
+            style = ExerciseExampleCardStyle.Large(
+                example.copy(
+                    bundles = persistentListOf(
+                        example.bundles.first().copy(percentage = PercentageFormatState.of(-1)),
+                        example.bundles.last(),
+                    ),
                 ),
             ),
         )

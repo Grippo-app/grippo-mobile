@@ -34,19 +34,23 @@ public interface TokenDao {
     @Update
     public suspend fun update(value: TokenEntity)
 
+    /**
+     * Atomically updates credentials when [id] is the active user and both expected credentials match.
+     * Returns the affected row count, or 0 if the row is missing or any comparison fails.
+     */
     @Query(
         """
-        UPDATE token SET access = :access, refresh = :refresh
+        UPDATE token SET access = :newAccess, refresh = :newRefresh
         WHERE id = :id AND access IS :expectedAccess AND refresh IS :expectedRefresh
         AND EXISTS (SELECT 1 FROM user_active WHERE id = 0 AND userId = :id)
         """
     )
-    public suspend fun updateIfCurrent(
+    public suspend fun compareAndUpdate(
         id: String,
         expectedAccess: String?,
         expectedRefresh: String?,
-        access: String,
-        refresh: String,
+        newAccess: String,
+        newRefresh: String,
     ): Int
 
     // ────────────── DELETE ──────────────
@@ -54,6 +58,10 @@ public interface TokenDao {
     @Query("DELETE FROM token WHERE id = :id")
     public suspend fun delete(id: String)
 
+    /**
+     * Atomically deletes credentials when [id] is the active user and both expected credentials match.
+     * Returns the affected row count, or 0 if the row is missing or any comparison fails.
+     */
     @Query(
         """
         DELETE FROM token
@@ -61,9 +69,9 @@ public interface TokenDao {
         AND EXISTS (SELECT 1 FROM user_active WHERE id = 0 AND userId = :id)
         """
     )
-    public suspend fun deleteIfCurrent(
+    public suspend fun compareAndDelete(
         id: String,
         expectedAccess: String?,
         expectedRefresh: String?,
-    )
+    ): Int
 }

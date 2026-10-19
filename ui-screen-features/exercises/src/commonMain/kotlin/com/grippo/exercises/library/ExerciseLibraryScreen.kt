@@ -35,10 +35,14 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.equipments.EquipmentEnumState
 import com.grippo.core.state.equipments.EquipmentState
+import com.grippo.core.state.examples.ExerciseExampleBundleState
 import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.formatters.DateTimeFormatState
+import com.grippo.core.state.formatters.PercentageFormatState
+import com.grippo.core.state.muscles.MuscleEnumState
+import com.grippo.core.state.muscles.MuscleState
 import com.grippo.core.state.muscles.stubMuscleGroup
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.empty.IllustratedEmptyState
@@ -361,6 +365,7 @@ private fun exerciseLibraryPreviewExamples() = persistentListOf(
                 usageCount = 0,
                 lastUsed = DateTimeFormatState.Empty(DateFormat.DateOnly.DateDdMmm),
             ),
+            bundles = persistentListOf(),
         )
     },
 )
@@ -377,7 +382,18 @@ private fun exerciseLibraryPreviewExample(id: String, name: String): ExerciseExa
                 format = DateFormat.DateOnly.DateDdMmm,
             ),
         ),
-        bundles = persistentListOf(),
+        bundles = persistentListOf(
+            ExerciseExampleBundleState(
+                id = "library-chest-involvement",
+                muscle = MuscleState(id = "library-chest", type = MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL),
+                percentage = PercentageFormatState.of(70),
+            ),
+            ExerciseExampleBundleState(
+                id = "library-triceps-involvement",
+                muscle = MuscleState(id = "library-triceps", type = MuscleEnumState.TRICEPS),
+                percentage = PercentageFormatState.of(30),
+            ),
+        ),
         equipments = persistentListOf(
             EquipmentState(id = "library-dumbbells", type = EquipmentEnumState.DUMBBELLS),
             EquipmentState(id = "library-bench", type = EquipmentEnumState.ADJUSTABLE_BENCH),

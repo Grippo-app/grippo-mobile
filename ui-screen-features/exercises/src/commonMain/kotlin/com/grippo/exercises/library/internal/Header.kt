@@ -1,25 +1,28 @@
 package com.grippo.exercises.library.internal
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onPlaced
+import com.grippo.core.state.muscles.stubMuscleGroup
 import com.grippo.design.components.cards.selectable.CheckSelectableCard
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.inputs.InputSearch
 import com.grippo.design.components.muscle.MuscleMark
 import com.grippo.design.components.muscle.MuscleMarkStyle
-import com.grippo.core.state.muscles.stubMuscleGroup
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -28,6 +31,7 @@ import com.grippo.design.resources.provider.exercise_library_suggestions_chip
 import com.grippo.exercises.library.ExerciseLibraryContract
 import com.grippo.exercises.library.Queries
 import com.grippo.exercises.library.QueryFilter
+import kotlinx.coroutines.CompletableDeferred
 
 @Composable
 internal fun Header(
@@ -36,6 +40,8 @@ internal fun Header(
     canShowSuggestions: Boolean,
     contract: ExerciseLibraryContract,
 ) {
+    val groupsScrollState = rememberScrollState()
+
     Column(modifier = modifier) {
         InputSearch(
             modifier = Modifier
@@ -47,63 +53,63 @@ internal fun Header(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        val groupsListState = rememberLazyListState()
-
-        LaunchedEffect(value.muscleGroups, value.filter, canShowSuggestions) {
-            val groupOffset = if (canShowSuggestions) 1 else 0
-            val targetIndex = when (val filter = value.filter) {
-                QueryFilter.Suggestions -> if (canShowSuggestions) 0 else null
-                is QueryFilter.Group -> value.muscleGroups
-                    .indexOfFirst { it.id == filter.id }
-                    .takeIf { it >= 0 }
-                    ?.plus(groupOffset)
-
-                QueryFilter.All -> null
-            } ?: return@LaunchedEffect
-            groupsListState.scrollToItem(targetIndex)
-        }
-
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(groupsScrollState)
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding),
-            state = groupsListState
         ) {
             if (canShowSuggestions) {
-                item(key = "suggestions") {
-                    val suggestionsClickProvider = remember {
-                        { contract.onSuggestionsClick() }
-                    }
+                LibraryFilterChip(
+                    title = AppTokens.strings.res(Res.string.exercise_library_suggestions_chip),
+                    isSelected = value.filter is QueryFilter.Suggestions,
+                    onSelect = contract::onSuggestionsClick,
+                )
+            }
 
-                    CheckSelectableCard(
-                        style = CheckSelectableCardStyle.Small(
-                            title = AppTokens.strings.res(Res.string.exercise_library_suggestions_chip)
-                        ),
-                        isSelected = value.filter is QueryFilter.Suggestions,
-                        onSelect = suggestionsClickProvider
+            value.muscleGroups.forEach { item ->
+                key(item.id) {
+                    LibraryFilterChip(
+                        title = item.type.title().text(),
+                        isSelected = value.filter is QueryFilter.Group && value.filter.id == item.id,
+                        onSelect = { contract.onMuscleGroupClick(item.id) },
+                        leading = { MuscleMark(group = item.type, style = MuscleMarkStyle.Inline) },
                     )
                 }
             }
-
-            items(
-                items = value.muscleGroups,
-                key = { it.id },
-            ) { item ->
-                val clickProvider = remember(item.id) {
-                    { contract.onMuscleGroupClick(item.id) }
-                }
-
-                CheckSelectableCard(
-                    style = CheckSelectableCardStyle.Small(
-                        title = item.type.title().text()
-                    ),
-                    isSelected = value.filter is QueryFilter.Group && value.filter.id == item.id,
-                    onSelect = clickProvider,
-                    leading = { MuscleMark(group = item.type, style = MuscleMarkStyle.Inline) },
-                )
-            }
         }
     }
+}
+
+@Composable
+private fun LibraryFilterChip(
+    modifier: Modifier = Modifier,
+    title: String,
+    isSelected: Boolean,
+    onSelect: () -> Unit,
+    leading: (@Composable () -> Unit)? = null,
+) {
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    // Initial selection can arrive before the chip has been placed.
+    val firstPlacement = remember { CompletableDeferred<Unit>() }
+
+    LaunchedEffect(isSelected) {
+        if (isSelected) {
+            firstPlacement.await()
+            bringIntoViewRequester.bringIntoView()
+        }
+    }
+
+    CheckSelectableCard(
+        modifier = modifier
+            .bringIntoViewRequester(bringIntoViewRequester)
+            .onPlaced { firstPlacement.complete(Unit) },
+        style = CheckSelectableCardStyle.Small(title = title),
+        isSelected = isSelected,
+        onSelect = onSelect,
+        leading = leading,
+    )
 }
 
 @Composable

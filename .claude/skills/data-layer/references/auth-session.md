@@ -66,11 +66,11 @@ Inspect both platform implementations and all callers when changing either adapt
   ([backend transport](backend-client.md)): a 4xx arrives as `AppError.Network.Expected` and is
   retried; `RefreshUnauthorizedException` is thrown only when an unauthorized response reaches
   TokenProvider unvalidated.
-- Refresh writes use `TokenDao.updateIfCurrent`; failure cleanup uses `deleteIfCurrent`. Both
-  SQL mutations atomically match the captured ID/access/refresh and active owner. A late refresh
-  cannot recreate a logged-out row, overwrite a new login or delete its credentials. A zero-row
-  update is an AuthProvider failure, never a stored refresh. Do not replace these checks with a
-  read followed by an unconditional write/delete.
+- Refresh writes use `TokenDao.compareAndUpdate`; failure cleanup uses `compareAndDelete`. Both
+  SQL mutations atomically match the captured ID/access/refresh and active owner, returning the
+  affected row count. A late refresh cannot recreate a logged-out row, overwrite a new login
+  or delete its credentials. A zero-row update is an AuthProvider failure, never a stored refresh.
+  Do not replace these checks with a read followed by an unconditional write/delete.
 - Ordinary refresh failures conditionally delete the captured failing snapshot, then rethrow.
   Do not re-read the active account to choose a cleanup owner. The captured attempt keeps the
   original failure available to its waiters. An ordinary cleanup failure is suppressed on the original refresh error;

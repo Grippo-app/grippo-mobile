@@ -157,14 +157,14 @@ internal class TokenProvider(
                 throw AppError.Network.IncompleteResponse()
             }
 
-            val updated = tokenDao.updateIfCurrent(
+            val updatedRows = tokenDao.compareAndUpdate(
                 id = token.id,
                 expectedAccess = token.access,
                 expectedRefresh = token.refresh,
-                access = refresh.accessToken,
-                refresh = refresh.refreshToken,
+                newAccess = refresh.accessToken,
+                newRefresh = refresh.refreshToken,
             )
-            if (updated == 0) {
+            if (updatedRows == 0) {
                 return null
             }
             token
@@ -202,7 +202,7 @@ internal class TokenProvider(
 
     private suspend fun handleRefreshFailure(e: Throwable, token: TokenEntity): Nothing {
         try {
-            tokenDao.deleteIfCurrent(
+            tokenDao.compareAndDelete(
                 id = token.id,
                 expectedAccess = token.access,
                 expectedRefresh = token.refresh,

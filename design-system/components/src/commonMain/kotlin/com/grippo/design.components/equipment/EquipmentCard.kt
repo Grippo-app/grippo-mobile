@@ -3,8 +3,10 @@ package com.grippo.design.components.equipment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -13,7 +15,12 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.grippo.core.state.equipments.EquipmentEnumState
 import com.grippo.core.state.equipments.EquipmentState
 import com.grippo.design.components.cards.selectable.ToggleSelectableCard
@@ -24,6 +31,9 @@ import com.grippo.design.preview.PreviewContainer
 
 @Stable
 public sealed interface EquipmentCardStyle {
+    @Immutable
+    public data object Compact : EquipmentCardStyle
+
     @Immutable
     public data object Inline : EquipmentCardStyle
 
@@ -44,6 +54,7 @@ public fun EquipmentCard(
     style: EquipmentCardStyle,
 ) {
     when (style) {
+        EquipmentCardStyle.Compact -> EquipmentCardCompact(modifier = modifier, value = value)
         EquipmentCardStyle.Inline -> EquipmentCardInline(modifier = modifier, value = value)
         EquipmentCardStyle.Detail -> EquipmentCardDetail(modifier = modifier, value = value)
         is EquipmentCardStyle.Selection -> EquipmentCardSelection(
@@ -52,6 +63,34 @@ public fun EquipmentCard(
             style = style,
         )
     }
+}
+
+@Composable
+private fun EquipmentCardCompact(
+    modifier: Modifier,
+    value: EquipmentState,
+) {
+    val title = value.type.title().text()
+    val opticalPadding = when (value.type) {
+        EquipmentEnumState.DUMBBELLS,
+        EquipmentEnumState.BARBELL,
+        EquipmentEnumState.EZ_BAR,
+        EquipmentEnumState.TRAP_BAR -> AppTokens.dp.equipmentCard.compactFreeWeightPadding
+
+        else -> 0.dp
+    }
+
+    Image(
+        modifier = modifier
+            .size(AppTokens.dp.equipmentCard.compactIcon)
+            .semantics {
+                text = AnnotatedString(title)
+            }
+            .padding(opticalPadding),
+        imageVector = value.type.icon(),
+        contentDescription = null,
+        contentScale = ContentScale.Fit,
+    )
 }
 
 @Composable
@@ -128,6 +167,24 @@ private fun EquipmentCardSelection(
             )
         },
     )
+}
+
+@AppPreview
+@Composable
+private fun EquipmentCardCompactPreview() {
+    PreviewContainer {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+        ) {
+            EquipmentEnumState.entries.forEach { type ->
+                EquipmentCard(
+                    value = EquipmentState(id = type.name, type = type),
+                    style = EquipmentCardStyle.Compact,
+                )
+            }
+        }
+    }
 }
 
 @AppPreview
