@@ -20,7 +20,6 @@ import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
-import kotlin.time.Duration.Companion.days
 import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
@@ -38,19 +37,14 @@ public class StartTrainingViewModel(
     StartTrainingState()
 ), StartTrainingContract {
 
-    private val recentRange: DateRange = DateTimeUtils.now().let { now ->
-        DateRange(
-            from = DateTimeUtils.minus(value = now, minus = RECENT_TRAININGS_WINDOW_DAYS.days),
-            to = now,
-        )
-    }
-
     init {
         safeLaunch(loader = StartTrainingLoader.Options) {
+            val recentRange = state.value.recentRange
+
             trainingFeature.getTrainings(start = recentRange.from, end = recentRange.to)
         }
 
-        observeOptions(range = recentRange)
+        observeOptions(range = state.value.recentRange)
             .onEach(::provideOptions)
             .safeLaunch(processing = Processing.Infinity)
     }
@@ -196,7 +190,6 @@ public class StartTrainingViewModel(
     }
 
     private companion object {
-        private const val RECENT_TRAININGS_WINDOW_DAYS = 14
         private const val MAX_RECENT_TRAININGS = 10
     }
 }
