@@ -149,8 +149,14 @@ private fun StartTrainingContent(
             .fillMaxWidth()
             .weight(weight = 1f, fill = true),
         contentPadding = PaddingValues(
-            horizontal = AppTokens.dp.dialog.horizontalPadding,
-            vertical = AppTokens.dp.contentPadding.block,
+            start = AppTokens.dp.dialog.horizontalPadding,
+            end = AppTokens.dp.dialog.horizontalPadding,
+            top = if (choices.size > 1) {
+                AppTokens.dp.contentPadding.block
+            } else {
+                AppTokens.dp.dialog.top
+            },
+            bottom = AppTokens.dp.contentPadding.block,
         ),
         overlay = AppTokens.colors.background.dialog,
         bottom = {

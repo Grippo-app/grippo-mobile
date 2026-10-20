@@ -38,7 +38,6 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.MetricCardPresentation
 import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.metrics.profile.goal.GoalFitDriftingCard
@@ -320,7 +319,6 @@ private fun GoalEvidenceDetails(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
-        ContentDivider()
         if (value.range.value == null) {
             Text(
                 text = AppTokens.strings.res(

@@ -125,271 +125,291 @@ public fun bodyFront(
             close()
         }
         path(fill = SolidColor(rectusAbdominis)) {
-            moveTo(174.69f, 291.71f)
-            curveTo(174.29f, 320.11f, 185.52f, 347.54f, 191.19f, 357.71f)
-            curveTo(196.39f, 361.71f, 199.35f, 357.71f, 200.19f, 355.21f)
-            lineTo(198.69f, 302.71f)
-            curveTo(193.89f, 289.51f, 180.69f, 289.88f, 174.69f, 291.71f)
+            moveTo(180f, 215f)
+            curveTo(185f, 211f, 194f, 210f, 199f, 213f)
+            curveTo(202f, 215f, 202f, 221f, 202f, 225f)
+            curveTo(202f, 230f, 203f, 236f, 198f, 237f)
+            curveTo(192f, 236f, 184f, 236f, 178f, 237f)
+            curveTo(174f, 237f, 174f, 232f, 174f, 228f)
+            curveTo(174f, 222f, 176f, 218f, 180f, 215f)
             close()
         }
         path(fill = SolidColor(rectusAbdominis)) {
-            moveTo(172.69f, 281.21f)
-            verticalLineTo(268.21f)
-            curveTo(189.89f, 257.01f, 198.19f, 262.54f, 200.19f, 266.71f)
-            curveTo(200.69f, 274.21f, 201.39f, 288.91f, 200.19f, 287.71f)
-            curveTo(198.99f, 286.51f, 192.02f, 284.54f, 188.69f, 283.71f)
-            curveTo(178.29f, 284.11f, 173.69f, 282.21f, 172.69f, 281.21f)
+            moveTo(231f, 215f)
+            curveTo(226f, 211f, 217f, 210f, 212f, 213f)
+            curveTo(209f, 215f, 209f, 221f, 209f, 225f)
+            curveTo(209f, 230f, 208f, 236f, 213f, 237f)
+            curveTo(219f, 236f, 227f, 236f, 233f, 237f)
+            curveTo(237f, 237f, 237f, 232f, 237f, 228f)
+            curveTo(237f, 222f, 235f, 218f, 231f, 215f)
             close()
         }
         path(fill = SolidColor(rectusAbdominis)) {
-            moveTo(173.69f, 256.71f)
-            lineTo(172.69f, 245.71f)
-            curveTo(181.09f, 230.11f, 195.19f, 230.88f, 201.19f, 233.21f)
-            curveTo(201.19f, 238.41f, 199.52f, 249.71f, 198.69f, 254.71f)
-            curveTo(184.29f, 253.11f, 176.02f, 255.38f, 173.69f, 256.71f)
+            moveTo(180f, 247f)
+            curveTo(185f, 244f, 195f, 243f, 199f, 246f)
+            curveTo(202f, 248f, 202f, 253f, 202f, 257f)
+            curveTo(202f, 262f, 203f, 267f, 198f, 268f)
+            curveTo(192f, 267f, 184f, 267f, 178f, 268f)
+            curveTo(174f, 268f, 174f, 264f, 174f, 260f)
+            curveTo(174f, 254f, 176f, 250f, 180f, 247f)
             close()
         }
         path(fill = SolidColor(rectusAbdominis)) {
-            moveTo(188.69f, 209.21f)
-            curveTo(173.89f, 212.01f, 171.85f, 226.38f, 172.69f, 233.21f)
-            curveTo(182.29f, 224.81f, 195.02f, 223.71f, 200.19f, 224.21f)
-            curveTo(201.02f, 219.88f, 202.19f, 210.81f, 200.19f, 209.21f)
-            curveTo(198.19f, 207.61f, 191.69f, 208.54f, 188.69f, 209.21f)
-            close()
-        }
-        path(fill = SolidColor(obliquesAbdominis)) {
-            moveTo(156.69f, 271.21f)
-            curveTo(154.69f, 276.01f, 155.85f, 310.38f, 156.69f, 327.71f)
-            curveTo(157.89f, 330.11f, 164.85f, 332.38f, 168.19f, 333.21f)
-            lineTo(169.69f, 327.71f)
-            lineTo(166.19f, 278.71f)
-            curveTo(163.85f, 273.71f, 158.69f, 266.41f, 156.69f, 271.21f)
-            close()
-        }
-        path(fill = SolidColor(obliquesAbdominis)) {
-            moveTo(162.69f, 251.71f)
-            lineTo(162.19f, 262.71f)
-            curveTo(158.99f, 264.31f, 153.19f, 258.04f, 150.69f, 254.71f)
-            curveTo(149.02f, 247.88f, 146.29f, 235.21f, 148.69f, 239.21f)
-            curveTo(151.09f, 243.21f, 159.02f, 249.21f, 162.69f, 251.71f)
-            close()
-        }
-        path(fill = SolidColor(obliquesAbdominis)) {
-            moveTo(159.19f, 241.71f)
-            lineTo(149.69f, 229.21f)
-            verticalLineTo(224.71f)
-            curveTo(152.09f, 223.91f, 158.69f, 228.71f, 161.69f, 231.21f)
-            curveTo(161.69f, 233.38f, 161.59f, 238.31f, 161.19f, 240.71f)
-            curveTo(160.79f, 243.11f, 159.69f, 242.38f, 159.19f, 241.71f)
-            close()
-        }
-        path(fill = SolidColor(obliquesAbdominis)) {
-            moveTo(159.19f, 224.71f)
-            lineTo(150.19f, 214.21f)
-            curveTo(149.19f, 211.21f, 151.69f, 211.71f, 154.69f, 211.71f)
-            curveTo(157.09f, 211.71f, 161.35f, 214.04f, 163.19f, 215.21f)
-            curveTo(163.85f, 216.54f, 165.09f, 220.01f, 164.69f, 223.21f)
-            curveTo(164.29f, 226.41f, 160.85f, 225.54f, 159.19f, 224.71f)
-            close()
-        }
-        path(fill = SolidColor(obliquesAbdominis)) {
-            moveTo(163.69f, 210.21f)
-            lineTo(149.69f, 200.21f)
-            curveTo(148.69f, 196.21f, 152.69f, 197.21f, 155.69f, 197.71f)
-            curveTo(158.09f, 198.11f, 164.35f, 200.54f, 167.19f, 201.71f)
-            curveTo(168.19f, 201.88f, 169.89f, 203.11f, 168.69f, 206.71f)
-            curveTo(167.49f, 210.31f, 164.85f, 210.54f, 163.69f, 210.21f)
+            moveTo(231f, 247f)
+            curveTo(226f, 244f, 216f, 243f, 212f, 246f)
+            curveTo(209f, 248f, 209f, 253f, 209f, 257f)
+            curveTo(209f, 262f, 208f, 267f, 213f, 268f)
+            curveTo(219f, 267f, 227f, 267f, 233f, 268f)
+            curveTo(237f, 268f, 237f, 264f, 237f, 260f)
+            curveTo(237f, 254f, 235f, 250f, 231f, 247f)
             close()
         }
         path(fill = SolidColor(rectusAbdominis)) {
-            moveTo(237.29f, 292.2f)
-            curveTo(237.69f, 320.6f, 226.46f, 348.03f, 220.79f, 358.2f)
-            curveTo(215.59f, 362.2f, 212.62f, 358.2f, 211.79f, 355.7f)
-            lineTo(213.29f, 303.2f)
-            curveTo(218.09f, 290f, 231.29f, 290.36f, 237.29f, 292.2f)
+            moveTo(180f, 278f)
+            curveTo(185f, 275f, 195f, 274f, 199f, 277f)
+            curveTo(202f, 279f, 202f, 284f, 202f, 288f)
+            curveTo(202f, 293f, 203f, 298f, 198f, 299f)
+            curveTo(192f, 298f, 184f, 298f, 179f, 299f)
+            curveTo(175f, 299f, 175f, 295f, 175f, 291f)
+            curveTo(175f, 285f, 176f, 281f, 180f, 278f)
             close()
         }
         path(fill = SolidColor(rectusAbdominis)) {
-            moveTo(239.29f, 281.7f)
-            verticalLineTo(268.7f)
-            curveTo(222.09f, 257.5f, 213.79f, 263.03f, 211.79f, 267.2f)
-            curveTo(211.29f, 274.7f, 210.59f, 289.4f, 211.79f, 288.2f)
-            curveTo(212.99f, 287f, 219.96f, 285.03f, 223.29f, 284.2f)
-            curveTo(233.69f, 284.6f, 238.29f, 282.7f, 239.29f, 281.7f)
+            moveTo(231f, 278f)
+            curveTo(226f, 275f, 216f, 274f, 212f, 277f)
+            curveTo(209f, 279f, 209f, 284f, 209f, 288f)
+            curveTo(209f, 293f, 208f, 298f, 213f, 299f)
+            curveTo(219f, 298f, 227f, 298f, 232f, 299f)
+            curveTo(236f, 299f, 236f, 295f, 236f, 291f)
+            curveTo(236f, 285f, 235f, 281f, 231f, 278f)
             close()
         }
         path(fill = SolidColor(rectusAbdominis)) {
-            moveTo(238.29f, 257.2f)
-            lineTo(239.29f, 246.2f)
-            curveTo(230.89f, 230.6f, 216.79f, 231.36f, 210.79f, 233.7f)
-            curveTo(210.79f, 238.9f, 212.46f, 250.2f, 213.29f, 255.2f)
-            curveTo(227.69f, 253.6f, 235.96f, 255.86f, 238.29f, 257.2f)
+            moveTo(183f, 306f)
+            curveTo(188f, 304f, 195f, 305f, 199f, 308f)
+            curveTo(202f, 311f, 202f, 317f, 202f, 325f)
+            curveTo(202f, 332f, 202f, 342f, 201f, 348f)
+            curveTo(200f, 355f, 194f, 356f, 190f, 350f)
+            curveTo(183f, 339f, 180f, 326f, 179f, 316f)
+            curveTo(178f, 310f, 179f, 307f, 183f, 306f)
             close()
         }
         path(fill = SolidColor(rectusAbdominis)) {
-            moveTo(223.29f, 209.7f)
-            curveTo(238.09f, 212.5f, 240.12f, 226.86f, 239.29f, 233.7f)
-            curveTo(229.69f, 225.3f, 216.96f, 224.2f, 211.79f, 224.7f)
-            curveTo(210.96f, 220.36f, 209.79f, 211.3f, 211.79f, 209.7f)
-            curveTo(213.79f, 208.1f, 220.29f, 209.03f, 223.29f, 209.7f)
+            moveTo(228f, 306f)
+            curveTo(223f, 304f, 216f, 305f, 212f, 308f)
+            curveTo(209f, 311f, 209f, 317f, 209f, 325f)
+            curveTo(209f, 332f, 209f, 342f, 210f, 348f)
+            curveTo(211f, 355f, 217f, 356f, 221f, 350f)
+            curveTo(228f, 339f, 231f, 326f, 232f, 316f)
+            curveTo(233f, 310f, 232f, 307f, 228f, 306f)
             close()
         }
         path(fill = SolidColor(obliquesAbdominis)) {
-            moveTo(255.29f, 271.7f)
-            curveTo(257.29f, 276.5f, 256.12f, 310.86f, 255.29f, 328.2f)
-            curveTo(254.09f, 330.6f, 247.12f, 332.86f, 243.79f, 333.7f)
-            lineTo(242.29f, 328.2f)
-            lineTo(245.79f, 279.2f)
-            curveTo(248.12f, 274.2f, 253.29f, 266.9f, 255.29f, 271.7f)
+            moveTo(154f, 207f)
+            curveTo(158f, 205f, 163f, 208f, 166f, 214f)
+            curveTo(171f, 225f, 170f, 240f, 168f, 256f)
+            curveTo(166f, 272f, 168f, 303f, 169f, 322f)
+            curveTo(170f, 330f, 164f, 331f, 160f, 326f)
+            curveTo(157f, 322f, 156f, 316f, 156f, 308f)
+            curveTo(157f, 295f, 157f, 280f, 157f, 269f)
+            curveTo(157f, 254f, 148f, 242f, 149f, 230f)
+            curveTo(150f, 220f, 149f, 210f, 154f, 207f)
             close()
         }
         path(fill = SolidColor(obliquesAbdominis)) {
-            moveTo(249.29f, 252.2f)
-            lineTo(249.79f, 263.2f)
-            curveTo(252.99f, 264.8f, 258.79f, 258.53f, 261.29f, 255.2f)
-            curveTo(262.96f, 248.36f, 265.69f, 235.7f, 263.29f, 239.7f)
-            curveTo(260.89f, 243.7f, 252.96f, 249.7f, 249.29f, 252.2f)
-            close()
-        }
-        path(fill = SolidColor(obliquesAbdominis)) {
-            moveTo(252.79f, 242.2f)
-            lineTo(262.29f, 229.7f)
-            verticalLineTo(225.2f)
-            curveTo(259.89f, 224.4f, 253.29f, 229.2f, 250.29f, 231.7f)
-            curveTo(250.29f, 233.86f, 250.39f, 238.8f, 250.79f, 241.2f)
-            curveTo(251.19f, 243.6f, 252.29f, 242.86f, 252.79f, 242.2f)
-            close()
-        }
-        path(fill = SolidColor(obliquesAbdominis)) {
-            moveTo(252.79f, 225.2f)
-            lineTo(261.79f, 214.7f)
-            curveTo(262.79f, 211.7f, 260.29f, 212.2f, 257.29f, 212.2f)
-            curveTo(254.89f, 212.2f, 250.62f, 214.53f, 248.79f, 215.7f)
-            curveTo(248.12f, 217.03f, 246.89f, 220.5f, 247.29f, 223.7f)
-            curveTo(247.69f, 226.9f, 251.12f, 226.03f, 252.79f, 225.2f)
-            close()
-        }
-        path(fill = SolidColor(obliquesAbdominis)) {
-            moveTo(248.29f, 210.7f)
-            lineTo(262.29f, 200.7f)
-            curveTo(263.29f, 196.7f, 259.29f, 197.7f, 256.29f, 198.2f)
-            curveTo(253.89f, 198.6f, 247.62f, 201.03f, 244.79f, 202.2f)
-            curveTo(243.79f, 202.36f, 242.09f, 203.6f, 243.29f, 207.2f)
-            curveTo(244.49f, 210.8f, 247.12f, 211.03f, 248.29f, 210.7f)
+            moveTo(257f, 207f)
+            curveTo(253f, 205f, 248f, 208f, 245f, 214f)
+            curveTo(240f, 225f, 241f, 240f, 243f, 256f)
+            curveTo(245f, 272f, 243f, 303f, 242f, 322f)
+            curveTo(241f, 330f, 247f, 331f, 251f, 326f)
+            curveTo(254f, 322f, 255f, 316f, 255f, 308f)
+            curveTo(254f, 295f, 254f, 280f, 254f, 269f)
+            curveTo(254f, 254f, 263f, 242f, 262f, 230f)
+            curveTo(261f, 220f, 262f, 210f, 257f, 207f)
             close()
         }
         path(fill = SolidColor(lateralDeltoid)) {
-            moveTo(137.69f, 132.71f)
-            curveTo(108.49f, 130.71f, 105.52f, 160.21f, 107.69f, 175.21f)
-            lineTo(108.69f, 176.71f)
-            curveTo(109.49f, 163.51f, 128.35f, 141.88f, 137.69f, 132.71f)
-            close()
-        }
-        path(fill = SolidColor(anteriorDeltoid)) {
-            moveTo(113.19f, 180.71f)
-            curveTo(116.69f, 167.54f, 129.69f, 140.11f, 153.69f, 135.71f)
-            curveTo(151.35f, 148.88f, 139.99f, 176.31f, 113.19f, 180.71f)
+            moveTo(113f, 151f)
+            curveTo(116f, 144f, 122f, 140f, 129f, 139f)
+            curveTo(134f, 138f, 135f, 142f, 131f, 146f)
+            curveTo(124f, 154f, 118f, 163f, 114f, 172f)
+            curveTo(111f, 178f, 108f, 175f, 109f, 169f)
+            curveTo(109f, 163f, 110f, 157f, 113f, 151f)
             close()
         }
         path(fill = SolidColor(lateralDeltoid)) {
-            moveTo(273.69f, 132.81f)
-            curveTo(302.89f, 130.81f, 305.85f, 160.31f, 303.69f, 175.31f)
-            lineTo(302.69f, 176.81f)
-            curveTo(301.89f, 163.61f, 283.02f, 141.97f, 273.69f, 132.81f)
+            moveTo(298f, 151f)
+            curveTo(295f, 144f, 289f, 140f, 282f, 139f)
+            curveTo(277f, 138f, 276f, 142f, 280f, 146f)
+            curveTo(287f, 154f, 293f, 163f, 297f, 172f)
+            curveTo(300f, 178f, 303f, 175f, 302f, 169f)
+            curveTo(302f, 163f, 301f, 157f, 298f, 151f)
             close()
         }
         path(fill = SolidColor(anteriorDeltoid)) {
-            moveTo(298.19f, 180.81f)
-            curveTo(294.69f, 167.64f, 281.69f, 140.21f, 257.69f, 135.81f)
-            curveTo(260.02f, 148.97f, 271.39f, 176.41f, 298.19f, 180.81f)
+            moveTo(141f, 145f)
+            curveTo(147f, 141f, 151f, 142f, 149f, 148f)
+            curveTo(145f, 159f, 135f, 170f, 124f, 176f)
+            curveTo(119f, 179f, 116f, 176f, 119f, 171f)
+            curveTo(123f, 161f, 133f, 150f, 141f, 145f)
+            close()
+        }
+        path(fill = SolidColor(anteriorDeltoid)) {
+            moveTo(270f, 145f)
+            curveTo(264f, 141f, 260f, 142f, 262f, 148f)
+            curveTo(266f, 159f, 276f, 170f, 287f, 176f)
+            curveTo(292f, 179f, 295f, 176f, 292f, 171f)
+            curveTo(288f, 161f, 278f, 150f, 270f, 145f)
             close()
         }
         path(fill = SolidColor(biceps)) {
-            moveTo(311.19f, 251.21f)
-            curveTo(276.79f, 226.01f, 277.19f, 196.38f, 281.69f, 184.71f)
-            curveTo(304.69f, 181.71f, 313.19f, 205.21f, 313.19f, 214.21f)
-            curveTo(313.19f, 221.41f, 314.19f, 232.21f, 314.69f, 236.71f)
-            curveTo(317.49f, 248.71f, 313.52f, 251.38f, 311.19f, 251.21f)
-            close()
-        }
-        path(fill = SolidColor(forearm)) {
-            moveTo(346.69f, 311.71f)
-            curveTo(336.29f, 273.31f, 321.02f, 259.04f, 314.69f, 256.71f)
-            curveTo(313.89f, 261.11f, 315.69f, 270.54f, 316.69f, 274.71f)
-            curveTo(320.85f, 283.38f, 330.09f, 301.31f, 333.69f, 303.71f)
-            curveTo(338.19f, 306.71f, 358.19f, 343.21f, 359.69f, 346.21f)
-            curveTo(360.89f, 348.61f, 361.19f, 347.21f, 361.19f, 346.21f)
-            lineTo(346.69f, 311.71f)
-            close()
-        }
-        path(fill = SolidColor(forearm)) {
-            moveTo(299.69f, 281.71f)
-            verticalLineTo(268.71f)
-            curveTo(300.49f, 266.31f, 302.35f, 267.38f, 303.19f, 268.21f)
-            curveTo(309.19f, 274.71f, 319.19f, 286.71f, 321.69f, 291.71f)
-            curveTo(323.69f, 295.71f, 321.19f, 295.38f, 319.69f, 294.71f)
-            curveTo(314.85f, 291.54f, 304.59f, 285.11f, 302.19f, 284.71f)
-            curveTo(299.79f, 284.31f, 299.52f, 282.54f, 299.69f, 281.71f)
-            close()
-        }
-        path(fill = SolidColor(forearm)) {
-            moveTo(355.69f, 347.71f)
-            curveTo(353.29f, 344.51f, 328.02f, 313.04f, 315.69f, 297.71f)
-            curveTo(315.02f, 296.71f, 315.69f, 296.01f, 323.69f, 301.21f)
-            curveTo(331.69f, 306.41f, 348.35f, 332.38f, 355.69f, 344.71f)
-            curveTo(356.69f, 347.04f, 358.09f, 350.91f, 355.69f, 347.71f)
-            close()
-        }
-        path(fill = SolidColor(forearm)) {
-            moveTo(351.69f, 346.21f)
-            curveTo(333.69f, 331.81f, 314.52f, 306.21f, 307.19f, 295.21f)
-            curveTo(305.19f, 294.01f, 306.35f, 297.38f, 307.19f, 299.21f)
-            curveTo(319.69f, 323.21f, 346.69f, 344.71f, 350.19f, 346.71f)
-            curveTo(352.99f, 348.31f, 352.35f, 347.04f, 351.69f, 346.21f)
+            moveTo(117f, 188f)
+            curveTo(123f, 185f, 129f, 188f, 130f, 195f)
+            curveTo(131f, 209f, 121f, 229f, 110f, 239f)
+            curveTo(104f, 246f, 99f, 244f, 100f, 236f)
+            curveTo(101f, 217f, 105f, 194f, 117f, 188f)
             close()
         }
         path(fill = SolidColor(biceps)) {
-            moveTo(101.69f, 250.47f)
-            curveTo(136.09f, 225.27f, 135.69f, 195.64f, 131.19f, 183.97f)
-            curveTo(108.19f, 180.97f, 99.69f, 204.47f, 99.69f, 213.47f)
-            curveTo(99.69f, 220.67f, 98.69f, 231.47f, 98.19f, 235.97f)
-            curveTo(95.39f, 247.97f, 99.35f, 250.64f, 101.69f, 250.47f)
+            moveTo(294f, 188f)
+            curveTo(288f, 185f, 282f, 188f, 281f, 195f)
+            curveTo(280f, 209f, 290f, 229f, 301f, 239f)
+            curveTo(307f, 246f, 312f, 244f, 311f, 236f)
+            curveTo(310f, 217f, 306f, 194f, 294f, 188f)
             close()
         }
         path(fill = SolidColor(forearm)) {
-            moveTo(66.19f, 310.97f)
-            curveTo(76.59f, 272.57f, 91.85f, 258.3f, 98.19f, 255.97f)
-            curveTo(98.99f, 260.37f, 97.19f, 269.8f, 96.19f, 273.97f)
-            curveTo(92.02f, 282.64f, 82.79f, 300.57f, 79.19f, 302.97f)
-            curveTo(74.69f, 305.97f, 54.69f, 342.47f, 53.19f, 345.47f)
-            curveTo(51.99f, 347.87f, 51.69f, 346.47f, 51.69f, 345.47f)
-            lineTo(66.19f, 310.97f)
+            moveTo(95f, 266f)
+            curveTo(101f, 262f, 108f, 267f, 109f, 274f)
+            curveTo(109f, 286f, 98f, 304f, 87f, 317f)
+            curveTo(78f, 327f, 69f, 337f, 64f, 339f)
+            curveTo(58f, 342f, 56f, 338f, 59f, 332f)
+            curveTo(67f, 313f, 74f, 288f, 86f, 274f)
+            curveTo(90f, 270f, 92f, 268f, 95f, 266f)
             close()
         }
         path(fill = SolidColor(forearm)) {
-            moveTo(113.19f, 280.97f)
-            verticalLineTo(267.97f)
-            curveTo(112.39f, 265.57f, 110.52f, 266.64f, 109.69f, 267.47f)
-            curveTo(103.69f, 273.97f, 93.69f, 285.97f, 91.19f, 290.97f)
-            curveTo(89.19f, 294.97f, 91.69f, 294.64f, 93.19f, 293.97f)
-            curveTo(98.02f, 290.8f, 108.29f, 284.37f, 110.69f, 283.97f)
-            curveTo(113.09f, 283.57f, 113.35f, 281.8f, 113.19f, 280.97f)
+            moveTo(316f, 266f)
+            curveTo(310f, 262f, 303f, 267f, 302f, 274f)
+            curveTo(302f, 286f, 313f, 304f, 324f, 317f)
+            curveTo(333f, 327f, 342f, 337f, 347f, 339f)
+            curveTo(353f, 342f, 355f, 338f, 352f, 332f)
+            curveTo(344f, 313f, 337f, 288f, 325f, 274f)
+            curveTo(321f, 270f, 319f, 268f, 316f, 266f)
             close()
         }
-        path(fill = SolidColor(forearm)) {
-            moveTo(57.19f, 346.97f)
-            curveTo(59.59f, 343.77f, 84.85f, 312.3f, 97.19f, 296.97f)
-            curveTo(97.85f, 295.97f, 97.19f, 295.27f, 89.19f, 300.47f)
-            curveTo(81.19f, 305.67f, 64.52f, 331.64f, 57.19f, 343.97f)
-            curveTo(56.19f, 346.3f, 54.79f, 350.17f, 57.19f, 346.97f)
+        path(fill = SolidColor(pectoralisMajorClavicular)) {
+            moveTo(152f, 153f)
+            curveTo(159f, 145f, 168f, 141f, 177f, 142f)
+            curveTo(186f, 143f, 195f, 147f, 199f, 152f)
+            curveTo(202f, 156f, 203f, 163f, 198f, 164f)
+            curveTo(185f, 158f, 168f, 158f, 155f, 165f)
+            curveTo(150f, 168f, 146f, 166f, 148f, 161f)
+            curveTo(149f, 158f, 150f, 155f, 152f, 153f)
             close()
         }
-        path(fill = SolidColor(forearm)) {
-            moveTo(61.19f, 345.47f)
-            curveTo(79.19f, 331.07f, 98.35f, 305.47f, 105.69f, 294.47f)
-            curveTo(107.69f, 293.27f, 106.52f, 296.64f, 105.69f, 298.47f)
-            curveTo(93.19f, 322.47f, 66.19f, 343.97f, 62.69f, 345.97f)
-            curveTo(59.89f, 347.57f, 60.52f, 346.3f, 61.19f, 345.47f)
+        path(fill = SolidColor(pectoralisMajorClavicular)) {
+            moveTo(259f, 153f)
+            curveTo(252f, 145f, 243f, 141f, 234f, 142f)
+            curveTo(225f, 143f, 216f, 147f, 212f, 152f)
+            curveTo(209f, 156f, 208f, 163f, 213f, 164f)
+            curveTo(226f, 158f, 243f, 158f, 256f, 165f)
+            curveTo(261f, 168f, 265f, 166f, 263f, 161f)
+            curveTo(262f, 158f, 261f, 155f, 259f, 153f)
+            close()
+        }
+        path(fill = SolidColor(pectoralisMajorSternocostal)) {
+            moveTo(153f, 173f)
+            curveTo(164f, 165f, 181f, 164f, 195f, 170f)
+            curveTo(200f, 172f, 202f, 176f, 202f, 182f)
+            curveTo(202f, 187f, 203f, 192f, 197f, 193f)
+            curveTo(181f, 190f, 165f, 185f, 153f, 180f)
+            curveTo(148f, 178f, 149f, 176f, 153f, 173f)
+            close()
+        }
+        path(fill = SolidColor(pectoralisMajorSternocostal)) {
+            moveTo(258f, 173f)
+            curveTo(247f, 165f, 230f, 164f, 216f, 170f)
+            curveTo(211f, 172f, 209f, 176f, 209f, 182f)
+            curveTo(209f, 187f, 208f, 192f, 214f, 193f)
+            curveTo(230f, 190f, 246f, 185f, 258f, 180f)
+            curveTo(263f, 178f, 262f, 176f, 258f, 173f)
+            close()
+        }
+        path(fill = SolidColor(pectoralisMajorAbdominal)) {
+            moveTo(150f, 187f)
+            curveTo(160f, 189f, 176f, 195f, 190f, 198f)
+            curveTo(197f, 200f, 198f, 204f, 191f, 206f)
+            curveTo(175f, 207f, 160f, 201f, 151f, 195f)
+            curveTo(145f, 191f, 145f, 186f, 150f, 187f)
+            close()
+        }
+        path(fill = SolidColor(pectoralisMajorAbdominal)) {
+            moveTo(261f, 187f)
+            curveTo(251f, 189f, 235f, 195f, 221f, 198f)
+            curveTo(214f, 200f, 213f, 204f, 220f, 206f)
+            curveTo(236f, 207f, 251f, 201f, 260f, 195f)
+            curveTo(266f, 191f, 266f, 186f, 261f, 187f)
+            close()
+        }
+        path(fill = SolidColor(other)) {
+            moveTo(187f, 105f)
+            curveTo(188f, 102f, 190f, 106f, 192f, 111f)
+            curveTo(196f, 120f, 199f, 128f, 200f, 135f)
+            curveTo(201f, 140f, 199f, 141f, 197f, 137f)
+            curveTo(192f, 129f, 186f, 116f, 187f, 105f)
+            close()
+        }
+        path(fill = SolidColor(other)) {
+            moveTo(224f, 105f)
+            curveTo(223f, 102f, 221f, 106f, 219f, 111f)
+            curveTo(215f, 120f, 212f, 128f, 211f, 135f)
+            curveTo(210f, 140f, 212f, 141f, 214f, 137f)
+            curveTo(219f, 129f, 225f, 116f, 224f, 105f)
+            close()
+        }
+        path(fill = SolidColor(other)) {
+            moveTo(177f, 119f)
+            curveTo(182f, 116f, 184f, 118f, 180f, 122f)
+            curveTo(174f, 128f, 163f, 131f, 157f, 130f)
+            curveTo(153f, 129f, 157f, 126f, 160f, 125f)
+            close()
+        }
+        path(fill = SolidColor(other)) {
+            moveTo(234f, 119f)
+            curveTo(229f, 116f, 227f, 118f, 231f, 122f)
+            curveTo(237f, 128f, 248f, 131f, 254f, 130f)
+            curveTo(258f, 129f, 254f, 126f, 251f, 125f)
+            close()
+        }
+        path(fill = SolidColor(other)) {
+            moveTo(139f, 196f)
+            curveTo(141f, 193f, 143f, 198f, 144f, 205f)
+            curveTo(146f, 215f, 146f, 224f, 144f, 229f)
+            curveTo(142f, 233f, 140f, 229f, 140f, 224f)
+            close()
+        }
+        path(fill = SolidColor(other)) {
+            moveTo(272f, 196f)
+            curveTo(270f, 193f, 268f, 198f, 267f, 205f)
+            curveTo(265f, 215f, 265f, 224f, 267f, 229f)
+            curveTo(269f, 233f, 271f, 229f, 271f, 224f)
+            close()
+        }
+        path(fill = SolidColor(other)) {
+            moveTo(125f, 238f)
+            curveTo(128f, 232f, 130f, 235f, 128f, 241f)
+            curveTo(125f, 251f, 115f, 257f, 108f, 260f)
+            curveTo(104f, 262f, 104f, 258f, 108f, 255f)
+            curveTo(116f, 248f, 120f, 243f, 125f, 238f)
+            close()
+        }
+        path(fill = SolidColor(other)) {
+            moveTo(286f, 238f)
+            curveTo(283f, 232f, 281f, 235f, 283f, 241f)
+            curveTo(286f, 251f, 296f, 257f, 303f, 260f)
+            curveTo(307f, 262f, 307f, 258f, 303f, 255f)
+            curveTo(295f, 248f, 291f, 243f, 286f, 238f)
             close()
         }
         path(fill = SolidColor(other)) {
@@ -444,14 +464,6 @@ public fun bodyFront(
             close()
         }
         path(fill = SolidColor(other)) {
-            moveTo(129.19f, 230.71f)
-            curveTo(123.99f, 240.71f, 109.69f, 253.88f, 103.19f, 259.21f)
-            curveTo(103.19f, 262.01f, 105.52f, 261.38f, 106.69f, 260.71f)
-            curveTo(113.02f, 256.54f, 126.39f, 246.41f, 129.19f, 239.21f)
-            curveTo(131.99f, 232.01f, 130.35f, 230.54f, 129.19f, 230.71f)
-            close()
-        }
-        path(fill = SolidColor(other)) {
             moveTo(372.35f, 396.9f)
             lineTo(384.35f, 383.9f)
             curveTo(385.95f, 382.7f, 386.02f, 380.73f, 385.85f, 379.9f)
@@ -500,130 +512,6 @@ public fun bodyFront(
             curveTo(367.05f, 400.8f, 367.02f, 404.06f, 367.35f, 405.9f)
             curveTo(368.19f, 408.06f, 370.45f, 413.3f, 372.85f, 416.9f)
             curveTo(375.25f, 420.5f, 375.85f, 416.4f, 375.85f, 413.9f)
-            close()
-        }
-        path(fill = SolidColor(other)) {
-            moveTo(308.19f, 259.21f)
-            curveTo(301.39f, 255.61f, 288.69f, 239.04f, 283.19f, 231.21f)
-            curveTo(279.99f, 228.01f, 280.52f, 233.21f, 281.19f, 236.21f)
-            curveTo(283.99f, 243.81f, 298.69f, 255.71f, 305.69f, 260.71f)
-            curveTo(308.49f, 261.91f, 308.52f, 260.21f, 308.19f, 259.21f)
-            close()
-        }
-        path(fill = SolidColor(other)) {
-            moveTo(139.19f, 222.21f)
-            lineTo(137.69f, 195.71f)
-            curveTo(137.19f, 193.38f, 137.09f, 190.11f, 140.69f, 195.71f)
-            curveTo(144.29f, 201.31f, 146.19f, 211.71f, 146.69f, 216.21f)
-            curveTo(146.69f, 223.21f, 146.19f, 236.71f, 144.19f, 234.71f)
-            curveTo(142.19f, 232.71f, 140.02f, 225.54f, 139.19f, 222.21f)
-            close()
-        }
-        path(fill = SolidColor(other)) {
-            moveTo(200.19f, 143.21f)
-            lineTo(184.69f, 112.71f)
-            curveTo(184.29f, 101.51f, 185.19f, 98.71f, 185.69f, 98.71f)
-            curveTo(188.49f, 101.51f, 197.85f, 122.21f, 202.19f, 132.21f)
-            curveTo(202.59f, 140.21f, 201.02f, 142.88f, 200.19f, 143.21f)
-            close()
-        }
-        path(fill = SolidColor(other)) {
-            moveTo(184.19f, 124.71f)
-            lineTo(178.69f, 132.21f)
-            curveTo(183.09f, 135.81f, 186.52f, 134.38f, 187.69f, 133.21f)
-            lineTo(184.19f, 124.71f)
-            close()
-        }
-        path(fill = SolidColor(other)) {
-            moveTo(179.69f, 119.21f)
-            lineTo(167.19f, 131.21f)
-            curveTo(163.69f, 131.21f, 155.99f, 131.11f, 153.19f, 130.71f)
-            curveTo(150.39f, 130.31f, 151.35f, 128.88f, 152.19f, 128.21f)
-            curveTo(158.19f, 124.38f, 171.59f, 116.31f, 177.19f, 114.71f)
-            curveTo(182.79f, 113.11f, 181.19f, 117.04f, 179.69f, 119.21f)
-            close()
-        }
-        path(fill = SolidColor(other)) {
-            moveTo(206.19f, 129.71f)
-            lineTo(198.69f, 105.71f)
-            horizontalLineTo(214.69f)
-            lineTo(206.19f, 129.71f)
-            close()
-        }
-        path(fill = SolidColor(other)) {
-            moveTo(209.19f, 132.21f)
-            curveTo(210.39f, 128.21f, 220.83f, 108.21f, 225.9f, 98.71f)
-            curveTo(227.27f, 97.51f, 226.33f, 108.88f, 225.69f, 114.71f)
-            lineTo(209.69f, 143.21f)
-            curveTo(209.02f, 141.21f, 207.99f, 136.21f, 209.19f, 132.21f)
-            close()
-        }
-        path(fill = SolidColor(other)) {
-            moveTo(221.69f, 133.21f)
-            lineTo(226.19f, 124.71f)
-            curveTo(229.39f, 127.11f, 230.52f, 131.38f, 230.69f, 133.21f)
-            curveTo(229.09f, 135.21f, 224.02f, 134.04f, 221.69f, 133.21f)
-            close()
-        }
-        path(fill = SolidColor(other)) {
-            moveTo(241.69f, 130.21f)
-            lineTo(228.69f, 118.21f)
-            curveTo(227.49f, 113.01f, 232.52f, 114.38f, 235.19f, 115.71f)
-            curveTo(243.52f, 119.54f, 259.84f, 127.71f, 258.46f, 129.71f)
-            curveTo(257.09f, 131.71f, 246.71f, 130.88f, 241.69f, 130.21f)
-            close()
-        }
-        path(fill = SolidColor(other)) {
-            moveTo(265.69f, 232.71f)
-            verticalLineTo(211.71f)
-            lineTo(274.69f, 191.71f)
-            lineTo(274.19f, 213.21f)
-            curveTo(273.85f, 216.71f, 272.59f, 225.41f, 270.19f, 232.21f)
-            curveTo(267.79f, 239.01f, 266.19f, 235.38f, 265.69f, 232.71f)
-            close()
-        }
-        path(fill = SolidColor(pectoralisMajorSternocostal)) {
-            moveTo(202.19f, 195.94f)
-            curveTo(185.5f, 206.44f, 164f, 179.44f, 143f, 176.44f)
-            curveTo(168.09f, 147.77f, 191.32f, 157.57f, 202.05f, 162.09f)
-            lineTo(202.19f, 162.15f)
-            verticalLineTo(195.94f)
-            close()
-        }
-        path(fill = SolidColor(pectoralisMajorAbdominal)) {
-            moveTo(142.5f, 177.94f)
-            curveTo(146f, 196.94f, 172.5f, 203.44f, 186f, 198.44f)
-            curveTo(167.5f, 192.44f, 158f, 181.94f, 142.5f, 177.94f)
-            close()
-        }
-        path(fill = SolidColor(pectoralisMajorClavicular)) {
-            moveTo(202.19f, 150.65f)
-            curveTo(168.59f, 121.45f, 149.33f, 150.44f, 142f, 172.94f)
-            verticalLineTo(174.94f)
-            curveTo(165.6f, 145.34f, 190.35f, 155.49f, 202.19f, 160.15f)
-            verticalLineTo(150.65f)
-            close()
-        }
-        path(fill = SolidColor(pectoralisMajorSternocostal)) {
-            moveTo(209f, 195.94f)
-            curveTo(225.69f, 206.44f, 247.19f, 179.44f, 268.19f, 176.44f)
-            curveTo(243.09f, 147.77f, 219.87f, 157.57f, 209.14f, 162.09f)
-            lineTo(209f, 162.15f)
-            verticalLineTo(195.94f)
-            close()
-        }
-        path(fill = SolidColor(pectoralisMajorAbdominal)) {
-            moveTo(268.69f, 177.94f)
-            curveTo(265.19f, 196.94f, 238.69f, 203.44f, 225.19f, 198.44f)
-            curveTo(243.69f, 192.44f, 253.19f, 181.94f, 268.69f, 177.94f)
-            close()
-        }
-        path(fill = SolidColor(pectoralisMajorClavicular)) {
-            moveTo(209f, 150.65f)
-            curveTo(242.6f, 121.45f, 261.85f, 150.44f, 269.19f, 172.94f)
-            verticalLineTo(174.94f)
-            curveTo(245.59f, 145.34f, 220.83f, 155.49f, 209f, 160.15f)
-            verticalLineTo(150.65f)
             close()
         }
     }.build()

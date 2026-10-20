@@ -8,20 +8,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummaryUnknown
-import com.grippo.design.components.divider.ContentDivider
+import com.grippo.design.components.datetime.DialogRangeHeader
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingFocusCard
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingImagesMode
@@ -49,19 +47,7 @@ internal fun MuscleLoadingDetailsScreen(
     contract: MuscleLoadingDetailsContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-    Text(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        text = state.range.short(),
-        style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.secondary,
-        textAlign = TextAlign.Center
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+    DialogRangeHeader(text = state.range.short())
 
     val segmentItems = remember {
         MuscleLoadingDetailsShowingMode.entries.map { it to it.text }
@@ -106,8 +92,6 @@ internal fun MuscleLoadingDetailsScreen(
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-    ContentDivider()
-
     LazyColumn(
         state = listState,
         modifier = Modifier
@@ -117,7 +101,6 @@ internal fun MuscleLoadingDetailsScreen(
         contentPadding = PaddingValues(
             start = AppTokens.dp.dialog.horizontalPadding,
             end = AppTokens.dp.dialog.horizontalPadding,
-            top = AppTokens.dp.contentPadding.content,
             bottom = AppTokens.dp.dialog.bottom,
         ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)

@@ -53,7 +53,7 @@ public fun BottomSheetToolbar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            modifier = Modifier,
+            modifier = Modifier.size(AppTokens.dp.button.small.height),
             contentAlignment = Alignment.Center
         ) {
             androidx.compose.animation.AnimatedVisibility(

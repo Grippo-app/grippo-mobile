@@ -606,8 +606,20 @@ and Latin text in both themes; each role keeps its existing size and line height
   `content` from the heading to its card or between related entries. Compact goal
   details use `content` between their summary, diagnostic and disclosure blocks,
   and from a diagnostic heading to its card. The first visible section has no
-  leading separator. Full-width sheet ranges retain `dialog.horizontalPadding`;
-  body content starts once at `dialog.top`.
+  leading separator. Statistics, streak, performance and muscle detail ranges
+  share `DialogRangeHeader`: centered secondary `b14Med`,
+  `dialog.horizontalPadding` gutters and `content` below, with no extra top gap
+  after the toolbar. The range header owns the single gap before its body;
+  muscle detail controls likewise keep one `content` gap before their scrolling content.
+  Other sheet bodies start once at `dialog.top`.
+- Open dialog sections use headings and spacing rather than decorative dividers.
+  Statistics' muscle breakdown uses the same `h4` heading and `content` gap as
+  other detail sections; expanded goal evidence has no leading rule. Dividers
+  separate repeated list rows or meaningful groups inside a compound card,
+  rather than the sheet's date, controls or open sections.
+- Bottom-sheet toolbars reserve equal Small icon-button slots on both sides of
+  the title, including when Back is absent, so titles and centered date ranges
+  share the sheet's center line.
 - Optional descriptions, suggestions, equipment and history leave no separator
   when absent. Present sections own the gap between them; text groups use `text`.
   Equipment galleries use `content` between cards, keeping image and card sizes.
@@ -629,6 +641,8 @@ and Latin text in both themes; each role keeps its existing size and line height
 - Start workout sheets expose available Custom, Suggested and Repeat choices
   through pinned equal-width Segment controls. All modes fill the same available
   host height so the sheet, choices and action stay in place when content changes.
+  Without a choice segment, the body starts at `dialog.top`; a present segment
+  keeps `block` before its body.
   Custom centers the existing empty-exercises artwork in IllustratedEmptyState
   with a Large illustration, `h4` title and secondary `b14Med` description.
   Populated modes use a left-aligned `h3` introduction and secondary `b14Med`
@@ -740,9 +754,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   and cannot be overridden by callers. Vertical metric separators share
   those color and thickness roles. Selection indicators, timeline connectors,
   chart guides and skeleton fills retain their own roles.
-- Boundaries between fixed headers or controls and scrolling content, including
-  bottom navigation, reach the host edges. The surrounding content owns its
-  horizontal gutter; the divider does not add another inset.
+- Open dialog headers, controls and sections use their shared spacing without
+  an extra horizontal rule. Where another host requires a boundary between fixed
+  content and a scrolling body or bottom navigation, it reaches the host edges.
+  The surrounding content owns its horizontal gutter; the divider adds no inset.
 - Open list rows separate only adjacent items. Their lines end at the content
   edge and start at the primary text after a decorative image or icon. Set
   numbers are content, so set-row lines span the existing row gutters. The last

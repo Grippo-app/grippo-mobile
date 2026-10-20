@@ -3,11 +3,9 @@ package com.grippo.performance.trend.details
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
@@ -21,7 +19,7 @@ import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.performance.PerformanceTrendStatusState
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.stubPerformanceTrendHistory
-import com.grippo.design.components.divider.ContentDivider
+import com.grippo.design.components.datetime.DialogRangeHeader
 import com.grippo.design.components.metrics.performance.PerformanceMetricCard
 import com.grippo.design.components.metrics.performance.PerformanceTrendHistoryCard
 import com.grippo.design.components.utils.AnchorScrollBehavior
@@ -45,21 +43,7 @@ internal fun PerformanceTrendDetailsScreen(
     contract: PerformanceTrendDetailsContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-    Text(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        text = state.range.short(),
-        style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.secondary,
-        textAlign = TextAlign.Center
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-    ContentDivider()
+    DialogRangeHeader(text = state.range.short())
 
     val listState = rememberAnchoredLazyListState(
         behavior = AnchorScrollBehavior.Animated
@@ -74,7 +58,6 @@ internal fun PerformanceTrendDetailsScreen(
         contentPadding = PaddingValues(
             start = AppTokens.dp.dialog.horizontalPadding,
             end = AppTokens.dp.dialog.horizontalPadding,
-            top = AppTokens.dp.contentPadding.content,
             bottom = AppTokens.dp.dialog.bottom,
         ),
     ) {

@@ -1,17 +1,16 @@
 package com.grippo.statistics
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
@@ -20,13 +19,12 @@ import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummaryUnknown
 import com.grippo.core.state.metrics.volume.stubTotal
 import com.grippo.core.state.metrics.volume.stubVolumeSeries
 import com.grippo.design.components.chart.internal.BarChartXAxisLabels
-import com.grippo.design.components.divider.ContentDivider
+import com.grippo.design.components.datetime.DialogRangeHeader
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
 import com.grippo.design.components.metrics.volume.TrainingTotalSection
 import com.grippo.design.components.metrics.volume.VolumeMetricChart
-import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -44,32 +42,14 @@ internal fun StatisticsScreen(
     contract: StatisticsContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
     when (val mode = state.mode) {
         is StatisticsMode.Exercises -> {
-
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
         }
 
         is StatisticsMode.Trainings -> {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                text = mode.range.short(),
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.secondary,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            DialogRangeHeader(text = mode.range.short())
         }
-    }
-
-    if (state.mode is StatisticsMode.Trainings) {
-        ContentDivider()
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
     }
 
     if (loaders.contains(StatisticsLoader.Charts)) {
@@ -127,18 +107,23 @@ internal fun StatisticsScreen(
 
             state.muscleLoad
                 ?.let { summary ->
-                    item(key = "muscles_spliter") {
-                        ContentSpliter(
-                            text = AppTokens.strings.res(Res.string.muscles)
-                        )
-                    }
-
                     item(key = "muscle_load") {
-                        MuscleLoading(
+                        Column(
                             modifier = Modifier.fillMaxWidth(),
-                            summary = summary,
-                            mode = MuscleLoadingMode.PerGroup,
-                        )
+                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                        ) {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = AppTokens.strings.res(Res.string.muscles),
+                                style = AppTokens.typography.h4(),
+                                color = AppTokens.colors.text.primary,
+                            )
+                            MuscleLoading(
+                                modifier = Modifier.fillMaxWidth(),
+                                summary = summary,
+                                mode = MuscleLoadingMode.PerGroup,
+                            )
+                        }
                     }
                 }
 
