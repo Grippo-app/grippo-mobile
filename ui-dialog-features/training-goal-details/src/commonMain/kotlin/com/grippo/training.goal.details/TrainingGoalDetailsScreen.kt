@@ -38,8 +38,8 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.metrics.MetricCardPresentation
 import com.grippo.design.components.metrics.profile.goal.GoalCard
+import com.grippo.design.components.metrics.profile.goal.GoalCardStyle
 import com.grippo.design.components.metrics.profile.goal.GoalFitDriftingCard
 import com.grippo.design.components.metrics.profile.goal.GoalFitOnTrackCard
 import com.grippo.design.components.utils.AnchorScrollBehavior
@@ -48,11 +48,9 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.goal_details_analysis_evidence
 import com.grippo.design.resources.provider.goal_details_analysis_excluded
 import com.grippo.design.resources.provider.goal_details_analysis_method
 import com.grippo.design.resources.provider.goal_details_analysis_missing_metadata
-import com.grippo.design.resources.provider.goal_details_analysis_period
 import com.grippo.design.resources.provider.goal_details_hide_details
 import com.grippo.design.resources.provider.goal_details_show_details
 import com.grippo.design.resources.provider.goal_fit_diagnostic_drifting_title
@@ -61,8 +59,6 @@ import com.grippo.design.resources.provider.goal_options_collapsed
 import com.grippo.design.resources.provider.goal_options_expanded
 import com.grippo.design.resources.provider.icons.ArrowDown
 import com.grippo.design.resources.provider.icons.ArrowTop
-import com.grippo.toolkit.date.utils.DateCompose
-import com.grippo.toolkit.date.utils.DateFormat
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -104,6 +100,7 @@ private fun TrainingGoalDetailsContent(
 ) {
     val progress = state.progress
     val priorityFindings = state.priorityFindings
+    val positiveFindings = state.positiveFindings
     val notice = state.notice()
     val listState = rememberAnchoredLazyListState(behavior = AnchorScrollBehavior.Animated)
 
@@ -119,22 +116,12 @@ private fun TrainingGoalDetailsContent(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
         if (progress != null) {
-            item(key = "hero") {
+            item(key = "summary") {
                 GoalCard(
                     modifier = Modifier.fillMaxWidth(),
                     value = progress,
-                    presentation = MetricCardPresentation.Detailed,
-                    onUpdateClick = onAddGoal,
+                    style = GoalCardStyle.Assessment,
                 )
-            }
-
-            if (progress.evidence.range.value != null) {
-                item(key = "sample") {
-                    GoalAnalysisSummary(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = progress.evidence,
-                    )
-                }
             }
         }
 
@@ -158,7 +145,24 @@ private fun TrainingGoalDetailsContent(
             }
         }
 
+        if (positiveFindings.isNotEmpty()) {
+            item(key = "positive_finding") {
+                GoalSupportSection(
+                    modifier = Modifier.fillMaxWidth(),
+                    findings = positiveFindings,
+                )
+            }
+        }
+
         if (progress != null) {
+            item(key = "calendar") {
+                GoalCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = progress,
+                    style = GoalCardStyle.Calendar(onUpdateClick = onAddGoal),
+                )
+            }
+
             item(key = "disclosure") {
                 GoalAssessmentDisclosure(
                     modifier = Modifier.fillMaxWidth(),
@@ -168,42 +172,6 @@ private fun TrainingGoalDetailsContent(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun GoalAnalysisSummary(
-    modifier: Modifier = Modifier,
-    value: GoalAnalysisEvidenceState,
-) {
-    val range = value.range.value ?: return
-    val from = DateCompose.rememberFormat(
-        value = range.from,
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
-    )
-    val to = DateCompose.rememberFormat(
-        value = range.to,
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
-    )
-
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-    ) {
-        Text(
-            text = AppTokens.strings.res(Res.string.goal_details_analysis_period, from, to),
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary,
-        )
-        Text(
-            text = AppTokens.strings.res(
-                Res.string.goal_details_analysis_evidence,
-                value.days,
-                value.setCount,
-            ),
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary,
-        )
     }
 }
 
@@ -222,6 +190,27 @@ private fun GoalAdjustmentSection(
             color = AppTokens.colors.text.primary,
         )
         GoalFitDriftingCard(
+            modifier = Modifier.fillMaxWidth(),
+            findings = findings,
+        )
+    }
+}
+
+@Composable
+private fun GoalSupportSection(
+    modifier: Modifier = Modifier,
+    findings: ImmutableList<GoalFitFindingState>,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+    ) {
+        Text(
+            text = AppTokens.strings.res(Res.string.goal_fit_diagnostic_on_track_title),
+            style = AppTokens.typography.h4(),
+            color = AppTokens.colors.text.primary,
+        )
+        GoalFitOnTrackCard(
             modifier = Modifier.fillMaxWidth(),
             findings = findings,
         )
@@ -285,20 +274,10 @@ private fun GoalAssessmentDisclosure(
                 }
 
                 if (additionalFindings.any { it.severity == GoalFitSeverityState.PASS }) {
-                    Column(
+                    GoalSupportSection(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                    ) {
-                        Text(
-                            text = AppTokens.strings.res(Res.string.goal_fit_diagnostic_on_track_title),
-                            style = AppTokens.typography.h4(),
-                            color = AppTokens.colors.text.primary,
-                        )
-                        GoalFitOnTrackCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            findings = additionalFindings,
-                        )
-                    }
+                        findings = additionalFindings,
+                    )
                 }
 
                 GoalEvidenceDetails(
@@ -319,17 +298,6 @@ private fun GoalEvidenceDetails(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
-        if (value.range.value == null) {
-            Text(
-                text = AppTokens.strings.res(
-                    Res.string.goal_details_analysis_evidence,
-                    value.days,
-                    value.setCount,
-                ),
-                style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.secondary,
-            )
-        }
         if (value.excludedSetCount > 0) {
             Text(
                 text = AppTokens.strings.res(
@@ -482,6 +450,24 @@ private fun TrainingGoalDetailsScreenEmptyPeriodPreview() {
 
 @AppPreview
 @Composable
+private fun TrainingGoalDetailsScreenNoEvaluableSetsPreview() {
+    val base = stubGoalProgress(score = null)
+    val progress = base.copy(
+        sessionCount = 0,
+        findings = persistentListOf(),
+        evidence = base.evidence.copy(setCount = 0, excludedSetCount = 24),
+    )
+    PreviewContainer {
+        TrainingGoalDetailsScreen(
+            state = TrainingGoalDetailsDialogState(progress = progress),
+            loaders = persistentSetOf(),
+            contract = TrainingGoalDetailsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
 private fun TrainingGoalDetailsScreenPartialEvidencePreview() {
     val base = stubGoalProgress(primary = GoalPrimaryGoalEnumState.BUILD_MUSCLE, score = 50)
     val progress = base.copy(
@@ -501,7 +487,6 @@ private fun TrainingGoalDetailsScreenPartialEvidencePreview() {
         )
     }
 }
-
 
 @AppPreview
 @Composable
@@ -584,6 +569,14 @@ private fun TrainingGoalDetailsExpandedPreview() {
                             excludedSetCount = 3,
                             missingMetadataSetCount = 8,
                         ),
+                        findings = (base.findings + GoalFitFindingState(
+                            rule = GoalFitRuleState.BUILD_MUSCLE_WEEKLY_FREQUENCY_PER_PRIMARY_GROUP,
+                            severity = GoalFitSeverityState.PASS,
+                            actualValue = 2.6f,
+                            targetMin = 1f,
+                            targetMax = null,
+                            context = persistentListOf(MuscleGroupEnumState.LEGS),
+                        )).toPersistentList(),
                     ),
                 ),
                 isExpanded = true,

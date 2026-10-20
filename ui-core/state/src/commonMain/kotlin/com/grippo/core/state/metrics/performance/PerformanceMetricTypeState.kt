@@ -6,21 +6,21 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.icons.Flame
 import com.grippo.design.resources.provider.icons.Gauge
 import com.grippo.design.resources.provider.icons.Repeat
 import com.grippo.design.resources.provider.icons.Stack
 import com.grippo.design.resources.provider.icons.Timer
-import com.grippo.design.resources.provider.performance_metric_density
-import com.grippo.design.resources.provider.performance_metric_intensity
+import com.grippo.design.resources.provider.metric_overview_density
+import com.grippo.design.resources.provider.metric_overview_duration
+import com.grippo.design.resources.provider.metric_overview_intensity
+import com.grippo.design.resources.provider.metric_overview_repetitions
+import com.grippo.design.resources.provider.metric_overview_volume
 import com.grippo.design.resources.provider.performance_trend_desc_density
 import com.grippo.design.resources.provider.performance_trend_desc_duration
 import com.grippo.design.resources.provider.performance_trend_desc_intensity
 import com.grippo.design.resources.provider.performance_trend_desc_repetitions
 import com.grippo.design.resources.provider.performance_trend_desc_volume
-import com.grippo.design.resources.provider.repetitions
-import com.grippo.design.resources.provider.volume
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
 
@@ -61,10 +61,10 @@ public enum class PerformanceMetricTypeState {
     public fun labelText(): UiText = UiText.Res(labelResource())
 
     private fun labelResource(): StringResource = when (this) {
-        Duration -> Res.string.duration
-        Volume -> Res.string.volume
-        Density -> Res.string.performance_metric_density
-        Repetitions -> Res.string.repetitions
-        Intensity -> Res.string.performance_metric_intensity
+        Duration -> Res.string.metric_overview_duration
+        Volume -> Res.string.metric_overview_volume
+        Density -> Res.string.metric_overview_density
+        Repetitions -> Res.string.metric_overview_repetitions
+        Intensity -> Res.string.metric_overview_intensity
     }
 }

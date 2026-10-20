@@ -35,11 +35,12 @@ closes without an event.
 
 Dashboard cards use concise `Overview` presentations. The existing card actions
 open MuscleLoadingDetails, TrainingStreakDetails, PerformanceTrendDetails and
-TrainingGoalDetails. The latter three retain `Detailed` card presentations for
-full history, best values and timeline data; the muscle dialog retains its full
-distribution and PerGroup/PerMuscle selector. Overview card headings use the same
-primary style and decorative top-right chevron, with their existing parent click
-as the sole detail action; Calendar and Update retain their explicit callbacks.
+TrainingGoalDetails. Detail dialogs provide the corresponding period evidence
+and diagnostics; the muscle dialog retains its full distribution and offers the
+PerGroup/PerMuscle selector when a known group distribution exists. Overview
+card headings use the same primary style and decorative top-right chevron, with
+their existing parent click as the sole detail action; Calendar and Update retain
+their explicit callbacks.
 Performance metrics retain their order, individual click owners and null-item
 omission; each pair shares a natural-height row to align card boundaries.
 Goal Overview uses the current goal and selected analysis window. An unavailable
@@ -47,21 +48,26 @@ score stays neutral; an empty period preserves an existing goal, and removing th
 goal clears its card. Details show the same grouped findings that produce the
 score (100/50/0 for assessable criteria); unknown criteria are omitted. Evidence
 includes analyzed days, sessions/sets, excluded observations and missing metadata.
-A deadline is a goal date, never evidence of achieving the outcome.
+Goal details use an open compact summary, up to two attention findings and one
+positive finding; the remaining checks and calculation details are disclosed on
+request. A deadline is a goal date, never evidence of achieving the outcome.
 The full-width muscle summary shows recorded-set distribution and selected-period
 workouts/sets. Accepted performed sets retain their shares when required load
 measurements are incomplete; `unmeasuredVolumeSets` discloses sets omitted from
 physical volume, which is calculated only from measured sets. Missing groups are
 not displayed as zero or assigned a training recommendation. The Home map uses
 its compact centered 144×140 slot; muscle
-details retain the full distribution and PerGroup/PerMuscle selector.
+details retain the full distribution and expose the PerGroup/PerMuscle selector
+only when a known group distribution exists.
 The rhythm summary counts distinct local dates with saved positive training
 repetitions in the selected inclusive range, capped at the current time; exercise
 catalog availability does not remove a performed day. Its target is an observed
 rhythm from at least three fully observed completed weeks (including zero weeks),
 not a profile/experience prescription. Supported cycles require at least three
 repeats. Labels describe training days and observed rhythm, without probability
-claims. Details retain the full dated periods and mark partial periods.
+claims. Details show the last seven daily entries or four newest weekly/cycle
+periods. Date labels scope the visible evidence; weekly/cycle rows also mark
+partial observation. The rebuilt State retains the full timeline.
 Performance compares the latest session with available nonnegative finite values
 from preceding sessions in the selected period. Missing current/baseline values
 remain unavailable; the displayed percentage and status share that comparison,

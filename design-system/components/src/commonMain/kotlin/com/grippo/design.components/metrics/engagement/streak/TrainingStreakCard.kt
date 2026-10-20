@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.state.metrics.engagement.TrainingStreakFeaturedState
-import com.grippo.core.state.metrics.engagement.TrainingStreakMood
 import com.grippo.core.state.metrics.engagement.TrainingStreakState
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
 import com.grippo.design.components.indicators.LineIndicator
@@ -24,27 +23,9 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.highlight_active_days
-import com.grippo.design.resources.provider.highlight_streak
-import com.grippo.design.resources.provider.highlight_streak_daily_target
-import com.grippo.design.resources.provider.highlight_streak_mood_crushing
-import com.grippo.design.resources.provider.highlight_streak_mood_on_track
-import com.grippo.design.resources.provider.highlight_streak_mood_paused
-import com.grippo.design.resources.provider.highlight_streak_mood_restart
-import com.grippo.design.resources.provider.highlight_streak_pattern_headline_primary
-import com.grippo.design.resources.provider.highlight_streak_pattern_target
-import com.grippo.design.resources.provider.highlight_streak_rhythm
-import com.grippo.design.resources.provider.highlight_streak_rhythm_target
-import com.grippo.design.resources.provider.highlight_streak_weekly_headline_primary
-import com.grippo.design.resources.provider.highlight_streak_weekly_target
-import com.grippo.design.resources.provider.highlight_streaks
 import com.grippo.design.resources.provider.icons.Flame
 import com.grippo.design.resources.provider.metric_overview_streak_active_days
-import com.grippo.design.resources.provider.metric_overview_streak_daily_pattern
-import com.grippo.design.resources.provider.metric_overview_streak_pattern_pattern
-import com.grippo.design.resources.provider.metric_overview_streak_rhythm_pattern
 import com.grippo.design.resources.provider.metric_overview_streak_title
-import com.grippo.design.resources.provider.metric_overview_streak_weekly_pattern
 import com.grippo.design.resources.provider.training_streak_current_progress
 
 @Composable
@@ -53,173 +34,78 @@ public fun TrainingStreakCard(
     value: TrainingStreakState,
     presentation: MetricCardPresentation = MetricCardPresentation.Detailed,
 ) {
-    val title = AppTokens.strings.res(
-        if (presentation == MetricCardPresentation.Overview) {
-            Res.string.metric_overview_streak_title
-        } else {
-            Res.string.highlight_streaks
-        },
-    )
-
-    val headlinePrimary = when (val featured = value.featured) {
-        is TrainingStreakFeaturedState.Daily -> AppTokens.strings.res(
-            Res.string.highlight_streak,
-            featured.length
-        )
-
-        is TrainingStreakFeaturedState.Weekly -> AppTokens.strings.res(
-            Res.string.highlight_streak_weekly_headline_primary,
-            featured.length
-        )
-
-        is TrainingStreakFeaturedState.Rhythm -> AppTokens.strings.res(
-            Res.string.highlight_streak_rhythm,
-            featured.length,
-        )
-
-        is TrainingStreakFeaturedState.Pattern -> AppTokens.strings.res(
-            Res.string.highlight_streak_pattern_headline_primary,
-            featured.length
-        )
+    if (presentation == MetricCardPresentation.Detailed) {
+        TrainingStreakDetailSummary(modifier = modifier, value = value)
+        return
     }
-    val cadenceLabel = if (presentation == MetricCardPresentation.Overview) {
-        when (val featured = value.featured) {
-            is TrainingStreakFeaturedState.Daily -> AppTokens.strings.res(
-                Res.string.metric_overview_streak_daily_pattern,
-            )
 
-            is TrainingStreakFeaturedState.Weekly -> AppTokens.strings.res(
-                Res.string.metric_overview_streak_weekly_pattern,
-                featured.targetTrainingDaysPerPeriod,
-            )
+    val title = AppTokens.strings.res(Res.string.metric_overview_streak_title)
 
-            is TrainingStreakFeaturedState.Rhythm -> AppTokens.strings.res(
-                Res.string.metric_overview_streak_rhythm_pattern,
-                featured.workDays,
-                featured.restDays,
-            )
-
-            is TrainingStreakFeaturedState.Pattern -> AppTokens.strings.res(
-                Res.string.metric_overview_streak_pattern_pattern,
-                featured.targetTrainingDaysPerPeriod,
-                featured.periodLengthDays,
-            )
-        }
-    } else {
-        when (val featured = value.featured) {
-            is TrainingStreakFeaturedState.Daily ->
-                AppTokens.strings.res(Res.string.highlight_streak_daily_target)
-
-            is TrainingStreakFeaturedState.Weekly -> AppTokens.strings.res(
-                Res.string.highlight_streak_weekly_target,
-                featured.targetTrainingDaysPerPeriod
-            )
-
-            is TrainingStreakFeaturedState.Rhythm -> AppTokens.strings.res(
-                Res.string.highlight_streak_rhythm_target,
-                featured.workDays,
-                featured.restDays
-            )
-
-            is TrainingStreakFeaturedState.Pattern -> AppTokens.strings.res(
-                Res.string.highlight_streak_pattern_target,
-                featured.targetTrainingDaysPerPeriod,
-                featured.periodLengthDays,
-            )
-        }
-    }
+    val headlinePrimary = value.featured.overviewHeadline()
+    val cadenceLabel = value.featured.overviewCadence()
 
     val progressValue =
         (value.featured.progressPercent.coerceIn(0, 100)) / 100f
 
-    val progressColors = when (value.featured.mood) {
-        TrainingStreakMood.CrushingIt -> AppTokens.colors.charts.indicator.success
-        TrainingStreakMood.OnTrack -> AppTokens.colors.charts.indicator.info
-        TrainingStreakMood.Paused -> AppTokens.colors.charts.indicator.muted
-        TrainingStreakMood.Restart -> AppTokens.colors.charts.indicator.warning
-    }
+    val progressColors = value.featured.mood.indicatorColors()
 
     MetricSectionPanel(
         modifier = modifier,
-        style = if (presentation == MetricCardPresentation.Overview) {
-            MetricSectionPanelStyle.Large
-        } else {
-            MetricSectionPanelStyle.Small
-        },
+        style = MetricSectionPanelStyle.Large,
     ) {
-        if (presentation == MetricCardPresentation.Overview) {
-            MetricOverviewHeader(title = title)
+        MetricOverviewHeader(title = title)
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                verticalAlignment = Alignment.CenterVertically,
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(
+                modifier = Modifier.weight(2.5f),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
             ) {
-                Column(
-                    modifier = Modifier.weight(2.5f),
-                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(AppTokens.dp.metrics.overview.rhythmIcon),
-                            imageVector = AppTokens.icons.Flame,
-                            tint = progressColors.dominant,
-                            contentDescription = null,
-                        )
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = headlinePrimary,
-                            style = AppTokens.typography.h4(),
-                            color = AppTokens.colors.text.primary,
-                        )
-                    }
-                    Text(
-                        text = cadenceLabel,
-                        style = AppTokens.typography.b13Med(),
-                        color = AppTokens.colors.text.secondary,
+                    Icon(
+                        modifier = Modifier.size(AppTokens.dp.metrics.overview.rhythmIcon),
+                        imageVector = AppTokens.icons.Flame,
+                        tint = progressColors.dominant,
+                        contentDescription = null,
                     )
-                }
-
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-                ) {
                     Text(
-                        text = value.totalActiveDays.toString(),
-                        style = AppTokens.typography.h3(),
+                        modifier = Modifier.weight(1f),
+                        text = headlinePrimary,
+                        style = AppTokens.typography.h4(),
                         color = AppTokens.colors.text.primary,
-                        textAlign = TextAlign.End,
-                    )
-                    Text(
-                        text = AppTokens.strings.res(Res.string.metric_overview_streak_active_days),
-                        style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.secondary,
-                        textAlign = TextAlign.End,
                     )
                 }
+                Text(
+                    text = cadenceLabel,
+                    style = AppTokens.typography.b13Med(),
+                    color = AppTokens.colors.text.secondary,
+                )
             }
-        } else {
-            Text(
-                text = title,
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-            )
 
-            Text(
-                text = headlinePrimary,
-                style = AppTokens.typography.h5(),
-                color = AppTokens.colors.text.primary,
-            )
-
-            Text(
-                text = cadenceLabel,
-                style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.secondary,
-            )
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+            ) {
+                Text(
+                    text = value.totalActiveDays.toString(),
+                    style = AppTokens.typography.h3(),
+                    color = AppTokens.colors.text.primary,
+                    textAlign = TextAlign.End,
+                )
+                Text(
+                    text = AppTokens.strings.res(Res.string.metric_overview_streak_active_days),
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.text.secondary,
+                    textAlign = TextAlign.End,
+                )
+            }
         }
 
         LineIndicator(
@@ -239,24 +125,30 @@ public fun TrainingStreakCard(
                 color = AppTokens.colors.text.secondary,
             )
         }
+    }
+}
 
-        if (presentation == MetricCardPresentation.Detailed) {
-            val moodLabel = when (value.featured.mood) {
-                TrainingStreakMood.CrushingIt -> AppTokens.strings.res(Res.string.highlight_streak_mood_crushing)
-                TrainingStreakMood.OnTrack -> AppTokens.strings.res(Res.string.highlight_streak_mood_on_track)
-                TrainingStreakMood.Paused -> AppTokens.strings.res(Res.string.highlight_streak_mood_paused)
-                TrainingStreakMood.Restart -> AppTokens.strings.res(Res.string.highlight_streak_mood_restart)
-            }
-
+@Composable
+private fun TrainingStreakDetailSummary(
+    modifier: Modifier = Modifier,
+    value: TrainingStreakState,
+) {
+    MetricSectionPanel(modifier = modifier, style = MetricSectionPanelStyle.Large) {
+        Text(
+            text = value.summaryHeadline(),
+            style = AppTokens.typography.h3(),
+            color = AppTokens.colors.text.primary,
+        )
+        Text(
+            text = value.summaryDescription(),
+            style = AppTokens.typography.b14Med(),
+            color = AppTokens.colors.text.secondary,
+        )
+        if (value.featured.length > 0) {
             Text(
-                text = AppTokens.strings.res(Res.string.highlight_active_days, value.totalActiveDays),
+                text = value.activeDaysDescription(),
                 style = AppTokens.typography.b13Med(),
                 color = AppTokens.colors.text.secondary,
-            )
-            Text(
-                text = moodLabel,
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.tertiary,
             )
         }
     }
@@ -313,10 +205,12 @@ private fun TrainingStreakCardDetailedPatternPreview() {
 @AppPreview
 @Composable
 private fun TrainingStreakCardDetailedRestartPreview() {
+    val streak = stubTrainingStreaks()[1]
+    val featured = streak.featured as TrainingStreakFeaturedState.Weekly
     PreviewContainer {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
-            value = stubTrainingStreaks()[4],
+            value = streak.copy(featured = featured.copy(length = 0)),
             presentation = MetricCardPresentation.Detailed,
         )
     }

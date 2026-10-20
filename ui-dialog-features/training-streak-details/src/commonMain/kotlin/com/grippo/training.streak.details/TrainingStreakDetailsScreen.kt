@@ -1,9 +1,9 @@
 package com.grippo.training.streak.details
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,10 +11,13 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
 import com.grippo.core.state.metrics.engagement.TrainingStreakFeaturedState
 import com.grippo.core.state.metrics.engagement.TrainingStreakMood
+import com.grippo.core.state.metrics.engagement.TrainingStreakState
+import com.grippo.core.state.metrics.engagement.stubTrainingStreakProgress
+import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
 import com.grippo.design.components.datetime.DialogRangeHeader
+import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakInsightsCard
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakTimelineCard
@@ -24,113 +27,228 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.training_streak_insights_title
-import com.grippo.design.resources.provider.training_streak_timeline_title
-import kotlinx.collections.immutable.persistentListOf
+import com.grippo.design.resources.provider.training_streak_details_empty
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun TrainingStreakDetailsScreen(
     state: TrainingStreakDetailsDialogState,
     loaders: ImmutableSet<TrainingStreakDetailsLoader>,
-    contract: TrainingStreakDetailsContract
+    contract: TrainingStreakDetailsContract,
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
-
     DialogRangeHeader(text = state.range.short())
 
     val listState = rememberAnchoredLazyListState(
-        behavior = AnchorScrollBehavior.Animated
+        behavior = AnchorScrollBehavior.Animated,
     )
+    val streak = state.streak
 
     LazyColumn(
         state = listState,
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f, false)
+            .weight(weight = 1f, fill = false)
             .navigationBarsPadding(),
         contentPadding = PaddingValues(
             start = AppTokens.dp.dialog.horizontalPadding,
             end = AppTokens.dp.dialog.horizontalPadding,
             bottom = AppTokens.dp.dialog.bottom,
         ),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
     ) {
-        state.streak?.let { streak ->
-            item(key = "summary") {
-                TrainingStreakCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = streak
-                )
+        when {
+            streak == null -> {
+                item(key = "loading") {
+                    Loader(modifier = Modifier.fillMaxWidth())
+                }
             }
 
-            item(key = "insights_header") {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = AppTokens.dp.contentPadding.block),
-                    text = AppTokens.strings.res(Res.string.training_streak_insights_title),
-                    style = AppTokens.typography.h4(),
-                    color = AppTokens.colors.text.primary,
-                )
-            }
-
-            item(key = "insights") {
-                TrainingStreakInsightsCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = AppTokens.dp.contentPadding.content),
-                    value = streak
-                )
-            }
-
-            if (streak.timeline.isNotEmpty()) {
-                item(key = "timeline_header") {
+            streak.totalActiveDays == 0 -> {
+                item(key = "empty") {
                     Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = AppTokens.dp.contentPadding.block),
-                        text = AppTokens.strings.res(Res.string.training_streak_timeline_title),
-                        style = AppTokens.typography.h4(),
-                        color = AppTokens.colors.text.primary,
+                        modifier = Modifier.fillMaxWidth(),
+                        text = AppTokens.strings.res(Res.string.training_streak_details_empty),
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.secondary,
+                    )
+                }
+            }
+
+            else -> {
+                item(key = "summary") {
+                    TrainingStreakCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = streak,
                     )
                 }
 
-                item(key = "timeline") {
-                    TrainingStreakTimelineCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = AppTokens.dp.contentPadding.content),
-                        entries = streak.timeline
+                if (streak.timeline.isNotEmpty()) {
+                    item(key = "timeline") {
+                        TrainingStreakTimelineCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = streak,
+                        )
+                    }
+                }
+
+                item(key = "method") {
+                    TrainingStreakInsightsCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = streak,
                     )
                 }
             }
         }
-
     }
 }
 
 @AppPreview
 @Composable
-private fun ScreenPreview() {
+private fun TrainingStreakDailyPreview() {
     PreviewContainer {
         TrainingStreakDetailsScreen(
-            state = TrainingStreakDetailsDialogState(
-                range = DateRangeFormatState.of(
-                    from = LocalDateTime(2026, 10, 11, 0, 0),
-                    to = LocalDateTime(2026, 10, 17, 23, 59),
-                ),
-                streak = stubTrainingStreaks().first()
-            ),
+            state = trainingStreakDetailsPreview(streak = dailyStreakPreview()),
             loaders = persistentSetOf(),
-            contract = TrainingStreakDetailsContract.Empty
+            contract = TrainingStreakDetailsContract.Empty,
         )
     }
 }
 
 @AppPreview
 @Composable
-private fun NoActiveDaysPreview() {
+private fun TrainingStreakWeeklyPreview() {
+    PreviewContainer {
+        TrainingStreakDetailsScreen(
+            state = trainingStreakDetailsPreview(streak = weeklyStreakPreview()),
+            loaders = persistentSetOf(),
+            contract = TrainingStreakDetailsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakRhythmPreview() {
+    PreviewContainer {
+        TrainingStreakDetailsScreen(
+            state = trainingStreakDetailsPreview(streak = stubTrainingStreaks()[2]),
+            loaders = persistentSetOf(),
+            contract = TrainingStreakDetailsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakPatternPreview() {
+    PreviewContainer {
+        TrainingStreakDetailsScreen(
+            state = trainingStreakDetailsPreview(streak = patternStreakPreview()),
+            loaders = persistentSetOf(),
+            contract = TrainingStreakDetailsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakActiveHistoryWithoutCurrentRunPreview() {
+    val daily = dailyStreakPreview()
+    val streak = daily.copy(
+        featured = TrainingStreakFeaturedState.Daily(
+            length = 0,
+            mood = TrainingStreakMood.Paused,
+            progressPercent = 0,
+            confidence = 0.2f,
+        ),
+        timeline = daily.timeline.mapIndexed { index, entry ->
+            entry.copy(achievedTrainingDays = if (index >= 5) 0 else entry.achievedTrainingDays)
+        }.toPersistentList(),
+        lastTrainingGapDays = 2,
+    )
+    PreviewContainer {
+        TrainingStreakDetailsScreen(
+            state = trainingStreakDetailsPreview(streak = streak),
+            loaders = persistentSetOf(),
+            contract = TrainingStreakDetailsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakPartialLeadingPeriodPreview() {
+    val weekly = stubTrainingStreaks()[1]
+    val streak = weekly.copy(
+        totalActiveDays = 14,
+        historyDays = 25,
+        lastTrainingGapDays = 1,
+        featured = (weekly.featured as TrainingStreakFeaturedState.Weekly).copy(
+            length = 3,
+            progressPercent = 100,
+        ),
+        timeline = persistentListOf(
+            stubTrainingStreakProgress().copy(
+                achievedTrainingDays = 2,
+                isPartial = true,
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(year = 2026, monthNumber = 8, dayOfMonth = 31, hour = 0, minute = 0),
+                    to = LocalDateTime(year = 2026, monthNumber = 9, dayOfMonth = 6, hour = 23, minute = 59),
+                ),
+            ),
+            stubTrainingStreakProgress().copy(
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(year = 2026, monthNumber = 9, dayOfMonth = 7, hour = 0, minute = 0),
+                    to = LocalDateTime(year = 2026, monthNumber = 9, dayOfMonth = 13, hour = 23, minute = 59),
+                ),
+            ),
+            stubTrainingStreakProgress().copy(
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(year = 2026, monthNumber = 9, dayOfMonth = 14, hour = 0, minute = 0),
+                    to = LocalDateTime(year = 2026, monthNumber = 9, dayOfMonth = 20, hour = 23, minute = 59),
+                ),
+            ),
+            stubTrainingStreakProgress().copy(
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(year = 2026, monthNumber = 9, dayOfMonth = 21, hour = 0, minute = 0),
+                    to = LocalDateTime(year = 2026, monthNumber = 9, dayOfMonth = 27, hour = 23, minute = 59),
+                ),
+            ),
+        ),
+    )
+    PreviewContainer {
+        TrainingStreakDetailsScreen(
+            state = trainingStreakDetailsPreview(streak = streak).copy(
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(year = 2026, monthNumber = 9, dayOfMonth = 3, hour = 0, minute = 0),
+                    to = LocalDateTime(year = 2026, monthNumber = 9, dayOfMonth = 27, hour = 23, minute = 59),
+                ),
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingStreakDetailsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakWithoutTimelinePreview() {
+    PreviewContainer {
+        TrainingStreakDetailsScreen(
+            state = trainingStreakDetailsPreview(streak = dailyStreakPreview().copy(timeline = persistentListOf())),
+            loaders = persistentSetOf(),
+            contract = TrainingStreakDetailsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakNoActiveDaysPreview() {
     val streak = stubTrainingStreaks().first().copy(
         totalActiveDays = 0,
         featured = TrainingStreakFeaturedState.Daily(
@@ -145,13 +263,7 @@ private fun NoActiveDaysPreview() {
     )
     PreviewContainer {
         TrainingStreakDetailsScreen(
-            state = TrainingStreakDetailsDialogState(
-                range = DateRangeFormatState.of(
-                    from = LocalDateTime(2026, 10, 11, 0, 0),
-                    to = LocalDateTime(2026, 10, 17, 23, 59),
-                ),
-                streak = streak,
-            ),
+            state = trainingStreakDetailsPreview(streak = streak),
             loaders = persistentSetOf(),
             contract = TrainingStreakDetailsContract.Empty,
         )
@@ -160,17 +272,99 @@ private fun NoActiveDaysPreview() {
 
 @AppPreview
 @Composable
-private fun WithoutStreakPreview() {
+private fun TrainingStreakInitialLoadingPreview() {
     PreviewContainer {
         TrainingStreakDetailsScreen(
-            state = TrainingStreakDetailsDialogState(
-                range = DateRangeFormatState.of(
-                    from = LocalDateTime(2026, 10, 11, 0, 0),
-                    to = LocalDateTime(2026, 10, 17, 23, 59),
-                ),
-            ),
+            state = trainingStreakDetailsPreview(streak = null),
             loaders = persistentSetOf(),
             contract = TrainingStreakDetailsContract.Empty,
         )
     }
+}
+
+private fun trainingStreakDetailsPreview(streak: TrainingStreakState?): TrainingStreakDetailsDialogState {
+    return TrainingStreakDetailsDialogState(
+        range = DateRangeFormatState.of(
+            from = LocalDateTime(year = 2026, monthNumber = 8, dayOfMonth = 26, hour = 0, minute = 0),
+            to = LocalDateTime(year = 2026, monthNumber = 10, dayOfMonth = 20, hour = 23, minute = 59),
+        ),
+        streak = streak,
+    )
+}
+
+private fun dailyStreakPreview(): TrainingStreakState {
+    return stubTrainingStreaks().first().copy(
+        timeline = (14..20).map { day ->
+            stubTrainingStreakProgress().copy(
+                achievedTrainingDays = if (day >= 16) 1 else 0,
+                targetTrainingDays = 1,
+                isPartial = day == 20,
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(year = 2026, monthNumber = 10, dayOfMonth = day, hour = 0, minute = 0),
+                    to = LocalDateTime(year = 2026, monthNumber = 10, dayOfMonth = day, hour = 23, minute = 59),
+                ),
+            )
+        }.toPersistentList(),
+    )
+}
+
+private fun weeklyStreakPreview(): TrainingStreakState {
+    val weekly = stubTrainingStreaks()[1]
+    val previous = stubTrainingStreakProgress().copy(
+        achievedTrainingDays = 0,
+        range = DateRangeFormatState.of(
+            from = LocalDateTime(year = 2026, monthNumber = 9, dayOfMonth = 28, hour = 0, minute = 0),
+            to = LocalDateTime(year = 2026, monthNumber = 10, dayOfMonth = 4, hour = 23, minute = 59),
+        ),
+    )
+    return weekly.copy(
+        historyDays = 30,
+        timeline = (persistentListOf(previous) + weekly.timeline).toPersistentList(),
+    )
+}
+
+private fun patternStreakPreview(): TrainingStreakState {
+    val streak = stubTrainingStreaks()[3]
+    val featured = streak.featured as TrainingStreakFeaturedState.Pattern
+    return streak.copy(
+        totalActiveDays = 21,
+        featured = featured.copy(length = 4, progressPercent = 100),
+        historyDays = 56,
+        lastTrainingGapDays = 3,
+        timeline = persistentListOf(
+            stubTrainingStreakProgress().copy(
+                achievedTrainingDays = 3,
+                targetTrainingDays = 3,
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(year = 2026, monthNumber = 9, dayOfMonth = 19, hour = 0, minute = 0),
+                    to = LocalDateTime(year = 2026, monthNumber = 9, dayOfMonth = 26, hour = 23, minute = 59),
+                ),
+            ),
+            stubTrainingStreakProgress().copy(
+                achievedTrainingDays = 3,
+                targetTrainingDays = 3,
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(year = 2026, monthNumber = 9, dayOfMonth = 27, hour = 0, minute = 0),
+                    to = LocalDateTime(year = 2026, monthNumber = 10, dayOfMonth = 4, hour = 23, minute = 59),
+                ),
+            ),
+            stubTrainingStreakProgress().copy(
+                achievedTrainingDays = 3,
+                targetTrainingDays = 3,
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(year = 2026, monthNumber = 10, dayOfMonth = 5, hour = 0, minute = 0),
+                    to = LocalDateTime(year = 2026, monthNumber = 10, dayOfMonth = 12, hour = 23, minute = 59),
+                ),
+            ),
+            stubTrainingStreakProgress().copy(
+                achievedTrainingDays = 3,
+                targetTrainingDays = 3,
+                isPartial = true,
+                range = DateRangeFormatState.of(
+                    from = LocalDateTime(year = 2026, monthNumber = 10, dayOfMonth = 13, hour = 0, minute = 0),
+                    to = LocalDateTime(year = 2026, monthNumber = 10, dayOfMonth = 20, hour = 23, minute = 59),
+                ),
+            ),
+        ),
+    )
 }

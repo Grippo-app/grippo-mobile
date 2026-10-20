@@ -1,7 +1,12 @@
 package com.grippo.core.state.metrics.engagement
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateRangeFormatState
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.training_streak_details_active_days
+import com.grippo.design.resources.provider.training_streak_details_no_sequence
 import kotlinx.datetime.LocalDateTime
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -25,6 +30,27 @@ public data class TrainingStreakState(
 
     public val score: Float
         get() = featured.confidence
+
+    @Composable
+    public fun activeDaysDescription(): String = AppTokens.strings.res(
+        Res.plurals.training_streak_details_active_days,
+        totalActiveDays,
+        totalActiveDays,
+    )
+
+    @Composable
+    public fun summaryHeadline(): String = if (featured.length == 0) {
+        activeDaysDescription()
+    } else {
+        featured.detailsHeadline()
+    }
+
+    @Composable
+    public fun summaryDescription(): String = if (featured.length == 0) {
+        AppTokens.strings.res(Res.string.training_streak_details_no_sequence)
+    } else {
+        featured.cadenceDescription()
+    }
 }
 
 public fun stubTrainingStreaks(): ImmutableList<TrainingStreakState> {

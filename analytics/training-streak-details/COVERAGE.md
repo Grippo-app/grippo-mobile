@@ -4,7 +4,8 @@ Scope: `:ui-dialog-features:training-streak-details` and its Home entry.
 
 ## Surface and analytics gate
 
-Actual entry: HomeViewModel.onOpenTrainingStreak checks the current range, emits
+Actual entry: the Home Dashboard overview TrainingStreakCard uses scalableClick
+to invoke HomeViewModel.onOpenTrainingStreak, which checks the current range, emits
 its existing HomeEvent.TrainingStreakClicked and opens DialogConfig.TrainingStreakDetails.
 DialogContentComponent constructs TrainingStreakDetailsComponent with that range;
 its retained TrainingStreakDetailsViewModel renders TrainingStreakDetailsScreen.
@@ -12,6 +13,11 @@ This is one read-only bottom sheet, with no nested flow or independent screen.
 The VM keeps default null screenPresentation. No screen enum or dedicated dialog
 presentation contract is required or introduced. Surface coverage gate passes source
 review of config, factory, Component, VM and rendered content.
+
+| Route / surface | Component | ViewModel | Presentation | Callbacks / operations | Omissions |
+|---|---|---|---|---|---|
+| HomeRouter.Home / Dashboard entry | HomeComponent | HomeViewModel | Existing HomeScreen.Home hook | onOpenTrainingStreak observes TrainingStreakClicked after the range guard | Other Home behavior belongs to analytics/home/COVERAGE.md |
+| DialogConfig.TrainingStreakDetails / read-only sheet | TrainingStreakDetailsComponent | TrainingStreakDetailsViewModel | Default null: dialog, outside independent-screen coverage | onBack observes DismissRequested; reactive calculations have no request operation | Host dismissal, passive reading and scrolling are not tracked |
 
 | Owner / callback | Observation | Eligibility / payload |
 |---|---|---|
@@ -39,7 +45,7 @@ VM injection are reconciled against actual source.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | Component / VM | Immutable range input and its display | Runtime only for live dialog | Caller range, DateRangeFormatState.of, retainedInstance | Ordinary recreation retains VM; reopening uses current caller range |
-| VM | streak, insights and timeline | Rebuild | TrainingFeature.observeTrainings combined with currentDateFlow, TrainingStreakUseCase.fromTrainings(trainings, range) with now captured once by the calculator, existing toState mapper | Fresh VM starts with null streak; empty trainings clear it; nonempty data rebuild presentation. Multiple sessions count once per local date; completed weeks/cycles provide evidence; historical ranges are evaluated at their own end |
+| VM | streak, recent evidence and calculation explanation | Rebuild | TrainingFeature.observeTrainings combined with currentDateFlow, TrainingStreakUseCase.fromTrainings(trainings, range) with now captured once by the calculator, existing toState mapper | Fresh VM starts with null streak and displays the shared loading component. Every emission, including an empty list, is calculated. Zero performed active days display empty guidance; positive active days display the summary and available evidence. Multiple sessions count once per local date; historical ranges are evaluated at their own end |
 | Dialog host | Session, callbacks and Back direction | Runtime only | Slot and step serializer = null | Process death discards live dialog; reopening constructs a fresh session |
 | Foundation / widgets | Jobs, loaders, scrolling and telemetry provenance | Runtime only | Existing scope and widget ownership | No business draft supplier or synthetic callbacks |
 
@@ -47,13 +53,32 @@ No editable inputs, selections, filters, accepted results, parent drafts or secr
 are owned here. The immutable range is a seed, not an editable filter. Source gate
 passes with no StateKeeper snapshot required: session persistence would conflict
 with the dialog policy, while presentation is rebuilt from its existing data source.
-Initialization, empty data handling, Back and parent opening behavior remain unchanged.
+Back and parent opening behavior use their existing callbacks and routes.
 No feature storage, serialization plugin or platform lifecycle bridge is introduced.
 The existing WhileActive subscription owns the date flow; it emits on collection
 and each local midnight. Reopening or reactivation recalculates with fresh time;
 the dialog range itself stays fixed while its final day becomes completed.
 Range captions and timeline dates use DateRangeFormatState.short in composition,
 so the current locale rebuilds text without changing the runtime date bounds.
+
+## Availability and content
+
+The fixed range caption is visible above one anchored scroll owner. A null streak
+means the first source observation has not completed; the shared Loader supplies
+localized loading text and indeterminate progress semantics. A successful source
+observation always produces a nonnull calculation. An empty list and training rows
+whose repetitions are all zero both produce zero active days and the same compact
+empty guidance. No zero achievement summary, timeline, method block or unsupported
+navigation action is displayed for that state. A failed observation stays in the
+existing Flow.safeLaunch error pipeline and is not presented as an empty result.
+
+With active history, the sheet presents one summary, recent evidence when its
+timeline is nonempty, and one short calculation explanation. The components own
+their headings; the screen adds no duplicate insight or timeline titles. Active
+history with a zero current run remains populated so that earlier activity is not
+hidden. A missing timeline omits the entire evidence section. Dialog background,
+section spacing, text hierarchy and bottom/navigation insets use their existing
+design-system owners.
 
 ## Calculation and presentation boundary
 
@@ -70,6 +95,6 @@ and remaining capacity; activity on rest positions does not replace them. Weekly
 targets continue to accept any distinct training date in the week.
 
 No event, operation, schema, encoder, screen hook, consent or transport symbol
-changes with this calculation update; the live admin synchronization trigger does
-not apply. Source, build and device verification evidence is reported in the task
+changes with this presentation and availability behavior; the live admin
+synchronization trigger does not apply. Source, build and device verification evidence is reported in the task
 reply rather than kept as historical narratives in this coverage record.

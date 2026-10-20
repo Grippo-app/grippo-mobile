@@ -61,25 +61,15 @@
     <string name="spotlight_near_best_action">Compare o volume com a mesma técnica e amplitude de movimento.</string>
     <string name="dashboard">Painel</string>
     <string name="highlight_muscle_focus">Foco muscular</string>
-    <string name="highlight_streaks">Sequências</string>
-    <string name="highlight_active_days">%1$s dias ativos</string>
     <string name="highlight_streak">Sequência de %1$d dias</string>
     <string name="highlight_streak_weekly_headline_primary">Sequência de %1$d semanas</string>
-    <string name="highlight_streak_weekly_target">Ritmo observado · %1$d dias de treino/semana</string>
-    <string name="highlight_streak_daily_target">Dias ativos consecutivos</string>
     <string name="highlight_streak_rhythm">Sequência de %1$d ciclos</string>
-    <string name="highlight_streak_rhythm_target">Ritmo observado · %1$d dias ativos · %2$d dias de descanso</string>
     <string name="highlight_streak_pattern_headline_primary">Sequência do padrão: %1$d ciclos</string>
-    <string name="highlight_streak_pattern_target">Ritmo observado · %1$d dias ativos / %2$d dias</string>
-    <string name="highlight_streak_mood_crushing">🔥 Você está indo muito bem. Continue assim.</string>
-    <string name="highlight_streak_mood_on_track">💪 Bom progresso. Mantenha a consistência.</string>
-    <string name="highlight_streak_mood_paused">Tudo bem fazer uma pausa. Volte quando quiser.</string>
-    <string name="highlight_streak_mood_restart">🚀 Recomece. Um passo já basta.</string>
-    <string name="performance_trend_desc_duration">Duração de cada treino no período selecionado. Mais longo ou mais curto não significa melhor. Cada comparação usa treinos anteriores nesse período com dados de duração disponíveis.</string>
-    <string name="performance_trend_desc_volume">Peso total movimentado: peso de trabalho × repetições. Cada treino é comparado com a média dos treinos anteriores neste período com dados de volume disponíveis. A escolha dos exercícios e a duração da sessão afetam esse total; ele não mede a força por si só.</string>
-    <string name="performance_trend_desc_density">Volume dividido pela duração total do treino em minutos, incluindo os descansos. Comparado com treinos anteriores neste período com dados de densidade disponíveis. Mais trabalho por minuto não significa, por si só, um treino melhor.</string>
-    <string name="performance_trend_desc_repetitions">Total de repetições por treino, comparado com treinos anteriores neste período com dados de repetições disponíveis. A escolha dos exercícios, as séries e as sessões mais leves planejadas afetam o total; menos repetições não comprovam fadiga.</string>
-    <string name="performance_trend_desc_intensity">Peso médio de trabalho por repetição com carga, comparado com treinos anteriores neste período com dados de peso disponíveis. A escolha dos exercícios afeta essa média; ela não mede o esforço nem a força por si só.</string>
+    <string name="performance_trend_desc_duration">Duração do treino. Mais longo ou mais curto não significa melhor.</string>
+    <string name="performance_trend_desc_volume">Peso movimentado: peso de trabalho × repetições. A escolha dos exercícios e a duração do treino afetam o total; o total, por si só, não mede a força.</string>
+    <string name="performance_trend_desc_density">Volume por minuto do treino completo, incluindo os descansos. Um valor maior não significa, por si só, um treino melhor.</string>
+    <string name="performance_trend_desc_repetitions">Total de repetições por treino. Exercícios, séries e sessões leves planejadas afetam o total; menos repetições não comprovam fadiga.</string>
+    <string name="performance_trend_desc_intensity">Peso médio de trabalho por repetição com carga. O valor depende dos exercícios e não mede, por si só, o esforço nem a força.</string>
     <string name="sets_value">Séries (%1$s)</string>
     <string name="percent">%</string>
     <string name="selected">Selecionado</string>
@@ -242,15 +232,9 @@
     <string name="value_muscle_loading">Carga muscular de %1$s</string>
     <string name="muscle_loading">Carga muscular</string>
     <string name="muscle_load_no_data">Ainda não há dados.</string>
-    <string name="muscle_loading_distribution_title">Distribuição</string>
-    <string name="value_training_streak">Sequência de treinos de %1$s</string>
-    <string name="training_streak">Sequência de treinos</string>
     <string name="value_performance_trend">%1$s — tendência de %2$s</string>
     <string name="performance_trend">Tendência de %1$s</string>
     <string name="training_streak_insights_title">Sobre este cálculo</string>
-    <string name="training_streak_history_value">Histórico observado: %1$d dias</string>
-    <string name="training_streak_timeline_title">Progresso ao longo do tempo</string>
-    <string name="training_streak_period_value">Dias ativos: %1$d / %2$d</string>
     <string name="estimated_one_rm">Carga máxima estimada para uma repetição</string>
     <string name="equipments">Equipamentos</string>
     <string name="muscles">Músculos</string>
@@ -279,8 +263,6 @@
     <string name="progress">Progresso</string>
     <string name="tonnage_chip">Tonelagem</string>
     <string name="intensity_chip">Intensidade</string>
-    <string name="performance_metric_density">Ritmo de trabalho</string>
-    <string name="performance_metric_intensity">Peso médio</string>
     <string name="repetitions_chip">Repetições</string>
     <string name="volume">Volume</string>
     <string name="training_progress_lost_title">Sair do treino</string>
@@ -598,6 +580,7 @@
     <string name="goal_card_update_btn">Atualizar</string>
 
     <!-- Training goal details dialog -->
+    <string name="goal_details_alignment_hint">Uma estimativa baseada nos treinos registrados, não na conclusão do objetivo.</string>
     <string name="goal_details_title">Detalhes do objetivo</string>
     <string name="goal_details_show_details">Sobre esta avaliação</string>
     <string name="goal_details_hide_details">Ocultar detalhes</string>
@@ -608,8 +591,8 @@
     <!-- Goal-fit diagnostic sections -->
     <string name="goal_fit_diagnostic_drifting_title">O que ajustar</string>
     <string name="goal_fit_diagnostic_on_track_title">O que funciona</string>
-    <!-- Goal-fit target formats: actual / target line uses %1$s (actual), %2$s (target) -->
-    <string name="goal_fit_value_target">%1$s · alvo %2$s</string>
+    <!-- Target line: %1$s is the formatted goal-fit criterion. -->
+    <string name="goal_fit_target_value">Meta: %1$s</string>
     <string name="goal_fit_target_at_least">≥%1$s</string>
     <string name="goal_fit_target_at_most">≤%1$s</string>
     <string name="goal_fit_target_range">%1$s–%2$s</string>
@@ -865,7 +848,6 @@
     <string name="exercise_history_set_result">%1$s × %2$s</string>
     <string name="exercise_history_previous_short">%1$s · %2$s</string>
     <string name="exercise_history_vs_date">vs %1$s</string>
-    <string name="training_streak_calculation_description">Apenas os dias com séries concluídas contam. Vários treinos no mesmo dia contam uma vez. Os alvos semanais e por ciclo descrevem seu histórico recente.</string>
     <string name="training_streak_current_progress">Último período: %1$d / %2$d dias ativos</string>
     <string name="estimated_one_rm_source">A partir de %1$s × %2$s · %3$s</string>
     <string name="estimated_one_rm_history_peak">Melhor neste histórico: %1$s</string>
@@ -879,7 +861,6 @@
     <string name="performance_status_improved">Acima do habitual</string>
     <string name="performance_status_declined">Abaixo do habitual</string>
     <string name="performance_status_stable">Dentro da faixa habitual</string>
-    <string name="performance_best_value">Melhor no período até agora: %1$s</string>
 
     <string name="digest_title">Resumo do mês</string>
     <string name="digest_unavailable">—</string>
@@ -890,7 +871,7 @@
     <string name="goal_details_analysis_excluded">Séries excluídas por registros inválidos ou incompletos: %1$d</string>
     <string name="goal_details_analysis_missing_metadata">Diagnóstico muscular indisponível: faltam dados de exercícios para %1$d séries.</string>
     <string name="goal_details_analysis_unavailable">O período selecionado não se sobrepõe ao histórico do objetivo disponível hoje.</string>
-    <string name="goal_details_analysis_method">Compara seu treino registrado com padrões de referência para este objetivo. Isso estima o alinhamento do treino, não se o objetivo foi alcançado.</string>
+    <string name="goal_details_analysis_method">Usa as séries registradas desde a definição do objetivo, dentro do período selecionado. A avaliação do padrão semanal exige pelo menos sete dias de observação.</string>
     <string name="training_streak_partial_period">Período parcialmente observado</string>
     <string name="goal_fit_rule_build_muscle_weekly_frequency_title">Frequência de treino</string>
     <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Frequência de treino</string>
@@ -900,12 +881,63 @@
     <string name="muscle_load_anatomy_note">Participação muscular estimada neste exercício.</string>
     <string name="muscle_load_excluded_sets">Séries não contadas (sem repetições ou com medidas inválidas): %1$d.</string>
     <string name="muscle_load_unassigned_sets">Séries registradas com participação muscular desconhecida: %1$d.</string>
-    <string name="muscle_load_focus_title">Maior proporção</string>
-    <string name="muscle_load_focus_note">Estas proporções descrevem o foco do treino, não a fadiga nem a recuperação.</string>
-    <string name="performance_history_scope">Até os 10 treinos mais recentes. O gráfico segue a ordem dos treinos e conecta os valores disponíveis. As comparações usam treinos anteriores no período selecionado.</string>
+    <string name="performance_history_scope">O gráfico conecta os valores disponíveis de até 10 treinos mais recentes.</string>
+    <string name="performance_trend_details_comparison_scope">As comparações usam a média de todos os treinos anteriores com dados no período selecionado.</string>
     <string name="muscle_load_unmeasured_volume_sets">Séries com dados de carga incompletos: %1$d. As proporções musculares usam as séries registradas; o volume inclui apenas séries com medidas completas.</string>
     <string name="goal_card_limited_data">Dados limitados</string>
     <string name="available_training_details_notice">Calculado a partir dos detalhes disponíveis dos exercícios. Alguns registros podem estar indisponíveis.</string>
     <string name="available_sets_label">Séries disponíveis</string>
     <string name="available_exercises_label">Exercícios disponíveis</string>
+    <string name="muscle_loading_details_share_note">Estimativa da distribuição das séries com músculos identificados.</string>
+    <string name="muscle_loading_details_coverage">Séries fora desta distribuição: %1$d</string>
+    <string name="muscle_loading_details_no_workouts_title">Nenhum treino neste período</string>
+    <string name="muscle_loading_details_no_workouts_message">Registre um treino para ver quais músculos participaram das séries.</string>
+    <string name="muscle_loading_details_no_sets_title">Ainda não há séries para distribuir</string>
+    <string name="muscle_loading_details_no_sets_message">Não há séries registradas disponíveis neste período com dados utilizáveis.</string>
+    <string name="muscle_loading_details_unknown_title">Dados dos músculos indisponíveis</string>
+    <string name="muscle_loading_details_unknown_message">Suas séries estão registradas, mas não há dados sobre os músculos envolvidos nos exercícios.</string>
+    <string name="muscle_loading_details_method_title">Como interpretar</string>
+    <string name="muscle_loading_details_method_body">Cada série disponível é distribuída entre os músculos na proporção da participação indicada no exercício. Antes do arredondamento, as porcentagens somam 100% entre as séries com músculos identificados.</string>
+    <string name="muscle_loading_details_method_limits">A distribuição descreve as séries registradas. Fadiga muscular, recuperação e qualidade do treino não são medidas aqui.</string>
+    <string name="muscle_loading_details_method_expanded">Expandido</string>
+    <string name="muscle_loading_details_method_collapsed">Recolhido</string>
+
+    <string name="performance_trend_details_latest">Último treino</string>
+    <string name="performance_trend_details_previous_average">Média anterior: %1$s</string>
+    <string name="performance_trend_details_comparison">Variação: %1$s</string>
+    <string name="performance_trend_details_first_workout">A comparação precisa de um treino anterior com dados neste período.</string>
+    <string name="performance_trend_details_zero_average">A média anterior é zero, então não é possível calcular a variação percentual.</string>
+    <string name="performance_trend_details_value_unavailable">Valor indisponível</string>
+    <string name="performance_trend_details_value_unavailable_description">Este treino não tem dados suficientes para calcular este indicador.</string>
+    <string name="performance_trend_details_recent_workouts">Treinos recentes</string>
+    <string name="performance_trend_details_history_scope">Exibindo %1$d de %2$d treinos neste período.</string>
+    <string name="performance_trend_details_about">Como é calculado</string>
+    <string name="performance_trend_details_expanded">Expandido</string>
+    <string name="performance_trend_details_collapsed">Recolhido</string>
+    <string name="performance_trend_details_empty_message">Escolha outro período no Início para ver seus treinos registrados.</string>
+
+    <!-- Training rhythm details -->
+    <string name="training_streak_details_daily_headline">Dias seguidos: %1$d</string>
+    <string name="training_streak_details_weekly_headline">Semanas no ritmo: %1$d</string>
+    <string name="training_streak_details_cycle_headline">Repetições do ritmo: %1$d</string>
+    <string name="training_streak_details_no_sequence">Sem sequência contínua no fim do período</string>
+    <string name="training_streak_details_daily_cadence">Dias consecutivos com treino registrado</string>
+    <string name="training_streak_details_weekly_cadence">Ritmo semanal habitual · dias com treino: %1$d</string>
+    <string name="training_streak_details_rhythm_cadence">Nos registros · dias com treino: %1$d, depois dias sem treino registrado: %2$d</string>
+    <string name="training_streak_details_pattern_cadence">Ciclo registrado · total de dias: %2$d · dias com treino: %1$d</string>
+    <string name="training_streak_details_daily_method">Vários treinos no mesmo dia contam uma vez. A sequência conta dias seguidos com treino no fim do período escolhido; um dia em andamento mantém a sequência anterior. É seu histórico, não uma meta de treino diário.</string>
+    <string name="training_streak_details_weekly_method">Vários treinos no mesmo dia contam uma vez. A sequência conta semanas seguidas no ritmo habitual até o fim do período escolhido; uma semana em andamento mantém a sequência anterior. A frequência vem dos registros, não de uma meta de treino.</string>
+    <string name="training_streak_details_cycle_method">Vários treinos no mesmo dia contam uma vez. A sequência conta ciclos seguidos no fim do período escolhido; um ciclo em andamento mantém a sequência anterior. As barras contam dias que coincidem com o ritmo dos registros, não uma meta de treino.</string>
+    <string name="training_streak_details_recent_days">Dias recentes</string>
+    <string name="training_streak_details_recent_weeks">Semanas recentes</string>
+    <string name="training_streak_details_recent_cycles">Ciclos recentes</string>
+    <string name="training_streak_details_daily_legend">Preenchido: treino registrado · Vazio: sem registro</string>
+    <string name="training_streak_details_weekly_legend">Dias com treino / frequência semanal habitual</string>
+    <string name="training_streak_details_cycle_legend">Dias coincidentes / dias com treino no ritmo registrado</string>
+    <string name="training_streak_details_weekly_value">Dias com treino: %1$d / %2$d</string>
+    <string name="training_streak_details_cycle_value">Dias coincidentes: %1$d / %2$d</string>
+    <string name="training_streak_details_day_recorded">Treino registrado</string>
+    <string name="training_streak_details_day_unrecorded">Sem treino registrado</string>
+    <string name="training_streak_details_day_description">%1$s · %2$s</string>
+    <string name="training_streak_details_empty">Nenhum dia de treino neste período. Treinos registrados com repetições concluídas vão revelar seu ritmo aqui.</string>
 </resources>

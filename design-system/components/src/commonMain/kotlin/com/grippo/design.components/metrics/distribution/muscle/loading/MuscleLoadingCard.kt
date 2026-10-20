@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,7 +25,7 @@ import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummaryEmpty
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummarySingleGroup
 import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.design.components.indicators.LineIndicator
-import com.grippo.design.components.metrics.MetricCardPresentation
+import com.grippo.design.components.metrics.distribution.muscle.loading.internal.MuscleLoadingCardSummary
 import com.grippo.design.components.metrics.distribution.muscle.loading.internal.rememberMuscleLoadIndicatorColors
 import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
@@ -43,35 +44,55 @@ import com.grippo.design.resources.provider.muscle_load_no_data
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
+@Immutable
+public sealed interface MuscleLoadingCardStyle {
+    @Immutable
+    public data object Overview : MuscleLoadingCardStyle
+
+    @Immutable
+    public data object Detailed : MuscleLoadingCardStyle
+
+    @Immutable
+    public data object Summary : MuscleLoadingCardStyle
+}
+
 @Composable
 public fun MuscleLoadingCard(
     modifier: Modifier = Modifier,
     summary: MuscleLoadSummaryState,
-    presentation: MetricCardPresentation = MetricCardPresentation.Detailed,
+    style: MuscleLoadingCardStyle = MuscleLoadingCardStyle.Detailed,
 ) {
-    MetricSectionPanel(
-        modifier = modifier,
-        style = if (presentation == MetricCardPresentation.Overview) {
-            MetricSectionPanelStyle.Large
-        } else {
-            MetricSectionPanelStyle.Small
-        },
-    ) {
-        if (presentation == MetricCardPresentation.Overview) {
-            MuscleLoadingOverview(summary = summary)
-        } else {
-            Text(
-                text = AppTokens.strings.res(Res.string.highlight_muscle_focus),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+    when (style) {
+        MuscleLoadingCardStyle.Summary -> MuscleLoadingCardSummary(
+            modifier = modifier,
+            summary = summary,
+        )
 
-            MuscleLoading(
-                summary = summary,
-                mode = MuscleLoadingMode.PerGroup,
-            )
+        MuscleLoadingCardStyle.Overview,
+        MuscleLoadingCardStyle.Detailed -> MetricSectionPanel(
+            modifier = modifier,
+            style = if (style == MuscleLoadingCardStyle.Overview) {
+                MetricSectionPanelStyle.Large
+            } else {
+                MetricSectionPanelStyle.Small
+            },
+        ) {
+            if (style == MuscleLoadingCardStyle.Overview) {
+                MuscleLoadingOverview(summary = summary)
+            } else {
+                Text(
+                    text = AppTokens.strings.res(Res.string.highlight_muscle_focus),
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.text.secondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+                MuscleLoading(
+                    summary = summary,
+                    mode = MuscleLoadingMode.PerGroup,
+                )
+            }
         }
     }
 }
@@ -228,7 +249,7 @@ private fun MuscleLoadingCardOverviewIncompletePreview() {
                     unmeasuredVolumeSets = 4,
                 ),
             ),
-            presentation = MetricCardPresentation.Overview,
+            style = MuscleLoadingCardStyle.Overview,
         )
     }
 }
@@ -240,7 +261,7 @@ private fun MuscleLoadingCardOverviewPreview() {
         MuscleLoadingCard(
             modifier = Modifier.fillMaxWidth(),
             summary = stubMuscleLoadSummary(),
-            presentation = MetricCardPresentation.Overview,
+            style = MuscleLoadingCardStyle.Overview,
         )
     }
 }
@@ -252,7 +273,7 @@ private fun MuscleLoadingCardOverviewEmptyPreview() {
         MuscleLoadingCard(
             modifier = Modifier.fillMaxWidth(),
             summary = stubMuscleLoadSummaryEmpty(),
-            presentation = MetricCardPresentation.Overview,
+            style = MuscleLoadingCardStyle.Overview,
         )
     }
 }
@@ -264,7 +285,7 @@ private fun MuscleLoadingCardOverviewSingleGroupPreview() {
         MuscleLoadingCard(
             modifier = Modifier.fillMaxWidth(),
             summary = stubMuscleLoadSummarySingleGroup(),
-            presentation = MetricCardPresentation.Overview,
+            style = MuscleLoadingCardStyle.Overview,
         )
     }
 }
@@ -279,7 +300,7 @@ private fun MuscleLoadingCardOverviewSingleGroupWithoutMusclePreview() {
             summary = summary.copy(
                 perMuscle = summary.perMuscle.copy(entries = persistentListOf()),
             ),
-            presentation = MetricCardPresentation.Overview,
+            style = MuscleLoadingCardStyle.Overview,
         )
     }
 }
@@ -301,7 +322,7 @@ private fun MuscleLoadingCardOverviewSingleGroupTiedMusclesPreview() {
                         .toPersistentList(),
                 ),
             ),
-            presentation = MetricCardPresentation.Overview,
+            style = MuscleLoadingCardStyle.Overview,
         )
     }
 }
@@ -331,7 +352,7 @@ private fun MuscleLoadingCardOverviewTwoGroupsPreview() {
                         .toPersistentList(),
                 ),
             ),
-            presentation = MetricCardPresentation.Overview,
+            style = MuscleLoadingCardStyle.Overview,
         )
     }
 }

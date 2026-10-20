@@ -56,7 +56,9 @@ public class PerformanceTrendDetailsViewModel(
             )
         }.toPersistentList()
 
-        update { it.copy(history = history) }
+        val trainingCount = trainings.size
+
+        update { it.copy(history = history, trainingCount = trainingCount) }
     }
 
     override fun onBack() {

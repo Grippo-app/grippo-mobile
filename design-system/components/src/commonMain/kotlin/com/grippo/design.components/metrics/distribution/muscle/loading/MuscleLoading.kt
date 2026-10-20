@@ -26,11 +26,18 @@ public enum class MuscleLoadingMode {
     PerMuscle,
 }
 
+@Immutable
+public enum class MuscleLoadingStyle {
+    Annotated,
+    Breakdown,
+}
+
 @Composable
 public fun MuscleLoading(
     modifier: Modifier = Modifier,
     summary: MuscleLoadSummaryState,
     mode: MuscleLoadingMode,
+    style: MuscleLoadingStyle = MuscleLoadingStyle.Annotated,
 ) {
     val entries = when (mode) {
         MuscleLoadingMode.PerGroup -> summary.perGroup.entries
@@ -58,17 +65,31 @@ public fun MuscleLoading(
                 summary = summary,
             )
         }
-        if (entries.isNotEmpty() || summary.meta.trainingsCount > 0) {
-            Text(
-                text = AppTokens.strings.res(
-                    if (summary.meta.trainingsCount == 0) Res.string.muscle_load_anatomy_note
-                    else Res.string.muscle_load_set_share_note
-                ),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-            )
+        if (style == MuscleLoadingStyle.Annotated) {
+            if (entries.isNotEmpty() || summary.meta.trainingsCount > 0) {
+                Text(
+                    text = AppTokens.strings.res(
+                        if (summary.meta.trainingsCount == 0) Res.string.muscle_load_anatomy_note
+                        else Res.string.muscle_load_set_share_note
+                    ),
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.text.secondary,
+                )
+            }
+            MuscleLoadingDataNotice(summary = summary)
         }
-        MuscleLoadingDataNotice(summary = summary)
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingBreakdownPreview() {
+    PreviewContainer {
+        MuscleLoading(
+            summary = stubMuscleLoadSummary(),
+            mode = MuscleLoadingMode.PerGroup,
+            style = MuscleLoadingStyle.Breakdown,
+        )
     }
 }
 

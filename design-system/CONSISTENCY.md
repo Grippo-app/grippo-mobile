@@ -108,7 +108,23 @@ and Latin text in both themes; each role keeps its existing size and line height
   outside. Recorded-set distribution remains weighted by exercise involvement;
   exercise anatomy keeps its distinct participation explanation. Exclusions and
   missing-data notices remain visible, and tied leaders receive equal emphasis.
-  The leading-share ring retains `charts.ring.info`, with no status thresholds.
+  Muscle-load details request the full available sheet height from their local
+  scrolling content, including loading and empty states; switching group/muscle
+  lists does not choose the sheet height. The shared dialog host keeps its policy.
+  Centered `b14Med/text.secondary` date context precedes a cohesive evidence card:
+  `MuscleLoadingCardStyle.Summary` uses `MetricSectionPanel.Large`, two neutral
+  `h3/text.primary` counts with `b12Med/text.secondary` labels for available sets
+  and workouts, one known-set-share caption and a visible excluded/unknown-set
+  count. The Summary is read-only, without a chevron, anatomy or a leading-share
+  ring. `Overview` and `Detailed` remain variants of the same card family.
+  An Outline segment selects groups versus muscles. The body map and exact share
+  rows remain open on `background.dialog`; `MuscleLoadingStyle.Breakdown` avoids
+  repeating the card's explanation. A Tertiary disclosure owns method detail.
+  `Annotated` keeps the existing explanation owner in all other contexts.
+  The disclosure uses `b13Med/text.secondary` methodology and data-quality detail;
+  volume-only caveats are absent from this set-share surface. Loading, no workouts,
+  unavailable sets and unknown anatomy have distinct content without fabricated
+  zero shares or quality/recovery judgments.
 - `MuscleMark` Standard uses `muscle.markSize/markPadding/markRadius`
   (32/2/8 dp). Inline uses `muscle.inlineMarkSize` (28 dp) without a background
   tile or padding, preserving the same 28 dp anatomical drawing. Summary uses
@@ -168,11 +184,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   navigation slot with the "Library" label is the broad exercise cue, distinct
   from its copper `GoalMark` "strength" use. Tabs split 2 + 2 around the central
   Play action.
-- Muscle-focus summaries show the leading recorded-set share with `charts.ring.info`;
-  the ring is descriptive data and has no success/warning thresholds. Empty summaries
-  show neutral unavailable information without an inferred score or status.
-  Progress bars use linear proportions and outside
-  values; pie slices preserve their actual shares.
+- Muscle distribution summaries show neutral unavailable information when data
+  is absent, without an inferred score or status. Progress bars use linear
+  proportions and outside values; pie slices preserve their actual shares.
 - Timeline points use `timeline.marker/markerBackground` for a warm chronological
   anchor with a soft halo; connectors stay `divider.default`. The marker does not
   represent selection or workout completion. Keep content and rail geometry stable.
@@ -389,13 +403,16 @@ and Latin text in both themes; each role keeps its existing size and line height
   dimmed `text.tertiary` treatment; unavailable duration shows "—" and recorded
   zero shows "0 min". Average volume per workout is not shown.
   The history toolbar uses `divider.subtle` to separate controls from records.
-- Home uses `MetricCardPresentation.Overview` for goal, muscle, streak and
-  performance summaries; goal, streak and performance dialogs retain `Detailed`,
-  while muscle details keep the full distribution and PerGroup/PerMuscle selector.
+- Home uses `GoalCardStyle.Overview` and `MuscleLoadingCardStyle.Overview` for
+  goal and muscle summaries, and `MetricCardPresentation.Overview` for streak
+  and performance summaries.
+  Detail dialogs provide the corresponding period evidence and diagnostics;
+  muscle details keep the full distribution and expose the PerGroup/PerMuscle
+  selector when a known group distribution exists.
   Overview includes the context needed to interpret the current value: muscle
   distribution and session/set counts, inferred training rhythm and active days,
-  and a guarded comparison with previous workouts' average. Full history, best
-  values and timeline breakdowns remain available through the existing card action.
+  and a guarded comparison with previous workouts' average. Period history,
+  diagnostic findings and timeline breakdowns remain available through the existing card action.
   A quiet hint under Progress identifies the summary cards as detail entry points;
   it appears only when at least one of those cards is present.
 - Home card headings use `h5` and `text.primary`; section headings retain `h4`,
@@ -436,26 +453,48 @@ and Latin text in both themes; each role keeps its existing size and line height
   the existing streak headline and cadence on the left, active-day count on the
   right, with its short localized caption. Both columns wrap naturally; the
   existing thin progress indicator follows below. Full history stays in Details.
+- Training-rhythm details use one Large neutral summary: `h3` result, `b14Med`
+  cadence and a single `b13Med` active-day total. With recorded activity but no
+  current series, that total becomes the result and is not repeated. Recent
+  evidence and the compact calculation explanation stay open on the dialog surface.
+  Daily history uses up to seven chronological date markers; recorded days use
+  `charts.indicator.info`, blank markers mean no record rather than missed training.
+  Each marker has a complete localized date and record-status description.
+  Weeks and cycles use up to four newest-first ranges, blue indicators and explicit
+  counted/reference days; incomplete observation is labelled, without warning or
+  success colors. Cycle counts include only training days matching the inferred
+  rhythm. Section headings use `h4`; compact method heading uses `b13Semi` and
+  its supporting body uses `b13Med`. No duplicate summary progress, mood verdict,
+  observed-history counter or framed explanation competes with the evidence.
 - Goal cards lead with the shared goal mark and primary goal. Training alignment
   is a neutral numerical percentage with an explicit caption and a separate
   semantic status; no completion ring suggests an achieved outcome. Missing
   scores show an unavailable value, and partial evidence retains its notice.
-  A separate compact calendar row shows the actual target and remaining time in
-  Overview and Details; no second progress scale competes with alignment. Expiry
-  never implies success. The analyzed-workout count is scoped
-  to the selected period: only eligible sessions contribute, not lifetime totals.
-  Overview content determines its own height without filler spacers; the existing
-  remaining/overdue message and Update eligibility are preserved.
-  Details shows at most two non-passing diagnostic facts first, in the existing
-  severity/rule order. Those facts and the disclosure keep their order when
-  toggled. Additional criteria, evidence counts and the short explanation expand
-  vertically from the control and fade over 200 ms; no duplicate findings or
-  replacement lazy items make the sheet jump to its new height.
-  Titles sit above actual/target values
-  so both retain their full width. Repeated introductions and score/deadline
-  summaries are omitted; unavailable assessments stay neutral, and partial-data
-  limitations remain visible. The score describes training alignment, not goal
-  achievement.
+  Shared cards keep the compact calendar row with the actual target and remaining
+  time; expiry never implies success. Analyzed-workout counts include only
+  eligible sessions in the selected period.
+  The sealed GoalCard family owns Overview, Assessment and Calendar styles.
+  Goal details use its open Assessment style on `background.dialog`, with the shared
+  copper GoalMark, an `h4` goal name, a modest neutral `h3` alignment value and a
+  secondary status label with its existing semantic marker. The visible short
+  explanation distinguishes training patterns from goal completion. Actual
+  analyzed dates, workouts/days/sets remain quiet secondary `b12Med` context.
+  At most two non-PASS diagnostics lead in severity/rule order, followed by one
+  PASS fact when available. Diagnostic sections use one quiet `background.card`
+  surface with the existing breakdown radius/padding and no outline. Each fact
+  keeps the same text edge: a full-width `b14Semi` rule title, optional secondary
+  `b12Med` muscle context, a `b14Semi` actual value and a separate secondary
+  `b12Med` target line. Existing semantic dots align with the first title line;
+  ContentDivider separates facts without nested cards or context indentation.
+  Actual values retain the existing severity color mapping and threshold-rounding
+  qualifiers. Partial-data limitations remain visible; unavailable assessments
+  stay neutral.
+  Its quiet Calendar style follows the useful findings, using secondary
+  `b12Med` date/remaining copy, the shared Calendar icon and the existing Small
+  Secondary Update action only when overdue. No second progress scale competes
+  with alignment. The disclosure keeps stable order and reveals remaining checks,
+  exclusions/metadata limitations and methodology with vertical expansion and
+  fade over 200 ms; visible findings are not repeated inside it.
   Weekly training-day diagnostics use compact localized day/week units; their
   criterion heading carries the training context instead of each value repeating it.
   Status wording describes a course to follow or adjust without judging the user.
@@ -513,10 +552,29 @@ and Latin text in both themes; each role keeps its existing size and line height
   row; their trailing Toggle is passive. Input clear/copy/password actions have
   separate localized labels. Read-only exercise summaries have no click target
   or detail chevron; recording/completed-workout rows retain their detail action.
-- Detailed performance cards keep the metric name beside its icon and, for
-  non-duration metrics with an available comparison, the status below the value. Home uses the common title/chevron header; names, units,
-  comparison text and statuses wrap naturally. Its paired metric cards share an
-  intrinsic-height row, so localized headings can grow without uneven card bottoms.
+- Performance details lead with the latest-workout label/date and one Small
+  MetricSectionPanel summary. The existing metric icon uses `icon.secondary` beside
+  a neutral `h4` value. Home card headings and the host title share the friendly
+  metric name owned by `PerformanceMetricTypeState.label()` / `labelText()`.
+  Earlier average and signed change use secondary `b12Med`; the average label names
+  the comparison baseline once and the adjacent delta uses a short change label.
+  Detailed summaries omit status chips and best-value repetitions; missing current
+  data, missing earlier data and a zero earlier average have distinct quiet copy.
+  Home Overview retains its title/chevron, statuses, comparisons and paired
+  intrinsic-height rows. Complete localized names, units and explanations wrap.
+- Performance history uses open date/value rows for up to nine previous sessions;
+  the latest session appears only in the summary. Secondary `b13Med` dates, neutral
+  `b14Semi` values and `subContent` vertical padding keep the rows quiet. Same-day
+  sessions add secondary `b12Med` times in both summary and rows; `ContentDivider`
+  separates adjacent rows only. The blue elapsed-date chart retains up to ten recent
+  sessions with the compact `metrics.performance.trend.historyAspectRatio` of 3.2.
+  A secondary count caption includes the latest session when the selected period
+  contains more than the retained history. A single session has no history section.
+  A Tertiary calculation disclosure follows the content, initially collapsed with
+  coordinated expand/shrink and fade. Metric definitions and their limits use
+  secondary `b13Med`; chart scope and one shared comparison rule use `b12Med`.
+  The chart-scope sentence appears only with a rendered chart; the comparison rule
+  remains available in the disclosure even when there are too few chart points.
 - Regular exercise thumbnails remain `ExerciseExampleImageStyle.MEDIUM` (64 dp).
   Medium history/read-only exercise rows use `COMPACT` (48 dp); small inline
   exercise references may use `SMALL` (32 dp).
@@ -602,8 +660,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   Quiet dividers and Small CheckSelectableCard choices organize expanded content.
   One scrolling body keeps the pinned Primary Save action on an opaque screen
   surface; permanent introductory and field-description copy is omitted.
-- Streak and performance details use `block` before a new section heading and
-  `content` from the heading to its card or between related entries. Compact goal
+- Streak and performance details use `block` before a new section heading.
+  Headings meet cards or charts at `content`; performance history retains the
+  compact row spacing defined above. Compact goal
   details use `content` between their summary, diagnostic and disclosure blocks,
   and from a diagnostic heading to its card. The first visible section has no
   leading separator. Statistics, streak, performance and muscle detail ranges

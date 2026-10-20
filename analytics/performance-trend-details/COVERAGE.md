@@ -22,8 +22,9 @@ the default null screenPresentation. Dialog sessions have no presentation contra
 
 The leaf Back callback observes a dismissal request, not delivered dismissal.
 The shared host handles toolbar Back/Close, Compose/system Back and swipe/outside
-dismissal without invoking that callback; those paths are omitted. Dialog views/close, scrolling, chart gestures
-and read-only history cards have no events. No range, values, identity, body
+dismissal without invoking that callback; those paths are omitted. Dialog views/close,
+scrolling, chart gestures, read-only history rows and the local methodology
+disclosure have no events. No range, values, identity, body
 measurements, text or exceptions are reported. The typed stateless analytics service
 retains its existing injection, schema and shared module registration.
 
@@ -53,25 +54,55 @@ Descriptions explain exercise/session composition limits without inferring fatig
 strength or effort. Values retain calculation precision and use output formatting
 without input-field limits. Repetition means may be fractional.
 
-History includes the first session and up to ten newest sessions; each prefix
-uses all its available predecessors, even when older cards fall outside the ten
-shown. Stable training IDs key history cards. The chart shows available values in
-workout order with elapsed-day spacing and actual date labels. If a timestamp is
+The sheet's Detailed metric card is one neutral summary of the latest session and
+its available earlier-session average. The average label establishes the comparison
+baseline once; the adjacent percentage uses a short change label. The Overview
+card keeps its existing friendly metric names and resolves them through the same
+PerformanceMetricTypeState label mapping as the dialog title. Label and labelText
+remain resource-backed, so locale changes do not freeze the names.
+History uses compact date/value rows for previous sessions only; the latest
+session appears once in the summary. Same-day sessions include their time in both
+summary and rows. A single session has no history heading or empty list section.
+The initially collapsed methodology disclosure contains the metric definition and
+its limits and one shared earlier-average comparison rule. A separate chart-scope
+sentence is included only when the chart is shown. The same locally derived
+hasChart predicate (at least two available chart values) controls both the chart and
+that sentence, including empty, single-session and partially measured histories.
+No visibility field is stored in State or a draft.
+
+Before the first cached-source emission, `history` is null and the sheet shows
+initial loading rather than an empty-period claim. The first emission resolves
+history to a populated or empty immutable list. The sheet observes the same cached
+selected-period source as before; it makes no separate refresh request or remote
+freshness claim. `trainingCount` counts every training in that emission, independently
+of the ten-entry display limit, and updates together with history.
+
+History retains up to ten newest sessions, including a first session when it is
+within that limit; each prefix uses all its available predecessors, even when older
+entries fall outside the ten retained. The screen derives up to nine previous-session
+rows without changing that history. A scope caption compares total trainingCount
+with the retained history size, including the latest summary. Stable training IDs
+key history rows. The compact chart keeps the full retained history and shows
+available values in workout order with elapsed-day spacing and actual date labels. If a timestamp is
 unavailable, the whole series falls back to workout index spacing. Missing metric
 values are not replaced with zero. Distinct first/last dates are shown below the chart; exact values
 retain their metric's units in the local tooltip and accessibility description. Lines connect available observations; they are not
 measurements of the intervening workouts. Fewer than two points hides the chart,
-while the session cards remain visible. An empty period has explicit explanatory copy.
+while the available session values remain accessible. An empty period has explicit
+explanatory copy. An available previous average is determined from the metric's
+actual nullable average, so a recorded zero baseline remains distinct from having
+no earlier measurement.
 
 ## State preservation inventory
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | PerformanceTrendDetailsComponent / VM | range and metricType | Runtime only for live dialog | Caller inputs and retainedInstance; no draft key | Retained VM survives ordinary recreation; fresh opening uses current Home inputs |
-| PerformanceTrendDetailsViewModel | history, training identity, dates and metric presentation | Rebuild | TrainingFeature.observeTrainings, PerformanceTrendUseCase and domain-to-state mapper | Starts empty; rebuilds all available session cards, including a single session |
+| PerformanceTrendDetailsViewModel | history, total trainingCount, training identity, dates and metric presentation | Rebuild | TrainingFeature.observeTrainings for the selected range, PerformanceTrendUseCase and domain-to-state mapper | History starts null; the first emission resolves populated/empty data and its total count in one update. At most ten newest entries are retained for the summary and chart, with up to nine previous-session rows derived locally; their comparisons still use all predecessors |
+| PerformanceTrendDetailsScreen | Methodology disclosure state | Runtime only | Local rememberSaveable presentation state in the live dialog | Fresh opening starts collapsed; ordinary recomposition/recreation retains the current disclosure. No business draft or process-death dialog restoration |
 | Dialog host | Session, callbacks and pending Back | Runtime only | Slot/step serializer = null | Process death discards the session |
 | Foundation / widgets | Jobs, loaders and scroll/gesture state | Runtime only | Existing foundation and widget owners | No business snapshot or synthetic input events |
 
-No editable fields, selections, filters, picker results, secrets or parent drafts
-are introduced. Calculated values are rebuilt; no StateKeeper supplier, extra
+No editable business fields, selections, filters, picker results, secrets or parent
+drafts are introduced. Calculated values are rebuilt; no StateKeeper supplier, extra
 lifecycle job or reporting state is added. Home owns its selected period.

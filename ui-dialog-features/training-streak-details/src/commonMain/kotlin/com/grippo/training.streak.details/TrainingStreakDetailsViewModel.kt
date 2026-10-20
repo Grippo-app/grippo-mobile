@@ -31,11 +31,9 @@ public class TrainingStreakDetailsViewModel(
 
     private fun provideTrainingStreak(trainings: List<Training>) {
         val range = state.value.range.value ?: return
-        val streak = trainings.takeIf { it.isNotEmpty() }?.let { values ->
-            trainingStreakUseCase
-                .fromTrainings(trainings = values, range = range)
-                .toState()
-        }
+        val streak = trainingStreakUseCase
+            .fromTrainings(trainings = trainings, range = range)
+            .toState()
 
         update { it.copy(streak = streak) }
     }

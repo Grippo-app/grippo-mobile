@@ -2,11 +2,13 @@ package com.grippo.core.state.metrics.performance
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.formatters.DensityFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.design.core.AppTokens
 import kotlin.time.Duration as KotlinDuration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
@@ -21,6 +23,14 @@ public sealed interface PerformanceMetricState {
     public val status: PerformanceTrendStatusState
 
     public fun isEmpty(): Boolean = status == PerformanceTrendStatusState.Empty
+
+    public fun hasAverage(): Boolean = when (this) {
+        is Duration -> average != null
+        is Volume -> average != null
+        is Density -> average != null
+        is Repetitions -> average != null
+        is Intensity -> average != null
+    }
 
     /** Values retain their calculation precision; only display text is rounded. */
     public fun chartValue(): Float? {
@@ -54,12 +64,20 @@ public sealed interface PerformanceMetricState {
     }
 
     @Composable
-    public fun bestDisplay(): String = when (this) {
-        is Duration -> DurationFormatState.shortMinutes(best)
-        is Volume -> VolumeFormatState.shortTotal(best)
-        is Density -> DensityFormatState.shortTotal(best)
-        is Repetitions -> RepetitionsFormatState.shortAverage(best?.toDouble())
-        is Intensity -> IntensityFormatState.shortAverage(best)
+    public fun averageDeltaColor(): Color {
+        if (this is Duration) {
+            return AppTokens.colors.text.secondary
+        }
+
+        return when (status) {
+            PerformanceTrendStatusState.Record,
+            PerformanceTrendStatusState.Improved -> AppTokens.colors.semantic.success
+
+            PerformanceTrendStatusState.Declined -> AppTokens.colors.semantic.warning
+
+            PerformanceTrendStatusState.Stable,
+            PerformanceTrendStatusState.Empty -> AppTokens.colors.text.secondary
+        }
     }
 
     @Immutable

@@ -28,10 +28,12 @@ import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
 import com.grippo.design.components.metrics.MetricCardPresentation
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCard
+import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardStyle
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.performance.ExerciseSpotlightsCard
 import com.grippo.design.components.metrics.performance.PerformanceMetricCard
 import com.grippo.design.components.metrics.profile.goal.GoalCard
+import com.grippo.design.components.metrics.profile.goal.GoalCardStyle
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.utils.AnchorScrollBehavior
 import com.grippo.design.components.utils.rememberAnchoredLazyGridState
@@ -137,8 +139,7 @@ internal fun DashboardHomeContent(
                         .fillMaxWidth()
                         .scalableClick(onClick = contract::onOpenGoalDetails),
                     value = state.goalProgress,
-                    presentation = MetricCardPresentation.Overview,
-                    onUpdateClick = contract::onAddGoal
+                    style = GoalCardStyle.Overview(onUpdateClick = contract::onAddGoal),
                 )
             }
         }
@@ -150,7 +151,7 @@ internal fun DashboardHomeContent(
                         .fillMaxWidth()
                         .scalableClick(onClick = contract::onOpenMuscleLoading),
                     summary = state.muscleLoad,
-                    presentation = MetricCardPresentation.Overview,
+                    style = MuscleLoadingCardStyle.Overview,
                 )
             }
         }

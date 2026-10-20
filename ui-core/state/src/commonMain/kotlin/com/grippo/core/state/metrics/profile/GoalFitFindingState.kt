@@ -11,11 +11,11 @@ import com.grippo.design.resources.provider.decimal_separator
 import com.grippo.design.resources.provider.goal_fit_target_at_least
 import com.grippo.design.resources.provider.goal_fit_target_at_most
 import com.grippo.design.resources.provider.goal_fit_target_range
+import com.grippo.design.resources.provider.goal_fit_target_value
 import com.grippo.design.resources.provider.goal_fit_unit_groups
 import com.grippo.design.resources.provider.goal_fit_unit_ratio
 import com.grippo.design.resources.provider.goal_fit_unit_training_days_per_week
 import com.grippo.design.resources.provider.goal_fit_unit_sets_per_week
-import com.grippo.design.resources.provider.goal_fit_value_target
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import com.grippo.toolkit.number.utils.formatDecimal
@@ -39,16 +39,18 @@ public data class GoalFitFindingState(
     public fun contextLabel(): String = context.map { it.title().text() }.joinToString(", ")
 
     @Composable
-    public fun valueTargetText(): String {
-        val actual = when {
-            targetMin != null && actualValue < targetMin && number(actualValue) == number(targetMin) ->
-                "<${formatValue(targetMin)}"
+    public fun actualText(): String = when {
+        targetMin != null && actualValue < targetMin && number(actualValue) == number(targetMin) ->
+            "<${formatValue(targetMin)}"
 
-            targetMax != null && actualValue > targetMax && number(actualValue) == number(targetMax) ->
-                ">${formatValue(targetMax)}"
+        targetMax != null && actualValue > targetMax && number(actualValue) == number(targetMax) ->
+            ">${formatValue(targetMax)}"
 
-            else -> formatValue(actualValue)
-        }
+        else -> formatValue(actualValue)
+    }
+
+    @Composable
+    public fun targetText(): String? {
         val target = when {
             targetMin != null && targetMax != null -> AppTokens.strings.res(
                 Res.string.goal_fit_target_range,
@@ -66,9 +68,9 @@ public data class GoalFitFindingState(
                 formatValue(targetMax),
             )
 
-            else -> return actual
+            else -> return null
         }
-        return AppTokens.strings.res(Res.string.goal_fit_value_target, actual, target)
+        return AppTokens.strings.res(Res.string.goal_fit_target_value, target)
     }
 
     @Composable

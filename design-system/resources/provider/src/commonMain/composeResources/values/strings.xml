@@ -61,25 +61,15 @@
     <string name="spotlight_near_best_action">Compare volume with the same technique and range of motion.</string>
     <string name="dashboard">Dashboard</string>
     <string name="highlight_muscle_focus">Muscle focus</string>
-    <string name="highlight_streaks">Streaks</string>
-    <string name="highlight_active_days">%1$s active days</string>
     <string name="highlight_streak">%1$d-day streak</string>
     <string name="highlight_streak_weekly_headline_primary">%1$d-week streak</string>
-    <string name="highlight_streak_weekly_target">Observed rhythm · %1$d training days/week</string>
-    <string name="highlight_streak_daily_target">Consecutive active days</string>
     <string name="highlight_streak_rhythm">%1$d-cycle streak</string>
-    <string name="highlight_streak_rhythm_target">Observed rhythm · %1$d active days · %2$d rest days</string>
     <string name="highlight_streak_pattern_headline_primary">Pattern streak: %1$d cycles</string>
-    <string name="highlight_streak_pattern_target">Observed rhythm · %1$d active days / %2$d days</string>
-    <string name="highlight_streak_mood_crushing">🔥 You’re doing great. Keep it up.</string>
-    <string name="highlight_streak_mood_on_track">💪 Nice progress. Stay consistent.</string>
-    <string name="highlight_streak_mood_paused">It’s okay to pause. Come back anytime.</string>
-    <string name="highlight_streak_mood_restart">🚀 Start fresh. One step is enough.</string>
-    <string name="performance_trend_desc_duration">Duration of each workout in the selected period. Longer or shorter does not mean better. Each comparison uses earlier workouts in that period with available duration data.</string>
-    <string name="performance_trend_desc_volume">Total weight moved: working weight × repetitions. Each workout is compared with the average of earlier workouts in this period with available volume data. Exercise choice and session length affect this total; it does not measure strength on its own.</string>
-    <string name="performance_trend_desc_density">Volume divided by the full workout duration in minutes, including rests. Compared with earlier workouts in this period with available density data. More work per minute does not by itself mean a better workout.</string>
-    <string name="performance_trend_desc_repetitions">Total repetitions per workout, compared with earlier workouts in this period with available repetition data. Exercise choice, sets and planned easier sessions affect the total; fewer reps do not establish fatigue.</string>
-    <string name="performance_trend_desc_intensity">Average working weight per weighted repetition, compared with earlier workouts in this period with available weight data. Exercise choice affects this average; it does not measure effort or strength on its own.</string>
+    <string name="performance_trend_desc_duration">Workout duration. Longer or shorter does not mean better.</string>
+    <string name="performance_trend_desc_volume">Weight moved: working weight × repetitions. Exercise choice and workout length affect the total; it does not measure strength on its own.</string>
+    <string name="performance_trend_desc_density">Volume per minute of the full workout, including rests. A higher value does not by itself mean a better workout.</string>
+    <string name="performance_trend_desc_repetitions">Total repetitions per workout. Exercise choice, sets and planned lighter sessions affect the total; fewer reps do not establish fatigue.</string>
+    <string name="performance_trend_desc_intensity">Average working weight per weighted repetition. Exercise choice affects this value; it does not measure effort or strength on its own.</string>
     <string name="sets_value">Sets (%1$s)</string>
     <string name="percent">%</string>
     <string name="selected">Selected</string>
@@ -242,15 +232,9 @@
     <string name="value_muscle_loading">%1$s muscle loading</string>
     <string name="muscle_loading">Muscle loading</string>
     <string name="muscle_load_no_data">No data yet.</string>
-    <string name="muscle_loading_distribution_title">Distribution</string>
-    <string name="value_training_streak">%1$s training streak</string>
-    <string name="training_streak">Training streak</string>
     <string name="value_performance_trend">%1$s — %2$s trend</string>
     <string name="performance_trend">%1$s trend</string>
     <string name="training_streak_insights_title">About this calculation</string>
-    <string name="training_streak_history_value">Observed history: %1$d days</string>
-    <string name="training_streak_timeline_title">Timeline progress</string>
-    <string name="training_streak_period_value">Active days: %1$d / %2$d</string>
     <string name="estimated_one_rm">Estimated one-rep max</string>
     <string name="equipments">Equipment</string>
     <string name="muscles">Muscles</string>
@@ -279,8 +263,6 @@
     <string name="progress">Progress</string>
     <string name="tonnage_chip">Tonnage</string>
     <string name="intensity_chip">Intensity</string>
-    <string name="performance_metric_density">Work rate</string>
-    <string name="performance_metric_intensity">Avg weight</string>
     <string name="repetitions_chip">Repetitions</string>
     <string name="volume">Volume</string>
     <string name="training_progress_lost_title">Exit workout</string>
@@ -598,6 +580,7 @@
     <string name="goal_card_update_btn">Update</string>
 
     <!-- Training goal details dialog -->
+    <string name="goal_details_alignment_hint">Based on recorded training patterns, not goal completion.</string>
     <string name="goal_details_title">Goal details</string>
     <string name="goal_details_show_details">About this assessment</string>
     <string name="goal_details_hide_details">Hide details</string>
@@ -608,8 +591,8 @@
     <!-- Goal-fit diagnostic sections -->
     <string name="goal_fit_diagnostic_drifting_title">What to adjust</string>
     <string name="goal_fit_diagnostic_on_track_title">What works</string>
-    <!-- Goal-fit target formats: actual / target line uses %1$s (actual), %2$s (target) -->
-    <string name="goal_fit_value_target">%1$s · target %2$s</string>
+    <!-- Target line: %1$s is the formatted goal-fit criterion. -->
+    <string name="goal_fit_target_value">Target: %1$s</string>
     <string name="goal_fit_target_at_least">≥%1$s</string>
     <string name="goal_fit_target_at_most">≤%1$s</string>
     <string name="goal_fit_target_range">%1$s–%2$s</string>
@@ -865,7 +848,6 @@
     <string name="exercise_history_set_result">%1$s × %2$s</string>
     <string name="exercise_history_previous_short">%1$s · %2$s</string>
     <string name="exercise_history_vs_date">vs %1$s</string>
-    <string name="training_streak_calculation_description">Only days with completed sets count. Multiple workouts on the same day count once. Weekly and cycle targets describe your recent history.</string>
     <string name="training_streak_current_progress">Latest period: %1$d / %2$d active days</string>
     <string name="estimated_one_rm_source">From %1$s × %2$s · %3$s</string>
     <string name="estimated_one_rm_history_peak">Best in this history: %1$s</string>
@@ -879,7 +861,6 @@
     <string name="performance_status_improved">Above usual</string>
     <string name="performance_status_declined">Below usual</string>
     <string name="performance_status_stable">Within usual range</string>
-    <string name="performance_best_value">Best in period so far %1$s</string>
 
     <string name="digest_title">Month summary</string>
     <string name="digest_unavailable">—</string>
@@ -890,7 +871,7 @@
     <string name="goal_details_analysis_excluded">Excluded sets with invalid or incomplete entries: %1$d</string>
     <string name="goal_details_analysis_missing_metadata">Muscle diagnostics unavailable: exercise data missing for %1$d sets.</string>
     <string name="goal_details_analysis_unavailable">The selected period does not overlap the goal history available today.</string>
-    <string name="goal_details_analysis_method">Compares your recorded training with reference patterns for this goal. This estimates training alignment, not whether the goal has been achieved.</string>
+    <string name="goal_details_analysis_method">Uses recorded sets since you set the goal, within the selected period. Weekly patterns need at least seven observed days.</string>
     <string name="training_streak_partial_period">Partially observed period</string>
     <string name="goal_fit_rule_build_muscle_weekly_frequency_title">Training frequency</string>
     <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Training frequency</string>
@@ -900,12 +881,63 @@
     <string name="muscle_load_anatomy_note">Estimated muscle involvement in this exercise.</string>
     <string name="muscle_load_excluded_sets">Sets not counted (missing repetitions or invalid measurements): %1$d.</string>
     <string name="muscle_load_unassigned_sets">Recorded sets with unknown muscle involvement: %1$d.</string>
-    <string name="muscle_load_focus_title">Largest share</string>
-    <string name="muscle_load_focus_note">These shares describe training focus, not fatigue or recovery.</string>
-    <string name="performance_history_scope">Up to 10 latest workouts. The chart follows workout order and connects available values. Comparisons use earlier workouts in the selected period.</string>
+    <string name="performance_history_scope">The chart connects available values from up to 10 latest workouts.</string>
+    <string name="performance_trend_details_comparison_scope">Comparisons use the average of all earlier workouts with data in the selected period.</string>
     <string name="muscle_load_unmeasured_volume_sets">Sets with incomplete load data: %1$d. Muscle shares use recorded sets; volume includes fully measured sets only.</string>
     <string name="goal_card_limited_data">Limited data</string>
     <string name="available_training_details_notice">Calculated from available exercise details. Some records may be unavailable.</string>
     <string name="available_sets_label">Available sets</string>
     <string name="available_exercises_label">Available exercises</string>
+    <string name="muscle_loading_details_share_note">Estimated shares of sets with known muscle involvement.</string>
+    <string name="muscle_loading_details_coverage">Sets outside this breakdown: %1$d</string>
+    <string name="muscle_loading_details_no_workouts_title">No workouts in this period</string>
+    <string name="muscle_loading_details_no_workouts_message">Record a workout to see which muscles your sets involved.</string>
+    <string name="muscle_loading_details_no_sets_title">No sets to break down yet</string>
+    <string name="muscle_loading_details_no_sets_message">This period has no available recorded sets with usable data.</string>
+    <string name="muscle_loading_details_unknown_title">Muscle data is unavailable</string>
+    <string name="muscle_loading_details_unknown_message">Your sets are recorded, but their exercises have no known muscle involvement.</string>
+    <string name="muscle_loading_details_method_title">How to read this</string>
+    <string name="muscle_loading_details_method_body">Each available set is shared between muscles in proportion to their listed involvement in the exercise. Before rounding, shares total 100% across sets with known muscle involvement.</string>
+    <string name="muscle_loading_details_method_limits">The share describes recorded sets. Muscle fatigue, recovery and training quality are not measured here.</string>
+    <string name="muscle_loading_details_method_expanded">Expanded</string>
+    <string name="muscle_loading_details_method_collapsed">Collapsed</string>
+
+    <string name="performance_trend_details_latest">Latest workout</string>
+    <string name="performance_trend_details_previous_average">Earlier average: %1$s</string>
+    <string name="performance_trend_details_comparison">Change: %1$s</string>
+    <string name="performance_trend_details_first_workout">A comparison needs an earlier workout with data in this period.</string>
+    <string name="performance_trend_details_zero_average">The earlier average is zero, so a percentage change is unavailable.</string>
+    <string name="performance_trend_details_value_unavailable">Value unavailable</string>
+    <string name="performance_trend_details_value_unavailable_description">This workout does not have enough data for this metric.</string>
+    <string name="performance_trend_details_recent_workouts">Recent workouts</string>
+    <string name="performance_trend_details_history_scope">Showing %1$d of %2$d workouts in this period.</string>
+    <string name="performance_trend_details_about">How it is calculated</string>
+    <string name="performance_trend_details_expanded">Expanded</string>
+    <string name="performance_trend_details_collapsed">Collapsed</string>
+    <string name="performance_trend_details_empty_message">Choose another period on Home to see your recorded workouts.</string>
+
+    <!-- Training rhythm details -->
+    <string name="training_streak_details_daily_headline">%1$d-day streak</string>
+    <string name="training_streak_details_weekly_headline">%1$d-week streak</string>
+    <string name="training_streak_details_cycle_headline">Rhythm repeats: %1$d</string>
+    <string name="training_streak_details_no_sequence">No continuous streak at the end of the period</string>
+    <string name="training_streak_details_daily_cadence">Consecutive days with recorded training</string>
+    <string name="training_streak_details_weekly_cadence">Usual weekly rhythm · training days: %1$d</string>
+    <string name="training_streak_details_rhythm_cadence">In your records · training days: %1$d, then days without a recorded workout: %2$d</string>
+    <string name="training_streak_details_pattern_cadence">Recorded cycle · total days: %2$d · training days: %1$d</string>
+    <string name="training_streak_details_daily_method">Several workouts on one day count once. The streak counts consecutive training days at the end of the selected period; an unfinished day keeps the previous streak. This is your history, not a daily training goal.</string>
+    <string name="training_streak_details_weekly_method">Several workouts on one day count once. The streak counts consecutive weeks at your usual frequency by the end of the selected period; an unfinished week keeps the previous streak. This frequency comes from your records, not a training goal.</string>
+    <string name="training_streak_details_cycle_method">Several workouts on one day count once. The streak counts consecutive cycles at the end of the selected period; an unfinished cycle keeps the previous streak. The bars count days matching the rhythm in your records, not a training goal.</string>
+    <string name="training_streak_details_recent_days">Recent days</string>
+    <string name="training_streak_details_recent_weeks">Recent weeks</string>
+    <string name="training_streak_details_recent_cycles">Recent cycles</string>
+    <string name="training_streak_details_daily_legend">Filled: training recorded · Empty: no record</string>
+    <string name="training_streak_details_weekly_legend">Training days / usual weekly count</string>
+    <string name="training_streak_details_cycle_legend">Matches / training days in your recorded rhythm</string>
+    <string name="training_streak_details_weekly_value">Training days: %1$d / %2$d</string>
+    <string name="training_streak_details_cycle_value">Matched days: %1$d / %2$d</string>
+    <string name="training_streak_details_day_recorded">Training recorded</string>
+    <string name="training_streak_details_day_unrecorded">No training recorded</string>
+    <string name="training_streak_details_day_description">%1$s · %2$s</string>
+    <string name="training_streak_details_empty">No training days in this period. Recorded workouts with completed reps will form your rhythm here.</string>
 </resources>

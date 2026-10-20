@@ -1,46 +1,34 @@
 package com.grippo.design.components.metrics.engagement.streak
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.engagement.TrainingStreakState
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
-import com.grippo.design.components.metrics.internal.MetricSectionPanel
-import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.highlight_active_days
-import com.grippo.design.resources.provider.training_streak_history_value
-import com.grippo.design.resources.provider.training_streak_calculation_description
+import com.grippo.design.resources.provider.training_streak_insights_title
 
 @Composable
 public fun TrainingStreakInsightsCard(
     modifier: Modifier = Modifier,
     value: TrainingStreakState,
 ) {
-    MetricSectionPanel(
+    Column(
         modifier = modifier,
-        style = MetricSectionPanelStyle.Small,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
     ) {
         Text(
-            text = AppTokens.strings.res(Res.string.highlight_active_days, value.totalActiveDays),
-            style = AppTokens.typography.h5(),
-            color = AppTokens.colors.text.primary
+            text = AppTokens.strings.res(Res.string.training_streak_insights_title),
+            style = AppTokens.typography.b13Semi(),
+            color = AppTokens.colors.text.primary,
         )
-
         Text(
-            text = AppTokens.strings.res(
-                Res.string.training_streak_history_value,
-                value.historyDays,
-            ),
-            style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.secondary
-        )
-
-        Text(
-            text = AppTokens.strings.res(Res.string.training_streak_calculation_description),
+            text = value.featured.calculationDescription(),
             style = AppTokens.typography.b13Med(),
             color = AppTokens.colors.text.secondary,
         )
@@ -49,10 +37,26 @@ public fun TrainingStreakInsightsCard(
 
 @AppPreview
 @Composable
-private fun TrainingStreakInsightsCardPreview() {
+private fun TrainingStreakInsightsCardDailyPreview() {
     PreviewContainer {
         TrainingStreakInsightsCard(
-            value = stubTrainingStreaks().first()
+            value = stubTrainingStreaks()[0],
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakInsightsCardWeeklyPreview() {
+    PreviewContainer {
+        TrainingStreakInsightsCard(value = stubTrainingStreaks()[1])
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakInsightsCardCyclePreview() {
+    PreviewContainer {
+        TrainingStreakInsightsCard(value = stubTrainingStreaks()[2])
     }
 }

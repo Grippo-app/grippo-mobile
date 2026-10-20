@@ -22,7 +22,9 @@ public data class TrainingGoalDetailsDialogState(
     public val priorityFindings: ImmutableList<GoalFitFindingState>
         get() {
             val progress = progress ?: return persistentListOf()
-            if (progress.score == null) return persistentListOf()
+            if (progress.score == null) {
+                return persistentListOf()
+            }
 
             return progress.findings
                 .filter { it.severity != GoalFitSeverityState.PASS }
@@ -31,13 +33,29 @@ public data class TrainingGoalDetailsDialogState(
                 .toPersistentList()
         }
 
+    public val positiveFindings: ImmutableList<GoalFitFindingState>
+        get() {
+            val progress = progress ?: return persistentListOf()
+            if (progress.score == null) {
+                return persistentListOf()
+            }
+
+            return progress.findings
+                .filter { it.severity == GoalFitSeverityState.PASS }
+                .take(1)
+                .toPersistentList()
+        }
+
     public val additionalFindings: ImmutableList<GoalFitFindingState>
         get() {
             val progress = progress ?: return persistentListOf()
-            if (progress.score == null) return persistentListOf()
+            if (progress.score == null) {
+                return persistentListOf()
+            }
 
             val priority = priorityFindings
-            return progress.findings.filterNot { it in priority }.toPersistentList()
+            val positive = positiveFindings
+            return progress.findings.filterNot { it in priority || it in positive }.toPersistentList()
         }
 
     @Composable

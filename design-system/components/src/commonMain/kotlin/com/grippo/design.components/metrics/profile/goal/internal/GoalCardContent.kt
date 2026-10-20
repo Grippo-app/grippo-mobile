@@ -25,9 +25,8 @@ import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.goal.GoalMark
-import com.grippo.design.components.metrics.MetricCardPresentation
-import com.grippo.design.components.metrics.internal.MetricSectionPanel
-import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
+import com.grippo.design.components.metrics.profile.goal.GoalCard
+import com.grippo.design.components.metrics.profile.goal.GoalCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -42,18 +41,13 @@ import com.grippo.design.resources.provider.icons.Calendar
 import com.grippo.design.resources.provider.metric_overview_goal_analyzed
 import com.grippo.design.resources.provider.metric_overview_goal_score
 import com.grippo.design.resources.provider.percent
-import com.grippo.toolkit.date.utils.DateCompose
 
 @Composable
 internal fun GoalCardContent(
     value: GoalProgressState,
     onUpdateClick: () -> Unit,
-    presentation: MetricCardPresentation = MetricCardPresentation.Detailed,
 ) {
-    GoalIdentity(
-        value = value,
-        showDetails = presentation == MetricCardPresentation.Overview,
-    )
+    GoalIdentity(value = value)
 
     ContentDivider()
 
@@ -66,19 +60,16 @@ internal fun GoalCardContent(
         onUpdateClick = onUpdateClick,
     )
 
-    if (presentation == MetricCardPresentation.Overview) {
-        Text(
-            text = AppTokens.strings.res(Res.string.available_training_details_notice),
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary,
-        )
-    }
+    Text(
+        text = AppTokens.strings.res(Res.string.available_training_details_notice),
+        style = AppTokens.typography.b12Med(),
+        color = AppTokens.colors.text.secondary,
+    )
 }
 
 @Composable
 private fun GoalIdentity(
     value: GoalProgressState,
-    showDetails: Boolean,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -103,14 +94,12 @@ private fun GoalIdentity(
             )
         }
 
-        if (showDetails) {
-            Icon(
-                modifier = Modifier.size(AppTokens.dp.metrics.overview.detailsIcon),
-                imageVector = AppTokens.icons.ArrowRight,
-                tint = AppTokens.colors.icon.secondary,
-                contentDescription = null,
-            )
-        }
+        Icon(
+            modifier = Modifier.size(AppTokens.dp.metrics.overview.detailsIcon),
+            imageVector = AppTokens.icons.ArrowRight,
+            tint = AppTokens.colors.icon.secondary,
+            contentDescription = null,
+        )
     }
 }
 
@@ -209,13 +198,7 @@ private fun GoalCalendarPeriod(
     value: GoalProgressState,
     onUpdateClick: () -> Unit,
 ) {
-    val target = value.goal.target
-    val targetValue = target.value
-    val targetText = if (targetValue != null) {
-        DateCompose.rememberFormat(value = targetValue, format = target.format)
-    } else {
-        target.display
-    }
+    val targetText = value.goal.target.short()
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -282,14 +265,12 @@ private fun GoalCalendarPeriod(
 @Composable
 private fun GoalCardContentOnTrackPreview() {
     PreviewContainer {
-        MetricSectionPanel(style = MetricSectionPanelStyle.Large) {
-            GoalCardContent(
-                value = stubGoalProgressList().first {
-                    !it.isFinished && it.score?.let { score -> score >= GoalProgressState.ON_TRACK_MIN } == true
-                },
-                onUpdateClick = {},
-            )
-        }
+        GoalCard(
+            value = stubGoalProgressList().first {
+                !it.isFinished && it.score?.let { score -> score >= GoalProgressState.ON_TRACK_MIN } == true
+            },
+            style = GoalCardStyle.Overview(onUpdateClick = {}),
+        )
     }
 }
 
@@ -297,15 +278,13 @@ private fun GoalCardContentOnTrackPreview() {
 @Composable
 private fun GoalCardContentDriftingPreview() {
     PreviewContainer {
-        MetricSectionPanel(style = MetricSectionPanelStyle.Large) {
-            GoalCardContent(
-                value = stubGoalProgressList().first {
-                    !it.isFinished &&
-                            it.score in GoalProgressState.DRIFTING_MIN until GoalProgressState.ON_TRACK_MIN
-                },
-                onUpdateClick = {},
-            )
-        }
+        GoalCard(
+            value = stubGoalProgressList().first {
+                !it.isFinished &&
+                        it.score in GoalProgressState.DRIFTING_MIN until GoalProgressState.ON_TRACK_MIN
+            },
+            style = GoalCardStyle.Overview(onUpdateClick = {}),
+        )
     }
 }
 
@@ -313,14 +292,12 @@ private fun GoalCardContentDriftingPreview() {
 @Composable
 private fun GoalCardContentOffTrackPreview() {
     PreviewContainer {
-        MetricSectionPanel(style = MetricSectionPanelStyle.Large) {
-            GoalCardContent(
-                value = stubGoalProgressList().first {
-                    it.score?.let { score -> score < GoalProgressState.DRIFTING_MIN } == true
-                },
-                onUpdateClick = {},
-            )
-        }
+        GoalCard(
+            value = stubGoalProgressList().first {
+                it.score?.let { score -> score < GoalProgressState.DRIFTING_MIN } == true
+            },
+            style = GoalCardStyle.Overview(onUpdateClick = {}),
+        )
     }
 }
 
@@ -329,12 +306,10 @@ private fun GoalCardContentOffTrackPreview() {
 private fun GoalCardContentNoScorePreview() {
     PreviewContainer {
         val value = stubGoalProgressList().first()
-        MetricSectionPanel(style = MetricSectionPanelStyle.Large) {
-            GoalCardContent(
-                value = value.copy(score = null),
-                onUpdateClick = {},
-            )
-        }
+        GoalCard(
+            value = value.copy(score = null),
+            style = GoalCardStyle.Overview(onUpdateClick = {}),
+        )
     }
 }
 
@@ -343,11 +318,9 @@ private fun GoalCardContentNoScorePreview() {
 private fun GoalCardContentPartialEvidencePreview() {
     PreviewContainer {
         val value = stubGoalProgressList().first()
-        MetricSectionPanel(style = MetricSectionPanelStyle.Large) {
-            GoalCardContent(
-                value = value.copy(evidence = value.evidence.copy(excludedSetCount = 3)),
-                onUpdateClick = {},
-            )
-        }
+        GoalCard(
+            value = value.copy(evidence = value.evidence.copy(excludedSetCount = 3)),
+            style = GoalCardStyle.Overview(onUpdateClick = {}),
+        )
     }
 }

@@ -32,16 +32,15 @@ import com.grippo.data.features.api.user.models.User
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_details_btn
 import com.grippo.design.resources.provider.goal_details_title
+import com.grippo.design.resources.provider.metric_overview_streak_title
 import com.grippo.design.resources.provider.muscle_loading
 import com.grippo.design.resources.provider.notification_weight_description
 import com.grippo.design.resources.provider.notification_weight_title
 import com.grippo.design.resources.provider.performance_trend
 import com.grippo.design.resources.provider.period_picker_title
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.training_streak
 import com.grippo.design.resources.provider.value_muscle_loading
 import com.grippo.design.resources.provider.value_performance_trend
-import com.grippo.design.resources.provider.value_training_streak
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.distribution.toState
@@ -403,12 +402,8 @@ internal class HomeViewModel(
         val range = state.value.range.value ?: return
         analytics.trackEvent(HomeEvent.TrainingStreakClicked)
 
-        val rangeLabel = state.value.range.label()
-        val title = rangeLabel?.let {
-            UiText.Res(value = Res.string.value_training_streak, formatArgs = persistentListOf(it))
-        } ?: UiText.Res(Res.string.training_streak)
         val dialog = DialogConfig.TrainingStreakDetails(
-            title = title,
+            title = UiText.Res(Res.string.metric_overview_streak_title),
             range = range
         )
 

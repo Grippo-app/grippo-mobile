@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="training_streak_details_active_days">
+        <item quantity="one">%1$d день із тренуваннями</item>
+        <item quantity="few">%1$d дні із тренуваннями</item>
+        <item quantity="many">%1$d днів із тренуваннями</item>
+        <item quantity="other">%1$d дня із тренуваннями</item>
+    </plurals>
+</resources>

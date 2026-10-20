@@ -291,7 +291,6 @@ public data object AppDp {
         val status: Status = Status
         val overview: Overview = Overview
 
-        val distribution: Distribution = Distribution
         val performance: Performance = Performance
         val profile: Profile = Profile
         val volume: Volume = Volume
@@ -330,21 +329,6 @@ public data object AppDp {
             val insightCardWidth: Dp = 320.dp
         }
 
-        public data object Distribution {
-            val muscleLoad: MuscleLoad = MuscleLoad
-
-            public data object MuscleLoad {
-                val balance: Balance = Balance
-
-                public data object Balance {
-                    val chart: Dp = size.xLarge
-                    val radius: Dp = AppDp.radius.medium
-                    val horizontalPadding: Dp = padding.medium
-                    val verticalPadding: Dp = padding.small
-                }
-            }
-        }
-
         public data object Performance {
             val strength: Strength = Strength
             val trend: Trend = Trend
@@ -355,7 +339,7 @@ public data object AppDp {
 
             public data object Trend {
                 val icon: Dp = AppDp.icon.extraSmall
-                val historyAspectRatio: Float = 2.2f
+                val historyAspectRatio: Float = 3.2f
             }
         }
 

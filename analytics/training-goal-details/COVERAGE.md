@@ -12,10 +12,16 @@ sheet. It has no nested flow or independent screen, so its default null
 `screenPresentation` is appropriate. Dialogs have no automatic view/close schema.
 No screen enum or separate dialog presentation contract is introduced.
 
+
+| Route / rendered surface | Component → ViewModel | Screen hook or dialog reason |
+|---|---|---|
+| `DialogConfig.TrainingGoalDetails` → `TrainingGoalDetailsScreen` | TrainingGoalDetailsComponent → TrainingGoalDetailsViewModel | Default null: in-memory dialog outside independent-screen presentation policy |
+| `HomeRouter.Home` → DashboardHomeContent GoalCard entry | HomeComponent → HomeViewModel | Existing typed `HomeScreen.Home` hook; full Home variants and containers are inventoried in `analytics/home/COVERAGE.md` |
+
 | Owner / callback | Observation | Eligibility / payload |
 |---|---|---|
 | TrainingGoalDetailsViewModel.onBack | DismissRequested / training_goal_details_dismiss_requested v1 | Existing callback without guards; empty payload before Back direction |
-| TrainingGoalDetailsViewModel.onAddGoal | AddGoalClicked / training_goal_details_add_goal v1 | Existing callback without guards; GoalCard update click before AddGoal direction; empty payload |
+| TrainingGoalDetailsViewModel.onAddGoal | AddGoalClicked / training_goal_details_add_goal v1 | Existing callback without guards; Overdue calendar Update click before AddGoal direction; empty payload |
 | HomeViewModel.onOpenGoalDetails | HomeEvent.GoalDetailsClicked | Existing valid-range guard; parent-owned open intent |
 | HomeViewModel config onAddGoal closure | HomeEvent.AddGoalClicked | Parent observes its accepted navigation callback, separate from dialog click intent |
 | Training/goal/catalog observation and adherence calculation | Deliberate omission | Reactive presentation rebuilding, no finite command or submission |
@@ -40,7 +46,7 @@ navigation directions retain their current owners.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | TrainingGoalDetailsComponent / VM | Immutable range seed | Runtime only | Caller range, retainedInstance | Reopening receives the current caller range; retained recreation reuses the VM |
-| TrainingGoalDetailsViewModel | progress; attention findings and unavailable-assessment copy derive from it | Rebuild | Combined TrainingFeature.observeTrainings, GoalFeature.observeGoal and currentDateFlow; relevant ExerciseExampleFeature.observeExerciseExamples IDs trigger recalculation; GoalFollowingUseCase with explicit range/current goal/current time | Fresh VM starts with null progress and a neutral NoData explanation; goal removal clears progress; an existing goal with empty period retains its card and a null score; latest source updates cancel obsolete computation |
+| TrainingGoalDetailsViewModel | progress; priority, positive and additional findings plus unavailable-assessment copy derive from it | Rebuild | Combined TrainingFeature.observeTrainings, GoalFeature.observeGoal and currentDateFlow; relevant ExerciseExampleFeature.observeExerciseExamples IDs trigger recalculation; GoalFollowingUseCase with explicit range/current goal/current time | Fresh VM starts with null progress and a neutral NoData explanation; goal removal clears progress; an existing goal with empty period retains its summary and a null score; latest source updates cancel obsolete computation |
 | GoalProgressState in dialog | grouped GoalAnalysisEvidenceState (range and valid/excluded/metadata-missing set counts), derived days/timeline, findings and prepared optional domain score | Rebuild | Domain adherence mapped through domain-to-state | Only observations since goal creation and inside the selected range are represented; insufficient observations have no numeric score |
 | Rendered content | Localized dates, evidence, unavailable-assessment copy and goal presentation | Rebuild | Typed date endpoints rendered with DateCompose; current resources and rebuilt progress | Locale changes resolve period endpoints and copy again; no resolved-label cache or saved business snapshot |
 | TrainingGoalDetailsScreen | Assessment disclosure | Runtime only | Local rememberSaveable keyed by goal primary/creation date | Collapsed for a fresh goal/session; survives recomposition/configuration within the current in-memory dialog; no process-death archive |
@@ -55,24 +61,35 @@ unchanged. Parent Home drafts and shell restoration retain their own inventories
 
 ## Calculation presentation
 
-The shared GoalCard renders the optional domain score and its status once. A
-null score shows TooEarly only when valid sets exist in a period shorter than
-`MIN_ANALYSIS_DAYS`; otherwise it shows NoData, or the existing no-overlap
-explanation for an unavailable analysis range. No corrective findings are
-presented as an evaluated assessment without a numeric score.
+The dialog uses the shared GoalCard Assessment variant with GoalMark, primary goal,
+optional domain score and semantic status. Its modest neutral percentage is
+explicitly labelled training alignment. A short visible explanation distinguishes
+recorded training patterns from goal completion. The Home Overview card remains
+unchanged. A null score has no corrective or positive diagnostic findings; a
+neutral notice distinguishes TooEarly, NoData and no analysis-range overlap.
+Null progress retains the existing neutral unavailable-assessment notice and
+never claims a confirmed missing goal or exposes a premature goal-creation action.
 
 The sheet keeps at most two priority non-PASS findings visible in the existing
-severity/rule order. Disclosure expands and fades in the remaining scored findings
-and evidence without replacing those priority rows or the control. Each finding
-appears once. Actual analysis dates, analyzed days, counted sets and conditional
-excluded or metadata-missing set counts remain available. Findings preserve their existing units, bounds and
-formatting. No new priority formula, prescription or coaching is calculated.
+severity/rule order, followed by one PASS finding when available. This positive
+fact acknowledges recorded evidence without inventing praise or coaching.
+Disclosure expands and fades in the remaining scored findings and methodology
+without replacing the visible findings or control. Visible findings are excluded
+from disclosure, so each finding appears once. Actual analysis dates, eligible
+session count, analyzed days and counted sets appear in the summary; conditional
+excluded and metadata-missing set counts remain in the disclosure. Findings keep
+their existing units, bounds and formatting, including rounded threshold qualifiers.
+The shared diagnostic block presents every fact on the same reading edge: rule,
+optional muscle context, actual value, then a separate localized target line.
+It uses one quiet section surface with dividers between facts; no nested context
+indentation or combined actual/target sentence remains. No priority formula,
+prescription or business scoring changes.
 
-The analyzed period and short method distinguish training alignment from goal
-achievement. The shared card keeps its partial-data notice. Deadline and remaining
-time retain their independent calendar meaning; no achievement or completion is
-inferred from expiry. The existing overdue Update action still opens the goal
-editor. Source observations, domain scoring and navigation owners are unchanged.
+Partial-data limitations remain visible with an available score. A quiet calendar
+section follows the diagnostic findings, keeping deadline/remaining time separate
+from training alignment. Expiry never implies achievement. The shared GoalCard Calendar variant retains the overdue
+Update action that opens the goal editor. Reactive sources, domain scoring,
+navigation owners and disclosure lifetime are unchanged.
 
 ## Admin synchronization impact
 

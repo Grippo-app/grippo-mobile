@@ -10,8 +10,8 @@ decision, and feature size alone is not permission.
 Current shape, for orientation (source owns changes):
 
 - Locale bundles live in the provider's `values*` directories, with full key parity.
-  Inspect the current directories for the shipped locale set. There is no
-  `plurals.xml`. Every format argument is positional.
+  Inspect the current directories for the shipped locale set; each bundle has
+  `strings.xml` and `plurals.xml`. Every format argument is positional.
 - `drawable/` holds five WebP files with alpha and no PNG, all named without
   prefixes: `empty_exercises`, `empty_sets`, `empty_workouts`, `error_dialog`,
   `onboarding_hero` (768 × 768).

@@ -61,25 +61,15 @@
     <string name="spotlight_near_best_action">Порівнюй обсяг за однакової техніки й амплітуди.</string>
     <string name="dashboard">Головна</string>
     <string name="highlight_muscle_focus">Фокус на м’язи</string>
-    <string name="highlight_streaks">Серії</string>
-    <string name="highlight_active_days">%1$s активних днів</string>
     <string name="highlight_streak">%1$d-денна серія</string>
     <string name="highlight_streak_weekly_headline_primary">%1$d-тижнева серія</string>
-    <string name="highlight_streak_weekly_target">Ваш ритм · %1$d дн. тренувань/тиж.</string>
-    <string name="highlight_streak_daily_target">Активні дні поспіль</string>
     <string name="highlight_streak_rhythm">Серія циклів: %1$d</string>
-    <string name="highlight_streak_rhythm_target">Ваш ритм · %1$d дн. тренувань · %2$d дн. відпочинку</string>
     <string name="highlight_streak_pattern_headline_primary">Патерн: %1$d циклів</string>
-    <string name="highlight_streak_pattern_target">Ваш ритм · %1$d активних дн. / %2$d дн.</string>
-    <string name="highlight_streak_mood_crushing">🔥 Ти чудово справляєшся. Так тримати.</string>
-    <string name="highlight_streak_mood_on_track">💪 Гарний прогрес. Тримай стабільний ритм.</string>
-    <string name="highlight_streak_mood_paused">Можна зробити паузу. Повертайся будь-коли.</string>
-    <string name="highlight_streak_mood_restart">🚀 Почни заново. Достатньо одного кроку.</string>
-    <string name="performance_trend_desc_duration">Тривалість кожного тренування у вибраному періоді. Довше чи коротше не означає краще. Порівняння — з попередніми тренуваннями цього періоду, для яких є дані про тривалість.</string>
-    <string name="performance_trend_desc_volume">Сумарна піднята вага: робоча вага × повторення. Порівняння — із середнім попередніх тренувань цього періоду з даними про обсяг. На підсумок впливають вправи й тривалість сесії; сам по собі він не показує зростання сили.</string>
-    <string name="performance_trend_desc_density">Обсяг, поділений на повну тривалість тренування у хвилинах, включно з відпочинком. Порівняння — з попередніми тренуваннями цього періоду з даними про щільність. Більше роботи за хвилину саме по собі не означає краще.</string>
-    <string name="performance_trend_desc_repetitions">Усього повторень за тренування порівняно з попередніми тренуваннями цього періоду, для яких є ці дані. На підсумок впливають вправи, підходи й заплановані легкі сесії; менше повторень не доводить втому.</string>
-    <string name="performance_trend_desc_intensity">Середня робоча вага на повторення з вагою порівняно з попередніми тренуваннями цього періоду, для яких є дані про вагу. Вибір вправ впливає на середнє; саме по собі воно не показує зусилля чи зростання сили.</string>
+    <string name="performance_trend_desc_duration">Тривалість тренування. Довше чи коротше не означає краще.</string>
+    <string name="performance_trend_desc_volume">Піднята вага: робоча вага × повторення. На підсумок впливають вправи й тривалість тренування; сам по собі він не показує зростання сили.</string>
+    <string name="performance_trend_desc_density">Обсяг за хвилину всього тренування, включно з відпочинком. Більше роботи за хвилину саме по собі не означає краще.</string>
+    <string name="performance_trend_desc_repetitions">Усього повторень за тренування. На підсумок впливають вправи, підходи й заплановані легкі сесії; менше повторень не доводить втому.</string>
+    <string name="performance_trend_desc_intensity">Середня робоча вага на повторення з вагою. Вибір вправ впливає на значення; саме по собі воно не показує зусилля чи зростання сили.</string>
     <string name="sets_value">Підходи (%1$s)</string>
     <string name="percent">%</string>
     <string name="selected">Обрано</string>
@@ -240,15 +230,9 @@
     <string name="value_muscle_loading">%1$s — м’язове навантаження</string>
     <string name="muscle_loading">М’язове навантаження</string>
     <string name="muscle_load_no_data">Немає даних.</string>
-    <string name="muscle_loading_distribution_title">Розподіл</string>
-    <string name="value_training_streak">%1$s — серія тренувань</string>
-    <string name="training_streak">Серія тренувань</string>
     <string name="value_performance_trend">%1$s — тренд %2$s</string>
     <string name="performance_trend">Тренд %1$s</string>
     <string name="training_streak_insights_title">Як це розраховано</string>
-    <string name="training_streak_history_value">Днів спостережуваної історії: %1$d</string>
-    <string name="training_streak_timeline_title">Прогрес за періодами</string>
-    <string name="training_streak_period_value">Активні дні: %1$d / %2$d</string>
     <string name="estimated_one_rm">Розрахунковий максимум на 1 повтор</string>
     <string name="equipments">Обладнання</string>
     <string name="muscles">М’язи</string>
@@ -277,8 +261,6 @@
     <string name="progress">Прогрес</string>
     <string name="tonnage_chip">Тоннаж</string>
     <string name="intensity_chip">Інтенсивність</string>
-    <string name="performance_metric_density">Темп роботи</string>
-    <string name="performance_metric_intensity">Сер. вага</string>
     <string name="repetitions_chip">Повторення</string>
     <string name="volume">Обсяг</string>
     <string name="training_progress_lost_title">Вийти з тренування</string>
@@ -594,6 +576,7 @@
     <string name="goal_card_update_btn">Оновити</string>
 
     <!-- Training goal details dialog -->
+    <string name="goal_details_alignment_hint">Оцінка за записами тренувань, а не за досягненням цілі.</string>
     <string name="goal_details_title">Деталі цілі</string>
     <string name="goal_details_show_details">Докладніше про оцінку</string>
     <string name="goal_details_hide_details">Сховати подробиці</string>
@@ -604,7 +587,7 @@
     <!-- Goal-fit diagnostic sections -->
     <string name="goal_fit_diagnostic_drifting_title">Що налаштувати</string>
     <string name="goal_fit_diagnostic_on_track_title">Що вже працює</string>
-    <string name="goal_fit_value_target">%1$s · ціль %2$s</string>
+    <string name="goal_fit_target_value">Орієнтир: %1$s</string>
     <string name="goal_fit_target_at_least">≥%1$s</string>
     <string name="goal_fit_target_at_most">≤%1$s</string>
     <string name="goal_fit_target_range">%1$s–%2$s</string>
@@ -844,7 +827,6 @@
     <string name="exercise_history_set_result">%1$s × %2$s</string>
     <string name="exercise_history_previous_short">%1$s · %2$s</string>
     <string name="exercise_history_vs_date">Раніше · %1$s</string>
-    <string name="training_streak_calculation_description">Враховуємо дні з виконаними підходами. Кілька тренувань за один день враховуються один раз. Тижневий ритм і цикли визначаємо за недавньою історією.</string>
     <string name="training_streak_current_progress">Останній період: %1$d / %2$d активних дн.</string>
     <string name="estimated_one_rm_source">За підходом %1$s × %2$s · %3$s</string>
     <string name="estimated_one_rm_history_peak">Найкращий у цій історії: %1$s</string>
@@ -858,7 +840,6 @@
     <string name="performance_status_improved">Вище звичного</string>
     <string name="performance_status_declined">Нижче звичного</string>
     <string name="performance_status_stable">У звичному діапазоні</string>
-    <string name="performance_best_value">Максимум періоду на той момент %1$s</string>
 
     <string name="digest_title">Підсумок місяця</string>
     <string name="digest_unavailable">—</string>
@@ -869,7 +850,7 @@
     <string name="goal_details_analysis_excluded">Виключено підходів із помилковими або неповними даними: %1$d</string>
     <string name="goal_details_analysis_missing_metadata">Діагностика м’язів недоступна: немає даних про вправи для %1$d підходів.</string>
     <string name="goal_details_analysis_unavailable">У вибраному періоді немає доступної історії цієї цілі.</string>
-    <string name="goal_details_analysis_method">Порівнюємо записані тренування з орієнтирами обраної цілі. Оцінка показує відповідність тренувань, а не досягнення цілі.</string>
+    <string name="goal_details_analysis_method">Ураховує записані підходи після вибору цілі в межах обраного періоду. Для оцінки тижневого ритму потрібно щонайменше сім днів спостережень.</string>
     <string name="training_streak_partial_period">Неповний період спостереження</string>
     <string name="goal_fit_rule_build_muscle_weekly_frequency_title">Регулярність тренувань</string>
     <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Регулярність тренувань</string>
@@ -879,12 +860,63 @@
     <string name="muscle_load_anatomy_note">Оцінкова участь м’язів у цій вправі.</string>
     <string name="muscle_load_excluded_sets">Не враховано підходів без повторень або з некоректними вимірюваннями: %1$d.</string>
     <string name="muscle_load_unassigned_sets">Підходів без даних про участь м’язів: %1$d.</string>
-    <string name="muscle_load_focus_title">Найбільша частка</string>
-    <string name="muscle_load_focus_note">Частки показують спрямованість тренувань, а не втому чи відновлення.</string>
-    <string name="performance_history_scope">До 10 останніх тренувань. Графік іде в порядку тренувань і з’єднує доступні значення. Порівняння враховують попередні тренування вибраного періоду.</string>
+    <string name="performance_history_scope">Графік з’єднує доступні значення до 10 останніх тренувань.</string>
+    <string name="performance_trend_details_comparison_scope">Порівняння — із середнім усіх попередніх тренувань із даними у вибраному періоді.</string>
     <string name="muscle_load_unmeasured_volume_sets">Підходів із неповними даними про навантаження: %1$d. Частки м’язів розраховано за записаними підходами, тоннаж — лише за повністю виміряними.</string>
     <string name="goal_card_limited_data">Обмежені дані</string>
     <string name="available_training_details_notice">Розраховано за доступними даними вправ. Частина записів може бути недоступною.</string>
     <string name="available_sets_label">Доступні підходи</string>
     <string name="available_exercises_label">Доступні вправи</string>
+    <string name="muscle_loading_details_share_note">Орієнтовні частки підходів із відомою участю м’язів.</string>
+    <string name="muscle_loading_details_coverage">Підходів поза розподілом: %1$d</string>
+    <string name="muscle_loading_details_no_workouts_title">У цьому періоді немає тренувань</string>
+    <string name="muscle_loading_details_no_workouts_message">Запиши тренування, щоб побачити, які м’язи брали участь у підходах.</string>
+    <string name="muscle_loading_details_no_sets_title">Ще немає підходів для розподілу</string>
+    <string name="muscle_loading_details_no_sets_message">У цьому періоді немає доступних записаних підходів із придатними даними.</string>
+    <string name="muscle_loading_details_unknown_title">Дані про м’язи недоступні</string>
+    <string name="muscle_loading_details_unknown_message">Підходи записані, але для їхніх вправ невідома участь м’язів.</string>
+    <string name="muscle_loading_details_method_title">Як читати ці дані</string>
+    <string name="muscle_loading_details_method_body">Кожен доступний підхід розподіляється між м’язами пропорційно їхній участі у вправі. До округлення частки підходів із відомою участю м’язів у сумі дають 100%.</string>
+    <string name="muscle_loading_details_method_limits">Частка описує записані підходи. Втома м’язів, відновлення та якість тренувань тут не вимірюються.</string>
+    <string name="muscle_loading_details_method_expanded">Розгорнуто</string>
+    <string name="muscle_loading_details_method_collapsed">Згорнуто</string>
+
+    <string name="performance_trend_details_latest">Останнє тренування</string>
+    <string name="performance_trend_details_previous_average">Середнє попередніх: %1$s</string>
+    <string name="performance_trend_details_comparison">Зміна: %1$s</string>
+    <string name="performance_trend_details_first_workout">Для порівняння потрібне попереднє тренування з даними в цьому періоді.</string>
+    <string name="performance_trend_details_zero_average">Середнє попередніх дорівнює нулю, тому відсоткову зміну не розрахувати.</string>
+    <string name="performance_trend_details_value_unavailable">Немає даних</string>
+    <string name="performance_trend_details_value_unavailable_description">Даних цього тренування недостатньо для розрахунку показника.</string>
+    <string name="performance_trend_details_recent_workouts">Останні тренування</string>
+    <string name="performance_trend_details_history_scope">Показано %1$d із %2$d тренувань за цей період.</string>
+    <string name="performance_trend_details_about">Як розраховується</string>
+    <string name="performance_trend_details_expanded">Розгорнуто</string>
+    <string name="performance_trend_details_collapsed">Згорнуто</string>
+    <string name="performance_trend_details_empty_message">Виберіть інший період на головному екрані, щоб переглянути записані тренування.</string>
+
+    <!-- Training rhythm details -->
+    <string name="training_streak_details_daily_headline">%1$d дн. поспіль</string>
+    <string name="training_streak_details_weekly_headline">%1$d тиж. у ритмі</string>
+    <string name="training_streak_details_cycle_headline">Повторів ритму: %1$d</string>
+    <string name="training_streak_details_no_sequence">Без безперервної серії наприкінці періоду</string>
+    <string name="training_streak_details_daily_cadence">Послідовні дні із записаними тренуваннями</string>
+    <string name="training_streak_details_weekly_cadence">Звичний тижневий ритм · днів із тренуваннями: %1$d</string>
+    <string name="training_streak_details_rhythm_cadence">За записами · днів із тренуваннями: %1$d, потім без тренувань: %2$d</string>
+    <string name="training_streak_details_pattern_cadence">Цикл за записами · усього днів: %2$d · із тренуваннями: %1$d</string>
+    <string name="training_streak_details_daily_method">Кілька тренувань за день рахуються один раз. Серія — дні з тренуваннями поспіль наприкінці вибраного періоду; незавершений день її не обриває. Це історія, а не ціль тренуватися щодня.</string>
+    <string name="training_streak_details_weekly_method">Кілька тренувань за день рахуються один раз. Серія — послідовні тижні у звичному ритмі наприкінці вибраного періоду; незавершений тиждень її не обриває. Частоту знайдено за записами, це не тренувальна ціль.</string>
+    <string name="training_streak_details_cycle_method">Кілька тренувань за день рахуються один раз. Серія — послідовні цикли наприкінці вибраного періоду; незавершений цикл її не обриває. У смугах — дні, що збіглися з ритмом у записах, а не тренувальна ціль.</string>
+    <string name="training_streak_details_recent_days">Останні дні</string>
+    <string name="training_streak_details_recent_weeks">Останні тижні</string>
+    <string name="training_streak_details_recent_cycles">Останні цикли</string>
+    <string name="training_streak_details_daily_legend">Заповнено: є тренування · Порожньо: немає запису</string>
+    <string name="training_streak_details_weekly_legend">Дні з тренуваннями / звична кількість за тиждень</string>
+    <string name="training_streak_details_cycle_legend">Збіги / тренувальні дні у звичному ритмі</string>
+    <string name="training_streak_details_weekly_value">Днів із тренуваннями: %1$d / %2$d</string>
+    <string name="training_streak_details_cycle_value">Днів зі збігом: %1$d / %2$d</string>
+    <string name="training_streak_details_day_recorded">Тренування записано</string>
+    <string name="training_streak_details_day_unrecorded">Немає запису про тренування</string>
+    <string name="training_streak_details_day_description">%1$s · %2$s</string>
+    <string name="training_streak_details_empty">У цьому періоді ще немає тренувальних днів. Збережені тренування з виконаними повтореннями допоможуть побачити твій ритм.</string>
 </resources>

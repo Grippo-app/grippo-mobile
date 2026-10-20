@@ -1,7 +1,6 @@
 package com.grippo.design.components.metrics.profile.goal.internal
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,33 +12,23 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import com.grippo.core.state.metrics.profile.GoalFitFindingState
 import com.grippo.core.state.metrics.profile.GoalFitRuleState
 import com.grippo.core.state.metrics.profile.GoalFitSeverityState
 import com.grippo.core.state.metrics.profile.stubGoalFitFindings
+import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
-
-@Immutable
-private data class FindingGroup(
-    val rule: GoalFitRuleState,
-    val findings: ImmutableList<GoalFitFindingState>,
-) {
-    val worstSeverity: GoalFitSeverityState
-        get() = findings.first().severity
-}
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun GoalFitFindingsBlock(
@@ -48,19 +37,15 @@ internal fun GoalFitFindingsBlock(
 ) {
     if (findings.isEmpty()) return
 
-    val groups = remember(findings) {
+    val orderedFindings = remember(findings) {
         findings
             .groupBy { it.rule }
-            .map { (rule, list) ->
-                val sorted = list.sortedBy { it.severity.sortKey }.toPersistentList()
-                FindingGroup(
-                    rule = rule,
-                    findings = sorted,
-                )
-            }
+            .values
+            .map { group -> group.sortedBy { it.severity.sortKey } }
             .sortedWith(
-                compareBy({ it.worstSeverity.sortKey }, { it.rule.ordinal }),
+                compareBy({ it.first().severity.sortKey }, { it.first().rule.ordinal }),
             )
+            .flatten()
     }
 
     val radius = AppTokens.dp.metrics.profile.goal.breakdown.radius
@@ -70,18 +55,18 @@ internal fun GoalFitFindingsBlock(
         modifier = modifier
             .clip(shape)
             .background(AppTokens.colors.background.card, shape)
-            .border(AppTokens.dp.metrics.panel.borderWidth, AppTokens.colors.border.default, shape)
             .padding(
                 horizontal = AppTokens.dp.metrics.profile.goal.breakdown.horizontalPadding,
                 vertical = AppTokens.dp.metrics.profile.goal.breakdown.verticalPadding,
             ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
-        groups.forEach { group ->
-            key(group.rule) {
-                FindingRule(
-                    group = group,
+        orderedFindings.forEachIndexed { index, finding ->
+            key(finding.rule, finding.context) {
+                FindingRow(
                     modifier = Modifier.fillMaxWidth(),
+                    finding = finding,
+                    showDivider = index < orderedFindings.lastIndex,
                 )
             }
         }
@@ -89,112 +74,76 @@ internal fun GoalFitFindingsBlock(
 }
 
 @Composable
-private fun FindingRule(
+private fun FindingRow(
     modifier: Modifier = Modifier,
-    group: FindingGroup,
+    finding: GoalFitFindingState,
+    showDivider: Boolean,
 ) {
-    val title = group.rule.title()
-    val singleFinding = group.findings.singleOrNull()
+    val targetText = finding.targetText()
 
-    if (singleFinding != null && singleFinding.context.isEmpty()) {
-        FindingSingleRow(title = title, finding = singleFinding, modifier = modifier)
-        return
-    }
-
-    Column(
+    Row(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = title,
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.primary,
+        Box(
+            modifier = Modifier
+                .padding(top = AppTokens.dp.contentPadding.text)
+                .size(AppTokens.dp.metrics.profile.goal.breakdown.severityDot)
+                .clip(CircleShape)
+                .background(finding.dotColor(), CircleShape),
         )
 
-        group.findings.forEach { finding ->
-            key(finding.context) {
-                FindingSubRow(finding = finding, modifier = Modifier.fillMaxWidth())
+        Column(
+            modifier = Modifier.weight(1f),
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = finding.rule.title(),
+                    style = AppTokens.typography.b14Semi(),
+                    color = AppTokens.colors.text.primary,
+                )
+                if (finding.context.isNotEmpty()) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = finding.contextLabel(),
+                        style = AppTokens.typography.b12Med(),
+                        color = AppTokens.colors.text.secondary,
+                    )
+                }
+            }
+            Column(
+                modifier = Modifier.padding(top = AppTokens.dp.contentPadding.subContent),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+            ) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = finding.actualText(),
+                    style = AppTokens.typography.b14Semi(),
+                    color = finding.valueColor(),
+                )
+                if (targetText != null) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = targetText,
+                        style = AppTokens.typography.b12Med(),
+                        color = AppTokens.colors.text.secondary,
+                    )
+                }
+            }
+            if (showDivider) {
+                ContentDivider(
+                    modifier = Modifier.padding(top = AppTokens.dp.contentPadding.content),
+                )
             }
         }
     }
 }
 
-@Composable
-private fun FindingSingleRow(
-    modifier: Modifier = Modifier,
-    title: String,
-    finding: GoalFitFindingState,
-) {
-    FindingValueRow(
-        title = title,
-        finding = finding,
-        modifier = modifier,
-        titleStyle = AppTokens.typography.b14Med(),
-    )
-}
-
-@Composable
-private fun FindingSubRow(
-    modifier: Modifier = Modifier,
-    finding: GoalFitFindingState,
-) {
-    FindingValueRow(
-        title = finding.contextLabel(),
-        finding = finding,
-        modifier = modifier.padding(start = AppTokens.dp.contentPadding.content),
-        titleStyle = AppTokens.typography.b13Med(),
-    )
-}
-
-@Composable
-private fun FindingValueRow(
-    modifier: Modifier = Modifier,
-    title: String,
-    finding: GoalFitFindingState,
-    titleStyle: TextStyle,
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-    ) {
-        SeverityDot(color = finding.dotColor())
-
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-        ) {
-            Text(
-                text = title,
-                style = titleStyle,
-                color = AppTokens.colors.text.primary,
-            )
-            Text(
-                text = finding.valueTargetText(),
-                style = AppTokens.typography.b13Med(),
-                color = finding.valueColor(),
-            )
-        }
-    }
-}
-
-@Composable
-private fun SeverityDot(
-    modifier: Modifier = Modifier,
-    color: Color,
-) {
-    Box(
-        modifier = modifier
-            .size(AppTokens.dp.metrics.profile.goal.breakdown.severityDot)
-            .clip(CircleShape)
-            .background(color, CircleShape),
-    )
-}
-
 @AppPreview
 @Composable
-private fun GoalFitFindingsBlockGroupedPreview() {
+private fun GoalFitFindingsBlockRepeatedRulePreview() {
     PreviewContainer {
         GoalFitFindingsBlock(findings = stubGoalFitFindings(GoalPrimaryGoalEnumState.BUILD_MUSCLE))
     }
@@ -213,5 +162,69 @@ private fun GoalFitFindingsBlockSingleRowsPreview() {
 private fun GoalFitFindingsBlockRangePreview() {
     PreviewContainer {
         GoalFitFindingsBlock(findings = stubGoalFitFindings(GoalPrimaryGoalEnumState.RETURN_TO_TRAINING))
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalFitFindingsBlockOptionalContentPreview() {
+    PreviewContainer {
+        GoalFitFindingsBlock(
+            findings = persistentListOf(
+                GoalFitFindingState(
+                    rule = GoalFitRuleState.BUILD_MUSCLE_WEEKLY_FREQUENCY_PER_PRIMARY_GROUP,
+                    severity = GoalFitSeverityState.PASS,
+                    actualValue = 2.6f,
+                    targetMin = 1f,
+                    targetMax = null,
+                    context = persistentListOf(
+                        MuscleGroupEnumState.CHEST_MUSCLES,
+                        MuscleGroupEnumState.BACK_MUSCLES,
+                        MuscleGroupEnumState.LEGS,
+                    ),
+                ),
+                GoalFitFindingState(
+                    rule = GoalFitRuleState.BUILD_MUSCLE_LOAD_PROGRESSION,
+                    severity = GoalFitSeverityState.PASS,
+                    actualValue = 0.024f,
+                    targetMin = null,
+                    targetMax = null,
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalFitFindingsBlockRoundingBoundariesPreview() {
+    PreviewContainer {
+        GoalFitFindingsBlock(
+            findings = persistentListOf(
+                GoalFitFindingState(
+                    rule = GoalFitRuleState.BUILD_MUSCLE_WEEKLY_SETS_PER_PRIMARY_GROUP,
+                    severity = GoalFitSeverityState.WARN,
+                    actualValue = 9.96f,
+                    targetMin = 10f,
+                    targetMax = null,
+                    context = persistentListOf(MuscleGroupEnumState.CHEST_MUSCLES),
+                ),
+                GoalFitFindingState(
+                    rule = GoalFitRuleState.RETURN_TO_TRAINING_LOAD_RAMP_GENTLE,
+                    severity = GoalFitSeverityState.FAIL,
+                    actualValue = 1.504f,
+                    targetMin = null,
+                    targetMax = 1.5f,
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalFitFindingsBlockEmptyPreview() {
+    PreviewContainer {
+        GoalFitFindingsBlock(findings = persistentListOf())
     }
 }
