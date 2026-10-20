@@ -1,8 +1,9 @@
 package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -20,36 +21,25 @@ public val AppIcon.Copy: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Back document — rounded "L" frame implied by EvenOdd cut-out.
             path(
-                fill = SolidColor(Color(0xFF33363F)),
-                pathFillType = PathFillType.EvenOdd
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
             ) {
-                // Outer back rectangle (all four corners rounded)
-                moveTo(8f, 3f)
-                horizontalLineTo(19f)
-                curveTo(20.105f, 3f, 21f, 3.895f, 21f, 5f)
+                moveTo(8f, 4f)
+                horizontalLineTo(18f)
+                curveTo(19.105f, 4f, 20f, 4.895f, 20f, 6f)
                 verticalLineTo(16f)
-                curveTo(21f, 17.105f, 20.105f, 18f, 19f, 18f)
-                horizontalLineTo(17f)
-                verticalLineTo(10f)
-                curveTo(17f, 8.343f, 15.657f, 7f, 14f, 7f)
-                horizontalLineTo(6f)
-                verticalLineTo(5f)
-                curveTo(6f, 3.895f, 6.895f, 3f, 8f, 3f)
-                close()
-            }
-            // Front document — fully rounded rectangle
-            path(fill = SolidColor(Color(0xFF33363F))) {
-                moveTo(5f, 8f)
+                moveTo(6f, 8f)
                 horizontalLineTo(14f)
                 curveTo(15.105f, 8f, 16f, 8.895f, 16f, 10f)
-                verticalLineTo(19f)
-                curveTo(16f, 20.105f, 15.105f, 21f, 14f, 21f)
-                horizontalLineTo(5f)
-                curveTo(3.895f, 21f, 3f, 20.105f, 3f, 19f)
+                verticalLineTo(18f)
+                curveTo(16f, 19.105f, 15.105f, 20f, 14f, 20f)
+                horizontalLineTo(6f)
+                curveTo(4.895f, 20f, 4f, 19.105f, 4f, 18f)
                 verticalLineTo(10f)
-                curveTo(3f, 8.895f, 3.895f, 8f, 5f, 8f)
+                curveTo(4f, 8.895f, 4.895f, 8f, 6f, 8f)
                 close()
             }
         }.build()

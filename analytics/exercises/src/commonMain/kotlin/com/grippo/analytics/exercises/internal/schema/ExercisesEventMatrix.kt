@@ -16,14 +16,17 @@ internal object ExercisesEventMatrix {
     }
     private val FilterClicked = AnalyticsEventSchema("exercises_filter_clicked", 1, listOf(Filter))
     private val ExerciseSelected = AnalyticsEventSchema("exercises_exercise_selected", 1, emptyList())
+    private val ExerciseDetailsClicked =
+        AnalyticsEventSchema("exercises_exercise_details_clicked", 1, emptyList())
     private val LoadNextPage = AnalyticsEventSchema("exercises_load_next_page", 1, emptyList())
     private val DismissRequested = AnalyticsEventSchema("exercises_dismiss_requested", 1, emptyList())
 
-    val all = listOf(FilterClicked, ExerciseSelected, LoadNextPage, DismissRequested)
+    val all = listOf(FilterClicked, ExerciseSelected, ExerciseDetailsClicked, LoadNextPage, DismissRequested)
 
     fun event(event: ExercisesEvent): AnalyticsEvent = when (event) {
         is ExercisesEvent.FilterClicked -> Payload(FilterClicked, listOf(Filter.value(event.filter)))
         ExercisesEvent.ExerciseSelected -> Payload(ExerciseSelected, emptyList())
+        ExercisesEvent.ExerciseDetailsClicked -> Payload(ExerciseDetailsClicked, emptyList())
         ExercisesEvent.LoadNextPage -> Payload(LoadNextPage, emptyList())
         ExercisesEvent.DismissRequested -> Payload(DismissRequested, emptyList())
     }

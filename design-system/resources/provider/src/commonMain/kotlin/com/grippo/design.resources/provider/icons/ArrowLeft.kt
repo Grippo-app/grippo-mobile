@@ -2,6 +2,8 @@ package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -21,7 +23,9 @@ public val AppIcon.ArrowLeft: ImageVector
         ).apply {
             path(
                 stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
             ) {
                 moveTo(15f, 6f)
                 lineTo(9f, 12f)
@@ -34,4 +38,3 @@ public val AppIcon.ArrowLeft: ImageVector
 
 @Suppress("ObjectPropertyName")
 private var _ArrowLeft: ImageVector? = null
-

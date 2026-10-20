@@ -50,7 +50,10 @@ internal fun HomeLoadingContent(
             contentDescription = loadingDescription
             progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
         },
-        contentPadding = PaddingValues(vertical = AppTokens.dp.contentPadding.content),
+        contentPadding = PaddingValues(
+            top = AppTokens.dp.contentPadding.content,
+            bottom = AppTokens.dp.screen.verticalPadding,
+        ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
         item(key = "last_training_loading") {

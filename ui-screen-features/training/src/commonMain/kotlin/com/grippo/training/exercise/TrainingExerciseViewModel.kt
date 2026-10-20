@@ -161,11 +161,14 @@ internal class TrainingExerciseViewModel(
         analytics.trackEvent(event = TrainingEvent.Exercise.ReplaceExample)
         navigation.close()
 
-        val mode = ExercisesRouter.Mode.SimilarTo(targetExerciseExampleId = exampleId)
-
         val resultKey = libraryResultKey(state.value.exercise.id)
 
-        val route = ExercisesRouter.Library(mode = mode, resultKey = resultKey)
+        val mode = ExercisesRouter.Mode.SimilarTo(
+            targetExerciseExampleId = exampleId,
+            resultKey = resultKey,
+        )
+
+        val route = ExercisesRouter.Library(mode = mode)
 
         val direction = TrainingExerciseDirection.ToLibrary(route = route)
 

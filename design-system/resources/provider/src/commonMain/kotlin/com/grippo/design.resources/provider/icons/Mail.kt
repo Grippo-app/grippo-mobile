@@ -1,8 +1,9 @@
 package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -20,34 +21,26 @@ public val AppIcon.Mail: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Envelope body with thin V-flap stripe inset from edges.
             path(
-                fill = SolidColor(Color(0xFF33363F)),
-                pathFillType = PathFillType.EvenOdd
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
             ) {
-                // Outer envelope rectangle
-                moveTo(4f, 5f)
-                horizontalLineTo(20f)
-                curveTo(21.105f, 5f, 22f, 5.895f, 22f, 7f)
-                verticalLineTo(17f)
-                curveTo(22f, 18.105f, 21.105f, 19f, 20f, 19f)
-                horizontalLineTo(4f)
-                curveTo(2.895f, 19f, 2f, 18.105f, 2f, 17f)
-                verticalLineTo(7f)
-                curveTo(2f, 5.895f, 2.895f, 5f, 4f, 5f)
+                moveTo(5f, 6f)
+                horizontalLineTo(19f)
+                curveTo(20.105f, 6f, 21f, 6.895f, 21f, 8f)
+                verticalLineTo(16f)
+                curveTo(21f, 17.105f, 20.105f, 18f, 19f, 18f)
+                horizontalLineTo(5f)
+                curveTo(3.895f, 18f, 3f, 17.105f, 3f, 16f)
+                verticalLineTo(8f)
+                curveTo(3f, 6.895f, 3.895f, 6f, 5f, 6f)
                 close()
-                // Thin V-flap stripe — recessed from the envelope edges, ~0.6 unit thick.
-                moveTo(5f, 8.4f)
-                curveTo(5.2f, 8.05f, 5.65f, 7.94f, 6f, 8.14f)
-                lineTo(12f, 11.55f)
-                lineTo(18f, 8.14f)
-                curveTo(18.35f, 7.94f, 18.8f, 8.05f, 19f, 8.4f)
-                curveTo(19.2f, 8.75f, 19.08f, 9.2f, 18.73f, 9.4f)
-                lineTo(12.37f, 13.02f)
-                curveTo(12.14f, 13.15f, 11.86f, 13.15f, 11.63f, 13.02f)
-                lineTo(5.27f, 9.4f)
-                curveTo(4.92f, 9.2f, 4.8f, 8.75f, 5f, 8.4f)
-                close()
+                moveTo(3.5f, 7.5f)
+                lineTo(10.8f, 12.975f)
+                curveTo(11.511f, 13.508f, 12.489f, 13.508f, 13.2f, 12.975f)
+                lineTo(20.5f, 7.5f)
             }
         }.build()
 

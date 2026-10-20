@@ -25,7 +25,7 @@ public val AppIcon.UserOutline: ImageVector
                 stroke = SolidColor(Color(0xFF33363F)),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineJoin = StrokeJoin.Round,
             ) {
                 moveTo(19.7274f, 20.4471f)
                 curveTo(19.2716f, 19.1713f, 18.2672f, 18.0439f, 16.8701f, 17.2399f)
@@ -37,7 +37,7 @@ public val AppIcon.UserOutline: ImageVector
                 stroke = SolidColor(Color(0xFF33363F)),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineJoin = StrokeJoin.Round,
             ) {
                 moveTo(8f, 8f)
                 arcToRelative(4f, 4f, 0f, true, false, 8f, 0f)

@@ -21,7 +21,7 @@ public val AppIcon.Trash: ImageVector
         ).apply {
             path(
                 stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 1.8f,
+                strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round,
             ) {

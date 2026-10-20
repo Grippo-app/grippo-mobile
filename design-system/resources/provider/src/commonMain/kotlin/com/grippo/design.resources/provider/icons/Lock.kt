@@ -1,8 +1,9 @@
 package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -20,37 +21,29 @@ public val AppIcon.Lock: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Shackle (top arch) — outline-only via stroke would break filled goal,
-            // so represent shackle as a filled arc (donut half) using EvenOdd.
             path(
-                fill = SolidColor(Color(0xFF33363F)),
-                pathFillType = PathFillType.EvenOdd
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
             ) {
-                // Outer arch
-                moveTo(7f, 11f)
-                verticalLineTo(8f)
-                curveTo(7f, 5.239f, 9.239f, 3f, 12f, 3f)
-                curveTo(14.761f, 3f, 17f, 5.239f, 17f, 8f)
-                verticalLineTo(11f)
-                horizontalLineTo(15f)
-                verticalLineTo(8f)
-                curveTo(15f, 6.343f, 13.657f, 5f, 12f, 5f)
-                curveTo(10.343f, 5f, 9f, 6.343f, 9f, 8f)
-                verticalLineTo(11f)
+                moveTo(8f, 10f)
+                verticalLineTo(7f)
+                curveTo(8f, 4.791f, 9.791f, 3f, 12f, 3f)
+                curveTo(14.209f, 3f, 16f, 4.791f, 16f, 7f)
+                verticalLineTo(10f)
+                moveTo(7f, 10f)
+                horizontalLineTo(17f)
+                curveTo(18.105f, 10f, 19f, 10.895f, 19f, 12f)
+                verticalLineTo(18f)
+                curveTo(19f, 19.105f, 18.105f, 20f, 17f, 20f)
+                horizontalLineTo(7f)
+                curveTo(5.895f, 20f, 5f, 19.105f, 5f, 18f)
+                verticalLineTo(12f)
+                curveTo(5f, 10.895f, 5.895f, 10f, 7f, 10f)
                 close()
-            }
-            // Body
-            path(fill = SolidColor(Color(0xFF33363F))) {
-                moveTo(5f, 11f)
-                horizontalLineTo(19f)
-                curveTo(20.105f, 11f, 21f, 11.895f, 21f, 13f)
-                verticalLineTo(20f)
-                curveTo(21f, 21.105f, 20.105f, 22f, 19f, 22f)
-                horizontalLineTo(5f)
-                curveTo(3.895f, 22f, 3f, 21.105f, 3f, 20f)
-                verticalLineTo(13f)
-                curveTo(3f, 11.895f, 3.895f, 11f, 5f, 11f)
-                close()
+                moveTo(12f, 14f)
+                verticalLineTo(16f)
             }
         }.build()
 

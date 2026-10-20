@@ -6,6 +6,7 @@ import com.grippo.analytics.exercises.models.ExercisesScreen
 import com.grippo.analytics.exercises.models.LibraryFilter
 import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.UiText
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
@@ -15,8 +16,13 @@ import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.exercise_details_btn
+import com.grippo.dialog.api.DialogConfig
+import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
+import com.grippo.screen.api.ExercisesRouter
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
@@ -26,24 +32,15 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 internal class ExerciseLibraryViewModel(
-    mode: ExerciseLibraryMode,
+    private val mode: ExercisesRouter.Mode,
     private val analytics: ExercisesAnalytics,
     private val userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
     exerciseExampleFeature: ExerciseExampleFeature,
     muscleFeature: MuscleFeature,
+    private val dialogController: DialogController,
     initialState: ExerciseLibraryState?,
 ) : BaseViewModel<ExerciseLibraryState, ExerciseLibraryDirection, ExerciseLibraryLoader>(
-    initialState?.copy(mode = mode) ?: ExerciseLibraryState(
-        mode = mode,
-        queries = Queries(
-            filter = when (mode) {
-                is ExerciseLibraryMode.SimilarTo -> QueryFilter.Suggestions
-                is ExerciseLibraryMode.Default -> mode.preselectedMuscleGroupId
-                    ?.let(QueryFilter::Group)
-                    ?: QueryFilter.All
-            },
-        ),
-    )
+    initialState?.copy(mode = ExerciseLibraryMode.of(mode)) ?: ExerciseLibraryState.initial(mode)
 ), ExerciseLibraryContract {
 
     override val screenPresentation = { reason: NavigationReason ->
@@ -51,7 +48,7 @@ internal class ExerciseLibraryViewModel(
     }
 
     init {
-        if (mode is ExerciseLibraryMode.SimilarTo) {
+        if (mode is ExercisesRouter.Mode.SimilarTo) {
             exerciseExampleFeature.observeExerciseExample(mode.targetExerciseExampleId)
                 .onEach(::provideTarget)
                 .safeLaunch()
@@ -80,6 +77,7 @@ internal class ExerciseLibraryViewModel(
             QueryFilter.Suggestions -> when (val m = current.mode) {
                 is ExerciseLibraryMode.SimilarTo -> ExampleScope.SimilarTo(m.targetExerciseExampleId)
                 is ExerciseLibraryMode.Default -> ExampleScope.All(sorting = CATALOG_SORTING)
+                ExerciseLibraryMode.Browse -> ExampleScope.All(sorting = CATALOG_SORTING)
             }
 
             is QueryFilter.Group -> ExampleScope.All(
@@ -244,8 +242,24 @@ internal class ExerciseLibraryViewModel(
 
     override fun onExerciseExampleSelectClick(id: String) {
         val example = state.value.exerciseExamples.find { it.value.id == id } ?: return
-        analytics.trackEvent(ExercisesEvent.ExerciseSelected)
-        navigateTo(ExerciseLibraryDirection.BackWithResult(example))
+
+        when (mode) {
+            is ExercisesRouter.Mode.Pick -> {
+                analytics.trackEvent(ExercisesEvent.ExerciseSelected)
+                navigateTo(ExerciseLibraryDirection.BackWithResult(resultKey = mode.resultKey, value = example))
+            }
+
+            ExercisesRouter.Mode.Browse -> {
+                analytics.trackEvent(ExercisesEvent.ExerciseDetailsClicked)
+
+                val dialog = DialogConfig.ExerciseExampleDetails(
+                    title = UiText.Res(Res.string.exercise_details_btn),
+                    id = example.value.id,
+                )
+
+                dialogController.open(dialog)
+            }
+        }
     }
 
     override fun onBack() {

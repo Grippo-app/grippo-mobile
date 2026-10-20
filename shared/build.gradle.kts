@@ -106,6 +106,7 @@ kotlin {
         implementation(projects.uiScreenFeatures.profile)
         implementation(projects.uiScreenFeatures.debug)
         implementation(projects.uiScreenFeatures.training)
+        implementation(projects.uiScreenFeatures.exercises)
         implementation(projects.uiScreenFeatures.home)
         implementation(projects.uiScreenFeatures.main)
 

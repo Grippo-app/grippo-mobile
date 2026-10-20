@@ -11,7 +11,6 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.exercises.library.ExerciseLibraryComponent
-import com.grippo.exercises.library.ExerciseLibraryMode
 import com.grippo.screen.api.ExercisesRouter
 
 public class ExercisesRootComponent(
@@ -56,15 +55,7 @@ public class ExercisesRootComponent(
             is ExercisesRouter.Library -> Child.Library(
                 ExerciseLibraryComponent(
                     componentContext = context,
-                    mode = when (val mode = router.mode) {
-                        is ExercisesRouter.Mode.Default -> ExerciseLibraryMode.Default(
-                            mode.preselectedMuscleGroupId
-                        )
-                        is ExercisesRouter.Mode.SimilarTo -> ExerciseLibraryMode.SimilarTo(
-                            mode.targetExerciseExampleId
-                        )
-                    },
-                    resultKey = router.resultKey,
+                    mode = router.mode,
                     back = viewModel::onBack,
                 ),
             )

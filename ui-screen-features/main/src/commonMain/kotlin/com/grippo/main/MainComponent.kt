@@ -13,6 +13,7 @@ public class MainComponent(
     componentContext: ComponentContext,
     private val createHome: (context: ComponentContext, onBack: () -> Unit) -> BaseComponent<*>,
     private val createCalendar: (context: ComponentContext, onBack: () -> Unit) -> BaseComponent<*>,
+    private val createLibrary: (context: ComponentContext, onBack: () -> Unit) -> BaseComponent<*>,
     private val createProfile: (context: ComponentContext, onBack: () -> Unit) -> BaseComponent<*>,
     private val toTraining: (StageState) -> Unit,
     private val toGoal: () -> Unit,
@@ -47,6 +48,7 @@ public class MainComponent(
     private fun createChild(tab: MainRouter, context: ComponentContext): BaseComponent<*> = when (tab) {
         MainRouter.Home -> createHome(context, viewModel::onBack)
         MainRouter.Calendar -> createCalendar(context, viewModel::onBack)
+        MainRouter.Library -> createLibrary(context, viewModel::onBack)
         MainRouter.Profile -> createProfile(context, viewModel::onBack)
     }
 

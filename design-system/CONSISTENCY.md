@@ -8,6 +8,10 @@ Use `AppTokens` for colors, typography and dimensions. Keep a component's role
 consistent across the dashboard, workout recording, history, profile and dialogs.
 A compact navigation item and a screen heading do not need the same font size.
 
+All product typography tokens use bundled Onest through `AppTypography`: Regular
+(400), Medium (500), SemiBold (600) and Bold (700). The same family covers Cyrillic
+and Latin text in both themes; each role keeps its existing size and line height.
+
 | Role | Typography | Color |
 | --- | --- | --- |
 | Screen or detail heading | Existing toolbar / `h2`–`h3` | `text.primary` |
@@ -137,6 +141,12 @@ A compact navigation item and a screen heading do not need the same font size.
   Goal entry points in Profile and Home use Compass for an unspecified goal;
   a configured Profile goal uses its shared goal icon. Both keep the copper
   accent. Ordinary benefit and methodology text stays neutral.
+- Bottom-bar tab identity: Home, Calendar, Dumbbell and UserOutline identify the
+  Home, Calendar, Library (exercise catalog) and Profile tabs in the
+  `bottomBar.activeContent/inactiveContent` tints; Dumbbell in a neutral/orange
+  navigation slot with the "Library" label is the broad exercise cue, distinct
+  from its copper `GoalMark` "strength" use. Tabs split 2 + 2 around the central
+  Play action.
 - Muscle-focus summaries show the leading recorded-set share with `charts.ring.info`;
   the ring is descriptive data and has no success/warning thresholds. Empty summaries
   show neutral unavailable information without an inferred score or status.
@@ -572,8 +582,11 @@ A compact navigation item and a screen heading do not need the same font size.
   metrics, preserving complete localized labels and large values in both hosts.
 - Scrolling sheet lists own their final `dialog.bottom` through content padding,
   with one navigation inset. A footer-only lazy item must not add an item gap to
-  that margin. The actionless library uses `screen.verticalPadding` at its end;
-  pinned actions still reserve their measured height through BottomOverlayContainer.
+  that margin. Main-tab content uses `screen.verticalPadding` at its bottom edge:
+  Home dashboard/loading/welcome, Calendar daily/monthly (including empty/loading),
+  Library lists/empty results and Profile content/pinned actions. Scrolling bodies
+  own that margin through content padding; Main owns the bottom-bar navigation inset.
+  Pinned actions still reserve their measured height through BottomOverlayContainer.
 - Editable set rows own their vertical padding; the list draws the optional divider
   below the swipe-reveal content and omits it for the final or only row. Their list
   adds no second row gap; the Sets heading

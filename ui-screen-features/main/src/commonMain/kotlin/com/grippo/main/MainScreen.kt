@@ -31,9 +31,11 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.calendar
 import com.grippo.design.resources.provider.home
 import com.grippo.design.resources.provider.icons.Calendar
+import com.grippo.design.resources.provider.icons.Dumbbell
 import com.grippo.design.resources.provider.icons.Home
 import com.grippo.design.resources.provider.icons.Play
 import com.grippo.design.resources.provider.icons.UserOutline
+import com.grippo.design.resources.provider.library
 import com.grippo.design.resources.provider.profile
 import com.grippo.design.resources.provider.start_workout
 import com.grippo.screen.api.MainRouter
@@ -54,6 +56,7 @@ internal fun MainScreen(
         persistentListOf(
             MainRouter.Home to BottomBarItem(UiText.Res(Res.string.home), icons.Home),
             MainRouter.Calendar to BottomBarItem(UiText.Res(Res.string.calendar), icons.Calendar),
+            MainRouter.Library to BottomBarItem(UiText.Res(Res.string.library), icons.Dumbbell),
             MainRouter.Profile to BottomBarItem(UiText.Res(Res.string.profile), icons.UserOutline),
         )
     }

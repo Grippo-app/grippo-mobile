@@ -1,8 +1,9 @@
 package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -20,30 +21,27 @@ public val AppIcon.Warning: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Filled circle with exclamation cut-out
             path(
-                fill = SolidColor(Color(0xFF33363F)),
-                pathFillType = PathFillType.EvenOdd
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
             ) {
-                // Outer circle
-                moveTo(12f, 2f)
-                curveTo(6.477f, 2f, 2f, 6.477f, 2f, 12f)
-                curveTo(2f, 17.523f, 6.477f, 22f, 12f, 22f)
-                curveTo(17.523f, 22f, 22f, 17.523f, 22f, 12f)
-                curveTo(22f, 6.477f, 17.523f, 2f, 12f, 2f)
+                moveTo(12f, 3f)
+                curveTo(16.971f, 3f, 21f, 7.029f, 21f, 12f)
+                curveTo(21f, 16.971f, 16.971f, 21f, 12f, 21f)
+                curveTo(7.029f, 21f, 3f, 16.971f, 3f, 12f)
+                curveTo(3f, 7.029f, 7.029f, 3f, 12f, 3f)
                 close()
-                // Exclamation stem cut-out
-                moveTo(11f, 6.5f)
-                horizontalLineTo(13f)
-                verticalLineTo(14f)
-                horizontalLineTo(11f)
-                close()
-                // Dot cut-out
+                moveTo(12f, 7.5f)
+                verticalLineTo(12.5f)
+            }
+            path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(12f, 15.5f)
-                curveTo(11.31f, 15.5f, 10.75f, 16.06f, 10.75f, 16.75f)
-                curveTo(10.75f, 17.44f, 11.31f, 18f, 12f, 18f)
-                curveTo(12.69f, 18f, 13.25f, 17.44f, 13.25f, 16.75f)
-                curveTo(13.25f, 16.06f, 12.69f, 15.5f, 12f, 15.5f)
+                curveTo(12.552f, 15.5f, 13f, 15.948f, 13f, 16.5f)
+                curveTo(13f, 17.052f, 12.552f, 17.5f, 12f, 17.5f)
+                curveTo(11.448f, 17.5f, 11f, 17.052f, 11f, 16.5f)
+                curveTo(11f, 15.948f, 11.448f, 15.5f, 12f, 15.5f)
                 close()
             }
         }.build()

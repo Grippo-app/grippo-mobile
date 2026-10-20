@@ -56,8 +56,10 @@ internal fun DashboardHomeContent(
     contract: HomeContract,
 ) {
     val basePadding = PaddingValues(
-        horizontal = AppTokens.dp.screen.horizontalPadding,
-        vertical = AppTokens.dp.contentPadding.content,
+        start = AppTokens.dp.screen.horizontalPadding,
+        top = AppTokens.dp.contentPadding.content,
+        end = AppTokens.dp.screen.horizontalPadding,
+        bottom = AppTokens.dp.screen.verticalPadding,
     )
 
     val lifetimeTrainingCount: Int = state.user?.stats?.trainingsCount ?: 0

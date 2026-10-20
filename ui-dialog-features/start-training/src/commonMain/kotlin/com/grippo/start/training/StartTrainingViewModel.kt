@@ -17,21 +17,18 @@ import com.grippo.data.features.api.training.models.Training
 import com.grippo.domain.state.training.toState
 import com.grippo.start.training.analytics.toAnalytics
 import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlin.time.Duration.Companion.days
 import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.withContext
-import kotlinx.datetime.LocalDateTime
 
 public class StartTrainingViewModel(
     private val analytics: StartTrainingAnalytics,
@@ -41,53 +38,40 @@ public class StartTrainingViewModel(
     StartTrainingState()
 ), StartTrainingContract {
 
-    init {
-        val now = DateTimeUtils.now()
-        val recentRangeStart = DateTimeUtils.minus(
-            value = now,
-            minus = RECENT_TRAININGS_WINDOW_DAYS.days,
+    private val recentRange: DateRange = DateTimeUtils.now().let { now ->
+        DateRange(
+            from = DateTimeUtils.minus(value = now, minus = RECENT_TRAININGS_WINDOW_DAYS.days),
+            to = now,
         )
-
-        safeLaunch { refreshTrainings(start = recentRangeStart, end = now) }
-
-        observeOptions(start = recentRangeStart, end = now)
-            .onEach(::provideOptions)
-            .safeLaunch()
     }
 
-    private suspend fun refreshTrainings(start: LocalDateTime, end: LocalDateTime) {
-        withLoader(StartTrainingLoader.Options) {
-            val refresh = safeLaunch {
-                trainingFeature.getTrainings(start = start, end = end)
-            }
-
-            try {
-                refresh.join()
-            } finally {
-                // A handled request failure must leave the options subscription alive.
-                withContext(NonCancellable) {
-                    refresh.cancelAndJoin()
-                }
-            }
+    init {
+        safeLaunch(loader = StartTrainingLoader.Options) {
+            trainingFeature.getTrainings(start = recentRange.from, end = recentRange.to)
         }
+
+        observeOptions(range = recentRange)
+            .onEach(::provideOptions)
+            .safeLaunch(processing = Processing.Infinity)
     }
 
     private fun observeOptions(
-        start: LocalDateTime,
-        end: LocalDateTime,
-    ): Flow<Pair<List<Training>, PresetTraining?>> = flow {
-        val preset = analytics.trackOperation(StartTrainingOperation.BuildOptions) {
+        range: DateRange,
+    ): Flow<Pair<List<Training>, StartTrainingOption.Preset?>> = flow {
+        val generated = analytics.trackOperation(StartTrainingOperation.BuildOptions) {
             generatePresetTrainingUseCase.execute()
         }
 
+        val preset = toPresetOption(generated)
+
         val recents = trainingFeature
-            .observeTrainings(start = start, end = end)
+            .observeTrainings(start = range.from, end = range.to)
             .map { recents -> recents to preset }
 
         emitAll(recents)
     }
 
-    private fun provideOptions(value: Pair<List<Training>, PresetTraining?>) {
+    private fun provideOptions(value: Pair<List<Training>, StartTrainingOption.Preset?>) {
         val (recents, preset) = value
 
         val recentOptions = recents
@@ -96,20 +80,21 @@ public class StartTrainingViewModel(
             .take(MAX_RECENT_TRAININGS)
             .map(::toRecentOption)
 
-        val presetOption = preset?.exercises
-            ?.map(::toPresetExercise)
-            ?.toPersistentList()
-            ?.takeIf { it.isNotEmpty() }
-            ?.let { StartTrainingOption.Preset(exercises = it) }
-
         val options = buildList {
-            presetOption?.let(::add)
+            preset?.let(::add)
             add(StartTrainingOption.Empty)
             addAll(recentOptions)
         }.toPersistentList()
 
         update { it.copy(options = options) }
     }
+
+    private fun toPresetOption(value: PresetTraining?): StartTrainingOption.Preset? = value
+        ?.exercises
+        ?.map(::toPresetExercise)
+        ?.toPersistentList()
+        ?.takeIf { it.isNotEmpty() }
+        ?.let { StartTrainingOption.Preset(exercises = it) }
 
     private fun toRecentOption(training: Training): StartTrainingOption.Recent {
         val mapped = training.toState()

@@ -24,8 +24,8 @@ public val AppIcon.Home: ImageVector
             path(
                 stroke = SolidColor(Color(0xFF33363F)),
                 strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
             ) {
                 moveTo(8.09525f, 7.34693f)
                 lineTo(7.09525f, 8.20407f)

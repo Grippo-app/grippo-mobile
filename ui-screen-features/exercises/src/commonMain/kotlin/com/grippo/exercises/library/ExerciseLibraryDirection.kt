@@ -1,9 +1,15 @@
 package com.grippo.exercises.library
 
 import com.grippo.core.foundation.models.BaseDirection
+import com.grippo.core.foundation.models.Result
+import com.grippo.core.foundation.models.ResultKey
 import com.grippo.core.state.examples.ExerciseExampleState
 
 internal sealed interface ExerciseLibraryDirection : BaseDirection {
-    public data class BackWithResult(val value: ExerciseExampleState) : ExerciseLibraryDirection
-    public data object Back : ExerciseLibraryDirection
+    data class BackWithResult(
+        val resultKey: ResultKey<Result<ExerciseExampleState>>,
+        val value: ExerciseExampleState,
+    ) : ExerciseLibraryDirection
+
+    data object Back : ExerciseLibraryDirection
 }

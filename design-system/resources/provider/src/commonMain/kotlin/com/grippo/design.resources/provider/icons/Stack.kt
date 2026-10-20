@@ -2,6 +2,8 @@ package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -19,38 +21,23 @@ public val AppIcon.Stack: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Top slab — pill-shaped (fully rounded ends)
-            path(fill = SolidColor(Color(0xFF33363F))) {
-                moveTo(6.25f, 4f)
-                horizontalLineTo(17.75f)
-                curveTo(19.0f, 4f, 20f, 5.0f, 20f, 6.25f)
-                curveTo(20f, 7.5f, 19f, 8.5f, 17.75f, 8.5f)
-                horizontalLineTo(6.25f)
-                curveTo(5f, 8.5f, 4f, 7.5f, 4f, 6.25f)
-                curveTo(4f, 5f, 5f, 4f, 6.25f, 4f)
+            path(
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(12f, 3f)
+                lineTo(21f, 8f)
+                lineTo(12f, 13f)
+                lineTo(3f, 8f)
                 close()
-            }
-            // Middle slab — pill-shaped
-            path(fill = SolidColor(Color(0xFF33363F))) {
-                moveTo(6.25f, 9.75f)
-                horizontalLineTo(17.75f)
-                curveTo(19f, 9.75f, 20f, 10.75f, 20f, 12f)
-                curveTo(20f, 13.25f, 19f, 14.25f, 17.75f, 14.25f)
-                horizontalLineTo(6.25f)
-                curveTo(5f, 14.25f, 4f, 13.25f, 4f, 12f)
-                curveTo(4f, 10.75f, 5f, 9.75f, 6.25f, 9.75f)
-                close()
-            }
-            // Bottom slab — pill-shaped
-            path(fill = SolidColor(Color(0xFF33363F))) {
-                moveTo(6.25f, 15.5f)
-                horizontalLineTo(17.75f)
-                curveTo(19f, 15.5f, 20f, 16.5f, 20f, 17.75f)
-                curveTo(20f, 19f, 19f, 20f, 17.75f, 20f)
-                horizontalLineTo(6.25f)
-                curveTo(5f, 20f, 4f, 19f, 4f, 17.75f)
-                curveTo(4f, 16.5f, 5f, 15.5f, 6.25f, 15.5f)
-                close()
+                moveTo(3f, 12f)
+                lineTo(12f, 17f)
+                lineTo(21f, 12f)
+                moveTo(3f, 16f)
+                lineTo(12f, 21f)
+                lineTo(21f, 16f)
             }
         }.build()
 

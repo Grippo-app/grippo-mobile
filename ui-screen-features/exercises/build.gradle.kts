@@ -23,6 +23,7 @@ kotlin {
         implementation(projects.designSystem.preview)
         implementation(projects.designSystem.components)
         implementation(projects.uiScreenFeatures.screenApi)
+        implementation(projects.uiDialogFeatures.dialogApi)
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataMappers.domainToState)
 

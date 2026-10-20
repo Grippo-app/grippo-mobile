@@ -17,10 +17,12 @@ import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.debug.DebugComponent
 import com.grippo.design.core.AppTheme
+import com.grippo.exercises.ExercisesRootComponent
 import com.grippo.home.HomeRootComponent
 import com.grippo.main.MainComponent
 import com.grippo.profile.ProfileComponent
 import com.grippo.screen.api.AuthRouter
+import com.grippo.screen.api.ExercisesRouter
 import com.grippo.screen.api.HomeRouter
 import com.grippo.screen.api.ProfileRouter
 import com.grippo.screen.api.RootRouter
@@ -144,6 +146,13 @@ public class RootComponent(
                             componentContext = childContext,
                             initial = TrainingsRouter.Trainings,
                             toTraining = viewModel::toTraining,
+                            close = back,
+                        )
+                    },
+                    createLibrary = { childContext, back ->
+                        ExercisesRootComponent(
+                            componentContext = childContext,
+                            initial = ExercisesRouter.Library(ExercisesRouter.Mode.Browse),
                             close = back,
                         )
                     },

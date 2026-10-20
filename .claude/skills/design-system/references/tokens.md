@@ -10,7 +10,7 @@ within that read-only contract.
 |---|---|---|
 | colors | AppColor, DarkColor/LightColor | Semantic product colors |
 | dp | AppDp | Dimensions, spacing, radii |
-| typography | AppTypography | Named text styles using manrope() |
+| typography | AppTypography | Named text styles using onest() |
 | strings | AppString | String resources |
 | drawables | AppDrawable | Raster product imagery |
 | icons | AppIcon extensions | ImageVector UI icons |

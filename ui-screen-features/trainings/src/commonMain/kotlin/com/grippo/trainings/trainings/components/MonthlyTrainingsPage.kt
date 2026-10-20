@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -86,16 +85,8 @@ private fun MonthCalendar(
         val totalHorizontalSpacing = horizontalSpacing * (weekDayLabels.size - 1)
         val dayCellWidth = (maxWidth - totalHorizontalSpacing) / weekDayLabels.size
         val dayCellHeight = AppTokens.dp.calendar.monthly.cellHeight
-        val weekRowCount = weeks.size.takeIf { it > 0 } ?: 1
-        val gridSpacing = AppTokens.dp.contentPadding.subContent * (weekRowCount - 1)
-        val minCalendarHeight = (dayCellHeight * weekRowCount) +
-                gridSpacing +
-                AppTokens.dp.contentPadding.block * 2
-
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = minCalendarHeight),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

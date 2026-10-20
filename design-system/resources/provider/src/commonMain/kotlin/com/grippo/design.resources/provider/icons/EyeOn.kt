@@ -1,8 +1,9 @@
 package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -20,33 +21,23 @@ public val AppIcon.EyeOn: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Wider, flatter almond eye (less circular) with hollow ring (iris cut-out).
             path(
-                fill = SolidColor(Color(0xFF33363F)),
-                pathFillType = PathFillType.EvenOdd
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
             ) {
-                // Outer almond — flatter top-bottom, wider left-right
-                moveTo(1.5f, 12f)
-                curveTo(3.5f, 7.5f, 7.5f, 5f, 12f, 5f)
-                curveTo(16.5f, 5f, 20.5f, 7.5f, 22.5f, 12f)
-                curveTo(20.5f, 16.5f, 16.5f, 19f, 12f, 19f)
-                curveTo(7.5f, 19f, 3.5f, 16.5f, 1.5f, 12f)
+                moveTo(3f, 12f)
+                curveTo(4.7f, 8.1f, 8f, 6f, 12f, 6f)
+                curveTo(16f, 6f, 19.3f, 8.1f, 21f, 12f)
+                curveTo(19.3f, 15.9f, 16f, 18f, 12f, 18f)
+                curveTo(8f, 18f, 4.7f, 15.9f, 3f, 12f)
                 close()
-                // Iris cut-out — bigger circle (~4 units radius)
-                moveTo(12f, 8f)
-                curveTo(14.209f, 8f, 16f, 9.791f, 16f, 12f)
-                curveTo(16f, 14.209f, 14.209f, 16f, 12f, 16f)
-                curveTo(9.791f, 16f, 8f, 14.209f, 8f, 12f)
-                curveTo(8f, 9.791f, 9.791f, 8f, 12f, 8f)
-                close()
-            }
-            // Inner pupil — solid dot in centre, sized so iris-ring is visible.
-            path(fill = SolidColor(Color(0xFF33363F))) {
-                moveTo(12f, 9.5f)
-                curveTo(13.381f, 9.5f, 14.5f, 10.619f, 14.5f, 12f)
-                curveTo(14.5f, 13.381f, 13.381f, 14.5f, 12f, 14.5f)
-                curveTo(10.619f, 14.5f, 9.5f, 13.381f, 9.5f, 12f)
-                curveTo(9.5f, 10.619f, 10.619f, 9.5f, 12f, 9.5f)
+                moveTo(12f, 9f)
+                curveTo(13.657f, 9f, 15f, 10.343f, 15f, 12f)
+                curveTo(15f, 13.657f, 13.657f, 15f, 12f, 15f)
+                curveTo(10.343f, 15f, 9f, 13.657f, 9f, 12f)
+                curveTo(9f, 10.343f, 10.343f, 9f, 12f, 9f)
                 close()
             }
         }.build()

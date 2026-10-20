@@ -30,7 +30,9 @@ and session `finish(result)`; do not convert them to screen results.
 
 Current examples: `TrainingRecordingViewModel.LIBRARY_RESULT_KEY` and
 `EXERCISE_RESULT_KEY`, `TrainingExerciseViewModel.libraryResultKey(exerciseId)`,
-`ExercisesRouter.Library.resultKey`, and `TrainingRouter.Exercise.resultKey`.
+`ExercisesRouter.Mode.Default.resultKey` / `ExercisesRouter.Mode.SimilarTo.resultKey`
+(the key lives on the picking mode, not on `ExercisesRouter.Library`; the
+embedded `Mode.Browse` tab carries no key), and `TrainingRouter.Exercise.resultKey`.
 
 ```kotlin
 // Receiver ViewModel

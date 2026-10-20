@@ -14,12 +14,15 @@ in-memory configs and are not restored.
 
 1. **RootComponent** in shared owns the primary StackNavigation<RootRouter>.
    Inspect `RootComponent.createChild`; it builds `AuthComponent`, `MainComponent`
-   (whose `createHome`/`createCalendar`/`createProfile` factories build
-   `HomeRootComponent`, `TrainingsRootComponent` and `ProfileComponent` for the
-   tabs), `TrainingsRootComponent`, `ProfileComponent`, `DebugComponent` and
-   `TrainingComponent`. `ExercisesRootComponent` is built from `TrainingComponent`;
-   `OnboardingComponent` is an internal child of `AuthComponent` (there is no
-   onboarding module).
+   (whose `createHome`/`createCalendar`/`createLibrary`/`createProfile` factories
+   build `HomeRootComponent`, `TrainingsRootComponent`, `ExercisesRootComponent`
+   with `ExercisesRouter.Library(ExercisesRouter.Mode.Browse)` and
+   `ProfileComponent` for the `MainRouter` tabs), `TrainingsRootComponent`,
+   `ProfileComponent`, `DebugComponent` and `TrainingComponent`.
+   `ExercisesRootComponent` is built from two places: `TrainingComponent` (picking
+   modes `Mode.Default` / `Mode.SimilarTo`, each carrying a `resultKey`) and
+   `MainComponent`'s Library tab (`Mode.Browse`, no key); `OnboardingComponent`
+   is an internal child of `AuthComponent` (there is no onboarding module).
 2. **`<Feature>Component`** (or `<Feature>RootComponent` — see naming below) in each `:ui-screen-features:<feature>` with more than one screen — owns a private `StackNavigation<<Feature>Router>`. Single-screen features skip the inner stack and just expose one `BaseComponent`.
 3. **`DialogComponent`** in `:shared` — owns `SlotNavigation<DialogSession>` parallel to the screen stack. `DialogContentComponent` owns the internal `StackNavigation<DialogStep>` for that session. Both use `serializer = null`; configs and typed callbacks remain live in memory. See [dialogs.md](dialogs.md).
 

@@ -42,9 +42,11 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.calendar
 import com.grippo.design.resources.provider.home
 import com.grippo.design.resources.provider.icons.Calendar
+import com.grippo.design.resources.provider.icons.Dumbbell
 import com.grippo.design.resources.provider.icons.Home
 import com.grippo.design.resources.provider.icons.Play
 import com.grippo.design.resources.provider.icons.UserOutline
+import com.grippo.design.resources.provider.library
 import com.grippo.design.resources.provider.profile
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -154,7 +156,8 @@ private fun BottomBarPreviewContent() {
         val items = persistentListOf(
             0 to BottomBarItem(UiText.Res(Res.string.home), AppTokens.icons.Home),
             1 to BottomBarItem(UiText.Res(Res.string.calendar), AppTokens.icons.Calendar),
-            2 to BottomBarItem(UiText.Res(Res.string.profile), AppTokens.icons.UserOutline),
+            2 to BottomBarItem(UiText.Res(Res.string.library), AppTokens.icons.Dumbbell),
+            3 to BottomBarItem(UiText.Res(Res.string.profile), AppTokens.icons.UserOutline),
         )
         items.forEach { (key, _) ->
             BottomBar(items = items, selected = key, onSelect = {}, action = {

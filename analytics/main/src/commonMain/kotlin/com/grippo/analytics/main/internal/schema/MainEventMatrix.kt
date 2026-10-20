@@ -12,6 +12,7 @@ internal object MainEventMatrix {
         when (it) {
             MainTab.Home -> "home"
             MainTab.Calendar -> "calendar"
+            MainTab.Library -> "library"
             MainTab.Profile -> "profile"
         }
     }

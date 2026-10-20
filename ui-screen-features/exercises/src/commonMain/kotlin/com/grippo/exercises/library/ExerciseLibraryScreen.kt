@@ -79,7 +79,10 @@ internal fun ExerciseLibraryScreen(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.exercise_library),
         style = ToolbarStyle.Transparent,
-        leading = Leading.Back(contract::onBack),
+        leading = when (state.mode) {
+            is ExerciseLibraryMode.Pick -> Leading.Back(contract::onBack)
+            ExerciseLibraryMode.Browse -> Leading.Nothing
+        },
     )
 
     val replaceMode = state.mode as? ExerciseLibraryMode.SimilarTo
@@ -160,7 +163,10 @@ internal fun ExerciseLibraryScreen(
                     .fillMaxSize()
                     .navigationBarsPadding(),
                 painter = AppTokens.drawables.res(Res.drawable.empty_exercises),
-                contentPadding = PaddingValues(AppTokens.dp.screen.horizontalPadding),
+                contentPadding = PaddingValues(
+                    horizontal = AppTokens.dp.screen.horizontalPadding,
+                    vertical = AppTokens.dp.screen.verticalPadding,
+                ),
                 text = AppTokens.strings.res(Res.string.empty_exercise_examples)
             )
 
@@ -351,6 +357,21 @@ private fun ScreenPreviewMuscleFilter() {
                     filter = QueryFilter.Group(muscleGroups.last().id),
                     muscleGroups = muscleGroups,
                 ),
+            ),
+            contract = ExerciseLibraryContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewBrowse() {
+    PreviewContainer {
+        ExerciseLibraryScreen(
+            state = ExerciseLibraryState(
+                mode = ExerciseLibraryMode.Browse,
+                exerciseExamples = exerciseLibraryPreviewExamples(),
+                queries = Queries(muscleGroups = stubMuscleGroup()),
             ),
             contract = ExerciseLibraryContract.Empty,
         )

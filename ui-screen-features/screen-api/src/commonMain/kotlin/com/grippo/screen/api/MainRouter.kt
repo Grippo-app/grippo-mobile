@@ -12,5 +12,8 @@ public sealed class MainRouter : BaseRouter {
     public data object Calendar : MainRouter()
 
     @Serializable
+    public data object Library : MainRouter()
+
+    @Serializable
     public data object Profile : MainRouter()
 }

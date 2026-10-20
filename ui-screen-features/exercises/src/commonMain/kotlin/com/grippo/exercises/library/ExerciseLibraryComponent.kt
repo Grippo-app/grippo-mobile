@@ -6,15 +6,12 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.models.PersistenceKey
-import com.grippo.core.foundation.models.Result
-import com.grippo.core.foundation.models.ResultKey
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.screen.api.ExercisesRouter
 
 internal class ExerciseLibraryComponent(
     componentContext: ComponentContext,
-    private val mode: ExerciseLibraryMode,
-    private val resultKey: ResultKey<Result<ExerciseExampleState>>,
+    private val mode: ExercisesRouter.Mode,
     private val back: () -> Unit,
 ) : BaseComponent<ExerciseLibraryDirection>(componentContext) {
 
@@ -25,6 +22,7 @@ internal class ExerciseLibraryComponent(
             userExerciseExamplesUseCase = getKoin().get(),
             exerciseExampleFeature = getKoin().get(),
             muscleFeature = getKoin().get(),
+            dialogController = getKoin().get(),
             initialState = restoreState(DRAFT),
         )
     }
@@ -39,7 +37,7 @@ internal class ExerciseLibraryComponent(
     override suspend fun eventListener(direction: ExerciseLibraryDirection) {
         when (direction) {
             is ExerciseLibraryDirection.BackWithResult -> {
-                sendResult(resultKey, direction.value)
+                sendResult(key = direction.resultKey, data = direction.value)
                 back.invoke()
             }
             ExerciseLibraryDirection.Back -> back.invoke()

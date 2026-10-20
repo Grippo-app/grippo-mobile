@@ -1,97 +1,36 @@
 package com.grippo.core.state.menu
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.UiText
-import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_menu
-import com.grippo.design.resources.provider.icons.Body
-import com.grippo.design.resources.provider.icons.Compass
-import com.grippo.design.resources.provider.icons.Kettlebell
-import com.grippo.design.resources.provider.icons.Medal
-import com.grippo.design.resources.provider.icons.Muscle
 import com.grippo.design.resources.provider.profile_menu_excluded_muscles
 import com.grippo.design.resources.provider.profile_menu_experience
 import com.grippo.design.resources.provider.profile_menu_missing_equipment
 import com.grippo.design.resources.provider.weight_and_height
 
 @Immutable
-public sealed class ProfileMenu : PickerMenuItem {
+public sealed class ProfileMenu {
+
+    public abstract fun text(): UiText
 
     public data object Body : ProfileMenu() {
-        override val id: String get() = "body"
-
         override fun text(): UiText = UiText.Res(Res.string.weight_and_height)
-
-        @Composable
-        override fun icon(): ImageVector = AppTokens.icons.Body
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.context.body
     }
 
     public data object Experience : ProfileMenu() {
-        override val id: String get() = "experience"
-
         override fun text(): UiText = UiText.Res(Res.string.profile_menu_experience)
-
-        @Composable
-        override fun icon(): ImageVector = AppTokens.icons.Medal
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.context.experience
     }
 
     public data object Muscles : ProfileMenu() {
-        override val id: String get() = "muscles"
-
         override fun text(): UiText = UiText.Res(Res.string.profile_menu_excluded_muscles)
-
-        @Composable
-        override fun icon(): ImageVector = AppTokens.icons.Muscle
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.context.muscle
     }
 
     public data object Equipment : ProfileMenu() {
-        override val id: String get() = "equipment"
         override fun text(): UiText = UiText.Res(Res.string.profile_menu_missing_equipment)
-
-        @Composable
-        override fun icon(): ImageVector = AppTokens.icons.Kettlebell
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.context.equipment
     }
 
     public data object Goal : ProfileMenu() {
-        override val id: String get() = "goal"
-
         override fun text(): UiText = UiText.Res(Res.string.goal_menu)
-
-        @Composable
-        override fun icon(): ImageVector = AppTokens.icons.Compass
-
-        @Composable
-        override fun textColor(): Color = AppTokens.colors.text.primary
-
-        @Composable
-        override fun iconColor(): Color = AppTokens.colors.goal.accent
     }
 }

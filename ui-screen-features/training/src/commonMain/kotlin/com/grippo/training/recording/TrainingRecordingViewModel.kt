@@ -255,12 +255,12 @@ internal class TrainingRecordingViewModel(
 
         val muscleGroupId = lastTargetMuscleGroupId()
 
-        val mode = ExercisesRouter.Mode.Default(preselectedMuscleGroupId = muscleGroupId)
-
-        val route = ExercisesRouter.Library(
-            mode = mode,
+        val mode = ExercisesRouter.Mode.Default(
+            preselectedMuscleGroupId = muscleGroupId,
             resultKey = LIBRARY_RESULT_KEY,
         )
+
+        val route = ExercisesRouter.Library(mode = mode)
 
         navigateTo(TrainingRecordingDirection.ToLibrary(route = route))
     }

@@ -24,8 +24,8 @@ public val AppIcon.Calendar: ImageVector
             path(
                 stroke = SolidColor(Color(0xFF33363F)),
                 strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
             ) {
                 moveTo(5f, 6f)
                 horizontalLineTo(19f)
@@ -42,7 +42,7 @@ public val AppIcon.Calendar: ImageVector
                 stroke = SolidColor(Color(0xFF33363F)),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineJoin = StrokeJoin.Round,
             ) {
                 moveTo(4f, 11f)
                 horizontalLineTo(20f)
@@ -51,7 +51,7 @@ public val AppIcon.Calendar: ImageVector
                 stroke = SolidColor(Color(0xFF33363F)),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineJoin = StrokeJoin.Round,
             ) {
                 moveTo(9f, 16f)
                 horizontalLineTo(15f)
@@ -60,7 +60,7 @@ public val AppIcon.Calendar: ImageVector
                 stroke = SolidColor(Color(0xFF33363F)),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineJoin = StrokeJoin.Round,
             ) {
                 moveTo(8f, 3f)
                 lineTo(8f, 7f)
@@ -69,7 +69,7 @@ public val AppIcon.Calendar: ImageVector
                 stroke = SolidColor(Color(0xFF33363F)),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineJoin = StrokeJoin.Round,
             ) {
                 moveTo(16f, 3f)
                 lineTo(16f, 7f)

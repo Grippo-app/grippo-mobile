@@ -6,5 +6,6 @@ import com.grippo.screen.api.MainRouter
 internal fun MainRouter.toAnalytics(): MainTab = when (this) {
     MainRouter.Home -> MainTab.Home
     MainRouter.Calendar -> MainTab.Calendar
+    MainRouter.Library -> MainTab.Library
     MainRouter.Profile -> MainTab.Profile
 }

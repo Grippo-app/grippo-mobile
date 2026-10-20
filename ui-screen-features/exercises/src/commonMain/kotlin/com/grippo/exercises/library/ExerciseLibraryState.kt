@@ -6,6 +6,7 @@ import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
+import com.grippo.screen.api.ExercisesRouter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
@@ -15,7 +16,7 @@ import kotlinx.serialization.Transient
 @Serializable
 internal data class ExerciseLibraryState(
     @Transient
-    val mode: ExerciseLibraryMode = ExerciseLibraryMode.Default(null),
+    val mode: ExerciseLibraryMode = ExerciseLibraryMode.Browse,
     @Transient
     val exerciseExamples: ImmutableList<ExerciseExampleState> = persistentListOf(),
     @Transient
@@ -26,21 +27,54 @@ internal data class ExerciseLibraryState(
 ) {
     val canShowSuggestions: Boolean =
         mode is ExerciseLibraryMode.SimilarTo && hasSuggestionsResults
+
+    companion object {
+        fun initial(route: ExercisesRouter.Mode): ExerciseLibraryState {
+            val mode = ExerciseLibraryMode.of(route)
+            return ExerciseLibraryState(
+                mode = mode,
+                queries = Queries(filter = mode.initialFilter()),
+            )
+        }
+    }
 }
 
 @Immutable
 internal sealed interface ExerciseLibraryMode {
 
+    /** A caller is waiting for one picked example; the toolbar shows Back. */
+    @Immutable
+    sealed interface Pick : ExerciseLibraryMode
+
     @Immutable
     data class Default(
         val preselectedMuscleGroupId: String?,
-    ) : ExerciseLibraryMode
+    ) : Pick
 
     @Immutable
     data class SimilarTo(
         val targetExerciseExampleId: String,
         val target: ExerciseExampleValueState? = null,
-    ) : ExerciseLibraryMode
+    ) : Pick
+
+    /** Embedded catalog (the Library tab): no caller, no Back, a card opens its details. */
+    @Immutable
+    data object Browse : ExerciseLibraryMode
+
+    /** The filter a fresh (non-restored) library starts with in this mode. */
+    fun initialFilter(): QueryFilter = when (this) {
+        is SimilarTo -> QueryFilter.Suggestions
+        is Default -> preselectedMuscleGroupId?.let(QueryFilter::Group) ?: QueryFilter.All
+        Browse -> QueryFilter.All
+    }
+
+    companion object {
+        fun of(mode: ExercisesRouter.Mode): ExerciseLibraryMode = when (mode) {
+            is ExercisesRouter.Mode.Default -> Default(mode.preselectedMuscleGroupId)
+            is ExercisesRouter.Mode.SimilarTo -> SimilarTo(mode.targetExerciseExampleId)
+            ExercisesRouter.Mode.Browse -> Browse
+        }
+    }
 }
 
 @Immutable
