@@ -42,8 +42,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   use the shared `ContentDivider`. Disabled switches use their own
   `toggle.disabledTrack` and `toggle.disabledThumb` roles.
 - Chart grid/axis/baseline colors and area/sparkline fill endpoints belong to
-  their chart color groups. Dynamic series gradients retain the supplied series
-  hue and use their chart group's blend/opacity coefficients. Avatar fills/rings
+  their chart color groups. Each series retains its supplied semantic hue;
+  history fills use their chart group's fade endpoints. Avatar fills/rings
   retain experience hues through the profile coefficients; bottom action fades
   retain their host surface hue through `overlay.bottomActionAlpha`. Shadow spot
   strength uses `overlay.shadowSpotAlphaMultiplier` without changing its hue.
@@ -59,9 +59,30 @@ and Latin text in both themes; each role keeps its existing size and line height
   tokens. Selection uses a modest guide and rounded outline, without a halo.
   General volume and selected-exercise history retain their supplied blue series
   meanings. All entries also have one complete formatted accessibility description.
-- Sparkline extrema use `charts.sparkline.minimumMarker` and `maximumMarker`
-  data colors. A minimum or maximum alone does not imply warning or success,
-  including in bodyweight history.
+- Time histories use a single blue contour (`charts.sparkline.lineA`) with a
+  restrained same-hue fade (`fillStart/fillEnd`), a 2.5 dp line and 8 dp vertical
+  breathing room. The default omits arbitrary midlines, glow, repeated dots and
+  colored extrema: a minimum/maximum alone implies neither warning nor success.
+  One observation is a single marker, with no invented duration or trend.
+  Distinct dated observations show complete first/last dates in `b10Med`
+  secondary text with `metrics.charts.sparkline.axisLabelSpacing`; values retain
+  their metric's units and precision in a compact Onest tooltip. Tap and horizontal
+  scrub use the same quiet guide/marker, without a halo; vertical scrolling stays
+  with the host. Bodyweight and performance histories use elapsed dates on X,
+  matching estimated 1RM, rather than compressing training gaps. Their complete
+  descriptions provide dates, values and units to accessibility services.
+- General tonnage columns use one `palette7BlueGrowth[2]` series hue; magnitude is
+  conveyed by length from zero. Exercise history preserves its distinct current
+  entry against quiet historical blue columns. Calendar bucket labels show actual
+  week date ranges and include the year for months; bucket aggregation is unchanged.
+- Area plots share the calm blue contour/fade and neutral axes, with no glow or
+  competing extrema labels by default. Radar plots retain each supplied series
+  hue with a restrained `charts.radar.fillAlpha`; hue does not encode severity.
+  Percentage rows use flat supplied colors, visible outside values including zero,
+  and exact linear bar lengths. Pie slices preserve true shares including small
+  values, and labels reserve measured space. Share rings keep `charts.ring.info`
+  for descriptive distribution, centered within their bounds; stroke caps do not
+  inflate small shares. These shapes do not imply goal completion or recovery.
 - Muscles share the “Body Map” motif across exercise-library filters and rows,
   exercise anatomy, onboarding/profile muscle selection, training summaries,
   Home and statistics/details. The anatomical zone is the primary recognition
@@ -161,7 +182,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   is flow position, separate from selection and semantic success.
 - Chips use a quiet card fill, thin neutral outline and their compact 8/12 dp
   shapes. Metric labels use secondary medium-weight text and values use primary
-  semibold text; context icons and category markers retain their meaning. Selected
+  semibold text. Values wrap to at most two lines; labels retain one line, with
+  ellipsis after either limit. Context icons and category markers retain their
+  meaning. Selected
   iteration-picker suggestion chips use selection.background and selection.accent
   for fill/outline with neutral text. Library filters and goal personalization
   use the neutral CheckSelectableCard Small treatment. Keep selection and click
@@ -499,17 +522,27 @@ and Latin text in both themes; each role keeps its existing size and line height
   exercise references may use `SMALL` (32 dp).
 - Exercise-library results use open `ExerciseExampleCardStyle.Large` rows with
   regular 64 dp thumbnails on the left. The right column has complete `h5` names,
-  image-only metadata immediately below, then `b12Med` last-used dates only when
-  present. Equipment uses the shared Compact treatment; missing equipment keeps
-  an explicitly labelled declared weight type between the images and date.
+  then an explicit usage status, followed by image-only metadata.
+  A positive usage count or a recorded last-used date indicates history: a
+  passive `ChipSize.Small` / `ChipInteraction.Static` uses the shared chip
+  geometry and `b11Semi` value style, `background.card`, `text.primary`,
+  `border.default` and a neutral `icon.secondary` Calendar. With an empty label,
+  its value shows the localized last-used date, or “In your history” when the
+  date is absent. The history value uses the shared two-line limit and wraps
+  beside the icon. Exercises without either history signal use a plain `b12Med`, `text.secondary`
+  “Not tried yet” caption. History is neither selection nor success, so it has
+  no orange or feedback tint. Equipment uses the shared Compact treatment;
+  missing equipment keeps an explicitly labelled declared weight type.
   All muscle groups are represented by one upper-body mark and, when needed,
   one legs mark at `muscle.summaryMarkSize` (32 dp), with neutral `icon.secondary`
   highlights and complete localized accessibility names. The equipment and
   anatomy clusters stay in the right
   column with `content` spacing between them and `text` wrapping gaps. Missing
   groups leave no empty row.
-  Quiet dividers follow the content gutters; repeated taxonomy
-  chips, outer card frames and never-used footers do not compete with selection.
+  Quiet dividers follow the content gutters; repeated taxonomy chips and outer
+  card frames do not compete with selection. The usage status stays in each row
+  across catalog, picker and replacement modes, preserving the supplied order
+  when similarity-ranked suggestions mix used and unused exercises.
 - Replacement-library targets use the passive Small reference with a complete
   `b14Semi` name and a 32 dp image inside a neutral `FocusFrame`
   (`background.card`, `border.default`), introduced by a `b12Med` caption.

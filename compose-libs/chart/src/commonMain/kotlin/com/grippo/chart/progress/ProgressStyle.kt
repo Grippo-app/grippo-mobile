@@ -14,8 +14,8 @@ import androidx.compose.ui.unit.Dp
  * Layout overview:
  * - Domain: normalized [0..1] or absolute max
  * - Bars: track (background), foreground gradient, stroke
- * - Labels: left-side labels per row
- * - Values: inside or outside numeric labels (normalized or absolute)
+ * - Labels: wrapping row headings
+ * - Values: inside fitting bars, otherwise beside the row heading
  * - Target: optional vertical reference line
  */
 @Immutable
@@ -59,7 +59,7 @@ public data class ProgressStyle(
         val strokeColor: Color,
     )
 
-    /** Left-side labels style. */
+    /** Row heading style. */
     @Immutable
     public data class Labels(
         val textStyle: TextStyle,
@@ -71,17 +71,17 @@ public data class ProgressStyle(
         @Immutable
         public data object None : Values
 
-        /** Inside value labels (auto contrast by default). */
+        /** Value labels inside fitting bars, falling back to the row heading. */
         @Immutable
         public data class Inside(
             val textStyle: TextStyle,
             val formatter: (Float, ProgressData) -> String,
             val minInnerPadding: Dp,
-            val insideColor: Color?,              // null -> auto contrast
+            val insideColor: Color?,              // null -> textStyle color
             val preferNormalizedLabels: Boolean,  // when domain is Normalized
         ) : Values
 
-        /** Outside value labels (to the right of the bar). */
+        /** Value labels beside the row heading. */
         @Immutable
         public data class Outside(
             val textStyle: TextStyle,

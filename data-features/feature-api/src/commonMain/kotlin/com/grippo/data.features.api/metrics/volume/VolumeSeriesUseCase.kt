@@ -23,7 +23,6 @@ public class VolumeSeriesUseCase {
     private companion object {
         private const val EPS = 1e-3f
         private const val TARGET_BUCKETS = 24
-        private const val WEEK_LABEL_PREFIX = "W"
     }
 
     public fun fromExercises(exercises: List<Exercise>): VolumeSeries {
@@ -199,25 +198,18 @@ public class VolumeSeriesUseCase {
             )
 
             BucketScale.Week -> {
-                val weekNumber = isoWeekNumber(bucket.start)
-                val month = DateTimeUtils.format(bucket.start, DateFormat.DateOnly.MonthShort)
-                "$WEEK_LABEL_PREFIX$weekNumber-$month"
+                val from = DateTimeUtils.format(bucket.start, DateFormat.DateOnly.DateDdMmm)
+                val to = DateTimeUtils.format(bucket.end, DateFormat.DateOnly.DateDdMmm)
+                "$from – $to"
             }
 
             BucketScale.Month -> DateTimeUtils.format(
                 bucket.start,
-                DateFormat.DateOnly.MonthShort
+                DateFormat.DateOnly.MmmYyyy
             )
 
             BucketScale.Exercise -> ""
         }
-    }
-
-    private fun isoWeekNumber(weekStartMonday: LocalDateTime): Int {
-        val date = weekStartMonday.date
-        val firstJan = LocalDate(date.year, 1, 1)
-        val dayOfYear = (date.toEpochDays() - firstJan.toEpochDays()).toInt() + 1
-        return ((dayOfYear - 1) / DayOfWeek.entries.size) + 1
     }
 
     private fun startOfWeek(dateTime: LocalDateTime): LocalDateTime {

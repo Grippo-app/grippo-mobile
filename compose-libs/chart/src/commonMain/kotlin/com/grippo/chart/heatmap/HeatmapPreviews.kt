@@ -100,5 +100,30 @@ private fun PreviewHeatmapFewShowAll() {
     )
 }
 
+@Preview
+@Composable
+private fun PreviewHeatmapLongColumnsAndConstantValues() {
+    HeatmapChart(
+        modifier = Modifier.fillMaxWidth(),
+        data = HeatmapData.fromRows(
+            values01 = listOf(listOf(0f, 0f, 0f), listOf(1f, 1f, 1f)),
+            rowLabels = listOf("Zero", "Full"),
+            colLabels = listOf(
+                "Повна назва першого тренувального періоду",
+                "Повна назва другого тренувального періоду",
+                "Повна назва останнього тренувального періоду",
+            ),
+        ),
+        style = hmStyle(adaptiveCols = true),
+    )
+}
 
-
+@Preview
+@Composable
+private fun PreviewHeatmapSingleCell() {
+    HeatmapChart(
+        modifier = Modifier.fillMaxWidth(),
+        data = HeatmapData.fromRows(values01 = listOf(listOf(0.5f))),
+        style = hmStyle(adaptiveCols = true),
+    )
+}

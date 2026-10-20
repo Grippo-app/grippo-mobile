@@ -197,3 +197,23 @@ private fun BarChartEmptyPreview() {
         )
     }
 }
+
+@AppPreview
+@Composable
+private fun BarChartSingleEntryPreview() {
+    PreviewContainer {
+        BarChart(
+            modifier = Modifier.size(300.dp),
+            data = BarData(
+                items = listOf(
+                    BarEntry(
+                        label = "20 Oct",
+                        value = 1_600f,
+                        color = AppTokens.colors.palette.palette7BlueGrowth[2],
+                    ),
+                ),
+            ),
+            valueFormatter = { value -> value.roundToInt().toString() },
+        )
+    }
+}

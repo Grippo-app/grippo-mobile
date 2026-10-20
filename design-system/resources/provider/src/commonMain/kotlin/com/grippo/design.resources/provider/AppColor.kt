@@ -334,11 +334,8 @@ public interface AppColor {
 
         public interface SparklineColors {
             public val lineA: Color
-            public val lineB: Color
             public val fillStart: Color
             public val fillEnd: Color
-            public val minimumMarker: Color
-            public val maximumMarker: Color
         }
 
         public interface TooltipColor {
@@ -356,17 +353,12 @@ public interface AppColor {
 
         public interface AreaColors {
             public val lineA: Color
-            public val lineB: Color
             public val fillStart: Color
             public val fillEnd: Color
-            public val glow: Color
-            public val dot: Color
         }
 
         public interface ProgressColors {
             public val track: Color
-            public val gradientStartAlpha: Float
-            public val gradientEndAlpha: Float
         }
 
         public interface BarColors {

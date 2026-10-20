@@ -1,26 +1,44 @@
 package com.grippo.chart.pie
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.DrawStyle
-import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import kotlin.math.PI
 import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 @Composable
@@ -29,364 +47,442 @@ public fun PieChart(
     data: PieData,
     style: PieStyle,
 ) {
-    val textMeasurer = rememberTextMeasurer()
-    val slices = data.slices
-
-    // Base sweeps from raw data (no distortion) + percents for labels (from data)
-    val (baseSweeps, percents) = remember(slices) {
-        val total = slices.sumOf { it.value.toDouble() }.toFloat()
-        if (total <= 0f || slices.isEmpty()) {
-            FloatArray(0) to IntArray(0)
-        } else {
-            val base = FloatArray(slices.size) { i ->
-                360f * (slices[i].value / total)
-            }
-            val pc = IntArray(slices.size) { i ->
-                ((slices[i].value / total) * 100f).toInt()
-            }
-            base to pc
-        }
+    val measurer = rememberTextMeasurer()
+    val slices = remember(data.slices) {
+        data.slices.filter { it.value.isFinite() && it.value > 0f }
+    }
+    val total = slices.sumOf { it.value.toDouble() }
+    val sweeps = remember(slices, total) {
+        slices.map { (it.value / total * 360.0).toFloat() }
     }
 
-    // Visual sweeps (may be distorted by minVisualPercent)
-    val sweeps = remember(baseSweeps, style.arc.minVisualPercent) {
-        if (baseSweeps.isEmpty()) {
-            FloatArray(0)
-        } else {
-            val n = baseSweeps.size
-            val minPercent = style.arc.minVisualPercent.coerceIn(0f, 1f)
-            if (minPercent <= 0f) {
-                baseSweeps
+    val density = LocalDensity.current
+
+    BoxWithConstraints(modifier = modifier) {
+        val hasBoundedHeight = constraints.hasBoundedHeight
+        val useLegend = remember(slices, sweeps, style, measurer, density, maxWidth, maxHeight) {
+            needsLegend(
+                slices = slices,
+                sweeps = sweeps,
+                style = style,
+                measurer = measurer,
+                density = density,
+                width = with(density) { maxWidth.toPx() },
+                height = with(density) { maxHeight.toPx() },
+            )
+        }
+        if (useLegend) {
+            val labels = style.labels
+            val textStyle = when (labels) {
+                is PieStyle.Labels.Adaptive -> labels.textStyle
+                is PieStyle.Labels.Inside -> labels.textStyle
+                is PieStyle.Labels.Outside -> labels.textStyle
+            }
+            val formatter = when (labels) {
+                is PieStyle.Labels.Adaptive -> labels.formatter
+                is PieStyle.Labels.Inside -> labels.formatter
+                is PieStyle.Labels.Outside -> labels.formatter
+            }
+            val gap = when (labels) {
+                is PieStyle.Labels.Adaptive -> labels.labelPadding
+                is PieStyle.Labels.Inside -> labels.labelPadding
+                is PieStyle.Labels.Outside -> labels.labelPadding
+            }
+            val requestedPlotHeight = style.arc.width * 4 + style.layout.padding * 2
+            val first = slices.first()
+            val firstLabel = formatter(first, (first.value / total * 100.0).roundToInt())
+            val legendMinimumHeight = with(density) {
+                val textWidth = (maxWidth.toPx() - (style.arc.width / 2 + gap).toPx()).toInt().coerceAtLeast(1)
+                measurer.measure(
+                    text = AnnotatedString(firstLabel),
+                    style = textStyle,
+                    constraints = Constraints(maxWidth = textWidth),
+                ).size.height.toDp().coerceAtLeast(style.arc.width / 2)
+            }
+            val plotHeight = if (hasBoundedHeight) {
+                minOf(requestedPlotHeight, (maxHeight - legendMinimumHeight).coerceAtLeast(0.dp))
             } else {
-                // Convert minimal percent to degrees; cap by theoretical max so sum can still reach 360°
-                val desiredMinDeg = 360f * minPercent
-                val maxFeasibleMin = 360f / n - 1e-3f // small epsilon to avoid zero space
-                val effectiveMinDeg = min(desiredMinDeg, maxFeasibleMin.coerceAtLeast(0f))
-
-                // Clamp and renormalize
-                val clamped = FloatArray(n) { i -> maxOf(baseSweeps[i], effectiveMinDeg) }
-                val sumClamped = clamped.sum()
-                val scale = if (sumClamped > 0f) 360f / sumClamped else 1f
-                FloatArray(n) { i -> clamped[i] * scale }
+                requestedPlotHeight
             }
-        }
-    }
-
-    // Build label layouts via formatter
-    val labelLayouts = remember(textMeasurer, style.labels, slices, percents, sweeps) {
-        if (sweeps.isEmpty()) emptyList()
-        else slices.indices.map { i ->
-            val (textStyle, formatter) = when (val labels = style.labels) {
-                is PieStyle.Labels.Adaptive -> labels.textStyle to labels.formatter
-                is PieStyle.Labels.Inside -> labels.textStyle to labels.formatter
-                is PieStyle.Labels.Outside -> labels.textStyle to labels.formatter
-            }
-            val label = formatter(slices[i], percents.getOrElse(i) { 0 })
-            textMeasurer.measure(AnnotatedString(label), textStyle)
-        }
-    }
-
-    Canvas(modifier = modifier) {
-        if (sweeps.isEmpty()) return@Canvas
-
-        // Layout rect and radii
-        val pad = style.layout.padding.toPx()
-        val chart = Rect(pad, pad, size.width - pad, size.height - pad)
-        if (chart.width <= 0f || chart.height <= 0f) return@Canvas
-
-        val widthPx = style.arc.width.toPx()
-        val cornerRadiusPx = style.arc.cornerRadius.toPx()
-        val connectorWidthPx = style.leaders.lineWidth.toPx()
-        val labelRadiusExtra = style.leaders.offset.toPx()
-        val labelPaddingH = when (val labels = style.labels) {
-            is PieStyle.Labels.Adaptive -> labels.labelPadding.toPx()
-            is PieStyle.Labels.Inside -> labels.labelPadding.toPx()
-            is PieStyle.Labels.Outside -> labels.labelPadding.toPx()
-        }
-
-        val minArcDeg: Float = 0.1f.coerceAtLeast(0f)
-
-        val center = Offset(chart.left + chart.width / 2f, chart.top + chart.height / 2f)
-        val outerRadius = min(chart.width, chart.height) / 2f
-        val innerRadius = outerRadius - widthPx
-        val centerRadius = (outerRadius + innerRadius) / 2f
-
-        // Collect outside-label candidates; inside labels drawn last on top
-        data class OutsideLabel(
-            val index: Int,
-            val angleDeg: Float, // mid-angle (deg)
-            var y: Float,        // desired y, will be adjusted
-            val width: Int,
-            val height: Int,
-            val rightSide: Boolean
-        )
-
-        val outside = mutableListOf<OutsideLabel>()
-        val insideLabels = mutableListOf<Pair<TextLayoutResult, Offset>>() // top-left positions
-
-        // First pass: draw arcs and collect label positions
-        var acc = style.layout.startAngleDeg
-        sweeps.forEachIndexed { i, visualSweep ->
-            // Local padding limited by slice size to avoid eating tiny slices
-            val localPad = style.arc.paddingAngleDeg
-                .coerceAtMost(visualSweep / 2f - minArcDeg)
-                .coerceAtLeast(0f)
-
-            val start = acc + localPad
-            val drawSweep = (visualSweep - 2f * localPad).coerceAtLeast(0f)
-            val mid = start + drawSweep / 2f
-
-            // Draw rounded arc if visible
-            if (drawSweep >= minArcDeg) {
-                drawRoundedArc(
-                    color = slices[i].color,
-                    startAngle = start,
-                    sweepAngle = drawSweep,
-                    width = widthPx,
-                    cornerRadius = cornerRadiusPx,
-                    center = center,
-                    outerRadius = outerRadius
+            Column(modifier = Modifier.fillMaxSize()) {
+                PieDrawing(
+                    modifier = Modifier.fillMaxWidth().height(plotHeight),
+                    slices = slices,
+                    sweeps = sweeps,
+                    total = total,
+                    style = style,
+                    showLabels = false,
                 )
-            }
-
-            // Prepare label placement using visual sweep for geometry decisions
-            when (val labels = style.labels) {
-                is PieStyle.Labels.Inside -> {
-                    val layout = labelLayouts[i]
-                    val midRad = mid * PI.toFloat() / 180f
-                    val x = center.x + centerRadius * cos(midRad)
-                    val y = center.y + centerRadius * sin(midRad)
-                    insideLabels += layout to Offset(
-                        x - layout.size.width / 2f,
-                        y - layout.size.height / 2f
-                    )
+                val legendModifier = if (hasBoundedHeight) {
+                    Modifier.weight(1f).verticalScroll(rememberScrollState())
+                } else {
+                    Modifier
                 }
-
-                is PieStyle.Labels.Outside -> {
-                    val layout = labelLayouts[i]
-                    val midRad = mid * PI.toFloat() / 180f
-                    val anchorY = center.y + (outerRadius + labelRadiusExtra) * sin(midRad)
-                    val right = cos(midRad) >= 0f
-                    outside += OutsideLabel(
-                        index = i,
-                        angleDeg = mid,
-                        y = anchorY,
-                        width = layout.size.width,
-                        height = layout.size.height,
-                        rightSide = right
-                    )
-                }
-
-                is PieStyle.Labels.Adaptive -> {
-                    // Use visual sweep for thresholds so UI matches what the user sees
-                    if (visualSweep >= labels.insideMinAngleDeg) {
-                        val layout = labelLayouts[i]
-                        val midRad = mid * PI.toFloat() / 180f
-                        val x = center.x + centerRadius * cos(midRad)
-                        val y = center.y + centerRadius * sin(midRad)
-                        insideLabels += layout to Offset(
-                            x - layout.size.width / 2f,
-                            y - layout.size.height / 2f
-                        )
-                    } else if (visualSweep >= labels.outsideMinAngleDeg && style.leaders.show) {
-                        val layout = labelLayouts[i]
-                        val midRad = mid * PI.toFloat() / 180f
-                        val anchorY = center.y + (outerRadius + labelRadiusExtra) * sin(midRad)
-                        val right = cos(midRad) >= 0f
-                        outside += OutsideLabel(
-                            index = i,
-                            angleDeg = mid,
-                            y = anchorY,
-                            width = layout.size.width,
-                            height = layout.size.height,
-                            rightSide = right
-                        )
+                Column(
+                    modifier = legendModifier,
+                    verticalArrangement = Arrangement.spacedBy(gap),
+                ) {
+                    slices.forEach { slice ->
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(gap),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Spacer(
+                                modifier = Modifier
+                                    .size(style.arc.width / 2)
+                                    .background(color = slice.color, shape = CircleShape),
+                            )
+                            BasicText(
+                                text = formatter(slice, (slice.value / total * 100.0).roundToInt()),
+                                style = textStyle,
+                            )
+                        }
                     }
                 }
             }
-
-            acc += visualSweep
-        }
-
-        // Helper: layout one side of outside labels and draw leaders + text
-        fun layoutAndDrawOutsideSide(rightSide: Boolean) {
-            val side = outside.filter { it.rightSide == rightSide }
-                .sortedBy { it.y }
-                .toMutableList()
-            if (side.isEmpty()) return
-
-            val minGap = 4.dp.toPx()
-            for (k in 1 until side.size) {
-                val prev = side[k - 1]
-                val cur = side[k]
-                val prevBottom = prev.y + prev.height / 2f
-                val curTop = cur.y - cur.height / 2f
-                if (curTop - prevBottom < minGap) {
-                    val shift = (minGap - (curTop - prevBottom))
-                    side[k] = cur.copy(y = cur.y + shift)
-                }
-            }
-
-            // Draw leaders and labels
-            side.forEach { item ->
-                val i = item.index
-                val layout = labelLayouts[i]
-
-                val midRad = (item.angleDeg * PI.toFloat() / 180f)
-                val arcPt = Offset(
-                    x = center.x + outerRadius * cos(midRad),
-                    y = center.y + outerRadius * sin(midRad)
-                )
-                val elbow = Offset(
-                    x = center.x + (outerRadius + labelRadiusExtra) * cos(midRad),
-                    y = center.y + (outerRadius + labelRadiusExtra) * sin(midRad)
-                )
-
-                val labelX = if (item.rightSide) {
-                    elbow.x + labelPaddingH
-                } else {
-                    elbow.x - labelPaddingH - layout.size.width
-                }
-                val labelYTop = item.y - layout.size.height / 2f
-
-                drawLine(
-                    color = slices[i].color,
-                    start = arcPt,
-                    end = elbow,
-                    strokeWidth = connectorWidthPx
-                )
-                drawLine(
-                    color = slices[i].color,
-                    start = elbow,
-                    end = Offset(
-                        x = if (item.rightSide) labelX else labelX + layout.size.width,
-                        y = item.y
-                    ),
-                    strokeWidth = connectorWidthPx
-                )
-
-                drawText(layout, topLeft = Offset(labelX, labelYTop))
-            }
-        }
-
-        if (outside.isNotEmpty() && style.leaders.show) {
-            layoutAndDrawOutsideSide(rightSide = true)
-            layoutAndDrawOutsideSide(rightSide = false)
-        }
-
-        // Draw inside labels on top
-        insideLabels.forEach { (layout, topLeft) ->
-            drawText(layout, topLeft = topLeft)
+        } else {
+            PieDrawing(
+                modifier = Modifier.matchParentSize(),
+                slices = slices,
+                sweeps = sweeps,
+                total = total,
+                style = style,
+                showLabels = true,
+            )
         }
     }
 }
 
-/**
- * Draws a segment of a pie chart with smooth rounded outer and inner corners.
- * Assumes donut style: [outerRadius] and [width] define inner radius.
- */
-private fun DrawScope.drawRoundedArc(
-    color: Color,
-    startAngle: Float,
-    sweepAngle: Float,
-    width: Float,
-    @androidx.annotation.FloatRange(from = 0.0, to = 1.0)
-    alpha: Float = 1.0f,
-    style: DrawStyle = Fill,
-    center: Offset = this.center,
-    outerRadius: Float = size.minDimension / 2f,
-    colorFilter: androidx.compose.ui.graphics.ColorFilter? = null,
-    blendMode: BlendMode = DrawScope.DefaultBlendMode,
-    cornerRadius: Float,
+@Composable
+private fun PieDrawing(
+    modifier: Modifier,
+    slices: List<PieSlice>,
+    sweeps: List<Float>,
+    total: Double,
+    style: PieStyle,
+    showLabels: Boolean,
 ) {
-    fun Float.toRad(): Float = this * PI.toFloat() / 180f
-    fun Double.toDeg(): Float = (this * 180.0 / PI).toFloat()
+    val measurer = rememberTextMeasurer()
+    val description = if (showLabels) {
+        val formatter = when (val labels = style.labels) {
+            is PieStyle.Labels.Adaptive -> labels.formatter
+            is PieStyle.Labels.Inside -> labels.formatter
+            is PieStyle.Labels.Outside -> labels.formatter
+        }
+        slices.joinToString(separator = "; ") { slice ->
+            val formatted = formatter(slice, (slice.value / total * 100.0).roundToInt())
+            if (formatted.contains(slice.label)) formatted else "${slice.label}: $formatted"
+        }
+    } else {
+        null
+    }
+    val drawingModifier = if (description != null) {
+        modifier.semantics { contentDescription = description }
+    } else {
+        modifier
+    }
+    Spacer(
+        modifier = drawingModifier.drawWithCache {
+            val padding = style.layout.padding.toPx().coerceAtLeast(0f)
+            val labelPadding = when (val labels = style.labels) {
+                is PieStyle.Labels.Adaptive -> labels.labelPadding.toPx()
+                is PieStyle.Labels.Inside -> labels.labelPadding.toPx()
+                is PieStyle.Labels.Outside -> labels.labelPadding.toPx()
+            }.coerceAtLeast(0f)
+            val labelStyle = when (val labels = style.labels) {
+                is PieStyle.Labels.Adaptive -> labels.textStyle
+                is PieStyle.Labels.Inside -> labels.textStyle
+                is PieStyle.Labels.Outside -> labels.textStyle
+            }
+            val formatter = when (val labels = style.labels) {
+                is PieStyle.Labels.Adaptive -> labels.formatter
+                is PieStyle.Labels.Inside -> labels.formatter
+                is PieStyle.Labels.Outside -> labels.formatter
+            }
+            val labelWidth = (size.width * 0.24f).roundToInt().coerceAtLeast(1)
+            var angle = style.layout.startAngleDeg
+            val labels = if (!showLabels) emptyList() else slices.mapIndexed { index, slice ->
+                val sweep = sweeps[index]
+                val middle = angle + sweep / 2f
+                angle += sweep
+                val percent = (slice.value / total * 100.0).roundToInt()
+                val text = formatter(slice, percent)
+                val textLayout = measurer.measure(
+                    text = AnnotatedString(text),
+                    style = labelStyle,
+                    constraints = Constraints(maxWidth = labelWidth),
+                )
+                val outside = when (val configuration = style.labels) {
+                    is PieStyle.Labels.Inside -> false
+                    is PieStyle.Labels.Outside -> true
+                    is PieStyle.Labels.Adaptive -> sweep < configuration.insideMinAngleDeg &&
+                        sweep >= configuration.outsideMinAngleDeg
+                }
+                PieLabel(
+                    layout = textLayout,
+                    angle = middle,
+                    outside = outside,
+                    visible = when (val configuration = style.labels) {
+                        is PieStyle.Labels.Adaptive -> sweep >= min(configuration.insideMinAngleDeg, configuration.outsideMinAngleDeg)
+                        else -> true
+                    },
+                    right = cos(middle * PI.toFloat() / 180f) >= 0f,
+                )
+            }
+            val outside = labels.filter { it.outside }
+            val leaderOffset = style.leaders.offset.toPx().coerceAtLeast(0f)
+            val leftGutter = outside.filter { !it.right }.maxOfOrNull { it.layout.size.width }?.toFloat() ?: 0f
+            val rightGutter = outside.filter { it.right }.maxOfOrNull { it.layout.size.width }?.toFloat() ?: 0f
+            val left = padding + if (leftGutter > 0f) leftGutter + labelPadding + leaderOffset else 0f
+            val right = size.width - padding - if (rightGutter > 0f) rightGutter + labelPadding + leaderOffset else 0f
+            val radius = min((right - left) / 2f, (size.height - padding * 2f) / 2f).coerceAtLeast(0f)
+            val center = Offset(x = (left + right) / 2f, y = size.height / 2f)
+            val arcWidth = style.arc.width.toPx().coerceIn(0f, (radius - 1f).coerceAtLeast(0f))
+            val labelRadius = radius - arcWidth / 2f
+            val leftLabels = outside.filter { !it.right }
+            val rightLabels = outside.filter { it.right }
+            val leftPositions = outsideLabelPositions(
+                labels = leftLabels,
+                center = center,
+                radius = radius + leaderOffset,
+                top = padding,
+                bottom = size.height - padding,
+                gap = labelPadding,
+            )
+            val rightPositions = outsideLabelPositions(
+                labels = rightLabels,
+                center = center,
+                radius = radius + leaderOffset,
+                top = padding,
+                bottom = size.height - padding,
+                gap = labelPadding,
+            )
+            var sliceStart = style.layout.startAngleDeg
+            val paths = slices.mapIndexed { index, _ ->
+                val start = sliceStart
+                val sweep = sweeps[index]
+                sliceStart += sweep
+                val gap = if (slices.size == 1) 0f else min(style.arc.paddingAngleDeg.coerceAtLeast(0f), sweep * 0.2f)
+                roundedSlicePath(
+                    center = center,
+                    radius = radius,
+                    width = arcWidth,
+                    startAngle = start + gap / 2f,
+                    sweepAngle = sweep - gap,
+                    corner = style.arc.cornerRadius.toPx(),
+                )
+            }
 
-    fun getPoint(angle: Float, radius: Float) = Offset(
-        x = radius * cos(angle.toRad()) + center.x,
-        y = radius * sin(angle.toRad()) + center.y
+            onDrawBehind {
+                if (radius <= 0f || arcWidth <= 0f) return@onDrawBehind
+                slices.forEachIndexed { index, slice ->
+                    if (slices.size == 1) {
+                        drawCircle(
+                            color = slice.color,
+                            center = center,
+                            radius = radius - arcWidth / 2f,
+                            style = Stroke(width = arcWidth),
+                        )
+                    } else {
+                        drawPath(path = paths[index], color = slice.color)
+                    }
+                    val label = labels.getOrNull(index)
+                    if (label != null && label.visible && !label.outside) {
+                        val position = polarPoint(center = center, radius = labelRadius, angle = label.angle)
+                        drawText(
+                            textLayoutResult = label.layout,
+                            topLeft = Offset(
+                                x = position.x - label.layout.size.width / 2f,
+                                y = position.y - label.layout.size.height / 2f,
+                            ),
+                        )
+                    }
+                }
+                outside.forEach { label ->
+                    val positions = if (label.right) rightPositions else leftPositions
+                    val y = positions.getValue(label)
+                    val x = if (label.right) size.width - padding - label.layout.size.width else padding
+                    if (style.leaders.show) {
+                        val anchor = polarPoint(center = center, radius = radius, angle = label.angle)
+                        val elbow = polarPoint(center = center, radius = radius + leaderOffset, angle = label.angle)
+                        drawLine(
+                            color = labelStyle.color,
+                            start = anchor,
+                            end = elbow,
+                            strokeWidth = style.leaders.lineWidth.toPx(),
+                        )
+                        drawLine(
+                            color = labelStyle.color,
+                            start = elbow,
+                            end = Offset(
+                                x = if (label.right) x - labelPadding else x + label.layout.size.width + labelPadding,
+                                y = y + label.layout.size.height / 2f,
+                            ),
+                            strokeWidth = style.leaders.lineWidth.toPx(),
+                        )
+                    }
+                    drawText(textLayoutResult = label.layout, topLeft = Offset(x = x, y = y))
+                }
+            }
+        },
     )
+}
 
-    val endAngle = startAngle + sweepAngle
-    val innerRadius = outerRadius - width
 
-    fun coerceCorner(arcRadius: Float, cornerRadius: Float): Pair<Float, Float> {
-        val safeRadius = cornerRadius.coerceAtMost(width / 2f)
-        val cornerTravelAngle = 2 * asin((safeRadius / (2 * arcRadius)).toDouble()).toDeg()
-        val maxSweep = sweepAngle / 2f
-        return if (cornerTravelAngle > maxSweep) {
-            Pair(arcRadius * sin(maxSweep.toRad()), maxSweep)
-        } else {
-            Pair(safeRadius, cornerTravelAngle)
+private fun needsLegend(
+    slices: List<PieSlice>,
+    sweeps: List<Float>,
+    style: PieStyle,
+    measurer: TextMeasurer,
+    density: Density,
+    width: Float,
+    height: Float,
+): Boolean = with(density) {
+    if (style.labels is PieStyle.Labels.Inside || slices.isEmpty()) return false
+    val labelStyle = when (val labels = style.labels) {
+        is PieStyle.Labels.Adaptive -> labels.textStyle
+        is PieStyle.Labels.Outside -> labels.textStyle
+        is PieStyle.Labels.Inside -> labels.textStyle
+    }
+    val formatter = when (val labels = style.labels) {
+        is PieStyle.Labels.Adaptive -> labels.formatter
+        is PieStyle.Labels.Outside -> labels.formatter
+        is PieStyle.Labels.Inside -> labels.formatter
+    }
+    val gap = when (val labels = style.labels) {
+        is PieStyle.Labels.Adaptive -> labels.labelPadding.toPx()
+        is PieStyle.Labels.Outside -> labels.labelPadding.toPx()
+        is PieStyle.Labels.Inside -> labels.labelPadding.toPx()
+    }.coerceAtLeast(0f)
+    val total = slices.sumOf { it.value.toDouble() }
+    val padding = style.layout.padding.toPx().coerceAtLeast(0f)
+    val maxLabelWidth = (width * 0.24f).roundToInt().coerceAtLeast(1)
+    var angle = style.layout.startAngleDeg
+    var leftHeight = 0f
+    var rightHeight = 0f
+    var leftWidth = 0
+    var rightWidth = 0
+    slices.forEachIndexed { index, slice ->
+        val sweep = sweeps[index]
+        val middle = angle + sweep / 2f
+        angle += sweep
+        val outside = when (val labels = style.labels) {
+            is PieStyle.Labels.Outside -> true
+            is PieStyle.Labels.Adaptive -> sweep < labels.insideMinAngleDeg && sweep >= labels.outsideMinAngleDeg
+            is PieStyle.Labels.Inside -> false
+        }
+        if (outside) {
+            val layout = measurer.measure(
+                text = AnnotatedString(formatter(slice, (slice.value / total * 100.0).roundToInt())),
+                style = labelStyle,
+                constraints = Constraints(maxWidth = maxLabelWidth),
+            )
+            if (cos(middle * PI.toFloat() / 180f) >= 0f) {
+                rightHeight += layout.size.height + gap
+                rightWidth = maxOf(rightWidth, layout.size.width)
+            } else {
+                leftHeight += layout.size.height + gap
+                leftWidth = maxOf(leftWidth, layout.size.width)
+            }
         }
     }
+    val availableHeight = (height - padding * 2f).coerceAtLeast(0f)
+    val availableWidth = width - padding * 2f - leftWidth - rightWidth -
+        (if (leftWidth > 0) gap + style.leaders.offset.toPx() else 0f) -
+        (if (rightWidth > 0) gap + style.leaders.offset.toPx() else 0f)
+    maxOf(leftHeight, rightHeight) - gap > availableHeight || availableWidth <= style.arc.width.toPx() * 2f
+}
 
-    if (sweepAngle <= 0f) return
+private data class PieLabel(
+    val layout: TextLayoutResult,
+    val angle: Float,
+    val outside: Boolean,
+    val visible: Boolean,
+    val right: Boolean,
+)
 
-    val (cornerOuterRadius, cornerOuterSweep) = coerceCorner(outerRadius, cornerRadius)
-    val (cornerInnerRadius, cornerInnerSweep) = coerceCorner(innerRadius, cornerRadius)
+private fun outsideLabelPositions(
+    labels: List<PieLabel>,
+    center: Offset,
+    radius: Float,
+    top: Float,
+    bottom: Float,
+    gap: Float,
+): Map<PieLabel, Float> {
+    val ordered = labels.sortedBy { sin(it.angle * PI.toFloat() / 180f) }
+    val positions = FloatArray(ordered.size)
+    var previousBottom = top - gap
+    ordered.forEachIndexed { index, label ->
+        val desired = polarPoint(center = center, radius = radius, angle = label.angle).y - label.layout.size.height / 2f
+        val position = maxOf(desired, previousBottom + gap)
+        positions[index] = position
+        previousBottom = position + label.layout.size.height
+    }
+    var nextTop = bottom + gap
+    for (index in ordered.indices.reversed()) {
+        positions[index] = min(positions[index], nextTop - gap - ordered[index].layout.size.height)
+        nextTop = positions[index]
+    }
+    return ordered.indices.associate { ordered[it] to positions[it] }
+}
 
-    val path = Path().apply {
-        val topLeft = getPoint(startAngle, outerRadius)
-        val topLeftStart = getPoint(startAngle, outerRadius - cornerOuterRadius)
-        val topLeftEnd = getPoint(startAngle + cornerOuterSweep, outerRadius)
-
-        val topRight = getPoint(endAngle, outerRadius)
-        val topRightEnd = getPoint(endAngle, outerRadius - cornerOuterRadius)
-
-        val bottomRight = getPoint(endAngle, innerRadius)
-        val bottomRightStart = getPoint(endAngle, innerRadius + cornerInnerRadius)
-        val bottomRightEnd = getPoint(endAngle - cornerInnerSweep, innerRadius)
-
-        val bottomLeft = getPoint(startAngle, innerRadius)
-        val bottomLeftEnd = getPoint(startAngle, innerRadius + cornerInnerRadius)
-
+private fun roundedSlicePath(
+    center: Offset,
+    radius: Float,
+    width: Float,
+    startAngle: Float,
+    sweepAngle: Float,
+    corner: Float,
+): Path {
+    val innerRadius = radius - width
+    if (radius <= 0f || innerRadius <= 0f || sweepAngle <= 0f) return Path()
+    val outerCorner = sliceCorner(radius = radius, width = width, sweep = sweepAngle, corner = corner)
+    val innerCorner = sliceCorner(radius = innerRadius, width = width, sweep = sweepAngle, corner = corner)
+    val endAngle = startAngle + sweepAngle
+    val topLeft = polarPoint(center = center, radius = radius, angle = startAngle)
+    val topLeftStart = polarPoint(center = center, radius = radius - outerCorner.first, angle = startAngle)
+    val topLeftEnd = polarPoint(center = center, radius = radius, angle = startAngle + outerCorner.second)
+    val topRight = polarPoint(center = center, radius = radius, angle = endAngle)
+    val topRightEnd = polarPoint(center = center, radius = radius - outerCorner.first, angle = endAngle)
+    val bottomRight = polarPoint(center = center, radius = innerRadius, angle = endAngle)
+    val bottomRightStart = polarPoint(center = center, radius = innerRadius + innerCorner.first, angle = endAngle)
+    val bottomRightEnd = polarPoint(center = center, radius = innerRadius, angle = endAngle - innerCorner.second)
+    val bottomLeft = polarPoint(center = center, radius = innerRadius, angle = startAngle)
+    val bottomLeftEnd = polarPoint(center = center, radius = innerRadius + innerCorner.first, angle = startAngle)
+    return Path().apply {
         moveTo(topLeftStart.x, topLeftStart.y)
         quadraticTo(topLeft.x, topLeft.y, topLeftEnd.x, topLeftEnd.y)
-
-        // Outer arc
-        val outerRect = Rect(
-            center.x - outerRadius,
-            center.y - outerRadius,
-            center.x + outerRadius,
-            center.y + outerRadius
-        )
         arcTo(
-            rect = outerRect,
-            startAngleDegrees = startAngle + cornerOuterSweep,
-            sweepAngleDegrees = sweepAngle - 2 * cornerOuterSweep,
-            forceMoveTo = false
+            rect = Rect(center.x - radius, center.y - radius, center.x + radius, center.y + radius),
+            startAngleDegrees = startAngle + outerCorner.second,
+            sweepAngleDegrees = sweepAngle - outerCorner.second * 2f,
+            forceMoveTo = false,
         )
-
         quadraticTo(topRight.x, topRight.y, topRightEnd.x, topRightEnd.y)
         lineTo(bottomRightStart.x, bottomRightStart.y)
         quadraticTo(bottomRight.x, bottomRight.y, bottomRightEnd.x, bottomRightEnd.y)
-
-        // Inner arc (reverse)
-        val innerRect = Rect(
-            center.x - innerRadius,
-            center.y - innerRadius,
-            center.x + innerRadius,
-            center.y + innerRadius
-        )
         arcTo(
-            rect = innerRect,
-            startAngleDegrees = endAngle - cornerInnerSweep,
-            sweepAngleDegrees = -(sweepAngle - 2 * cornerInnerSweep),
-            forceMoveTo = false
+            rect = Rect(center.x - innerRadius, center.y - innerRadius, center.x + innerRadius, center.y + innerRadius),
+            startAngleDegrees = endAngle - innerCorner.second,
+            sweepAngleDegrees = -(sweepAngle - innerCorner.second * 2f),
+            forceMoveTo = false,
         )
-
         quadraticTo(bottomLeft.x, bottomLeft.y, bottomLeftEnd.x, bottomLeftEnd.y)
-        lineTo(topLeftStart.x, topLeftStart.y)
         close()
     }
+}
 
-    drawPath(
-        path = path,
-        color = color,
-        style = style,
-        alpha = alpha,
-        colorFilter = colorFilter,
-        blendMode = blendMode,
-    )
+private fun sliceCorner(radius: Float, width: Float, sweep: Float, corner: Float): Pair<Float, Float> {
+    val safeCorner = corner.coerceIn(0f, min(width / 2f, radius))
+    val travel = (2.0 * asin((safeCorner / (2f * radius)).toDouble()) * 180.0 / PI).toFloat()
+    return if (travel > sweep / 2f) {
+        radius * sin(sweep * PI.toFloat() / 360f) to sweep / 2f
+    } else {
+        safeCorner to travel
+    }
+}
+
+private fun polarPoint(center: Offset, radius: Float, angle: Float): Offset {
+    val radians = angle * PI.toFloat() / 180f
+    return Offset(x = center.x + radius * cos(radians), y = center.y + radius * sin(radians))
 }

@@ -5,7 +5,11 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Stable
 public data class SparklineStyle(
@@ -16,6 +20,7 @@ public data class SparklineStyle(
     val peek: Peek = Peek.None,
     val dots: Dots,
     val extremes: Extremes,
+    val verticalPadding: Dp = 0.dp,
 ) {
     @Stable
     public data class Line(
@@ -90,6 +95,10 @@ public data class SparklineStyle(
             val decimals: Int = 0,
             val showLabel: Boolean = true,
             val valueFormatter: ((Float) -> String)? = null,
+            val tooltipBorderWidth: Dp = 1.dp,
+            val tooltipLabelSpacing: Dp = 2.dp,
+            val valueTextStyle: TextStyle = TextStyle(fontSize = 12.sp, textAlign = TextAlign.Center),
+            val labelTextStyle: TextStyle = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center),
         ) : Peek
     }
 

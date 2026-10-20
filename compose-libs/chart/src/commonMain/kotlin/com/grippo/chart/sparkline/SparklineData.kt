@@ -9,7 +9,6 @@ public data class SparklinePoint(
     val label: String? = null,
 )
 
-@Immutable
 public data class SparklineData(
     val points: List<SparklinePoint>,
 )

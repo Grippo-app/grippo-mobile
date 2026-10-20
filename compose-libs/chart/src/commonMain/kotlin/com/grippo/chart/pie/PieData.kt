@@ -11,7 +11,6 @@ public data class PieSlice(
     val color: Color,
 )
 
-@Immutable
 public data class PieData(
     val slices: List<PieSlice>,
 )

@@ -3,16 +3,15 @@ package com.grippo.design.components.chart.internal
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.progress.ProgressChart
 import com.grippo.chart.progress.ProgressChartData
 import com.grippo.chart.progress.ProgressData
 import com.grippo.chart.progress.ProgressStyle
+import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import kotlin.math.ceil
 
 @Composable
 internal fun ProgressChart(
@@ -20,6 +19,14 @@ internal fun ProgressChart(
     data: ProgressData
 ) {
     val charts = AppTokens.colors.charts
+    val valueLabels = data.items.map { entry ->
+        val label = if (entry.value.isFinite() && entry.value in 0f..100f) {
+            PercentageFormatState.shortShare(entry.value)
+        } else {
+            "—"
+        }
+        entry.value to label
+    }.toMap()
 
     val style = ProgressStyle(
         layout = ProgressStyle.Layout(
@@ -33,14 +40,7 @@ internal fun ProgressChart(
         ),
         bars = ProgressStyle.Bars(
             trackColor = charts.progress.track,
-            brushProvider = { entry, _, rect ->
-                Brush.horizontalGradient(
-                    0f to entry.color.copy(alpha = charts.progress.gradientStartAlpha),
-                    1f to entry.color.copy(alpha = charts.progress.gradientEndAlpha),
-                    startX = rect.left,
-                    endX = rect.right
-                )
-            },
+            brushProvider = null,
             strokeWidth = 0.dp,
             strokeColor = AppTokens.colors.divider.default,
         ),
@@ -48,8 +48,8 @@ internal fun ProgressChart(
             textStyle = AppTokens.typography.b12Semi().copy(color = AppTokens.colors.text.primary)
         ),
         values = ProgressStyle.Values.Outside(
-            textStyle = AppTokens.typography.b10Bold().copy(color = AppTokens.colors.text.primary),
-            formatter = { value, _ -> ceil(value).toInt().toString() },
+            textStyle = AppTokens.typography.b12Semi().copy(color = AppTokens.colors.text.primary),
+            formatter = { value, _ -> valueLabels[value] ?: "—" },
             preferNormalizedLabels = true,
         ),
         target = null,
@@ -109,6 +109,40 @@ private fun ProgressChartEmptyPreview() {
         ProgressChart(
             modifier = Modifier.size(300.dp),
             data = ProgressData(items = emptyList()),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProgressChartLongLabelsAndTinySharePreview() {
+    PreviewContainer {
+        ProgressChart(
+            modifier = Modifier.size(300.dp),
+            data = ProgressData(
+                items = listOf(
+                    ProgressChartData("Long localized muscle group and supporting movement name", 0.1f, AppTokens.colors.context.muscle),
+                    ProgressChartData("Recorded zero", 0f, AppTokens.colors.context.muscle),
+                    ProgressChartData("Complete recorded share", 100f, AppTokens.colors.context.muscle),
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProgressChartUnsupportedValuesPreview() {
+    PreviewContainer {
+        ProgressChart(
+            modifier = Modifier.size(300.dp),
+            data = ProgressData(
+                items = listOf(
+                    ProgressChartData("Unavailable", Float.NaN, AppTokens.colors.context.muscle),
+                    ProgressChartData("Infinite value", Float.POSITIVE_INFINITY, AppTokens.colors.context.muscle),
+                    ProgressChartData("Outside the share domain", -1f, AppTokens.colors.context.muscle),
+                ),
+            ),
         )
     }
 }

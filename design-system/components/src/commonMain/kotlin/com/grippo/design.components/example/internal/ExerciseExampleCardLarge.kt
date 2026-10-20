@@ -13,17 +13,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import com.grippo.core.state.equipments.EquipmentEnumState
 import com.grippo.core.state.equipments.EquipmentState
 import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.WeightTypeEnumState
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.muscles.MuscleGroupEnumState
+import com.grippo.design.components.chip.Chip
+import com.grippo.design.components.chip.ChipInteraction
+import com.grippo.design.components.chip.ChipLabel
+import com.grippo.design.components.chip.ChipLeading
+import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.equipment.EquipmentCard
 import com.grippo.design.components.equipment.EquipmentCardStyle
 import com.grippo.design.components.example.ExerciseExampleImage
@@ -34,8 +41,11 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.exercise_example_in_history
 import com.grippo.design.resources.provider.exercise_example_last_used_value
+import com.grippo.design.resources.provider.exercise_example_not_used
 import com.grippo.design.resources.provider.exercise_example_weight_type_value
+import com.grippo.design.resources.provider.icons.Calendar
 import com.grippo.design.resources.provider.muscles.bodySplit
 import com.grippo.toolkit.date.utils.DateCompose
 import kotlinx.collections.immutable.persistentListOf
@@ -82,6 +92,8 @@ internal fun ExerciseExampleCardLarge(
                 color = AppTokens.colors.text.primary,
             )
 
+            ExerciseExampleUsage(value = value.value)
+
             if (equipments.isNotEmpty() || muscleGroups.isNotEmpty()) {
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
@@ -108,25 +120,43 @@ internal fun ExerciseExampleCardLarge(
                     color = AppTokens.colors.text.secondary,
                 )
             }
-
-            val lastUsed = value.value.lastUsed
-            if (lastUsed !is DateTimeFormatState.Empty) {
-                val lastUsedValue = lastUsed.value
-                val lastUsedDate = if (lastUsedValue != null) {
-                    DateCompose.rememberFormat(value = lastUsedValue, format = lastUsed.format)
-                } else {
-                    lastUsed.display
-                }
-
-                if (lastUsedDate.isNotBlank()) {
-                    Text(
-                        text = AppTokens.strings.res(Res.string.exercise_example_last_used_value, lastUsedDate),
-                        style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-                }
-            }
         }
+    }
+}
+
+@Composable
+private fun ExerciseExampleUsage(value: ExerciseExampleValueState) {
+    val lastUsedValue = value.lastUsed.value
+    val hasHistory = value.usageCount > 0 || lastUsedValue != null
+
+    if (hasHistory) {
+        val lastUsedDate = if (lastUsedValue != null) {
+            DateCompose.rememberFormat(value = lastUsedValue, format = value.lastUsed.format)
+        } else {
+            ""
+        }
+        val label = if (lastUsedDate.isNotBlank()) {
+            AppTokens.strings.res(Res.string.exercise_example_last_used_value, lastUsedDate)
+        } else {
+            AppTokens.strings.res(Res.string.exercise_example_in_history)
+        }
+
+        Chip(
+            label = ChipLabel.Empty,
+            value = label,
+            interaction = ChipInteraction.Static,
+            leading = ChipLeading.Icon(AppTokens.icons.Calendar),
+            size = ChipSize.Small,
+            textColor = AppTokens.colors.text.primary,
+            iconColor = AppTokens.colors.icon.secondary,
+            brush = SolidColor(AppTokens.colors.background.card),
+        )
+    } else {
+        Text(
+            text = AppTokens.strings.res(Res.string.exercise_example_not_used),
+            style = AppTokens.typography.b12Med(),
+            color = AppTokens.colors.text.secondary,
+        )
     }
 }
 

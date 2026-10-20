@@ -335,6 +335,8 @@
     <string name="peak_intensity">Pico de intensidade</string>
 
     <string name="exercise_example_last_used_value">Último uso: %1$s</string>
+    <string name="exercise_example_in_history">No seu histórico</string>
+    <string name="exercise_example_not_used">Ainda não realizado</string>
     <string name="exercise_example_weight_type_value">Tipo de peso: %1$s</string>
     <string name="exercise_library_replace_target">Exercício a substituir</string>
 

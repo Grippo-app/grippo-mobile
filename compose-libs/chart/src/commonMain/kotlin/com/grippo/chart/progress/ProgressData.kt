@@ -10,7 +10,6 @@ public data class ProgressChartData(
     val color: Color
 )
 
-@Immutable
 public data class ProgressData(
     val items: List<ProgressChartData>,
 )

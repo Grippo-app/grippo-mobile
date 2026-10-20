@@ -7,7 +7,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.chart.bar.BarData
 import com.grippo.chart.bar.BarEntry
@@ -22,7 +21,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.tonnage
 
 @Composable
@@ -49,17 +47,7 @@ public fun VolumeMetricChart(
                 .heightIn(min = AppTokens.dp.metrics.volume.chart.height)
                 .aspectRatio(AppTokens.dp.metrics.volume.chart.aspectRatio),
             data = value.toBarData(),
-            valueFormatter = { volume ->
-                if (volume.isFinite()) {
-                    val formatted = VolumeFormatState.of(volume)
-                    when (formatted.value) {
-                        null -> "0${AppTokens.strings.res(Res.string.kg)}"
-                        else -> formatted.short()
-                    }
-                } else {
-                    "—"
-                }
-            },
+            valueFormatter = { volume -> VolumeFormatState.shortTotal(volume) },
             xAxisLabels = xAxisLabels,
         )
     }
@@ -67,44 +55,13 @@ public fun VolumeMetricChart(
 
 @Composable
 private fun VolumeSeriesState.toBarData(): BarData {
-    val palette = AppTokens.colors.palette.palette7BlueGrowth
-    return remember(entries, palette) {
-        val values = entries.map { it.value }
-        val minValue = values.minOrNull() ?: 0f
-        val maxValue = values.maxOrNull() ?: minValue
-        val colors = assignColors(values, palette, minValue, maxValue)
-
-        val items = entries.mapIndexed { index, entry ->
-            BarEntry(
-                label = entry.label,
-                value = entry.value,
-                color = colors[index]
-            )
-        }
-        BarData(items = items)
-    }
-}
-
-private fun assignColors(
-    values: List<Float>,
-    palette: List<Color>,
-    minValue: Float,
-    maxValue: Float,
-): List<Color> {
-    if (palette.isEmpty() || values.isEmpty()) {
-        return List(values.size) { Color.Unspecified }
-    }
-    val span = (maxValue - minValue).coerceAtLeast(1e-3f)
-    val singleColor = span <= 1e-3f
-
-    return values.map { value ->
-        if (singleColor) {
-            palette.first()
-        } else {
-            val normalized = ((value - minValue) / span).coerceIn(0f, 1f)
-            val index = (normalized * (palette.size - 1)).toInt().coerceIn(0, palette.size - 1)
-            palette[index]
-        }
+    val color = AppTokens.colors.palette.palette7BlueGrowth[2]
+    return remember(entries, color) {
+        BarData(
+            items = entries.map { entry ->
+                BarEntry(label = entry.label, value = entry.value, color = color)
+            },
+        )
     }
 }
 

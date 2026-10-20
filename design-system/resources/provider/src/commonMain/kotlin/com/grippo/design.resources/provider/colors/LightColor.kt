@@ -271,34 +271,26 @@ public object LightColor : AppColor {
         }
         override val sparkline = object : AppColor.Charts.SparklineColors {
             override val lineA = AppPalette.LightAccent.Blue
-            override val lineB = AppPalette.LightAccent.Green
-            override val fillStart = AppPalette.LightAccent.Blue.copy(alpha = 0.18f)
+            override val fillStart = AppPalette.LightAccent.Blue.copy(alpha = 0.12f)
             override val fillEnd = AppPalette.LightAccent.Blue.copy(alpha = 0f)
-            override val minimumMarker = AppPalette.LightAccent.Sky
-            override val maximumMarker = AppPalette.LightAccent.Purple
         }
         override val tooltip = object : AppColor.Charts.TooltipColor {
             override val background: Color = AppPalette.NeutralLight.N050
             override val border: Color = AppPalette.NeutralLight.N250
             override val text: Color = AppPalette.NeutralLight.N800
             override val focus: Color = AppPalette.LightAccent.Blue
-            override val guide: Color = AppPalette.LightAccent.Blue
+            override val guide: Color = divider.default
         }
         override val area = object : AppColor.Charts.AreaColors {
-            override val lineA = AppPalette.LightAccent.Green
-            override val lineB = AppPalette.LightAccent.Blue
-            override val fillStart = AppPalette.LightAccent.Green.copy(alpha = 0.18f)
-            override val fillEnd = AppPalette.LightAccent.Green.copy(alpha = 0f)
-            override val glow = AppPalette.LightAccent.Green
-            override val dot = AppPalette.LightAccent.Green
+            override val lineA = AppPalette.LightAccent.Blue
+            override val fillStart = AppPalette.LightAccent.Blue.copy(alpha = 0.12f)
+            override val fillEnd = AppPalette.LightAccent.Blue.copy(alpha = 0f)
         }
         override val radar = object : AppColor.Charts.RadarColors {
-            override val fillAlpha: Float = 0.35f
+            override val fillAlpha: Float = 0.12f
             override val grid = AppPalette.NeutralLight.N250
         }
         override val progress = object : AppColor.Charts.ProgressColors {
-            override val gradientStartAlpha: Float = 0.95f
-            override val gradientEndAlpha: Float = 0.7f
             override val track = AppPalette.NeutralLight.N250
         }
         override val ring = object : AppColor.Charts.RingColor {

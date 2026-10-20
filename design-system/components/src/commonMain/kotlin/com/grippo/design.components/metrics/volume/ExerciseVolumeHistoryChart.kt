@@ -20,7 +20,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_history_current_date
-import com.grippo.design.resources.provider.kg
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -55,10 +54,9 @@ public fun ExerciseVolumeHistoryChart(
             )
         },
     )
-    val kg = AppTokens.strings.res(Res.string.kg)
     val descriptions = value.mapIndexed { index, entry ->
         val label = if (index == value.lastIndex) selectedDate else dates[index]
-        val volume = if (entry.total.volume.value == null) "0$kg" else entry.total.volume.short()
+        val volume = VolumeFormatState.shortTotal(entry.total.volume.value ?: 0f)
         "$label: $volume"
     }
     val description = descriptions.joinToString(separator = "; ")
@@ -68,10 +66,7 @@ public fun ExerciseVolumeHistoryChart(
             .fillMaxWidth()
             .aspectRatio(AppTokens.dp.metrics.volume.chart.historyAspectRatio),
         data = data,
-        valueFormatter = { volume ->
-            val formatted = VolumeFormatState.of(volume)
-            if (formatted.value == null) "0$kg" else formatted.short()
-        },
+        valueFormatter = { volume -> VolumeFormatState.shortTotal(volume) },
         description = description,
     )
 }

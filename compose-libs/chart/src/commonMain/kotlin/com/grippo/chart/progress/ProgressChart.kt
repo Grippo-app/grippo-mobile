@@ -1,20 +1,30 @@
 package com.grippo.chart.progress
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.times
+import androidx.compose.ui.unit.dp
 import kotlin.math.ln
-import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 
 @Composable
@@ -23,198 +33,167 @@ public fun ProgressChart(
     data: ProgressData,
     style: ProgressStyle,
 ) {
+    val maximum = when (val domain = style.domain) {
+        is ProgressStyle.Domain.Normalized -> 1f
+        is ProgressStyle.Domain.Absolute -> domain.maxValue?.takeIf { it.isFinite() && it > 0f }
+            ?: data.items.maxOfOrNull { it.value.takeIf(Float::isFinite) ?: 0f }?.coerceAtLeast(1f)
+            ?: 1f
+    }
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(style.layout.spacing.coerceAtLeast(0.dp)),
+    ) {
+        data.items.forEach { entry ->
+            ProgressRow(entry = entry, data = data, style = style, maximum = maximum)
+        }
+    }
+}
+
+@Composable
+private fun ProgressRow(
+    entry: ProgressChartData,
+    data: ProgressData,
+    style: ProgressStyle,
+    maximum: Float,
+) {
+    val density = LocalDensity.current
     val measurer = rememberTextMeasurer()
+    val fraction = scaledFraction(value = entry.value, maximum = maximum, progression = style.progression)
+    val normalized = style.domain is ProgressStyle.Domain.Normalized
+    val valueText = if (!entry.value.isFinite() && style.values !is ProgressStyle.Values.None) {
+        "—"
+    } else when (val values = style.values) {
+        is ProgressStyle.Values.None -> null
+        is ProgressStyle.Values.Inside -> values.formatter(
+            if (normalized && values.preferNormalizedLabels) entry.value.coerceIn(0f, 1f) else entry.value,
+            data,
+        )
+        is ProgressStyle.Values.Outside -> values.formatter(
+            if (normalized && values.preferNormalizedLabels) entry.value.coerceIn(0f, 1f) else entry.value,
+            data,
+        )
+    }
+    val valueStyle = when (val values = style.values) {
+        is ProgressStyle.Values.None -> style.labels.textStyle
+        is ProgressStyle.Values.Inside -> values.textStyle
+        is ProgressStyle.Values.Outside -> values.textStyle
+    }
+    val valueLayout = remember(measurer, valueText, valueStyle) {
+        valueText?.let { measurer.measure(text = AnnotatedString(it), style = valueStyle) }
+    }
 
-    val h = style.layout.barHeight
-    val gap = style.layout.spacing
-    val totalHeight = data.items.size * h + (data.items.size - 1) * gap
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        val inside = style.values as? ProgressStyle.Values.Inside
+        val innerPadding = with(density) { inside?.minInnerPadding?.toPx() ?: 0f }
+        val barWidth = with(density) { maxWidth.toPx() } * fraction
+        val showInside = inside != null && valueLayout != null &&
+            valueLayout.size.width + innerPadding * 2f <= barWidth &&
+            valueLayout.size.height <= with(density) { style.layout.barHeight.toPx() }
 
-    Canvas(modifier.height(totalHeight)) {
-        if (data.items.isEmpty()) return@Canvas
-
-        // ----- Domain -----
-        val isNormalized = style.domain is ProgressStyle.Domain.Normalized
-        val autoMax = if (isNormalized) 1f else max(1f, data.items.maxOf { it.value })
-        val maxV = when (val d = style.domain) {
-            is ProgressStyle.Domain.Normalized -> 1f
-            is ProgressStyle.Domain.Absolute -> d.maxValue?.takeIf { it > 0f } ?: autoMax
-        }
-
-        // ----- Gutters -----
-        val labelPad = style.layout.labelPadding.toPx()
-
-        val maxLabelW = data.items.maxOf { e ->
-            measurer.measure(AnnotatedString(e.label), style.labels.textStyle).size.width
-        }
-        val leftGutter = maxLabelW + labelPad
-
-        val rightGutter = when (val vCfg = style.values) {
-            is ProgressStyle.Values.Outside -> {
-                val sampleValues = data.items.map { e ->
-                    val disp = if (isNormalized && vCfg.preferNormalizedLabels)
-                        e.value.coerceIn(0f, 1f) else e.value
-                    vCfg.formatter(disp, data)
-                }
-                val maxValueW = sampleValues.maxOfOrNull { t ->
-                    measurer.measure(AnnotatedString(t), vCfg.textStyle).size.width
-                } ?: 0
-                (maxValueW + labelPad)
-            }
-
-            else -> 0f
-        }
-
-        val chart = Rect(leftGutter, 0f, size.width - rightGutter, size.height)
-        val chartW = chart.width.coerceAtLeast(0f)
-        val chartH = chart.height.coerceAtLeast(0f)
-        if (chartW <= 0f || chartH <= 0f) return@Canvas
-
-        // geometry
-        val hPx = style.layout.barHeight.toPx()
-        val gapPx = style.layout.spacing.toPx()
-        val rx = style.layout.corner.toPx()
-        val strokeW = style.bars.strokeWidth.toPx()
-
-        val totalH = data.items.size * hPx + (data.items.size - 1) * gapPx
-        val scale = if (totalH > chartH) chartH / totalH else 1f
-        val hEff = hPx * scale
-        val gapEff = gapPx * scale
-        val totalHEff = data.items.size * hEff + (data.items.size - 1) * gapEff
-        val startY = chart.top + (chartH - totalHEff).coerceAtLeast(0f) / 2f
-
-        val domain = maxV.coerceAtLeast(1e-6f)
-
-        // ----- Scaling function -----
-        fun scaledWidth(value: Float): Float {
-            val v = if (isNormalized) value.coerceIn(0f, 1f) else value
-            val ratio = (v / domain).coerceIn(0f, 1f)
-            return when (val prog = style.progression) {
-                is ProgressStyle.Progression.Linear -> ratio * chartW
-                is ProgressStyle.Progression.Power -> ratio.pow(prog.alpha) * chartW
-                is ProgressStyle.Progression.Logarithmic -> {
-                    val safeV = max(v, 0f)
-                    (ln(safeV + 1.0) / ln(domain + 1.0)).toFloat() * chartW
+        Column(verticalArrangement = Arrangement.spacedBy(style.layout.labelPadding.coerceAtLeast(0.dp))) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(style.layout.labelPadding.coerceAtLeast(0.dp)),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                BasicText(
+                    modifier = Modifier.weight(1f),
+                    text = entry.label,
+                    style = style.labels.textStyle,
+                )
+                if (valueText != null && !showInside) {
+                    BasicText(text = valueText, style = valueStyle)
                 }
             }
-        }
-
-        // 1. Base widths
-        val baseWidths = data.items.map { e -> scaledWidth(e.value) }
-
-        // 2. Guarantee for text (Inside)
-        val finalWidths = when (val vCfg = style.values) {
-            is ProgressStyle.Values.Inside -> {
-                data.items.mapIndexed { i, e ->
-                    val isZero = (e.value <= 0f) || (baseWidths[i] <= 0f)
-                    if (isZero) {
-                        0f
-                    } else {
-                        val disp = if (isNormalized && vCfg.preferNormalizedLabels)
-                            e.value.coerceIn(0f, 1f) else e.value
-                        val txt = vCfg.formatter(disp, data)
-                        val textLayout = measurer.measure(AnnotatedString(txt), vCfg.textStyle)
-                        val needed = textLayout.size.width + 2 * vCfg.minInnerPadding.toPx()
-                        max(baseWidths[i], needed)
-                    }
-                }
-            }
-
-            else -> baseWidths
-        }
-
-        // target marker
-        style.target?.let { t ->
-            val v = if (isNormalized) t.value.coerceIn(0f, 1f) else t.value
-            val x = chart.left + scaledWidth(v)
-            drawLine(
-                color = t.color,
-                start = Offset(x, chart.top),
-                end = Offset(x, chart.bottom),
-                strokeWidth = t.width.toPx()
+            ProgressBar(
+                modifier = Modifier.fillMaxWidth().height(style.layout.barHeight.coerceAtLeast(0.dp)),
+                entry = entry,
+                style = style,
+                maximum = maximum,
+                fraction = fraction,
+                valueLayout = valueLayout.takeIf { showInside },
             )
         }
+    }
+}
 
-        // bars
-        data.items.forEachIndexed { i, e ->
-            val y = startY + i * (hEff + gapEff)
-            val w = finalWidths[i].coerceIn(0f, chartW)
-            val barRect = Rect(chart.left, y, chart.left + w, y + hEff)
-            val isZero = (e.value <= 0f) || (w <= 0f)
-
-            // track (background) — keeps layout readable even with zero values
-            style.bars.trackColor?.let { tc ->
+@Composable
+private fun ProgressBar(
+    modifier: Modifier,
+    entry: ProgressChartData,
+    style: ProgressStyle,
+    maximum: Float,
+    fraction: Float,
+    valueLayout: TextLayoutResult?,
+) {
+    Canvas(modifier = modifier) {
+        val width = size.width * fraction
+        val bar = Rect(left = 0f, top = 0f, right = width, bottom = size.height)
+        val corner = style.layout.corner.toPx().coerceAtLeast(0f)
+        style.bars.trackColor?.let { track ->
+            drawRoundRect(
+                color = track,
+                cornerRadius = CornerRadius(min(corner, size.minDimension / 2f)),
+            )
+        }
+        if (width > 0f && size.height > 0f) {
+            val radius = CornerRadius(min(corner, min(width, size.height) / 2f))
+            val brush = style.bars.brushProvider?.invoke(entry, size, bar)
+            if (brush != null) {
+                drawRoundRect(brush = brush, size = Size(width, size.height), cornerRadius = radius)
+            } else {
+                drawRoundRect(color = entry.color, size = Size(width, size.height), cornerRadius = radius)
+            }
+            val stroke = style.bars.strokeWidth.toPx().coerceIn(0f, min(width, size.height))
+            if (stroke > 0f) {
                 drawRoundRect(
-                    color = tc,
-                    topLeft = Offset(chart.left, y),
-                    size = Size(chartW, hEff),
-                    cornerRadius = CornerRadius(rx, rx)
+                    color = style.bars.strokeColor,
+                    topLeft = Offset(stroke / 2f, stroke / 2f),
+                    size = Size(width - stroke, size.height - stroke),
+                    cornerRadius = CornerRadius((radius.x - stroke / 2f).coerceAtLeast(0f)),
+                    style = Stroke(width = stroke),
                 )
             }
-
-            // foreground bar — skip when zero
-            if (!isZero) {
-                val brush = style.bars.brushProvider?.invoke(e, size, barRect)
-                if (brush != null) {
-                    drawRoundRect(
-                        brush = brush,
-                        topLeft = Offset(barRect.left, barRect.top),
-                        size = Size(barRect.width, barRect.height),
-                        cornerRadius = CornerRadius(rx, rx)
-                    )
-                } else {
-                    drawRoundRect(
-                        color = e.color,
-                        topLeft = Offset(barRect.left, barRect.top),
-                        size = Size(barRect.width, barRect.height),
-                        cornerRadius = CornerRadius(rx, rx)
-                    )
-                }
-
-                if (strokeW > 0f) {
-                    drawRoundRect(
-                        color = style.bars.strokeColor,
-                        topLeft = Offset(barRect.left, barRect.top),
-                        size = Size(barRect.width, barRect.height),
-                        cornerRadius = CornerRadius(rx, rx),
-                        style = Stroke(width = strokeW)
-                    )
-                }
-            }
-
-            // left label (always visible)
-            val labelLayout = measurer.measure(AnnotatedString(e.label), style.labels.textStyle)
-            val labelX = chart.left - labelPad - labelLayout.size.width
-            val labelY = y + (hEff - labelLayout.size.height) / 2f
-            drawText(labelLayout, topLeft = Offset(labelX, labelY))
-
-            // value label — skip when zero
-            if (!isZero) {
-                when (val vCfg = style.values) {
-                    is ProgressStyle.Values.None -> Unit
-                    is ProgressStyle.Values.Inside -> {
-                        val disp = if (isNormalized && vCfg.preferNormalizedLabels)
-                            e.value.coerceIn(0f, 1f) else e.value
-                        val txt = vCfg.formatter(disp, data)
-                        val textLayout = measurer.measure(
-                            AnnotatedString(txt),
-                            vCfg.textStyle.copy(color = vCfg.insideColor ?: vCfg.textStyle.color)
-                        )
-                        val vx = barRect.right - vCfg.minInnerPadding.toPx() - textLayout.size.width
-                        val vy = y + (hEff - textLayout.size.height) / 2f
-                        drawText(textLayout, topLeft = Offset(vx, vy))
-                    }
-
-                    is ProgressStyle.Values.Outside -> {
-                        val disp = if (isNormalized && vCfg.preferNormalizedLabels)
-                            e.value.coerceIn(0f, 1f) else e.value
-                        val txt = vCfg.formatter(disp, data)
-                        val textLayout = measurer.measure(AnnotatedString(txt), vCfg.textStyle)
-                        val vx = barRect.right + labelPad
-                        val vy = y + (hEff - textLayout.size.height) / 2f
-                        drawText(textLayout, topLeft = Offset(vx, vy))
-                    }
-                }
-            }
         }
+        style.target?.let { target ->
+            val position = size.width * scaledFraction(
+                value = target.value,
+                maximum = maximum,
+                progression = style.progression,
+            )
+            drawLine(
+                color = target.color,
+                start = Offset(position, 0f),
+                end = Offset(position, size.height),
+                strokeWidth = target.width.toPx(),
+            )
+        }
+        val inside = style.values as? ProgressStyle.Values.Inside
+        if (valueLayout != null && inside != null) {
+            drawText(
+                textLayoutResult = valueLayout,
+                color = inside.insideColor ?: inside.textStyle.color,
+                topLeft = Offset(
+                    x = width - inside.minInnerPadding.toPx() - valueLayout.size.width,
+                    y = (size.height - valueLayout.size.height) / 2f,
+                ),
+            )
+        }
+    }
+}
+
+private fun scaledFraction(
+    value: Float,
+    maximum: Float,
+    progression: ProgressStyle.Progression,
+): Float {
+    if (!value.isFinite() || value <= 0f) return 0f
+    val bounded = value.coerceAtMost(maximum)
+    val ratio = (bounded / maximum).coerceIn(0f, 1f)
+    return when (progression) {
+        is ProgressStyle.Progression.Linear -> ratio
+        is ProgressStyle.Progression.Power -> ratio.pow(progression.alpha.takeIf { it.isFinite() && it > 0f } ?: 1f)
+        is ProgressStyle.Progression.Logarithmic -> (ln(bounded.toDouble() + 1.0) / ln(maximum.toDouble() + 1.0)).toFloat()
     }
 }

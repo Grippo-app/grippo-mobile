@@ -11,7 +11,6 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.platform.LocalDensity
@@ -20,6 +19,7 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -41,7 +41,7 @@ public fun HeatmapChart(
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val widthDp = this.maxWidth
 
-        val plan = remember(widthDp, data, style) {
+        val plan = remember(widthDp, data, style, measurer, density) {
             buildPlan(
                 widthDp = widthDp,
                 data = data,
@@ -63,7 +63,6 @@ public fun HeatmapChart(
 
 // ============================== PLAN ==============================
 
-@androidx.compose.runtime.Immutable
 private data class HeatmapPlan(
     val totalHeightPx: Float,
     val chart: Rect,
@@ -88,7 +87,28 @@ private data class HeatmapPlan(
     // JUSTIFY (horizontal only):
     val gapPlusOneCount: Int,    // how many first gaps get +1px
     val gridLeftOffsetPx: Float  // symmetric offset after distributing +1px
-)
+) {
+    fun columnStart(c: Int): Float {
+        val bump = if (gapPlusOneCount > 0) min(c, gapPlusOneCount).toFloat() else 0f
+        return gridLeft + c * (cw + gapXPx) + bump
+    }
+
+    fun columnEdges(c: Int): Pair<Float, Float> {
+        val x0 = columnStart(c)
+        val x1 = if (c == cols - 1) {
+            chart.right
+        } else {
+            columnStart(c + 1) - gapXPx
+        }
+        return x0 to x1
+    }
+
+    fun columnCenter(c: Int): Float {
+        val (x0, x1) = columnEdges(c)
+        return (x0 + x1) / 2f
+    }
+
+}
 
 private fun buildPlan(
     widthDp: Dp,
@@ -113,18 +133,6 @@ private fun buildPlan(
 
         is HeatmapStyle.AxisLabels.None -> emptyList()
     }
-    val colLabelLayouts = when (val cLbl = style.colLabels) {
-        is HeatmapStyle.AxisLabels.ShowAll -> (0 until data.matrix.cols).map { c ->
-            measurer.measure(AnnotatedString(data.colLabels.getOrNull(c) ?: ""), cLbl.textStyle)
-        }
-
-        is HeatmapStyle.AxisLabels.Adaptive -> (0 until data.matrix.cols).map { c ->
-            measurer.measure(AnnotatedString(data.colLabels.getOrNull(c) ?: ""), cLbl.textStyle)
-        }
-
-        is HeatmapStyle.AxisLabels.None -> emptyList()
-    }
-
     // Metrics
     val widthPx = widthDp.toPx()
     val labelPadPx = style.layout.labelPadding.toPx()
@@ -133,7 +141,6 @@ private fun buildPlan(
     val rawRx = style.layout.corner.toPx()
 
     val hasRowLabels = rowLabelLayouts.isNotEmpty()
-    val hasColLabels = colLabelLayouts.isNotEmpty()
 
     // Left gutter: width of longest y-labels + labelPadding
     var leftGutter = 0f
@@ -141,6 +148,33 @@ private fun buildPlan(
         val maxW = rowLabelLayouts.maxOf { it.size.width }
         leftGutter = maxW + labelPadPx
     }
+
+    val widthForColumnLabels = (widthPx - leftGutter).coerceAtLeast(1f)
+    val columnLabelMaxWidth = when (style.colLabels) {
+        is HeatmapStyle.AxisLabels.ShowAll -> (widthForColumnLabels / data.matrix.cols).toInt().coerceAtLeast(1)
+        else -> widthForColumnLabels.toInt().coerceAtLeast(1)
+    }
+    val colLabelLayouts = when (val cLbl = style.colLabels) {
+        is HeatmapStyle.AxisLabels.ShowAll -> (0 until data.matrix.cols).map { c ->
+            measurer.measure(
+                text = AnnotatedString(data.colLabels.getOrNull(c) ?: ""),
+                style = cLbl.textStyle,
+                constraints = Constraints(maxWidth = columnLabelMaxWidth),
+            )
+        }
+
+        is HeatmapStyle.AxisLabels.Adaptive -> (0 until data.matrix.cols).map { c ->
+            measurer.measure(
+                text = AnnotatedString(data.colLabels.getOrNull(c) ?: ""),
+                style = cLbl.textStyle,
+                constraints = Constraints(maxWidth = columnLabelMaxWidth),
+            )
+        }
+
+        is HeatmapStyle.AxisLabels.None -> emptyList()
+    }
+
+    val hasColLabels = colLabelLayouts.isNotEmpty()
 
     // Bottom: X-axis + (optionally) legend
     val colLabelsMaxH = if (hasColLabels) colLabelLayouts.maxOf { it.size.height }.toFloat() else 0f
@@ -252,34 +286,12 @@ private fun DrawScope.drawHeatmap(
 ) {
     if (plan.rows <= 0 || plan.cols <= 0) return
 
-    // Column start with +1px bumps distributed into early gaps
-    fun colStart(c: Int): Float {
-        val bump = if (plan.gapPlusOneCount > 0) min(c, plan.gapPlusOneCount).toFloat() else 0f
-        return plan.gridLeft + c * (plan.cw + plan.gapXPx) + bump
-    }
-
-    // Column edges computed from starts (prevents accumulation errors)
-    fun colEdges(c: Int): Pair<Float, Float> {
-        val x0 = colStart(c)
-        val x1 = if (c == plan.cols - 1) {
-            plan.chart.right
-        } else {
-            colStart(c + 1) - plan.gapXPx
-        }
-        return x0 to x1
-    }
-
-    fun colCenter(c: Int): Float {
-        val (x0, x1) = colEdges(c)
-        return (x0 + x1) / 2f
-    }
-
     val chart = plan.chart
 
     // Cells
     for (r in 0 until plan.rows) {
         for (c in 0 until plan.cols) {
-            val (x0, x1) = colEdges(c)
+            val (x0, x1) = plan.columnEdges(c)
             val w = max(0f, x1 - x0)
 
             val y0 = plan.gridTop + (plan.ch + plan.gapYPx) * r
@@ -352,8 +364,9 @@ private fun DrawScope.drawHeatmap(
             val y = chart.bottom + plan.labelPadPx
             for (c in 0 until plan.cols) {
                 val layout = plan.colLabelLayouts[c]
-                val cx = colCenter(c)
-                val x = cx - layout.size.width / 2f
+                val cx = plan.columnCenter(c)
+                val x = (cx - layout.size.width / 2f)
+                    .coerceIn(chart.left, max(chart.left, chart.right - layout.size.width))
                 drawText(layout, topLeft = Offset(x, y))
             }
         }
@@ -366,8 +379,8 @@ private fun DrawScope.drawHeatmap(
             val boxes = (0 until plan.cols).map { c ->
                 val layout = plan.colLabelLayouts[c]
                 val w = layout.size.width.toFloat()
-                val cx = colCenter(c)
-                val left = (cx - w / 2f).coerceIn(chart.left, chart.right - w)
+                val cx = plan.columnCenter(c)
+                val left = (cx - w / 2f).coerceIn(chart.left, max(chart.left, chart.right - w))
                 Box(left, left + w, layout)
             }
 
@@ -413,25 +426,8 @@ private fun DrawScope.drawHeatmap(
                 chart.right, legendTop + lg.height.toPx()
             )
 
-            val legendColors = deriveLegendColorsFromDataQuantized(
-                data = data,
-                style = style,
-                bins = 6
-            )
-
-            if (legendColors.isNotEmpty()) {
-                drawDiscreteLegend(legendRect, legendColors)
-            } else {
-                val brush = Brush.horizontalGradient(
-                    0f to Color(0xFFE0E0E0),
-                    1f to Color(0xFFBDBDBD)
-                )
-                drawRect(
-                    brush = brush,
-                    topLeft = Offset(legendRect.left, legendRect.top),
-                    size = Size(legendRect.width, legendRect.height)
-                )
-            }
+            val legendColors = deriveLegendColors(style = style, bins = 6)
+            drawDiscreteLegend(rect = legendRect, colors = legendColors)
 
             // Text under legend — only if provided
             plan.minLegendTextLayout?.let {
@@ -455,45 +451,17 @@ private fun DrawScope.drawHeatmap(
 
 // ============================== HELPERS ==============================
 
-/**
- * Generate discrete legend colors based on actual range of normalized values.
- * If range collapsed — one strip.
- */
-private fun deriveLegendColorsFromDataQuantized(
-    data: HeatmapData,
-    style: HeatmapStyle,
-    bins: Int = 6
-): List<Color> {
-    val values = data.matrix.values
-    if (values.isEmpty()) return emptyList()
-
-    val norm: (Float) -> Float = { v -> v.coerceIn(0f, 1f) }
-
-    var tMin = 1f
-    var tMax = 0f
-    for (v in values) {
-        val t = norm(v)
-        if (t < tMin) tMin = t
-        if (t > tMax) tMax = t
-    }
-    val span = (tMax - tMin)
-    if (span <= 1e-6f) return listOf(style.palette.colorScale(tMin))
-
+/** Sample the declared normalized domain so the colors match the legend endpoints. */
+private fun deriveLegendColors(style: HeatmapStyle, bins: Int): List<Color> {
     val count = max(2, bins)
-    val tmp = ArrayList<Color>(count)
-    for (i in 0 until count) {
-        val center = tMin + (i + 0.5f) / count * span
-        tmp += style.palette.colorScale(center)
+    val colors = ArrayList<Color>(count)
+    for (index in 0 until count) {
+        val color = style.palette.colorScale(index / (count - 1f))
+        if (colors.lastOrNull() != color) {
+            colors += color
+        }
     }
-
-    // Collapse adjacent identical colors
-    val out = ArrayList<Color>(tmp.size)
-    var prev: Color? = null
-    for (c in tmp) {
-        if (prev == null || prev != c) out += c
-        prev = c
-    }
-    return out
+    return colors
 }
 
 /** Draw N equal-width legend strips. */

@@ -9,7 +9,6 @@ public data class AreaPoint(
     val xLabel: String? = null
 )
 
-@Immutable
 public data class AreaData(
     val points: List<AreaPoint>
 )

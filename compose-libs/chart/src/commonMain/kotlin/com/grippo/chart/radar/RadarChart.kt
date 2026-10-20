@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
@@ -11,11 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,16 +35,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
@@ -65,35 +62,36 @@ public fun RadarChart(
     val density = LocalDensity.current
 
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
-    var selected by remember { mutableStateOf<RadarHit?>(null) }
+    var selected by remember(data.axes, data.series, style.peek) { mutableStateOf<RadarHit?>(null) }
 
     val n = data.axes.size
 
-    LaunchedEffect(data.axes.size, data.series.size) {
-        val sel = selected ?: return@LaunchedEffect
-        if (sel.seriesIdx !in data.series.indices || sel.axisIdx !in 0 until data.axes.size) {
-            selected = null
-        }
-    }
-
-    val axisLabelLayouts: List<TextLayoutResult> = when (val lbl = style.labels) {
-        is RadarStyle.Labels.None -> emptyList()
-        is RadarStyle.Labels.Visible -> data.axes.map { axis ->
-            measurer.measure(AnnotatedString(axis.label), lbl.textStyle)
+    val axisLabelLayouts = remember(measurer, data.axes, style.labels, canvasSize.width) {
+        when (val labels = style.labels) {
+            is RadarStyle.Labels.None -> emptyList()
+            is RadarStyle.Labels.Visible -> data.axes.map { axis ->
+                measurer.measure(
+                    text = AnnotatedString(axis.label),
+                    style = labels.textStyle,
+                    constraints = Constraints(maxWidth = (canvasSize.width / 3).coerceAtLeast(1)),
+                )
+            }
         }
     }
 
     val levels = max(1, style.grid.levels)
-    val levelLabelLayouts: List<TextLayoutResult> = when (val ll = style.grid.levelLabels) {
-        is RadarStyle.LevelLabels.None -> emptyList()
-        is RadarStyle.LevelLabels.Visible -> (1..levels).map { idx ->
-            val t = idx / levels.toFloat()
-            val text = ll.levelFormatter(t)
-            measurer.measure(AnnotatedString(text), ll.levelLabelStyle)
+    val levelLabelLayouts = remember(measurer, levels, style.grid.levelLabels) {
+        when (val labels = style.grid.levelLabels) {
+            is RadarStyle.LevelLabels.None -> emptyList()
+            is RadarStyle.LevelLabels.Visible -> (1..levels).map { index ->
+                val level = index / levels.toFloat()
+                val text = labels.levelFormatter(level)
+                measurer.measure(text = AnnotatedString(text), style = labels.levelLabelStyle)
+            }
         }
     }
 
-    val layout by remember(
+    val layout = remember(
         canvasSize,
         data,
         style,
@@ -102,22 +100,21 @@ public fun RadarChart(
         axisLabelLayouts,
         levelLabelLayouts
     ) {
-        derivedStateOf {
-            if (canvasSize.width <= 0 || canvasSize.height <= 0 || n <= 0) {
-                null
-            } else {
-                computeRadarLayout(
-                    canvasSize = canvasSize,
-                    data = data,
-                    style = style,
-                    density = density,
-                    axisLabelLayouts = axisLabelLayouts,
-                    levelLabelLayouts = levelLabelLayouts,
-                )
-            }
+        if (canvasSize.width <= 0 || canvasSize.height <= 0 || n <= 0) {
+            null
+        } else {
+            computeRadarLayout(
+                canvasSize = canvasSize,
+                data = data,
+                style = style,
+                density = density,
+                axisLabelLayouts = axisLabelLayouts,
+                levelLabelLayouts = levelLabelLayouts,
+            )
         }
     }
 
+    val currentLayout by rememberUpdatedState(layout)
     val peek = style.peek
     val hitSlopPx = remember(peek, density) {
         if (peek is RadarStyle.Peek.Visible) with(density) { peek.hitSlop.toPx() } else 0f
@@ -130,7 +127,7 @@ public fun RadarChart(
                 if (peek is RadarStyle.Peek.Visible) {
                     Modifier.pointerInput(data, style, canvasSize, hitSlopPx) {
                         detectTapGestures { pos ->
-                            val l = layout ?: return@detectTapGestures
+                            val l = currentLayout ?: return@detectTapGestures
                             val hit = findHitVertex(
                                 series = l.series,
                                 tap = pos,
@@ -190,15 +187,17 @@ public fun RadarChart(
                             valueText,
                             labelText,
                             peek,
-                            density
+                            density,
+                            measurer,
+                            canvasSize,
                         ) {
                             measureTooltipSize(
                                 textMeasurer = measurer,
                                 density = density,
                                 valueText = valueText,
                                 labelText = labelText,
-                                padH = peek.tooltipPaddingH,
-                                padV = peek.tooltipPaddingV
+                                style = peek,
+                                canvasSize = canvasSize,
                             )
                         }
 
@@ -206,13 +205,7 @@ public fun RadarChart(
                             anchor = v.point,
                             canvasSize = canvasSize,
                             tooltipSize = tooltipSize,
-                            margin = peek.tooltipMargin,
-                            background = peek.tooltipBackground,
-                            border = peek.tooltipBorder,
-                            textColor = peek.tooltipText,
-                            corner = peek.tooltipCornerRadius,
-                            padH = peek.tooltipPaddingH,
-                            padV = peek.tooltipPaddingV,
+                            style = peek,
                             valueText = valueText,
                             labelText = labelText
                         )
@@ -290,13 +283,109 @@ private fun computeRadarLayout(
         }
     }
 
+    val bounds = RadarBounds(
+        chart = chart,
+        angles = angles,
+        axisLabelLayouts = axisLabelLayouts,
+        labelPadPx = labelPadPx,
+        topLevelLabelPadPx = topLevelLabelPadPx,
+        reserveAxisLabelSpace = style.layout.reserveAxisLabelSpace,
+    )
+
+    val (radius, center) = if (style.layout.centered) {
+        val adjustedTop = chart.top + topLevelLabelPadPx
+        val fixedCenter = chart.center
+
+        val maxByBounds = min(
+            min(fixedCenter.x - chart.left, chart.right - fixedCenter.x),
+            min(fixedCenter.y - adjustedTop, chart.bottom - fixedCenter.y),
+        ).coerceAtLeast(0f)
+
+        var lo = 0f
+        var hi = maxByBounds
+        repeat(26) {
+            val mid = (lo + hi) * 0.5f
+            if (bounds.labelsFit(r = mid, fixedCenter = fixedCenter, adjustedTop = adjustedTop)) lo = mid else hi = mid
+        }
+
+        lo to fixedCenter
+    } else {
+        var lo = 0f
+        var hi = max(w, h)
+
+        repeat(26) {
+            val mid = (lo + hi) * 0.5f
+            if (bounds.centerForRadius(mid) != null) lo = mid else hi = mid
+        }
+
+        val r = lo
+        val c = bounds.centerForRadius(r) ?: chart.center
+        r to c
+    }
+
+    val seriesLayouts: List<RadarSeriesLayout?> = data.series.map { s ->
+        val raw = FloatArray(n)
+
+        for (i in 0 until n) {
+            val v: Float? = when (val vv = s.values) {
+                is RadarValues.ByAxisId -> vv.map[data.axes[i].id]
+                is RadarValues.ByIndex -> vv.list.getOrNull(i)
+            }
+
+            if (v == null || !v.isFinite()) {
+                if (style.dataPolicy.requireCompleteSeries || !style.dataPolicy.missingAsZero) return@map null
+                raw[i] = 0f
+            } else {
+                raw[i] = v.coerceIn(0f, 1f)
+            }
+        }
+
+        val path = Path()
+        for (i in 0 until n) {
+            val p = radarPoint(center = center, angle = angles[i], radius = radius * raw[i])
+            if (i == 0) path.moveTo(p.x, p.y) else path.lineTo(p.x, p.y)
+        }
+        path.close()
+
+        val vertices = List(n) { i ->
+            RadarVertexLayout(
+                axisIdx = i,
+                value = raw[i],
+                point = radarPoint(center = center, angle = angles[i], radius = radius * raw[i])
+            )
+        }
+
+        RadarSeriesLayout(
+            path = path,
+            vertices = vertices,
+            rawValues = raw
+        )
+    }
+
+    return RadarChartLayoutResult(
+        chart = chart,
+        center = center,
+        radius = radius,
+        angles = angles,
+        series = seriesLayouts
+    )
+}
+
+private class RadarBounds(
+    val chart: Rect,
+    val angles: FloatArray,
+    val axisLabelLayouts: List<TextLayoutResult>,
+    val labelPadPx: Float,
+    val topLevelLabelPadPx: Float,
+    val reserveAxisLabelSpace: Boolean,
+) {
     fun centerForRadius(r: Float): Offset? {
         var xMin = Float.NEGATIVE_INFINITY
         var xMax = Float.POSITIVE_INFINITY
         var yMin = Float.NEGATIVE_INFINITY
         var yMax = Float.POSITIVE_INFINITY
 
-        for (i in 0 until n) {
+        for (i in angles.indices) {
             val cosA = cos(angles[i])
             val sinA = sin(angles[i])
 
@@ -311,9 +400,9 @@ private fun computeRadarLayout(
             yMin = max(yMin, chart.top + r + topLevelLabelPadPx)
         }
 
-        if (axisLabelLayouts.isNotEmpty() && style.layout.reserveAxisLabelSpace) {
+        if (axisLabelLayouts.isNotEmpty() && reserveAxisLabelSpace) {
             val rr = r + labelPadPx
-            for (i in 0 until n) {
+            for (i in angles.indices) {
                 val cosA = cos(angles[i])
                 val sinA = sin(angles[i])
 
@@ -335,117 +424,36 @@ private fun computeRadarLayout(
         )
     }
 
-    val (radius, center) = if (style.layout.centered) {
-        val adjustedTop = chart.top + topLevelLabelPadPx
-        val fixedCenter = chart.center
-
-        val maxByBounds = min(
-            min(fixedCenter.x - chart.left, chart.right - fixedCenter.x),
-            min(fixedCenter.y - adjustedTop, chart.bottom - fixedCenter.y),
-        ).coerceAtLeast(0f)
-
-        val labelPad = labelPadPx
-        val useLabels = axisLabelLayouts.isNotEmpty() && style.layout.reserveAxisLabelSpace
-
-        fun labelsFit(r: Float): Boolean {
-            if (!useLabels) return true
-            val rr = r + labelPad
-            for (i in 0 until n) {
-                val a = angles[i]
-                val p = Offset(
-                    x = fixedCenter.x + rr * cos(a),
-                    y = fixedCenter.y + rr * sin(a),
-                )
-                val textLayout = axisLabelLayouts[i]
-                val halfW = textLayout.size.width * 0.5f
-                val halfH = textLayout.size.height * 0.5f
-                val left = p.x - halfW
-                val right = p.x + halfW
-                val top = p.y - halfH
-                val bottom = p.y + halfH
-
-                if (left < chart.left) return false
-                if (right > chart.right) return false
-                if (top < adjustedTop) return false
-                if (bottom > chart.bottom) return false
-            }
-            return true
-        }
-
-        var lo = 0f
-        var hi = maxByBounds
-        repeat(26) {
-            val mid = (lo + hi) * 0.5f
-            if (labelsFit(mid)) lo = mid else hi = mid
-        }
-
-        lo to fixedCenter
-    } else {
-        var lo = 0f
-        var hi = max(w, h)
-
-        repeat(26) {
-            val mid = (lo + hi) * 0.5f
-            if (centerForRadius(mid) != null) lo = mid else hi = mid
-        }
-
-        val r = lo
-        val c = centerForRadius(r) ?: chart.center
-        r to c
-    }
-
-    fun polar(angle: Float, rr: Float): Offset = Offset(
-        x = center.x + rr * cos(angle),
-        y = center.y + rr * sin(angle)
-    )
-
-    val seriesLayouts: List<RadarSeriesLayout?> = data.series.map { s ->
-        val raw = FloatArray(n)
-
-        for (i in 0 until n) {
-            val v: Float? = when (val vv = s.values) {
-                is RadarValues.ByAxisId -> vv.map[data.axes[i].id]
-                is RadarValues.ByIndex -> vv.list.getOrNull(i)
-            }
-
-            if (v == null) {
-                if (!style.dataPolicy.missingAsZero) return@map null
-                raw[i] = 0f
-            } else {
-                raw[i] = v.coerceIn(0f, 1f)
-            }
-        }
-
-        val path = Path()
-        for (i in 0 until n) {
-            val p = polar(angles[i], radius * raw[i])
-            if (i == 0) path.moveTo(p.x, p.y) else path.lineTo(p.x, p.y)
-        }
-        path.close()
-
-        val vertices = List(n) { i ->
-            RadarVertexLayout(
-                axisIdx = i,
-                value = raw[i],
-                point = polar(angles[i], radius * raw[i])
+    fun labelsFit(r: Float, fixedCenter: Offset, adjustedTop: Float): Boolean {
+        if (axisLabelLayouts.isEmpty() || !reserveAxisLabelSpace) return true
+        val rr = r + labelPadPx
+        for (i in angles.indices) {
+            val a = angles[i]
+            val p = Offset(
+                x = fixedCenter.x + rr * cos(a),
+                y = fixedCenter.y + rr * sin(a),
             )
+            val textLayout = axisLabelLayouts[i]
+            val halfW = textLayout.size.width * 0.5f
+            val halfH = textLayout.size.height * 0.5f
+            val left = p.x - halfW
+            val right = p.x + halfW
+            val top = p.y - halfH
+            val bottom = p.y + halfH
+
+            if (left < chart.left) return false
+            if (right > chart.right) return false
+            if (top < adjustedTop) return false
+            if (bottom > chart.bottom) return false
         }
-
-        RadarSeriesLayout(
-            path = path,
-            vertices = vertices,
-            rawValues = raw
-        )
+        return true
     }
-
-    return RadarChartLayoutResult(
-        chart = chart,
-        center = center,
-        radius = radius,
-        angles = angles,
-        series = seriesLayouts
-    )
 }
+
+private fun radarPoint(center: Offset, angle: Float, radius: Float): Offset = Offset(
+    x = center.x + radius * cos(angle),
+    y = center.y + radius * sin(angle),
+)
 
 private fun DrawScope.drawRadar(
     layout: RadarChartLayoutResult,
@@ -462,11 +470,6 @@ private fun DrawScope.drawRadar(
     val n = data.axes.size
     if (n <= 0) return
 
-    fun polar(angle: Float, radius: Float): Offset = Offset(
-        x = c.x + radius * cos(angle),
-        y = c.y + radius * sin(angle)
-    )
-
     val levels = max(1, style.grid.levels)
     val gridStroke = Stroke(width = style.grid.strokeWidth.toPx(), cap = StrokeCap.Round)
 
@@ -477,7 +480,7 @@ private fun DrawScope.drawRadar(
         if (style.grid.asPolygon) {
             val p = Path()
             for (i in 0 until n) {
-                val pt = polar(layout.angles[i], rr)
+                val pt = radarPoint(center = c, angle = layout.angles[i], radius = rr)
                 if (i == 0) p.moveTo(pt.x, pt.y) else p.lineTo(pt.x, pt.y)
             }
             p.close()
@@ -504,7 +507,7 @@ private fun DrawScope.drawRadar(
         is RadarStyle.Spokes.Visible -> {
             val sw = sp.strokeWidth.toPx()
             for (i in 0 until n) {
-                val p = polar(layout.angles[i], r)
+                val p = radarPoint(center = c, angle = layout.angles[i], radius = r)
                 drawLine(sp.color, c, p, sw)
             }
         }
@@ -588,15 +591,19 @@ private fun DrawScope.drawRadar(
                 val off = vCfg.offset.toPx()
                 for (i in 0 until n) {
                     val vv = sl.rawValues.getOrNull(i) ?: continue
-                    val p0 = polar(layout.angles[i], r * vv)
+                    val p0 = radarPoint(center = c, angle = layout.angles[i], radius = r * vv)
                     val label = vCfg.formatter(vv, data)
-                    val textLayout = measurer.measure(AnnotatedString(label), vCfg.textStyle)
+                    val textLayout = measurer.measure(
+                        text = AnnotatedString(label),
+                        style = vCfg.textStyle,
+                        constraints = Constraints(maxWidth = chart.width.toInt().coerceAtLeast(1)),
+                    )
 
                     val a = layout.angles[i]
                     val x = (p0.x + cos(a) * off - textLayout.size.width * 0.5f)
-                        .coerceIn(chart.left, chart.right - textLayout.size.width.toFloat())
+                        .coerceIn(chart.left, max(chart.left, chart.right - textLayout.size.width))
                     val y = (p0.y + sin(a) * off - textLayout.size.height * 0.5f)
-                        .coerceIn(chart.top, chart.bottom - textLayout.size.height.toFloat())
+                        .coerceIn(chart.top, max(chart.top, chart.bottom - textLayout.size.height))
 
                     drawText(textLayout, topLeft = Offset(x, y))
                 }
@@ -617,7 +624,7 @@ private fun DrawScope.drawRadar(
             val gap = peek.guideGap.toPx()
 
             val axisAngle = layout.angles[selected.axisIdx]
-            val axisEnd = polar(axisAngle, r)
+            val axisEnd = radarPoint(center = c, angle = axisAngle, radius = r)
 
             val guidePath = Path().apply {
                 moveTo(c.x, c.y)
@@ -700,7 +707,7 @@ private fun DrawScope.drawRadar(
             }
             for (i in 0 until n) {
                 val a = layout.angles[i]
-                val p = polar(a, labelRadius)
+                val p = radarPoint(center = c, angle = a, radius = labelRadius)
                 val textLayout = axisLabelLayouts[i]
                 val x = p.x - textLayout.size.width * 0.5f
                 val y = p.y - textLayout.size.height * 0.5f
@@ -773,44 +780,23 @@ private fun buildSweepStops(
 ): List<Pair<Float, Color>> {
     if (angles.isEmpty()) return emptyList()
     val twoPi = 2f * PI.toFloat()
-    val startAngle = angles.first()
-    val seamWidth = 0.04f
-    val seamInner = seamWidth * 0.5f
-
-    val byAngle = buildList {
-        for (i in angles.indices) {
-            val angle = angles[i]
-            val fraction = (((angle - startAngle) % twoPi) + twoPi) % twoPi / twoPi
-            val value = rawValues.getOrNull(i) ?: 0f
-            add(fraction to colorFromStops(stops, value))
-        }
+    val byAngle = angles.indices.map { index ->
+        val fraction = ((angles[index] % twoPi + twoPi) % twoPi) / twoPi
+        fraction to colorFromStops(stops = stops, t = rawValues[index])
     }.sortedBy { it.first }
-
-    if (byAngle.isEmpty()) return emptyList()
-
-    val firstColor = byAngle.first().second
-    val lastColor = byAngle.last().second
-    val seamColor = lerpColor(lastColor, firstColor, 0.5f)
-    val preBlend = lerpColor(lastColor, seamColor, 0.5f)
-    val postBlend = lerpColor(seamColor, firstColor, 0.5f)
-
-    val adjusted = byAngle.map { (pos, color) ->
-        val clampedPos = when {
-            pos <= 0f -> seamWidth
-            pos >= 1f -> 1f - seamWidth
-            else -> pos
-        }
-        clampedPos to color
-    }.toMutableList()
-
-    adjusted.add(0f to seamColor)
-    adjusted.add(1f to seamColor)
-    adjusted.add(seamInner to postBlend)
-    adjusted.add(seamWidth to firstColor)
-    adjusted.add(1f - seamWidth to lastColor)
-    adjusted.add(1f - seamInner to preBlend)
-
-    return adjusted.sortedBy { it.first }
+    val first = byAngle.first()
+    val last = byAngle.last()
+    val seamSpan = 1f - last.first + first.first
+    val seam = if (seamSpan > 0f) {
+        lerpColor(a = last.second, b = first.second, t = (1f - last.first) / seamSpan)
+    } else {
+        first.second
+    }
+    return buildList {
+        if (first.first > 0f) add(0f to seam)
+        addAll(byAngle)
+        add(1f to seam)
+    }
 }
 
 private fun format01(value: Float, decimals: Int): String {
@@ -827,32 +813,35 @@ private fun measureTooltipSize(
     density: Density,
     valueText: String,
     labelText: String?,
-    padH: Dp,
-    padV: Dp,
+    style: RadarStyle.Peek.Visible,
+    canvasSize: IntSize,
 ): IntSize {
+    val padHPx = with(density) { style.tooltipPaddingH.roundToPx() }
+    val padVPx = with(density) { style.tooltipPaddingV.roundToPx() }
+    val contentWidth = (canvasSize.width - padHPx * 2).coerceAtLeast(1)
     val value = textMeasurer.measure(
         text = AnnotatedString(valueText),
-        style = TextStyle(fontSize = 12.sp, textAlign = TextAlign.Center)
+        style = style.valueTextStyle,
+        constraints = Constraints(maxWidth = contentWidth),
     ).size
 
     val label = if (!labelText.isNullOrBlank()) {
         textMeasurer.measure(
             text = AnnotatedString(labelText),
-            style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center)
+            style = style.labelTextStyle,
+            constraints = Constraints(maxWidth = contentWidth),
         ).size
     } else {
         null
     }
 
-    val padHPx = with(density) { padH.toPx() }
-    val padVPx = with(density) { padV.toPx() }
-    val gapPx = if (label != null) with(density) { 2.dp.toPx() } else 0f
+    val gapPx = if (label != null) with(density) { style.tooltipLabelSpacing.roundToPx() } else 0
 
     val contentW = max(value.width, label?.width ?: 0)
-    val contentH = value.height + (label?.height ?: 0) + gapPx.roundToInt()
+    val contentH = value.height + (label?.height ?: 0) + gapPx
 
-    val w = kotlin.math.ceil(contentW + padHPx * 2f + 2f).toInt()
-    val h = kotlin.math.ceil(contentH + padVPx * 2f + 2f).toInt()
+    val w = (contentW + padHPx * 2).coerceAtMost(canvasSize.width)
+    val h = contentH + padVPx * 2
 
     return IntSize(w, h)
 }
@@ -862,18 +851,12 @@ private fun RadarChartTooltip(
     anchor: Offset,
     canvasSize: IntSize,
     tooltipSize: IntSize,
-    margin: Dp,
-    background: Color,
-    border: Color,
-    textColor: Color,
-    corner: Dp,
-    padH: Dp,
-    padV: Dp,
+    style: RadarStyle.Peek.Visible,
     valueText: String,
     labelText: String?,
 ) {
     val density = LocalDensity.current
-    val marginPx = with(density) { margin.toPx() }.roundToInt()
+    val marginPx = with(density) { style.tooltipMargin.toPx() }.roundToInt()
 
     val w = tooltipSize.width
     val h = tooltipSize.height
@@ -881,13 +864,6 @@ private fun RadarChartTooltip(
 
     val ax = anchor.x.roundToInt()
     val ay = anchor.y.roundToInt()
-
-    fun clampX(x: Int): Int = x.coerceIn(0, max(0, canvasSize.width - w))
-    fun clampY(y: Int): Int = y.coerceIn(0, max(0, canvasSize.height - h))
-
-    fun fits(x: Int, y: Int): Boolean {
-        return x >= 0 && y >= 0 && x + w <= canvasSize.width && y + h <= canvasSize.height
-    }
 
     data class Candidate(val x: Int, val y: Int)
 
@@ -898,46 +874,43 @@ private fun RadarChartTooltip(
 
     val candidates = listOf(top, bottom, right, left)
 
-    val chosen = candidates.firstOrNull { fits(it.x, it.y) } ?: run {
+    val chosen = candidates.firstOrNull { it.x >= 0 && it.y >= 0 && it.x + w <= canvasSize.width && it.y + h <= canvasSize.height } ?: run {
         candidates.minBy { c ->
-            val cx = clampX(c.x)
-            val cy = clampY(c.y)
+            val cx = c.x.coerceIn(0, max(0, canvasSize.width - w))
+            val cy = c.y.coerceIn(0, max(0, canvasSize.height - h))
             abs(cx - c.x) + abs(cy - c.y)
         }
     }
 
-    val x = clampX(chosen.x)
-    val y = clampY(chosen.y)
+    val x = chosen.x.coerceIn(0, max(0, canvasSize.width - w))
+    val y = chosen.y.coerceIn(0, max(0, canvasSize.height - h))
 
     Box(
         modifier = Modifier
             .offset { IntOffset(x, y) }
             .background(
-                color = background,
-                shape = RoundedCornerShape(corner)
+                color = style.tooltipBackground,
+                shape = RoundedCornerShape(style.tooltipCornerRadius)
             )
             .border(
-                width = 1.dp,
-                color = border,
-                shape = RoundedCornerShape(corner)
+                width = style.tooltipBorderWidth,
+                color = style.tooltipBorder,
+                shape = RoundedCornerShape(style.tooltipCornerRadius)
             )
-            .padding(horizontal = padH, vertical = padV)
+            .padding(horizontal = style.tooltipPaddingH, vertical = style.tooltipPaddingV)
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(style.tooltipLabelSpacing),
+        ) {
             BasicText(
                 text = valueText,
-                style = TextStyle(
-                    color = textColor,
-                    fontSize = 12.sp
-                )
+                style = style.valueTextStyle.copy(color = style.tooltipText)
             )
             if (!labelText.isNullOrBlank()) {
                 BasicText(
                     text = labelText,
-                    style = TextStyle(
-                        color = textColor.copy(alpha = 0.80f),
-                        fontSize = 10.sp
-                    )
+                    style = style.labelTextStyle.copy(color = style.tooltipText)
                 )
             }
         }

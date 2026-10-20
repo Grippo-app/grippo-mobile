@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import com.grippo.chart.sparkline.SparklineData
 import com.grippo.chart.sparkline.SparklinePoint
 import com.grippo.core.state.metrics.performance.PerformanceTrendHistoryEntry
@@ -16,6 +18,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.datetime.daysUntil
 
 @Composable
 public fun PerformanceTrendHistoryCard(
@@ -30,12 +33,22 @@ public fun PerformanceTrendHistoryCard(
     val dateLabels = history.asReversed().map { it.endDate.short() }
 
     val data = remember(history, dateLabels) {
-        val points = history
-            .asReversed()
+        val chronological = history.asReversed()
+        val origin = chronological.firstOrNull()?.endDate?.value
+        val hasDates = chronological.all { it.endDate.value != null }
+        val points = chronological
             .mapIndexedNotNull { index, entry ->
                 val value = entry.metric.chartValue() ?: return@mapIndexedNotNull null
+                val date = entry.endDate.value
+                val elapsedDays = if (hasDates && origin != null && date != null) {
+                    val days = origin.date.daysUntil(date.date)
+                    val seconds = date.time.toSecondOfDay() - origin.time.toSecondOfDay()
+                    (days.toDouble() + seconds / 86_400.0).toFloat()
+                } else {
+                    index.toFloat()
+                }
                 SparklinePoint(
-                    x = index.toFloat(),
+                    x = elapsedDays,
                     y = value,
                     label = dateLabels[index],
                 )
@@ -48,10 +61,15 @@ public fun PerformanceTrendHistoryCard(
         }
     } ?: return
 
+    val description = data.points.joinToString("; ") { point ->
+        "${point.label}: ${valueLabels.getValue(point.y)}"
+    }
+
     Sparkline(
         modifier = modifier
             .fillMaxWidth()
-            .aspectRatio(AppTokens.dp.metrics.performance.trend.historyAspectRatio),
+            .aspectRatio(AppTokens.dp.metrics.performance.trend.historyAspectRatio)
+            .semantics { contentDescription = description },
         data = data,
         valueFormatter = valueLabels::getValue,
     )

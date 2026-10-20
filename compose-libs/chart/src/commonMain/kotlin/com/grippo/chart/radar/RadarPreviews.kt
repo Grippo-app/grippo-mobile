@@ -107,5 +107,18 @@ private fun PreviewRadarTwoAxes() {
     )
 }
 
-
-
+@Preview
+@Composable
+private fun PreviewRadarLongValueLabels() {
+    RadarChart(
+        modifier = Modifier.fillMaxWidth().height(240.dp),
+        data = radarData(),
+        style = radarStyle(labels = true, values = true).copy(
+            values = RadarStyle.Values.Visible(
+                textStyle = TextStyle(color = Color(0xFF333333)),
+                formatter = { value, _ -> "Recorded normalized value with its complete name: $value" },
+                offset = 10.dp,
+            ),
+        ),
+    )
+}

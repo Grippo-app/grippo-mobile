@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,6 +32,7 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.icons.Calendar
 import com.grippo.design.resources.provider.icons.Weight
 
 @Stable
@@ -91,7 +93,6 @@ public fun Chip(
     borderColor: Color = AppTokens.colors.border.default,
 ) {
     val tokens = resolveChipStyle(size)
-
     val shape = RoundedCornerShape(tokens.radius)
 
     Row(
@@ -121,7 +122,11 @@ public fun Chip(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            modifier = Modifier.weight(weight = 1f, fill = false),
+            modifier = if (label == ChipLabel.Empty) {
+                Modifier
+            } else {
+                Modifier.weight(weight = 1f, fill = false)
+            },
             verticalAlignment = Alignment.CenterVertically
         ) {
             when (leading) {
@@ -167,7 +172,7 @@ public fun Chip(
         Text(
             text = value,
             style = tokens.valueTextStyle,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             color = textColor
         )
@@ -294,5 +299,56 @@ private fun ChipContentVariantsPreview() {
             interaction = ChipInteraction.Clickable(onClick = {}),
             size = ChipSize.Medium,
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ChipTwoLineValuePreview() {
+    PreviewContainer {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        ) {
+            Spacer(modifier = Modifier.size(AppTokens.dp.exerciseExampleImage.medium.size))
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            ) {
+                Chip(
+                    label = ChipLabel.Empty,
+                    value = "Последнее использование: 14 октября 2026 года",
+                    leading = ChipLeading.Icon(AppTokens.icons.Calendar),
+                    brush = SolidColor(AppTokens.colors.background.card),
+                    textColor = AppTokens.colors.text.primary,
+                    iconColor = AppTokens.colors.icon.secondary,
+                    interaction = ChipInteraction.Static,
+                    size = ChipSize.Small,
+                )
+                Chip(
+                    label = ChipLabel.Empty,
+                    value = "Останнє використання: 14 жовтня 2026 року",
+                    leading = ChipLeading.Icon(AppTokens.icons.Calendar),
+                    brush = SolidColor(AppTokens.colors.background.card),
+                    textColor = AppTokens.colors.text.primary,
+                    iconColor = AppTokens.colors.icon.secondary,
+                    interaction = ChipInteraction.Static,
+                    size = ChipSize.Small,
+                )
+                Chip(
+                    label = ChipLabel.Text(UiText.Str(value = "History")),
+                    value = "Останнє використання: 14 жовтня 2026 року",
+                    leading = ChipLeading.Icon(AppTokens.icons.Calendar),
+                    brush = SolidColor(AppTokens.colors.background.card),
+                    textColor = AppTokens.colors.text.primary,
+                    labelColor = AppTokens.colors.text.secondary,
+                    iconColor = AppTokens.colors.icon.secondary,
+                    interaction = ChipInteraction.Static,
+                    size = ChipSize.Small,
+                )
+            }
+        }
     }
 }

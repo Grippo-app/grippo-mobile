@@ -334,6 +334,8 @@
     <string name="peak_intensity">Пиковая интенсивность</string>
 
     <string name="exercise_example_last_used_value">Последнее использование: %1$s</string>
+    <string name="exercise_example_in_history">В истории</string>
+    <string name="exercise_example_not_used">Еще не выполнялось</string>
     <string name="exercise_example_weight_type_value">Тип веса: %1$s</string>
     <string name="exercise_library_replace_target">Упражнение для замены</string>
 

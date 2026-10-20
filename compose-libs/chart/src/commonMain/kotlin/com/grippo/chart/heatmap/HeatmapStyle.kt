@@ -7,9 +7,7 @@ import androidx.compose.ui.unit.Dp
 
 /**
  * Visual configuration for a Heatmap chart.
- * Minimal sizing API:
- *  - If [layout.maxCellSize] is null -> cells stretch to fit width (still squares).
- *  - If [layout.maxCellSize] is non-null -> cell side = min(fitToWidth, maxCellSize).
+ * Cells fill the available width; [Layout.maxCellSize] defines their row height.
  */
 @Immutable
 public data class HeatmapStyle(

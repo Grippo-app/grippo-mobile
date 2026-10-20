@@ -56,8 +56,10 @@ without input-field limits. Repetition means may be fractional.
 History includes the first session and up to ten newest sessions; each prefix
 uses all its available predecessors, even when older cards fall outside the ten
 shown. Stable training IDs key history cards. The chart shows available values in
-workout order with original index spacing and actual date labels. Missing values
-are not replaced with zero. Lines connect available observations; they are not
+workout order with elapsed-day spacing and actual date labels. If a timestamp is
+unavailable, the whole series falls back to workout index spacing. Missing metric
+values are not replaced with zero. Distinct first/last dates are shown below the chart; exact values
+retain their metric's units in the local tooltip and accessibility description. Lines connect available observations; they are not
 measurements of the intervening workouts. Fewer than two points hides the chart,
 while the session cards remain visible. An empty period has explicit explanatory copy.
 

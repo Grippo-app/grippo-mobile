@@ -24,40 +24,30 @@ internal fun AreaChart(
     val style = AreaStyle(
         grid = AreaStyle.Grid(
             show = true,
-            color = AppTokens.colors.divider.default,
+            color = AppTokens.colors.divider.subtle,
             strokeWidth = AppTokens.dp.metrics.charts.axis.strokeWidth
         ),
         yAxis = AreaStyle.YAxis.Labels(
             targetTicks = 5,
-            textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary),
+            textStyle = AppTokens.typography.b10Med().copy(color = AppTokens.colors.text.secondary),
             formatter = { v, _ -> v.roundToInt().toString() },
-            tickMarkColor = AppTokens.colors.divider.default,
+            tickMarkColor = AppTokens.colors.divider.subtle,
             tickMarkWidth = AppTokens.dp.metrics.charts.axis.strokeWidth
         ),
-        yAxisLine = AreaStyle.AxisLine(
-            color = AppTokens.colors.divider.default,
-            width = AppTokens.dp.metrics.charts.axis.strokeWidth
-        ),
+        yAxisLine = null,
         xAxis = AreaStyle.XAxis.LabelsAdaptive(
-            textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.secondary),
+            textStyle = AppTokens.typography.b10Med().copy(color = AppTokens.colors.text.secondary),
             minGapDp = AppTokens.dp.metrics.charts.area.axisLabelGap
         ),
         line = AreaStyle.Line(
             strokeWidth = AppTokens.dp.metrics.charts.area.lineWidth,
             color = charts.area.lineA,
-            brushProvider = {
-                Brush.horizontalGradient(
-                    listOf(
-                        charts.area.lineA,
-                        charts.area.lineB
-                    )
-                )
-            },
+            brushProvider = null,
             curved = true,
             curveSmoothness = 0.20f,
             clampOvershoot = true
         ),
-        glow = AreaStyle.Glow(width = AppTokens.dp.metrics.charts.area.glowWidth, color = charts.area.glow),
+        glow = AreaStyle.Glow(width = 0.dp, color = null),
         fill = AreaStyle.Fill { sz ->
             Brush.verticalGradient(
                 0f to charts.area.fillStart,
@@ -65,12 +55,9 @@ internal fun AreaChart(
                 startY = 0f, endY = sz.height
             )
         },
-        dots = AreaStyle.Dots.Visible(radius = AppTokens.dp.metrics.charts.area.dotRadius, color = charts.area.dot),
-        extrema = AreaStyle.Extrema.Visible(
-            textStyle = AppTokens.typography.b10Bold().copy(color = AppTokens.colors.text.primary),
-            markerColor = null,
-            markerRadius = AppTokens.dp.metrics.charts.area.markerRadius
-        )
+        dots = AreaStyle.Dots.None,
+        extrema = AreaStyle.Extrema.None,
+        labelPadding = AppTokens.dp.metrics.charts.area.axisLabelGap,
     )
 
     AreaChart(
@@ -109,6 +96,43 @@ private fun AreaChartEmptyPreview() {
         AreaChart(
             modifier = Modifier.size(300.dp),
             data = AreaData(points = emptyList()),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun AreaChartSinglePointPreview() {
+    PreviewContainer {
+        AreaChart(
+            modifier = Modifier.size(300.dp),
+            data = AreaData(points = listOf(AreaPoint(0f, 82f, "20 Oct"))),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun AreaChartFlatPreview() {
+    PreviewContainer {
+        AreaChart(
+            modifier = Modifier.size(300.dp),
+            data = AreaData(points = List(7) { day -> AreaPoint(day.toFloat(), 82f, "${day + 1} Oct") }),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun AreaChartDensePreview() {
+    PreviewContainer {
+        AreaChart(
+            modifier = Modifier.size(300.dp),
+            data = AreaData(
+                points = List(31) { day ->
+                    AreaPoint(day.toFloat(), 80f + day % 5, "${day + 1} October 2026")
+                },
+            ),
         )
     }
 }

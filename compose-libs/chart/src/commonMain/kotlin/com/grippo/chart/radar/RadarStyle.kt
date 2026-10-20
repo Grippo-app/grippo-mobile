@@ -3,8 +3,10 @@ package com.grippo.chart.radar
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 /**
  * Visual configuration for a Radar (spider) chart.
@@ -12,7 +14,6 @@ import androidx.compose.ui.unit.dp
  * Axes radiate from the center and series are drawn as polygons. Use this style to control
  * rings, spokes, labels, polygon appearance, vertex markers, value labels and color mapping.
  */
-@Immutable
 public data class RadarStyle(
     val layout: Layout,
     val grid: Grid,
@@ -150,6 +151,10 @@ public data class RadarStyle(
             val showAxisLabel: Boolean = true,
             val showSeriesName: Boolean = true,
             val valueFormatter: ((Float, RadarData) -> String)? = null,
+            val tooltipBorderWidth: Dp = 1.dp,
+            val tooltipLabelSpacing: Dp = 2.dp,
+            val valueTextStyle: TextStyle = TextStyle(fontSize = 12.sp, textAlign = TextAlign.Center),
+            val labelTextStyle: TextStyle = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center),
         ) : Peek
     }
 }

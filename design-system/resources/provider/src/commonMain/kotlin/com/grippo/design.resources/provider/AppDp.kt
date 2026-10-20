@@ -216,7 +216,6 @@ public data object AppDp {
 
             public data object Axis {
                 val strokeWidth: Dp = 1.dp
-                val tickLength: Dp = 6.dp
             }
 
             public data object Peek {
@@ -226,7 +225,7 @@ public data object AppDp {
                 val guideGap: Dp = guideDash
                 val focusRadius: Dp = 3.5.dp
                 val focusRingWidth: Dp = 2.dp
-                val focusHaloRadius: Dp = 18.dp
+                val focusHaloRadius: Dp = 0.dp
                 val tooltipRadius: Dp = AppDp.radius.small
                 val tooltipHorizontalPadding: Dp = padding.small
                 val tooltipVerticalPadding: Dp = padding.extraSmall
@@ -236,11 +235,8 @@ public data object AppDp {
             }
 
             public data object Area {
-                val axisLabelGap: Dp = 1.dp
-                val lineWidth: Dp = 2.dp
-                val glowWidth: Dp = 8.dp
-                val dotRadius: Dp = 2.dp
-                val markerRadius: Dp = 3.dp
+                val axisLabelGap: Dp = padding.small
+                val lineWidth: Dp = 2.5.dp
             }
 
             public data object Bar {
@@ -252,7 +248,7 @@ public data object AppDp {
             }
 
             public data object Pie {
-                val layoutPadding: Dp = 56.dp
+                val layoutPadding: Dp = padding.small
                 val arcWidth: Dp = 24.dp
                 val radius: Dp = 6.dp
                 val labelPadding: Dp = 6.dp
@@ -280,9 +276,9 @@ public data object AppDp {
             }
 
             public data object Sparkline {
+                val axisLabelSpacing: Dp = padding.small
+                val verticalPadding: Dp = padding.small
                 val lineWidth: Dp = Area.lineWidth
-                val dotRadius: Dp = Area.dotRadius
-                val markerRadius: Dp = Area.markerRadius
             }
 
             public data object Indicator {

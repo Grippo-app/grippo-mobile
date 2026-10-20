@@ -251,7 +251,7 @@ private fun ScreenPreviewDefault() {
 @AppPreview
 @Composable
 private fun ScreenPreviewReplace() {
-    val examples = exerciseLibraryPreviewExamples()
+    val examples = exerciseLibraryPreviewRankedExamples()
     val targetExample = examples.first().value
     PreviewContainer {
         ExerciseLibraryScreen(
@@ -378,18 +378,77 @@ private fun ScreenPreviewBrowse() {
     }
 }
 
+@AppPreview
+@Composable
+private fun ScreenPreviewAllUnused() {
+    PreviewContainer {
+        ExerciseLibraryScreen(
+            state = ExerciseLibraryState(
+                mode = ExerciseLibraryMode.Browse,
+                exerciseExamples = persistentListOf(
+                    exerciseLibraryPreviewUnusedExample(
+                        "library-unused-incline",
+                        "Жим гантелей лежачи на похилій лаві нейтральним хватом",
+                    ),
+                    exerciseLibraryPreviewUnusedExample("library-unused-bench", "Dumbbell bench press"),
+                ),
+                queries = Queries(muscleGroups = stubMuscleGroup()),
+            ),
+            contract = ExerciseLibraryContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewAllUsed() {
+    PreviewContainer {
+        ExerciseLibraryScreen(
+            state = ExerciseLibraryState(
+                mode = ExerciseLibraryMode.Browse,
+                exerciseExamples = persistentListOf(
+                    exerciseLibraryPreviewExample(
+                        "library-used-incline",
+                        "Жим гантелей лежачи на похилій лаві нейтральним хватом",
+                    ),
+                    exerciseLibraryPreviewExample("library-used-bench", "Dumbbell bench press"),
+                ),
+                queries = Queries(muscleGroups = stubMuscleGroup()),
+            ),
+            contract = ExerciseLibraryContract.Empty,
+        )
+    }
+}
+
 private fun exerciseLibraryPreviewExamples() = persistentListOf(
     exerciseLibraryPreviewExample("library-incline", "Жим гантелей лежачи на похилій лаві нейтральним хватом"),
-    exerciseLibraryPreviewExample("library-bench", "Dumbbell bench press").let { example ->
+    exerciseLibraryPreviewUnusedExample("library-bench", "Dumbbell bench press").copy(
+        bundles = persistentListOf(),
+    ),
+)
+
+private fun exerciseLibraryPreviewRankedExamples() = persistentListOf(
+    exerciseLibraryPreviewExample("library-ranked-incline", "Dumbbell incline press"),
+    exerciseLibraryPreviewUnusedExample("library-ranked-bench", "Dumbbell bench press"),
+    exerciseLibraryPreviewExample("library-ranked-fly", "Dumbbell chest fly").let { example ->
         example.copy(
             value = example.value.copy(
-                usageCount = 0,
                 lastUsed = DateTimeFormatState.Empty(DateFormat.DateOnly.DateDdMmm),
             ),
-            bundles = persistentListOf(),
         )
     },
+    exerciseLibraryPreviewUnusedExample("library-ranked-floor", "Dumbbell floor press"),
 )
+
+private fun exerciseLibraryPreviewUnusedExample(id: String, name: String): ExerciseExampleState {
+    val example = exerciseLibraryPreviewExample(id, name)
+    return example.copy(
+        value = example.value.copy(
+            usageCount = 0,
+            lastUsed = DateTimeFormatState.Empty(DateFormat.DateOnly.DateDdMmm),
+        ),
+    )
+}
 
 private fun exerciseLibraryPreviewExample(id: String, name: String): ExerciseExampleState {
     val example = stubExerciseExample()
@@ -397,6 +456,8 @@ private fun exerciseLibraryPreviewExample(id: String, name: String): ExerciseExa
         value = example.value.copy(
             id = id,
             name = name,
+            imageUrl = null,
+            usageCount = 4,
             lastUsed = DateTimeFormatState.of(
                 value = LocalDateTime(2026, 10, 14, 12, 0),
                 range = DateRangePresets.infinity(),

@@ -8,6 +8,7 @@ import com.grippo.chart.pie.PieChart
 import com.grippo.chart.pie.PieData
 import com.grippo.chart.pie.PieSlice
 import com.grippo.chart.pie.PieStyle
+import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -17,21 +18,31 @@ internal fun PieChart(
     modifier: Modifier = Modifier,
     data: PieData
 ) {
+    val total = data.slices.sumOf { slice ->
+        if (slice.value.isFinite() && slice.value > 0f) slice.value.toDouble() else 0.0
+    }
+    val shareLabels = data.slices.map { slice ->
+        val share = if (total > 0.0 && slice.value.isFinite() && slice.value > 0f) {
+            (slice.value / total * 100.0).toFloat().coerceIn(0f, 100f)
+        } else {
+            0f
+        }
+        slice to PercentageFormatState.shortShare(share)
+    }.toMap()
     val style = PieStyle(
         layout = PieStyle.Layout(
             padding = AppTokens.dp.metrics.charts.pie.layoutPadding,
-            startAngleDeg = -60f,
+            startAngleDeg = -90f,
         ),
         arc = PieStyle.Arc(
             width = AppTokens.dp.metrics.charts.pie.arcWidth,
             paddingAngleDeg = 2f,
             cornerRadius = AppTokens.dp.metrics.charts.pie.radius,
-            minVisualPercent = 0f,
         ),
         labels = PieStyle.Labels.Outside(
-            textStyle = AppTokens.typography.b10Bold().copy(color = AppTokens.colors.text.primary),
+            textStyle = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.primary),
             labelPadding = AppTokens.dp.metrics.charts.pie.labelPadding,
-            formatter = { slice, _ -> slice.label }
+            formatter = { slice, _ -> "${slice.label} · ${shareLabels[slice]}" }
         ),
         leaders = PieStyle.Leaders(
             show = true,
@@ -91,6 +102,74 @@ private fun PieChartTinySharePreview() {
                     PieSlice("majority", "Majority", 99f, AppTokens.colors.muscle.palette6MuscleCalm.first()),
                     PieSlice("minority", "Minority", 1f, AppTokens.colors.muscle.palette6MuscleCalm.last()),
                 ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun PieChartSingleAndZeroPreview() {
+    PreviewContainer {
+        PieChart(
+            modifier = Modifier.size(300.dp),
+            data = PieData(
+                slices = listOf(PieSlice("single", "One group", 100f, AppTokens.colors.context.muscle)),
+            ),
+        )
+        PieChart(
+            modifier = Modifier.size(300.dp),
+            data = PieData(
+                slices = listOf(PieSlice("zero", "No recorded share", 0f, AppTokens.colors.context.muscle)),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun PieChartLongLabelsPreview() {
+    PreviewContainer {
+        val names = listOf(
+            "Quadriceps and lower body",
+            "Upper back and trapezius",
+            "Chest and anterior deltoids",
+            "Arms and forearms",
+            "Shoulders and rear deltoids",
+            "Abdominals and obliques",
+        )
+        PieChart(
+            modifier = Modifier.size(300.dp),
+            data = PieData(
+                slices = names.mapIndexed { index, name ->
+                    PieSlice(
+                        id = index.toString(),
+                        label = name,
+                        value = if (index == 0) 0.1f else 20f,
+                        color = AppTokens.colors.muscle.palette6MuscleCalm[index],
+                    )
+                },
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun PieChartDenseLegendPreview() {
+    PreviewContainer {
+        val colors = AppTokens.colors.muscle.palette6MuscleCalm
+        PieChart(
+            modifier = Modifier.size(300.dp),
+            data = PieData(
+                slices = List(18) { index ->
+                    PieSlice(
+                        id = index.toString(),
+                        label = "Recorded muscle group with a complete name ${index + 1}",
+                        value = (index + 1).toFloat(),
+                        color = colors[index % colors.size],
+                    )
+                },
             ),
         )
     }

@@ -28,7 +28,7 @@ private fun PreviewPieBasic() {
             outsideMinAngleDeg = 12f,
             textStyle = TextStyle(color = Color(0xFF333333)),
             labelPadding = 6.dp,
-            formatter = { s, p -> "${'$'}{s.label} ${'$'}p%" }
+            formatter = { slice, percent -> "${slice.label} $percent%" }
         ),
         leaders = PieStyle.Leaders(show = true, lineWidth = 1.dp, offset = 6.dp)
     )

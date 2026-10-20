@@ -2,14 +2,13 @@ package com.grippo.design.components.chart.internal
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.radar.RadarAxis
@@ -18,6 +17,7 @@ import com.grippo.chart.radar.RadarData
 import com.grippo.chart.radar.RadarSeries
 import com.grippo.chart.radar.RadarStyle
 import com.grippo.chart.radar.RadarValues
+import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -38,34 +38,17 @@ internal fun RadarChart(
     val density = LocalDensity.current
     val measurer = rememberTextMeasurer()
     val charts = AppTokens.colors.charts
-    val palette = AppTokens.colors.palette
-
-    val scaleStopsOrangeRed: List<Pair<Float, Color>> = remember(palette.palette5OrangeRedGrowth) {
-        val colors = palette.palette5OrangeRedGrowth
-        val last = (colors.size - 1).coerceAtLeast(1)
-        colors.mapIndexed { index, color ->
-            index.toFloat() / last.toFloat() to color
+    val shareLabels = data.series.flatMap { series ->
+        when (val values = series.values) {
+            is RadarValues.ByAxisId -> values.map.values.toList()
+            is RadarValues.ByIndex -> values.list
         }
-    }
+    }.filter(Float::isFinite).map { value ->
+        val bounded = value.coerceIn(0f, 1f)
+        bounded to PercentageFormatState.shortShare(bounded * 100f)
+    }.toMap()
 
     val labelTextStyle = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.primary)
-    val axisLabelLayouts: List<TextLayoutResult> = remember(
-        measurer,
-        showLabels,
-        data.axes,
-        labelTextStyle,
-        density.density,
-        density.fontScale
-    ) {
-        if (!showLabels) {
-            emptyList()
-        } else {
-            data.axes.map { axis ->
-                measurer.measure(AnnotatedString(axis.label), labelTextStyle)
-            }
-        }
-    }
-
     val labels = if (showLabels) {
         RadarStyle.Labels.Visible(textStyle = labelTextStyle)
     } else {
@@ -114,7 +97,12 @@ internal fun RadarChart(
 
             decimals = 0,
             showAxisLabel = true,
-            showSeriesName = false,
+            showSeriesName = data.series.size > 1,
+            valueFormatter = { value, _ -> shareLabels[value] ?: "—" },
+            valueTextStyle = AppTokens.typography.b12Semi(),
+            labelTextStyle = AppTokens.typography.b10Med(),
+            tooltipBorderWidth = AppTokens.dp.metrics.charts.peek.tooltipBorderWidth,
+            tooltipLabelSpacing = AppTokens.dp.metrics.charts.peek.tooltipLabelSpacing,
         ) else RadarStyle.Peek.None,
         labels = labels,
         polygon = RadarStyle.Polygon(
@@ -130,7 +118,7 @@ internal fun RadarChart(
             requireCompleteSeries = true,
             missingAsZero = true,
         ),
-        colorStops = scaleStopsOrangeRed,
+        colorStops = emptyList(),
     )
 
     val autoHeightModifier = Modifier.layout { measurable, constraints ->
@@ -140,6 +128,17 @@ internal fun RadarChart(
                 placeable.place(0, 0)
             }
         } else {
+            val axisLabelLayouts = if (showLabels) {
+                data.axes.map { axis ->
+                    measurer.measure(
+                        text = AnnotatedString(axis.label),
+                        style = labelTextStyle,
+                        constraints = Constraints(maxWidth = (constraints.maxWidth / 3).coerceAtLeast(1)),
+                    )
+                }
+            } else {
+                emptyList()
+            }
             val heightPx = computeHeightForWidthPx(
                 widthPx = constraints.maxWidth,
                 data = data,
@@ -354,6 +353,41 @@ private fun RadarChartEmptyPreview() {
         RadarChart(
             modifier = Modifier.size(300.dp),
             data = RadarData(axes = emptyList(), series = emptyList()),
+            showLabels = true,
+            clickable = true,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun RadarChartLongLabelsAndComparisonPreview() {
+    PreviewContainer {
+        val names = listOf(
+            "Chest and anterior deltoids",
+            "Upper back and trapezius",
+            "Quadriceps and lower body",
+            "Shoulders and rear deltoids",
+            "Arms and forearms",
+            "Abdominals and obliques",
+        )
+        RadarChart(
+            modifier = Modifier.size(300.dp),
+            data = RadarData(
+                axes = names.mapIndexed { index, label -> RadarAxis(index.toString(), label) },
+                series = listOf(
+                    RadarSeries(
+                        name = "Current",
+                        color = AppTokens.colors.context.muscle,
+                        values = RadarValues.ByIndex(listOf(0f, 0.001f, 1f, 0.5f, 0.75f, 0.3f)),
+                    ),
+                    RadarSeries(
+                        name = "Previous",
+                        color = AppTokens.colors.brand.color5,
+                        values = RadarValues.ByIndex(listOf(0.7f, 0.5f, 0.8f, 0.3f, 0.45f, 0.6f)),
+                    ),
+                ),
+            ),
             showLabels = true,
             clickable = true,
         )

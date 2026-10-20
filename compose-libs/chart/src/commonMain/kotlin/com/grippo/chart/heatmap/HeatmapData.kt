@@ -1,8 +1,5 @@
 package com.grippo.chart.heatmap
 
-import androidx.compose.runtime.Immutable
-
-@Immutable
 public data class HeatmapData(
     val matrix: Matrix01,
     val rowLabels: List<String> = emptyList(),
@@ -39,7 +36,6 @@ public data class HeatmapData(
     }
 }
 
-@Immutable
 public data class Matrix01(
     val rows: Int,
     val cols: Int,

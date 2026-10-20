@@ -6,11 +6,15 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,15 +35,16 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlin.math.abs
-import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -55,19 +60,23 @@ public fun Sparkline(
     val sortedCurrentPoints = remember(data.points) { data.points.sortedBy { it.x } }
 
     var sizePx by remember { mutableStateOf(IntSize.Zero) }
-    var selectedIndex by remember(data.points) { mutableStateOf<Int?>(null) }
+    var selectedIndex by remember(data.points, style.peek is SparklineStyle.Peek.Visible) { mutableStateOf<Int?>(null) }
     var settledPoints by remember { mutableStateOf<List<SparklinePoint>>(emptyList()) }
     val previousPoints = settledPoints
     val drawProgress = remember(sortedCurrentPoints) { Animatable(0f) }
 
     LaunchedEffect(sortedCurrentPoints) {
-        drawProgress.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(
-                durationMillis = 520,
-                easing = FastOutSlowInEasing
+        if (previousPoints.isEmpty()) {
+            drawProgress.snapTo(1f)
+        } else {
+            drawProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(
+                    durationMillis = 520,
+                    easing = FastOutSlowInEasing,
+                ),
             )
-        )
+        }
         settledPoints = sortedCurrentPoints
     }
 
@@ -103,42 +112,49 @@ public fun Sparkline(
     val guidePath = remember { Path() }
 
     val peek = style.peek
+    val currentOffsets = remember(layout) { layout?.currentPoints?.map { it.offset }.orEmpty() }
+
+    val visibleOffset: (Int) -> Offset = { index ->
+        val target = currentOffsets[index]
+        val source = transitionFromOffsets.getOrNull(index)
+        if (source == null) target else lerpOffset(source, target, drawProgress.value)
+    }
 
     val pointerModifier = if (peek is SparklineStyle.Peek.Visible) {
-        Modifier.pointerInput(layout, peek, style.dots, data.points, selectedIndex) {
-            detectTapGestures { pos ->
-                val l = layout ?: return@detectTapGestures
-                if (l.currentPoints.isEmpty()) return@detectTapGestures
-
-                val baseHit = with(density) { peek.hitSlop.toPx() }
-                val extraBase = with(density) { 6.dp.toPx() }
-
-                val dotR = when (val d = style.dots) {
-                    is SparklineStyle.Dots.None -> 0f
-                    is SparklineStyle.Dots.Visible -> with(density) { d.radius.toPx() }
-                }
-
-                val focusR = with(density) { peek.focusRadius.toPx() }
-
-                val threshold = baseHit + extraBase + max(dotR, focusR)
-
-                val nearest = l.currentPoints
-                    .withIndex()
-                    .minByOrNull { (it.value.offset - pos).getDistance() }
-
-                if (nearest == null) {
+        Modifier.pointerInput(layout, peek, transitionFromOffsets) {
+            detectTapGestures { position ->
+                val currentLayout = layout ?: return@detectTapGestures
+                val hitSlop = with(density) { peek.hitSlop.toPx() }
+                if (!currentLayout.chart.inflate(hitSlop).contains(position)) {
                     selectedIndex = null
                     return@detectTapGestures
                 }
-
-                val dist = (nearest.value.offset - pos).getDistance()
-                if (dist > threshold) {
-                    selectedIndex = null
-                    return@detectTapGestures
+                val nearest = currentOffsets.indices.minByOrNull { index ->
+                    abs(visibleOffset(index).x - position.x)
                 }
-
-                selectedIndex = if (selectedIndex == nearest.index) null else nearest.index
+                selectedIndex = if (selectedIndex == nearest) null else nearest
             }
+        }.pointerInput(layout, peek, transitionFromOffsets) {
+            var isScrubbing = false
+            detectHorizontalDragGestures(
+                onDragStart = { position ->
+                    isScrubbing = layout?.chart?.contains(position) == true
+                    if (isScrubbing) {
+                        selectedIndex = currentOffsets.indices.minByOrNull { index ->
+                            abs(visibleOffset(index).x - position.x)
+                        }
+                    }
+                },
+                onDragEnd = { isScrubbing = false },
+                onDragCancel = { isScrubbing = false },
+                onHorizontalDrag = { change, _ ->
+                    if (isScrubbing) {
+                        selectedIndex = currentOffsets.indices.minByOrNull { index ->
+                            abs(visibleOffset(index).x - change.position.x)
+                        }
+                    }
+                },
+            )
         }
     } else {
         Modifier
@@ -196,9 +212,7 @@ public fun Sparkline(
             val current = l.currentPoints
             if (current.isEmpty()) return@Canvas
 
-            val currentOffsets = current.map { it.offset }
             val progress = drawProgress.value
-            val revealAlpha = if (previousPoints.isEmpty()) progress else 1f
             val animatedOffsets = interpolateOffsets(
                 from = transitionFromOffsets,
                 to = currentOffsets,
@@ -208,11 +222,14 @@ public fun Sparkline(
             if (current.size == 1) {
                 val c = animatedOffsets.first()
 
-                drawSinglePointHero(
+                val radius = when (val dots = style.dots) {
+                    is SparklineStyle.Dots.Visible -> dots.radius.toPx()
+                    is SparklineStyle.Dots.None -> style.line.stroke.toPx()
+                }
+                drawCircle(
+                    color = style.line.color,
+                    radius = radius,
                     center = c,
-                    color = style.line.color.copy(alpha = revealAlpha),
-                    strokePx = style.line.stroke.toPx(),
-                    chart = chart
                 )
 
                 if (peek is SparklineStyle.Peek.Visible && selectedIndex == 0) {
@@ -248,7 +265,7 @@ public fun Sparkline(
                 areaPath.lineTo(animatedOffsets.last().x, chart.bottom)
                 areaPath.lineTo(animatedOffsets.first().x, chart.bottom)
                 areaPath.close()
-                drawPath(areaPath, brush = provider(chart), alpha = revealAlpha)
+                drawPath(areaPath, brush = provider(chart))
             }
 
             val sw = style.line.stroke.toPx()
@@ -256,13 +273,12 @@ public fun Sparkline(
                 drawPath(
                     path = linePath,
                     brush = provider(chart),
-                    alpha = revealAlpha,
                     style = Stroke(width = sw, cap = StrokeCap.Round)
                 )
             } ?: run {
                 drawPath(
                     path = linePath,
-                    color = style.line.color.copy(alpha = revealAlpha),
+                    color = style.line.color,
                     style = Stroke(width = sw, cap = StrokeCap.Round)
                 )
             }
@@ -274,7 +290,7 @@ public fun Sparkline(
                     val dc = d.color ?: style.line.color
                     animatedOffsets.forEach {
                         drawCircle(
-                            color = dc.copy(alpha = revealAlpha),
+                            color = dc,
                             radius = r,
                             center = it
                         )
@@ -292,18 +308,18 @@ public fun Sparkline(
 
                         if (minIdx == maxIdx) {
                             drawCircle(
-                                color = ex.maxColor.copy(alpha = revealAlpha),
+                                color = ex.maxColor,
                                 radius = rr,
                                 center = animatedOffsets[maxIdx]
                             )
                         } else {
                             drawCircle(
-                                color = ex.minColor.copy(alpha = revealAlpha),
+                                color = ex.minColor,
                                 radius = rr,
                                 center = animatedOffsets[minIdx]
                             )
                             drawCircle(
-                                color = ex.maxColor.copy(alpha = revealAlpha),
+                                color = ex.maxColor,
                                 radius = rr,
                                 center = animatedOffsets[maxIdx]
                             )
@@ -341,30 +357,24 @@ public fun Sparkline(
                 val valueText = peek.valueFormatter?.invoke(mp.raw.y) ?: formatValue(mp.raw.y, peek.decimals)
                 val labelText = if (peek.showLabel) mp.raw.label else null
 
-                val tooltipSize = remember(valueText, labelText, peek, density) {
+                val tooltipSize = remember(valueText, labelText, peek, density, sizePx.width, textMeasurer) {
                     measureTooltipSize(
                         textMeasurer = textMeasurer,
                         density = density,
                         valueText = valueText,
                         labelText = labelText,
-                        padH = peek.tooltipPaddingH,
-                        padV = peek.tooltipPaddingV
+                        style = peek,
+                        canvasWidth = sizePx.width,
                     )
                 }
 
                 SparklineTooltip(
-                    anchor = mp.offset,
+                    anchor = { visibleOffset(idx) },
                     canvasSize = sizePx,
                     tooltipSize = tooltipSize,
-                    margin = peek.tooltipMargin,
-                    background = peek.tooltipBackground,
-                    border = peek.tooltipBorder,
-                    textColor = peek.tooltipText,
-                    corner = peek.tooltipCornerRadius,
-                    padH = peek.tooltipPaddingH,
-                    padV = peek.tooltipPaddingV,
+                    style = peek,
                     valueText = valueText,
-                    labelText = labelText
+                    labelText = labelText,
                 )
             }
         }
@@ -379,8 +389,6 @@ private data class MappedPoint(
 private data class SparklineLayout(
     val chart: Rect,
     val currentPoints: List<MappedPoint>,
-    val minX: Float,
-    val maxX: Float,
     val minY: Float,
     val maxY: Float,
     val mx: (Float) -> Float,
@@ -394,7 +402,7 @@ private fun buildLayout(
     density: androidx.compose.ui.unit.Density,
 ): SparklineLayout? {
     if (sizePx.width <= 0 || sizePx.height <= 0) return null
-    if (data.points.isEmpty()) return null
+    if (data.points.isEmpty() || data.points.any { !it.x.isFinite() || !it.y.isFinite() }) return null
 
     val dotsPad = when (val d = style.dots) {
         is SparklineStyle.Dots.None -> 0f
@@ -406,13 +414,20 @@ private fun buildLayout(
         is SparklineStyle.Extremes.Visible -> with(density) { ex.radius.toPx() }
     }
 
-    val padding = max(dotsPad, extremesPad)
+    val focusPadding = when (val peek = style.peek) {
+        is SparklineStyle.Peek.None -> 0f
+        is SparklineStyle.Peek.Visible -> with(density) {
+            max(peek.focusRadius.toPx() + peek.focusRingWidth.toPx() / 2f, peek.focusHaloRadius.toPx())
+        }
+    }
+    val padding = maxOf(dotsPad, extremesPad, focusPadding, with(density) { style.line.stroke.toPx() / 2f })
+    val verticalPadding = max(padding, with(density) { style.verticalPadding.toPx() })
 
     val chart = Rect(
         left = padding,
-        top = padding,
+        top = verticalPadding,
         right = sizePx.width.toFloat() - padding,
-        bottom = sizePx.height.toFloat() - padding
+        bottom = sizePx.height.toFloat() - verticalPadding
     )
 
     if (chart.width <= 0f || chart.height <= 0f) return null
@@ -424,31 +439,28 @@ private fun buildLayout(
     val minY = all.minOf { it.y }
     val maxY = all.maxOf { it.y }
 
-    val spanXRaw = maxX - minX
-    val spanYRaw = maxY - minY
+    val spanXRaw = maxX.toDouble() - minX
+    val spanYRaw = maxY.toDouble() - minY
     val flatX = spanXRaw <= 1e-6f
     val flatY = spanYRaw <= 1e-6f
-    val spanX = if (flatX) 1f else spanXRaw
-    val spanY = if (flatY) 1f else spanYRaw
+    val spanX = if (flatX) 1.0 else spanXRaw
+    val spanY = if (flatY) 1.0 else spanYRaw
 
     val mapX: (Float) -> Float = { x ->
         if (flatX) chart.left + chart.width / 2f
-        else chart.left + (x - minX) / spanX * chart.width
+        else chart.left + ((x.toDouble() - minX) / spanX * chart.width).toFloat()
     }
 
     val mapY: (Float) -> Float = { y ->
         if (flatY) chart.top + chart.height / 2f
-        else chart.bottom - (y - minY) / spanY * chart.height
+        else chart.bottom - ((y.toDouble() - minY) / spanY * chart.height).toFloat()
     }
 
-    val currentSorted = data.points.sortedBy { it.x }
-    val currentMapped = currentSorted.map { MappedPoint(it, Offset(x = mapX(it.x), y = mapY(it.y))) }
+    val currentMapped = data.points.map { MappedPoint(it, Offset(x = mapX(it.x), y = mapY(it.y))) }
 
     return SparklineLayout(
         chart = chart,
         currentPoints = currentMapped,
-        minX = minX,
-        maxX = maxX,
         minY = minY,
         maxY = maxY,
         mx = mapX,
@@ -493,13 +505,10 @@ private fun buildLinePath(
         )
 
         if (clampOvershoot) {
-            val minYp = min(p0.y, min(p1.y, p2.y))
-            val maxYp = max(p0.y, max(p1.y, p2.y))
-            c1 = c1.copy(y = c1.y.coerceIn(minYp, maxYp))
-
-            val minYn = min(p1.y, min(p2.y, p3.y))
-            val maxYn = max(p1.y, max(p2.y, p3.y))
-            c2 = c2.copy(y = c2.y.coerceIn(minYn, maxYn))
+            val minY = min(p1.y, p2.y)
+            val maxY = max(p1.y, p2.y)
+            c1 = Offset(x = c1.x.coerceIn(p1.x, p2.x), y = c1.y.coerceIn(minY, maxY))
+            c2 = Offset(x = c2.x.coerceIn(p1.x, p2.x), y = c2.y.coerceIn(minY, maxY))
         }
 
         path.cubicTo(c1.x, c1.y, c2.x, c2.y, p2.x, p2.y)
@@ -539,163 +548,82 @@ private fun DrawScope.drawPeekOverlay(
         )
     )
 
-    val halo = Brush.radialGradient(
-        colors = listOf(
-            focusColor.copy(alpha = 0.20f),
-            focusColor.copy(alpha = 0f)
-        ),
-        center = point,
-        radius = focusHaloRadiusPx.coerceAtLeast(focusRadiusPx * 2f)
-    )
-
-    drawCircle(brush = halo, radius = focusHaloRadiusPx, center = point)
-    drawCircle(
-        color = focusColor.copy(alpha = 0.48f),
-        radius = (focusRadiusPx * 1.9f).coerceAtLeast(focusRadiusPx + 1f),
-        center = point,
-        style = Stroke(width = focusRingWidthPx.coerceAtLeast(1f), cap = StrokeCap.Round)
-    )
-    drawCircle(color = focusColor, radius = focusRadiusPx.coerceAtLeast(1f), center = point)
-}
-
-private fun DrawScope.drawSinglePointHero(
-    center: Offset,
-    color: androidx.compose.ui.graphics.Color,
-    strokePx: Float,
-    chart: Rect,
-) {
-    val sw = strokePx.coerceAtLeast(1f)
-    val inset = chart.width * 0.18f
-
-    drawLine(
-        color = color.copy(alpha = 0.42f),
-        start = Offset(chart.left + inset, center.y),
-        end = Offset(chart.right - inset, center.y),
-        strokeWidth = sw,
-        cap = StrokeCap.Round
-    )
-
-    drawLine(
-        color = color.copy(alpha = 0.18f),
-        start = Offset(center.x, center.y),
-        end = Offset(center.x, chart.bottom),
-        strokeWidth = max(sw * 0.9f, 1f),
-        cap = StrokeCap.Round
-    )
-
-    drawCircle(
-        color = color.copy(alpha = 0.16f),
-        radius = max(sw * 3.3f, min(chart.width, chart.height) * 0.10f),
-        center = center
-    )
-
-    drawCircle(
-        color = color.copy(alpha = 0.35f),
-        radius = max(sw * 2.2f, min(chart.width, chart.height) * 0.07f),
-        center = center,
-        style = Stroke(width = max(sw * 0.85f, 1f), cap = StrokeCap.Round)
-    )
-
-    drawCircle(
-        color = color,
-        radius = max(sw * 1.2f, min(chart.width, chart.height) * 0.03f),
-        center = center
-    )
+    if (focusHaloRadiusPx > 0f) {
+        val halo = Brush.radialGradient(
+            colors = listOf(focusColor.copy(alpha = 0.20f), focusColor.copy(alpha = 0f)),
+            center = point,
+            radius = focusHaloRadiusPx,
+        )
+        drawCircle(brush = halo, radius = focusHaloRadiusPx, center = point)
+    }
+    if (focusRadiusPx > 0f && focusRingWidthPx > 0f) {
+        drawCircle(
+            color = focusColor,
+            radius = focusRadiusPx,
+            center = point,
+            style = Stroke(width = focusRingWidthPx),
+        )
+    }
+    if (focusRadiusPx > 0f) {
+        drawCircle(color = focusColor, radius = focusRadiusPx, center = point)
+    }
 }
 
 @Composable
 private fun SparklineTooltip(
-    anchor: Offset,
+    anchor: () -> Offset,
     canvasSize: IntSize,
     tooltipSize: IntSize,
-    margin: Dp,
-    background: androidx.compose.ui.graphics.Color,
-    border: androidx.compose.ui.graphics.Color,
-    textColor: androidx.compose.ui.graphics.Color,
-    corner: Dp,
-    padH: Dp,
-    padV: Dp,
+    style: SparklineStyle.Peek.Visible,
     valueText: String,
     labelText: String?,
 ) {
     val density = LocalDensity.current
-    val marginPx = with(density) { margin.toPx() }.roundToInt()
-
-    val w = tooltipSize.width
-    val h = tooltipSize.height
-    if (w <= 0 || h <= 0 || canvasSize.width <= 0 || canvasSize.height <= 0) return
-
-    val ax = anchor.x.roundToInt()
-    val ay = anchor.y.roundToInt()
-
-    val clampX: (Int) -> Int = { x -> x.coerceIn(0, max(0, canvasSize.width - w)) }
-    val clampY: (Int) -> Int = { y -> y.coerceIn(0, max(0, canvasSize.height - h)) }
-
-    val fits: (Int, Int) -> Boolean = { x, y ->
-        x >= 0 && y >= 0 && x + w <= canvasSize.width && y + h <= canvasSize.height
+    val marginPx = with(density) { style.tooltipMargin.roundToPx() }
+    if (tooltipSize.width <= 0 || tooltipSize.height <= 0 ||
+        canvasSize.width <= 0 || tooltipSize.height > canvasSize.height
+    ) {
+        return
     }
-
-    data class Candidate(val x: Int, val y: Int)
-
-    val top = Candidate(
-        x = ax - w / 2,
-        y = ay - h - marginPx
-    )
-    val bottom = Candidate(
-        x = ax - w / 2,
-        y = ay + marginPx
-    )
-    val right = Candidate(
-        x = ax + marginPx,
-        y = ay - h / 2
-    )
-    val left = Candidate(
-        x = ax - w - marginPx,
-        y = ay - h / 2
-    )
-
-    val candidates = listOf(top, bottom, right, left)
-
-    val chosen = candidates.firstOrNull { fits(it.x, it.y) } ?: run {
-        candidates.minBy { c ->
-            val cx = clampX(c.x)
-            val cy = clampY(c.y)
-            abs(cx - c.x) + abs(cy - c.y)
-        }
-    }
-
-    val x = clampX(chosen.x)
-    val y = clampY(chosen.y)
+    val shape = RoundedCornerShape(style.tooltipCornerRadius)
 
     Box(
         modifier = Modifier
-            .offset { IntOffset(x, y) }
-            .background(
-                background,
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(corner)
+            .offset {
+                tooltipPosition(
+                    anchor = anchor(),
+                    canvasSize = canvasSize,
+                    tooltipSize = tooltipSize,
+                    marginPx = marginPx,
+                )
+            }
+            .width(with(density) { tooltipSize.width.toDp() })
+            .background(color = style.tooltipBackground, shape = shape)
+            .then(
+                if (style.tooltipBorderWidth > Dp.Hairline) {
+                    Modifier.border(style.tooltipBorderWidth, style.tooltipBorder, shape)
+                } else {
+                    Modifier
+                }
             )
-            .border(
-                1.dp,
-                border,
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(corner)
-            )
-            .padding(horizontal = padH, vertical = padV)
+            .padding(horizontal = style.tooltipPaddingH, vertical = style.tooltipPaddingV)
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(style.tooltipLabelSpacing),
+        ) {
             BasicText(
                 text = valueText,
-                style = TextStyle(
-                    color = textColor,
-                    fontSize = 12.sp
-                )
+                style = style.valueTextStyle.copy(color = style.tooltipText),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
             if (!labelText.isNullOrBlank()) {
                 BasicText(
                     text = labelText,
-                    style = TextStyle(
-                        color = textColor.copy(alpha = 0.80f),
-                        fontSize = 10.sp
-                    )
+                    style = style.labelTextStyle.copy(color = style.tooltipText),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }
@@ -703,36 +631,63 @@ private fun SparklineTooltip(
 }
 
 private fun measureTooltipSize(
-    textMeasurer: androidx.compose.ui.text.TextMeasurer,
-    density: androidx.compose.ui.unit.Density,
+    textMeasurer: TextMeasurer,
+    density: Density,
     valueText: String,
     labelText: String?,
-    padH: Dp,
-    padV: Dp,
+    style: SparklineStyle.Peek.Visible,
+    canvasWidth: Int,
 ): IntSize {
+    val padH = with(density) { style.tooltipPaddingH.roundToPx() }
+    val padV = with(density) { style.tooltipPaddingV.roundToPx() }
+    val constraints = Constraints(maxWidth = (canvasWidth - padH * 2).coerceAtLeast(1))
     val value = textMeasurer.measure(
-        text = valueText,
-        style = TextStyle(fontSize = 12.sp)
+        text = AnnotatedString(valueText),
+        style = style.valueTextStyle,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1,
+        constraints = constraints,
     ).size
-
     val label = if (!labelText.isNullOrBlank()) {
         textMeasurer.measure(
-            text = labelText,
-            style = TextStyle(fontSize = 10.sp)
+            text = AnnotatedString(labelText),
+            style = style.labelTextStyle,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
+            constraints = constraints,
         ).size
     } else null
+    val gap = if (label != null) with(density) { style.tooltipLabelSpacing.roundToPx() } else 0
 
-    val padHPx = with(density) { padH.toPx() }
-    val padVPx = with(density) { padV.toPx() }
-    val gapPx = if (label != null) with(density) { 2.dp.toPx() } else 0f
+    return IntSize(
+        width = (max(value.width, label?.width ?: 0) + padH * 2).coerceAtMost(canvasWidth),
+        height = value.height + (label?.height ?: 0) + gap + padV * 2,
+    )
+}
 
-    val contentW = max(value.width, label?.width ?: 0)
-    val contentH = value.height + (label?.height ?: 0) + gapPx.roundToInt()
-
-    val w = ceil(contentW + padHPx * 2f + 2f).toInt()
-    val h = ceil(contentH + padVPx * 2f + 2f).toInt()
-
-    return IntSize(w, h)
+private fun tooltipPosition(
+    anchor: Offset,
+    canvasSize: IntSize,
+    tooltipSize: IntSize,
+    marginPx: Int,
+): IntOffset {
+    val width = tooltipSize.width
+    val height = tooltipSize.height
+    val anchorX = anchor.x.roundToInt()
+    val anchorY = anchor.y.roundToInt()
+    val candidates = listOf(
+        IntOffset(x = anchorX - width / 2, y = anchorY - height - marginPx),
+        IntOffset(x = anchorX - width / 2, y = anchorY + marginPx),
+        IntOffset(x = anchorX + marginPx, y = anchorY - height / 2),
+        IntOffset(x = anchorX - width - marginPx, y = anchorY - height / 2),
+    )
+    val maxX = max(0, canvasSize.width - width)
+    val maxY = max(0, canvasSize.height - height)
+    val chosen = candidates.firstOrNull { it.x in 0..maxX && it.y in 0..maxY }
+        ?: candidates.minBy {
+            abs(it.x.coerceIn(0, maxX) - it.x) + abs(it.y.coerceIn(0, maxY) - it.y)
+        }
+    return IntOffset(x = chosen.x.coerceIn(0, maxX), y = chosen.y.coerceIn(0, maxY))
 }
 
 private fun formatValue(value: Float, decimals: Int): String {
@@ -787,13 +742,15 @@ private fun buildTransitionFromOffsets(
     previousPoints: List<SparklinePoint>,
     currentPoints: List<SparklinePoint>,
 ): List<Offset> {
-    if (previousPoints.isEmpty() || currentPoints.isEmpty()) return emptyList()
+    if (previousLayout == null || previousPoints.isEmpty() || currentPoints.isEmpty()) {
+        return emptyList()
+    }
 
     val previousSorted = previousPoints.sortedBy { it.x }
     val currentSorted = currentPoints.sortedBy { it.x }
 
     if (isAppendTransition(previousSorted, currentSorted)) {
-        val previousOffsets = previousLayout?.currentPoints?.map { it.offset }.orEmpty()
+        val previousOffsets = previousLayout.currentPoints.map { it.offset }
         if (previousOffsets.isNotEmpty()) {
             return List(currentSorted.size) { index ->
                 if (index < previousOffsets.size) {
@@ -808,13 +765,19 @@ private fun buildTransitionFromOffsets(
     if (previousSorted.size == 1) {
         val y = previousSorted.first().y
         return currentSorted.map { point ->
-            Offset(x = currentLayout.mx(point.x), y = currentLayout.my(y))
+            Offset(
+                x = currentLayout.mx(point.x),
+                y = currentLayout.my(y).coerceIn(currentLayout.chart.top, currentLayout.chart.bottom),
+            )
         }
     }
 
     return currentSorted.map { point ->
         val py = samplePreviousY(previousSorted, point.x)
-        Offset(x = currentLayout.mx(point.x), y = currentLayout.my(py))
+        Offset(
+            x = currentLayout.mx(point.x),
+            y = currentLayout.my(py).coerceIn(currentLayout.chart.top, currentLayout.chart.bottom),
+        )
     }
 }
 

@@ -335,6 +335,8 @@
     <string name="peak_intensity">Peak intensity</string>
 
     <string name="exercise_example_last_used_value">Last used: %1$s</string>
+    <string name="exercise_example_in_history">In your history</string>
+    <string name="exercise_example_not_used">Not tried yet</string>
     <string name="exercise_example_weight_type_value">Weight type: %1$s</string>
     <string name="exercise_library_replace_target">Exercise to replace</string>
 
