@@ -92,8 +92,8 @@ internal class ExerciseLibraryViewModel(
             name = current.queries.name.trim(),
             scope = scope,
             page = ExamplePage(
-                limits = current.pagination.limit,
-                number = current.pagination.page,
+                limits = current.pagination.limit * current.pagination.page,
+                number = ExamplePage.Chunk.number,
             ),
         )
     }
@@ -161,24 +161,18 @@ internal class ExerciseLibraryViewModel(
                 )
             }
 
-            val items = if (isFirstPage) {
-                incoming.toPersistentList()
-            } else {
-                (current.exerciseExamples + incoming).distinctBy { it.value.id }.toPersistentList()
-            }
-
             val nextHasSuggestionsResults =
                 if (isSuggestionsActive && isFirstPage) results.isNotEmpty()
                 else current.hasSuggestionsResults
 
             current.copy(
-                exerciseExamples = items,
+                exerciseExamples = incoming.toPersistentList(),
                 hasSuggestionsResults = nextHasSuggestionsResults,
                 pagination = PaginationState.Next(
                     page = pagination.page,
                     limit = pagination.limit,
                     isLoadingNextPage = false,
-                    isEndReached = results.size < pagination.limit,
+                    isEndReached = results.size < pagination.limit * pagination.page,
                 ),
             )
         }

@@ -18,6 +18,8 @@ import com.grippo.services.database.entity.ExerciseExampleComponentsEntity
 import com.grippo.services.database.entity.ExerciseExampleEntity
 import com.grippo.services.database.entity.ExerciseExampleEquipmentEntity
 import com.grippo.services.database.search.PrefixSearch
+import com.grippo.toolkit.localization.AppLocale
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
@@ -113,7 +115,8 @@ internal class ExerciseExampleRepositoryImpl(
     }
 
     override suspend fun getExerciseExamples(): Unit {
-        val response = api.getExerciseExamples()
+        val locale = AppLocale.current()
+        val response = api.getExerciseExamples(locale = locale)
 
         val examples = mutableListOf<ExerciseExampleEntity>()
         val components = mutableListOf<ExerciseExampleComponentsEntity>()
@@ -148,6 +151,9 @@ internal class ExerciseExampleRepositoryImpl(
             throw AppError.Network.IncompleteResponse()
         }
 
+        if (locale != AppLocale.current()) {
+            throw CancellationException("The exercise catalog locale changed")
+        }
         exerciseExampleDao.replaceFromSnapshot(
             examples = examples,
             components = components,
@@ -157,7 +163,8 @@ internal class ExerciseExampleRepositoryImpl(
     }
 
     override suspend fun getExerciseExampleById(id: String): Unit {
-        val response = api.getExerciseExample(id)
+        val locale = AppLocale.current()
+        val response = api.getExerciseExample(id = id, locale = locale)
 
         val entity = response.entity ?: throw AppError.Network.IncompleteResponse()
         val example = response.toEntityOrNull() ?: throw AppError.Network.IncompleteResponse()
@@ -175,6 +182,14 @@ internal class ExerciseExampleRepositoryImpl(
         }
         example.toDomain() ?: throw AppError.Network.IncompleteResponse()
         components.toDomain() ?: throw AppError.Network.IncompleteResponse()
-        exerciseExampleDao.insertOrReplace(example, components, bundles, equipments)
+        if (locale != AppLocale.current()) {
+            throw CancellationException("The exercise catalog locale changed")
+        }
+        exerciseExampleDao.insertOrReplace(
+            example = example,
+            components = components,
+            bundles = bundles,
+            equipments = equipments,
+        )
     }
 }

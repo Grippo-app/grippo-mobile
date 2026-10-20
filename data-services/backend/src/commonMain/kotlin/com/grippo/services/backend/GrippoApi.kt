@@ -287,17 +287,19 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
      * Exercise examples
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getExerciseExamples(): List<GetExerciseExampleResponse> {
+    public suspend fun getExerciseExamples(locale: String): List<GetExerciseExampleResponse> {
         return request(
             method = HttpMethod.Get,
             path = "/exercise-examples",
+            locale = locale,
         )
     }
 
-    public suspend fun getExerciseExample(id: String): GetExerciseExampleResponse {
+    public suspend fun getExerciseExample(id: String, locale: String): GetExerciseExampleResponse {
         return request(
             method = HttpMethod.Get,
-            path = "/exercise-examples/$id"
+            path = "/exercise-examples/$id",
+            locale = locale,
         )
     }
 
@@ -323,13 +325,15 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         method: HttpMethod,
         path: String,
         body: Any? = null,
-        queryParams: Map<String, String>? = null
+        queryParams: Map<String, String>? = null,
+        locale: String? = null,
     ): T {
         val response = client.invoke(
             method = method,
             path = path,
             body = body,
-            queryParams = queryParams
+            queryParams = queryParams,
+            locale = locale,
         )
         return response.body<T>()
     }

@@ -87,6 +87,12 @@ internal fun ColumnScope.ExercisesPage(
                                 items = exercises,
                                 key = { exercise -> exercise.id },
                             ) { exercise ->
+                                val name = state.examples
+                                    .firstOrNull { it.value.id == exercise.exerciseExample.id }
+                                    ?.value?.name ?: exercise.exerciseExample.name
+                                val example = exercise.exerciseExample.copy(name = name)
+                                val displayExercise = exercise.copy(exerciseExample = example)
+
                                 DraggableItem(state = dragDropState, key = exercise.id) {
                                     SwipeToReveal(
                                         horizontalPadding = AppTokens.dp.screen.horizontalPadding,
@@ -102,7 +108,7 @@ internal fun ColumnScope.ExercisesPage(
                                     ) {
                                         ExerciseCard(
                                             modifier = Modifier.fillMaxWidth(),
-                                            value = exercise,
+                                            value = displayExercise,
                                             style = ExerciseCardStyle.Large(
                                                 onClick = {
                                                     contract.onEditExercise(exercise.id)

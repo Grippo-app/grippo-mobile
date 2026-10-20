@@ -6,7 +6,6 @@
     <string name="repetitions">Repetitions</string>
     <string name="search_placeholder">Search…</string>
     <string name="set_value">Set #%1$s</string>
-    <string name="plus_value_more">+ %1$s more</string>
     <string name="body_weight_placeholder">Body weight</string>
     <string name="weight_and_height">Weight &amp; height</string>
     <string name="update_your_body_metrics">Update your current weight and height.</string>
@@ -37,7 +36,6 @@
     <string name="metric_overview_repetitions">Repetitions</string>
     <string name="metric_overview_goal_score">Training alignment</string>
     <string name="metric_overview_goal_analyzed">Workouts analyzed in period: %1$d</string>
-    <string name="metric_overview_goal_target">Target date: %1$s</string>
     <string name="spotlight_progress_win_title">More training volume</string>
     <string name="spotlight_needs_attention_title">Longer break</string>
     <string name="spotlight_good_frequency_title">Consistent practice</string>
@@ -89,7 +87,6 @@
     <string name="apply_btn">Apply</string>
     <string name="got_it_btn">Got it</string>
     <string name="confirm_btn">Confirm</string>
-    <string name="no_data_yet">No data yet</string>
     <string name="empty_training_exercises">Add your first exercise to start tracking this workout.</string>
     <string name="empty_daily_trainings">No workouts on this day.</string>
     <string name="empty_exercise_examples">No exercises match your search.</string>
@@ -98,7 +95,6 @@
     <string name="yearly">Yearly</string>
     <string name="custom">Custom</string>
     <string name="danger_zone">Danger zone</string>
-    <string name="of_body_weight">of body weight</string>
     <string name="weekly">Weekly</string>
     <string name="monthly">Monthly</string>
     <string name="details">Details</string>
@@ -301,7 +297,6 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="timeout_error">Timeout</string>
     <string name="unexpected_network_error">Unexpected network error</string>
-    <string name="select_exercise">Select exercise</string>
     <string name="draft_training_alert_title_add">Resume workout</string>
     <string name="draft_training_alert_description_add">Your workout draft is saved. Pick up where you left off.</string>
     <string name="draft_training_alert_title_edit">Resume editing</string>
@@ -595,7 +590,6 @@
     <string name="goal_card_status_on_track">On course</string>
     <string name="goal_card_status_drifting">Room to improve</string>
     <string name="goal_card_status_off_track">Adjust your course</string>
-    <string name="goal_card_progress_day">Day %1$d of %2$d</string>
     <string name="goal_card_progress_days_left">%1$d days left</string>
     <string name="goal_card_progress_overdue">Overdue by %1$d days</string>
     <string name="goal_card_progress_due_today">Due today</string>
@@ -906,7 +900,6 @@
     <string name="muscle_load_unassigned_sets">Recorded sets with unknown muscle involvement: %1$d.</string>
     <string name="muscle_load_focus_title">Largest share</string>
     <string name="muscle_load_focus_note">These shares describe training focus, not fatigue or recovery.</string>
-    <string name="muscle_load_less_than_one_percent">&lt;1%</string>
     <string name="performance_history_scope">Up to 10 latest workouts. The chart follows workout order and connects available values. Comparisons use earlier workouts in the selected period.</string>
     <string name="muscle_load_unmeasured_volume_sets">Sets with incomplete load data: %1$d. Muscle shares use recorded sets; volume includes fully measured sets only.</string>
     <string name="goal_card_limited_data">Limited data</string>

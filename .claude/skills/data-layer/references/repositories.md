@@ -16,6 +16,26 @@ Feature interfaces and UseCases live in `data-features/feature-api/`.
 Use `data-features/trainings/` and `data-features/user/` as source examples, inspecting their
 actual operation semantics rather than copying every dependency or failure policy.
 
+## Stateless repositories (canonical)
+
+Repository implementations MUST be stateless. Their only retained instance properties are
+constructor-injected dependencies. MUST NOT store request results, caches, mutable flows,
+flags, Jobs, coroutine scopes or synchronization primitives in a repository. Class-body
+properties, including immutable and `by lazy` properties, MUST NOT retain values or services
+derived from dependencies. In particular, do not obtain and store a DAO from `Database` in
+the repository body; inject the existing DAO binding through the constructor using
+[DI](../../di-modules/SKILL.md).
+
+Per-call locals for request inputs, mapping, validation and transaction work, and pure
+computed getters without backing state, are allowed.
+Authoritative cache and observable data stay with their existing storage/service owner;
+lifecycle-driven loading and cancellation stay with their existing lifecycle owner. A
+repository delegates observations to that owner rather than retaining its own stream or snapshot.
+This ownership rule does not authorize introducing a new owner or refactoring unrelated code.
+
+Completion check: inspect constructor properties, every class-body property initializer or
+delegate, observation sources and coroutine ownership against this section.
+
 ## Minimal domain models
 
 Constructor fields represent independent domain facts. MUST NOT store a count

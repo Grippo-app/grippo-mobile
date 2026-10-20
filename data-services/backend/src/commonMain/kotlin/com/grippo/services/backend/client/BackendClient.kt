@@ -8,7 +8,6 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
@@ -59,7 +58,9 @@ internal class BackendClient(
             host = "grippo-app.com"
             url { protocol = URLProtocol.HTTPS }
             contentType(ContentType.Application.Json)
-            header(HttpHeaders.AcceptLanguage, AppLocale.current())
+            if (!headers.contains(HttpHeaders.AcceptLanguage)) {
+                headers[HttpHeaders.AcceptLanguage] = AppLocale.current()
+            }
         }
     }
 
@@ -67,10 +68,12 @@ internal class BackendClient(
         method: HttpMethod,
         path: String,
         body: Any? = null,
-        queryParams: Map<String, String>? = null
+        queryParams: Map<String, String>? = null,
+        locale: String? = null,
     ): HttpResponse {
         return withContext(Dispatchers.IO) {
             clientProvider.request {
+                locale?.let { headers[HttpHeaders.AcceptLanguage] = it }
                 url {
                     path(path)
                     queryParams?.forEach { (key, value) -> parameters.append(key, value) }

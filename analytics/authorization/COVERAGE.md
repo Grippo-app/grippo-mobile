@@ -61,7 +61,13 @@ unreleased and every schema is version 1. The historical route-entry reason code
   parent replaces the stack with AuthProcess. Successful login or registration
   navigates to Home or ProfileCreation without adding screen owners; Root replaces
   authorization with Home.
-- Exercise-example first loading belongs to HomeViewModel ([home](../home/COVERAGE.md)).
+- A fresh HomeViewModel owns the startup exercise-example request after entering
+  Home, including after successful auth/profile completion. Root owns no catalog
+  request, Job, route guard or locale/foreground refresh subscription. Ordinary
+  foreground or locale changes do not repeat the request on a retained Home VM.
+  Failed/offline refreshes keep the last Room snapshot; dismissing the standard
+  error dialog retries the Home startup operation. Home continues observing Room
+  ([home](../home/COVERAGE.md)).
   LoginUseCase, RegisterUseCase and CreateProfileUseCase inject no
   ExerciseExampleFeature and request no examples; their Koin factories are
   reconciled. Required profile, exclusion, weight-history, goal and push-token
@@ -254,6 +260,7 @@ modes, and that transport change adds no screen, preserved input or payload.
 | ProfileCreationComponent stack | `ProfileCreationRouter` (five objects) | Preserve (navigation) | `ProfileCreationRouter.serializer()`, key `ProfileCreationComponent` | Initial User; push/pop |
 | RootComponent stack | `RootRouter.Auth(AuthRouter)` | Preserve (navigation) | `RootRouter.serializer()`, key `RootComponent` | Initial `Auth(AuthRouter.Splash)` |
 | RootViewModel / ProfileCreationViewModel | Session prerequisite and token observation | Rebuild / Runtime | Existing AuthorizationFeature.getToken source; no token in State, routes or drafts | Each retained owner observes its own prerequisite and retries only after error dismissal; a fresh restored ProfileCreation rechecks the source |
+| RootComponent / RootViewModel | Catalog startup ownership | None in Root | HomeViewModel starts `ExerciseExampleFeature.getExerciseExamples` from init | Root only routes the completed auth/profile flow to Home; a fresh Home VM owns its startup request. Root has no catalog dependency, Job, locale/foreground subscription or route guard. Existing token-loss routing and date-format locale installation remain unchanged; no catalog metadata enters an archive |
 | LocalSettingsRepository (DataStore) | `onboarding_shown` | Durable installation preference | `booleanPreferencesKey("onboarding_shown")` | Absent → false; one-way true write; `clearUserSettings` clears account preferences and restores it atomically with `analytics_consent` across logout/delete |
 | LocalSettingsRepository (DataStore) | `analytics_consent` | Durable installation preference | `booleanPreferencesKey("analytics_consent")` | Absent/false → Denied, true → Granted; `setDefaultAnalyticsConsent` writes only when absent; `setAnalyticsConsent` writes unconditionally; preserved across `clearUserSettings`, which LogoutUseCase and DeleteProfileUseCase call; applied to collection by ApplicationBootstrap |
 | All authorization VMs | Restoration flags, previous-source caches | None | No `var`/`lateinit` member in any authorization ViewModel | Conditions derive from State |

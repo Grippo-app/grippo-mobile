@@ -9,12 +9,12 @@ decision, and feature size alone is not permission.
 
 Current shape, for orientation (source owns changes):
 
-- Locales are exactly `values`, `values-uk` and `values-ru`, 759 keys each with
-  full key parity. There is no `plurals.xml`. Every format argument is positional.
-- `drawable/` holds nine WebP files with alpha and no PNG, all named without
-  prefixes: `bench_incline`, `dumbbell`, `plate` (1536 × 1024); `muscles`
-  (1024 × 1024); `empty_exercises`, `empty_sets`, `empty_workouts`,
-  `error_dialog`, `onboarding_hero` (768 × 768).
+- Locale bundles live in the provider's `values*` directories, with full key parity.
+  Inspect the current directories for the shipped locale set. There is no
+  `plurals.xml`. Every format argument is positional.
+- `drawable/` holds five WebP files with alpha and no PNG, all named without
+  prefixes: `empty_exercises`, `empty_sets`, `empty_workouts`, `error_dialog`,
+  `onboarding_hero` (768 × 768).
 
 ## Android packaging
 

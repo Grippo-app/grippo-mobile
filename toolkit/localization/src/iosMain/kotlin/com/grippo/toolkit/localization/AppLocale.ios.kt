@@ -21,7 +21,7 @@ public actual object AppLocale {
             return normalizeTag(systemTag)
         }
 
-    public actual fun current(): String = systemTagNow()
+    public actual fun current(): String = normalizeTag(systemTagNow())
 }
 
 // ---------- helpers ----------
@@ -32,14 +32,14 @@ private fun rememberSystemTag(): String {
 
     DisposableEffect(Unit) {
         val center = NSNotificationCenter.defaultCenter
-        val observers = mutableListOf<Any>()
-        fun observe(name: String) {
-            observers += center.addObserverForName(name, `object` = null, queue = null) { _ ->
+        val observers = listOfNotNull(
+            UIApplicationWillEnterForegroundNotification,
+            UIApplicationDidBecomeActiveNotification,
+        ).map { name ->
+            center.addObserverForName(name, `object` = null, queue = null) { _ ->
                 tag = systemTagNow()
             }
         }
-        UIApplicationWillEnterForegroundNotification?.let { observe(it) }
-        UIApplicationDidBecomeActiveNotification?.let { observe(it) }
         onDispose { observers.forEach { center.removeObserver(it) } }
     }
     return tag

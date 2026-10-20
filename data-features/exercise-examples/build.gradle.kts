@@ -16,6 +16,7 @@ kotlin {
         implementation(projects.dataServices.backend)
         implementation(projects.dataMappers.entityToDomain)
         implementation(projects.dataMappers.dtoToEntity)
+        implementation(projects.toolkit.localization)
 
         implementation(libs.kotlinx.coroutines.core)
     }

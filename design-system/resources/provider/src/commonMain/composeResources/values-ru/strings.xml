@@ -6,7 +6,6 @@
     <string name="repetitions">Повторения</string>
     <string name="search_placeholder">Поиск…</string>
     <string name="set_value">Подход №%1$s</string>
-    <string name="plus_value_more">+ ещё %1$s</string>
     <string name="body_weight_placeholder">Вес тела</string>
     <string name="weight_and_height">Вес и рост</string>
     <string name="update_your_body_metrics">Укажи актуальные вес и рост.</string>
@@ -37,7 +36,6 @@
     <string name="metric_overview_repetitions">Повторения</string>
     <string name="metric_overview_goal_score">Соответствие тренировок</string>
     <string name="metric_overview_goal_analyzed">Проанализировано тренировок за период: %1$d</string>
-    <string name="metric_overview_goal_target">Дата цели: %1$s</string>
     <string name="spotlight_progress_win_title">Рост объёма</string>
     <string name="spotlight_needs_attention_title">Дольше без упражнения</string>
     <string name="spotlight_good_frequency_title">Регулярность</string>
@@ -89,7 +87,6 @@
     <string name="apply_btn">Применить</string>
     <string name="got_it_btn">Понятно</string>
     <string name="confirm_btn">Подтвердить</string>
-    <string name="no_data_yet">Пока нет данных</string>
     <string name="empty_training_exercises">Добавь первое упражнение, чтобы начать отслеживать тренировку.</string>
     <string name="empty_daily_trainings">В этот день тренировок нет.</string>
     <string name="empty_exercise_examples">По запросу ничего не нашли.</string>
@@ -98,7 +95,6 @@
     <string name="yearly">Ежегодно</string>
     <string name="custom">Свой</string>
     <string name="danger_zone">Опасная зона</string>
-    <string name="of_body_weight">от массы тела</string>
     <string name="weekly">Еженедельно</string>
     <string name="monthly">Ежемесячно</string>
     <string name="details">Детали</string>
@@ -300,7 +296,6 @@
     <string name="something_went_wrong">Что-то пошло не так</string>
     <string name="timeout_error">Время ожидания истекло</string>
     <string name="unexpected_network_error">Неожиданная сетевая ошибка</string>
-    <string name="select_exercise">Выбери упражнение</string>
     <string name="draft_training_alert_title_add">Продолжить тренировку</string>
     <string name="draft_training_alert_description_add">Черновик тренировки сохранён. Продолжай с того места, где остановился.</string>
     <string name="draft_training_alert_title_edit">Продолжить редактирование</string>
@@ -592,7 +587,6 @@
     <string name="goal_card_status_on_track">На верном курсе</string>
     <string name="goal_card_status_drifting">Есть что улучшить</string>
     <string name="goal_card_status_off_track">Скорректируйте курс</string>
-    <string name="goal_card_progress_day">День %1$d из %2$d</string>
     <string name="goal_card_progress_days_left">Осталось %1$d дн.</string>
     <string name="goal_card_progress_overdue">Просрочено на %1$d дн.</string>
     <string name="goal_card_progress_due_today">Срок сегодня</string>
@@ -894,7 +888,6 @@
     <string name="muscle_load_unassigned_sets">Подходов без данных об участии мышц: %1$d.</string>
     <string name="muscle_load_focus_title">Наибольшая доля</string>
     <string name="muscle_load_focus_note">Доли показывают направленность тренировок, а не усталость или восстановление.</string>
-    <string name="muscle_load_less_than_one_percent">&lt;1%</string>
     <string name="performance_history_scope">До 10 последних тренировок. График идёт в порядке тренировок и соединяет доступные значения. Сравнения учитывают предыдущие тренировки выбранного периода.</string>
     <string name="muscle_load_unmeasured_volume_sets">Подходов с неполными данными о нагрузке: %1$d. Доли мышц рассчитаны по записанным подходам, тоннаж — только по полностью измеренным.</string>
     <string name="goal_card_limited_data">Ограниченные данные</string>

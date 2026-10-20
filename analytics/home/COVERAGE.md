@@ -117,7 +117,7 @@ it explains the existing card action and adds no control or observation.
 | onAddGoal (GoalCard update action and the HomeUnlockBanner "Set goal" call to action) and the TrainingGoalDetails `onAddGoal` closure | AddGoalClicked → `home_add_goal_clicked` | Three controls share one event; existing navigation at the callback owner; no reporting context propagated and no control attribution |
 | onBack (BackCallback registered by HomeComponent) | DismissRequested → `home_dismiss_requested` | Existing Back callback |
 | Range-driven `mapLatest` → `refreshTrainings`, per-request `safeLaunch` under the Trainings loader | RefreshTrainings → `home_task_*` {home_operation = refresh_trainings} | Complete `getTrainings(start, end)` block; waits for the resolved persisted range. A failed request reaches the standard error pipeline without terminating later range refreshes; no automatic retry. Range/lifecycle cancellation cancels and joins the request before replacing the loader. Clock-only local metric recomputation does not refresh the server, while changed rolling date bounds do; `Processing.WhileActive` re-runs it after a resume beyond the one-second disconnect grace |
-| Startup safeLaunch | RefreshExerciseExamples → `home_task_*` {refresh_exercise_examples} | Complete `getExerciseExamples()` block; once per fresh VM, outside any loader; the exercise-example first load lives here, not in auth/profile creation |
+| Fresh HomeViewModel `init` → `refreshExerciseExamples`, reused after error-dialog dismissal | RefreshExerciseExamples → `home_task_*` {home_operation = refresh_exercise_examples} | Complete `getExerciseExamples()` block in the existing VM-owned `safeLaunch`; one startup request per fresh VM. Ordinary background/foreground, tab reactivation and in-process locale changes do not repeat it. Root owns no catalog request; Room observations continue to rebuild Home data |
 | onWelcomeConfettiShown | Deliberate omission | Rendering callback from the confetti parade, not a user click |
 
 All ten interaction schemas are version 1 and parameterless; the operation schemas
@@ -128,15 +128,19 @@ variants, the three HomeOperation values and the one HomeScreen value have VM
 consumers and exhaustive encoders. Toolkit decoration owns fresh operation IDs,
 monotonic timing, original return values/exceptions and cancellation; `trackEvent`
 isolates ordinary reporting exceptions and the failed operation payload drops the
-error object. Command exceptions reach the standard error pipeline instead of
-being silently discarded by startup refreshes. No entity IDs, selected date
+error object. Command exceptions reach the standard error pipeline. No entity IDs, selected date
 bounds, raw input, measurements or errors are encoded.
 
 `HomeAnalyticsModule` (`@Module @ComponentScan`) binds `HomeAnalyticsImpl` as
 `HomeAnalytics` and registers one qualified `home_analytics` provider with the 14
 schemas; `shared/.../Koin.kt` lists it once, and the module depends only on
 `analytics-api`. Admin consumers of `home_operation` (the `Grippo Home operation`
-dimension and diagnostic report selector) are reconciled in the root GA4 review.
+dimension and diagnostic report selector) have historical reconciliation evidence
+in the root GA4 review. Home again owns its startup catalog operation under the
+existing `refresh_exercise_examples` code; its operation type, wire value and
+complete request boundary match the earlier Home-owned behavior. Live admin was
+not inspected or changed under the user's no-admin scope, and no fresh
+synchronization is claimed.
 
 Named rolling presets Last7/14/30/60/365Days include exactly N local calendar
 dates: the start is N−1 dates before the anchor and both endpoints are inclusive.
@@ -177,6 +181,7 @@ DismissRequested.
 | HomeViewModel | Accepted range kind | Preserve in the existing durable owner (no StateKeeper copy) | `LocalSettingsFeature.setRange/observeRange` → DataStore `range`; Range ↔ DateRangeKind mappers | Initial `DateRangeFormatState.Empty(kind = Last30Days)` with a null value until the store emits; an absent preference resolves to Last30Days only after that emission; `clearUserSettings` (logout/delete) removes `range`; the picker offers Last7/14/30/60, and `Infinity` is a resolvable persisted kind that yields Invalid with nonnull bounds |
 | HomeViewModel | Range date bounds / formatter state | Rebuild | combine(LocalSettingsFeature.observeRange, currentDateFlow) → provideRange → DateRangeFormatState.of(kind) | Recomputed after the persisted kind emits and at each local midnight; selectedPeriods deduplicates date bounds for server refresh, metricPeriods adds date invalidation after distinct so local metrics also rebuild inside unchanged calendar bounds. Both retain the existing WhileActive lifecycle |
 | HomeViewModel | `user` | Rebuild | `observeUser()` | Null emissions are ignored, so the user never clears once set |
+| HomeViewModel | Exercise catalog startup refresh | Runtime only / Rebuild | `init` → `refreshExerciseExamples` → `ExerciseExampleFeature.getExerciseExamples`; catalog data stays in Room | A fresh retained VM starts the request once, including fresh construction after restoration. Error-dialog dismissal retries the complete operation. Reusing the VM on foreground, tab activation or locale change adds no request; no catalog Job, locale snapshot, refresh flag or draft exists in Home or Root |
 | HomeViewModel | `lastTraining`, `performance` | Rebuild | Selected-period training observation → existing mappers / PerformanceTrendUseCase.fromTrainings | Empty period clears the last training and produces five unavailable metrics; fractional means remain read-only output |
 | HomeViewModel | `streak` | Rebuild | `provideTrainings(list, period)` → TrainingStreakUseCase.fromTrainings(trainings = list, range = period) → mapper | Same observed period; now captured once and range capped before day/week/cycle calculation; empty period clears summary |
 | HomeViewModel | `spotlights` | Rebuild | Selected-period trainings + observed relevant ExerciseExample catalog → ExerciseSpotlightUseCase.buildSpotlights(evaluatedAt = min(now, period.to), historyStart = period.from.date) → mapper | Rebuilds from the restored durable range and date invalidation/resume; empty period clears list; no draft or edit state |

@@ -86,7 +86,7 @@ internal class HomeViewModel(
     private val exerciseSpotlightUseCase: ExerciseSpotlightUseCase,
     private val trainingStreakUseCase: TrainingStreakUseCase,
     private val performanceTrendUseCase: PerformanceTrendUseCase,
-    exerciseExampleFeature: ExerciseExampleFeature,
+    private val exerciseExampleFeature: ExerciseExampleFeature,
     private val stringProvider: StringProvider,
     permissionManager: PermissionManager,
     private val notificationManager: NotificationManager,
@@ -133,6 +133,8 @@ internal class HomeViewModel(
         safeLaunch {
             scheduleWeightReminder()
         }
+
+        refreshExerciseExamples()
 
         val selectedPeriods = state
             .map { it.range.value }
@@ -183,14 +185,16 @@ internal class HomeViewModel(
             .safeLaunch()
 
         safeLaunch {
+            val status = localSettingsFeature.observeHomeWelcomeStatus().first()
+            provideWelcomeStatus(status)
+        }
+    }
+
+    private fun refreshExerciseExamples() {
+        safeLaunch(onError = ::refreshExerciseExamples) {
             analytics.trackOperation(operation = HomeOperation.RefreshExerciseExamples) {
                 exerciseExampleFeature.getExerciseExamples()
             }
-        }
-
-        safeLaunch {
-            val status = localSettingsFeature.observeHomeWelcomeStatus().first()
-            provideWelcomeStatus(status)
         }
     }
 

@@ -81,24 +81,6 @@ public fun stubExercise(): ExerciseState = ExerciseState(
     )
 )
 
-
-public fun stubPendingExercise(): ExerciseState = ExerciseState(
-    id = Uuid.random().toString(),
-    name = "Bench press",
-    iterations = buildList {
-        repeat(Random.nextInt(1, 12)) {
-            add(stubPendingIteration())
-        }
-    }.toPersistentList(),
-    total = stubTotal(),
-    exerciseExample = stubExerciseExampleValueState(),
-    createdAt = DateTimeFormatState.of(
-        value = DateTimeUtils.now(),
-        range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy
-    )
-)
-
 /**
  * Deterministic newest-first history of one exercise for previews: external sets with a pending
  * one, bodyweight sets, a recorded zero and the oldest record.

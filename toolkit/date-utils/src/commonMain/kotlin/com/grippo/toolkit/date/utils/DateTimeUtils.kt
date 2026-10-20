@@ -233,25 +233,6 @@ public object DateTimeUtils {
         return date == today
     }
 
-    public fun isYesterday(date: LocalDate): Boolean {
-        val yesterday = Clock.System
-            .todayIn(timeZone)
-            .minus(DatePeriod(days = 1))
-        return date == yesterday
-    }
-
-    public fun isTomorrow(date: LocalDate): Boolean {
-        val tomorrow = Clock.System
-            .todayIn(timeZone)
-            .plus(DatePeriod(days = 1))
-        return date == tomorrow
-    }
-
-    public fun isFuture(date: LocalDate): Boolean {
-        val today = Clock.System.todayIn(timeZone)
-        return date > today
-    }
-
     public fun isPast(date: LocalDate): Boolean {
         val today = Clock.System.todayIn(timeZone)
         return date < today

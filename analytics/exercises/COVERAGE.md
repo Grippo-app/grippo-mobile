@@ -49,6 +49,18 @@ Ordinary reporting exceptions are isolated; business updates and navigation stay
 independent. No entity IDs, target/group IDs, query text/length, errors or
 request/response bodies enter telemetry.
 
+Home startup refresh rebuilds the same Room catalog and search prefixes. Locale
+changes and foreground resumes do not start a Root refresh. List and detail
+responses pin the full effective locale. The repository checks the locale
+immediately before calling the DAO; each existing `@Transaction` method writes
+the catalog rows and search prefixes atomically. There is no explicit repository
+cancellation checkpoint or second locale check during the DAO transaction: if
+the locale changes after the pre-write check, that response can still commit its
+captured language. Failed requests retain the last successful snapshot, which can
+remain in the previous language offline or until a fresh Home startup. These
+data updates leave the library query/filter draft, accepted parent selections and
+analytics callbacks unchanged; they add no Exercises events or operations.
+
 ## Omissions and privacy
 
 Focus/IME/clear, scroll position, the programmatic Suggestions → All fallback on
@@ -68,7 +80,7 @@ referrer/flow attribution are deliberately outside this contract; filter values 
 | Same | `queries.filter`: All, Suggestions or Group(id) | Preserve | Serializable sealed QueryFilter | The saved value, including All, wins over route preselection; the fresh default comes from the mode (SimilarTo → Suggestions, Default(group) → Group, Browse and Default(null) → All); a vanished group is dropped only on a nonempty catalog, resetting to All with restartable pagination; an empty first SimilarTo page (no cached target, or every similar candidate already in the draft workout) falls back to All and clears the suggestions flag |
 | Same | `mode` and target identity | Rebuild from route | `@Transient`; derived from the serializable route Mode by `ExerciseLibraryMode.of` (the result key stays on the route, outside State) | Reapplied on every restore (`initialState?.copy(mode = ExerciseLibraryMode.of(mode))`); the target card is observed from ExerciseExampleFeature |
 | Same | `exerciseExamples`, `queries.muscleGroups`, `hasSuggestionsResults`, `canShowSuggestions` | Rebuild | `@Transient` fields (the derived `canShowSuggestions` is a class-body value recomputed by the mode copy); user exercise examples use case under flatMapLatest — Default mode pages the DAO catalog, SimilarTo mode combines the unpaged similar candidates with the observed target example and the Room draft training (`TrainingFeature.getDraftTraining()`), excludes examples already in the draft workout, ranks in Kotlin (muscle-bundle overlap, load model, prior/recent use, category, force type) keeping the top 10 or overlap ≥ 0.3, and slices the requested page in memory; MuscleFeature | A stale-params guard drops emissions for superseded parameters |
-| Same | `pagination` (page/limit/loading/end) | Runtime only | `@Transient` default first page (chunk page one, limit 20) | Loading restarts from page one with the restored query/filter; end reached when a page is shorter than the limit; old pages are not replayed; in SimilarTo mode the page is an in-memory `ExamplePage.slice` of the ranked shortlist, so pages are still at most `limit` long and a short page ends loading |
+| Same | `pagination` (page/limit/loading/end) | Runtime only | `@Transient` default first page (chunk page one, limit 20) | Loading restarts from page one with the restored query/filter. Each observation requests the entire loaded prefix (page one, limit = chunk limit × loaded pages), replacing all displayed cards when Room changes locale or ranking; end reached when that prefix is shorter than its requested limit. SimilarTo uses the same prefix via in-memory `ExamplePage.slice` of its ranked shortlist |
 | Same | Loaders (none defined), focus, list position, cached card target, the Browse details dialog session | Runtime only | Compose-only state; in-memory `DialogController` session (`Mode.Default`, no result) | Not archived; the dialog returns nothing to the draft |
 | ExerciseExampleCardLarge | Read-only equipment and last-used labels | Rebuild in composition | Distinct equipment types from the existing example; declared weight type when equipment is empty; `DateCompose` with the typed date and `DateTimeFormatState.format` | Equipment names resolve in the current locale. Empty or blank history adds no footer; other date states resolve the current locale when a typed value exists and keep the existing display otherwise. Query, filter and accepted selection are unchanged |
 | ExercisesRootComponent | Stack and the mode's `resultKey` | Preserve (navigation) | `ExercisesRouter.serializer()`, key `ExercisesRootComponent`; ResultKey serialized by address | Data-object root state; no parent editable draft. As the Library tab the root lives under MainComponent's `MainTabs` child context, so its keys do not collide with a Training-hosted root |

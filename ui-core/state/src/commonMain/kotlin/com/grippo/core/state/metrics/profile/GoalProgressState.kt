@@ -11,7 +11,6 @@ import com.grippo.core.state.profile.GoalState
 import com.grippo.core.state.profile.stubGoal
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.goal_card_progress_day
 import com.grippo.design.resources.provider.goal_card_progress_days_left
 import com.grippo.design.resources.provider.goal_card_progress_due_today
 import com.grippo.design.resources.provider.goal_card_progress_overdue
@@ -82,12 +81,6 @@ public data class GoalProgressState(
             val target = goal.target.value?.date ?: return false
             return date >= target
         }
-
-    @Composable
-    public fun progressLine(): String {
-        val day = (daysElapsed + 1).coerceAtMost(daysTotal)
-        return AppTokens.strings.res(Res.string.goal_card_progress_day, day, daysTotal)
-    }
 
     @Composable
     public fun remainingLine(): String {

@@ -5,8 +5,8 @@ before adding or changing a style; consumers call `AppTokens.typography.<method>
 Current shape, for orientation (source owns changes): `public data object AppTypography`
 with headings `h1()`…`h6()` and body styles named `b<size><Weight>()` with the
 abbreviated weight suffixes `Bold`, `Semi`, `Med`, `Reg`: `b15Med`, `b14Bold`,
-`b14Semi`, `b14Med`, `b13Semi`, `b13Bold`, `b13Med`, `b12Semi`, `b12Med`, `b11Bold`,
-`b11Semi`, `b11Med`, `b11Reg`, `b10Bold`, `b10Semi`, `b10Med`, `b10Reg`. `onest()`
+`b14Semi`, `b14Med`, `b13Semi`, `b13Med`, `b12Semi`, `b12Med`, `b11Semi`, `b11Med`,
+`b10Bold`, `b10Med`, `b10Reg`. `onest()`
 is a top-level `internal fun` in the same file, not a member; it registers four
 static Onest TTFs (Regular, Medium, SemiBold, Bold), matching the weights used by
 the tokens.

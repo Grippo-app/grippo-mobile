@@ -135,16 +135,6 @@ public fun stubAchievements(): PersistentList<AchievementState> = persistentList
     stubPeakIntensityAchievement(),
 )
 
-public fun stubAchievement(): AchievementState {
-    return when (Random.nextInt(0, 5)) {
-        0 -> stubBestTonnageAchievement()
-        1 -> stubBestWeightAchievement()
-        2 -> stubLifetimeVolumeAchievement()
-        3 -> stubMaxRepetitionsAchievement()
-        else -> stubPeakIntensityAchievement()
-    }
-}
-
 private fun stubBestTonnageAchievement(): AchievementState.BestTonnage {
     return AchievementState.BestTonnage(
         exerciseExampleId = Uuid.random().toString(),

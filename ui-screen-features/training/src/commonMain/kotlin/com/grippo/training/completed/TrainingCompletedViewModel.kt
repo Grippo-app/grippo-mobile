@@ -33,6 +33,11 @@ import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.LocalDateTime
 
 internal class TrainingCompletedViewModel(
@@ -71,6 +76,14 @@ internal class TrainingCompletedViewModel(
     }
 
     init {
+        state
+            .map { it.savedTrainingId }
+            .distinctUntilChanged()
+            .filterNotNull()
+            .flatMapLatest(trainingFeature::observeTraining)
+            .onEach(::provideTraining)
+            .safeLaunch()
+
         safeLaunch(
             loader = TrainingCompletedLoader.SaveTraining,
             onError = {
@@ -87,15 +100,14 @@ internal class TrainingCompletedViewModel(
                 trainingFeature.deleteDraftTraining()
             }
 
-            val domain = analytics.trackOperation(operation = TrainingOperation.LoadTraining) {
+            val training = analytics.trackOperation(operation = TrainingOperation.LoadTraining) {
                 trainingFeature.observeTraining(id).firstOrNull()
             }
+            provideTraining(training)
 
             analytics.trackOperation(operation = TrainingOperation.RefreshExamples) {
                 exerciseExampleFeature.getExerciseExamples()
             }
-
-            provideTraining(domain)
         }
     }
 

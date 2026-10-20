@@ -1,0 +1,909 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Grippo</string>
+    <string name="kg">kg</string>
+    <string name="reps">reps</string>
+    <string name="repetitions">Repetições</string>
+    <string name="search_placeholder">Buscar…</string>
+    <string name="set_value">Série nº %1$s</string>
+    <string name="body_weight_placeholder">Peso corporal</string>
+    <string name="weight_and_height">Peso &amp; altura</string>
+    <string name="update_your_body_metrics">Atualize seu peso e sua altura atuais.</string>
+    <string name="extra_weight_placeholder">Peso adicional</string>
+    <string name="assist_weight_placeholder">Peso de assistência</string>
+    <string name="home_exercise_highlights_title">Destaques dos seus exercícios</string>
+    <string name="home_progress_details_hint">Toque em um cartão para ver os detalhes.</string>
+    <string name="home_metrics_title">Números do treino</string>
+    <string name="home_metrics_description">Último treino neste período. Toque em uma métrica para ver as tendências.</string>
+    <string name="home_metrics_empty_description">Ainda não há dados de métricas neste período. Tente outro período.</string>
+    <string name="home_last_workout_in_period">Último treino no período</string>
+    <string name="metric_overview_muscle_distribution">Distribuição da carga muscular</string>
+    <string name="metric_overview_muscle_context">Treinos: %1$d · Séries disponíveis: %2$d</string>
+    <string name="metric_overview_muscle_primary">Músculo mais trabalhado: %1$s</string>
+    <string name="metric_overview_muscle_details">Todos os grupos e músculos</string>
+    <string name="metric_overview_streak_title">Ritmo de treino</string>
+    <string name="metric_overview_streak_active_days">Dias ativos</string>
+    <string name="metric_overview_streak_daily_pattern">Ritmo: dias de treino consecutivos</string>
+    <string name="metric_overview_streak_weekly_pattern">Dias de treino por semana: %1$d</string>
+    <string name="metric_overview_streak_rhythm_pattern">Dias de treino: %1$d · Dias de descanso: %2$d</string>
+    <string name="metric_overview_streak_pattern_pattern">Dias de treino: %1$d · Dias por ciclo: %2$d</string>
+    <string name="metric_overview_performance_average">Média anterior: %1$s</string>
+    <string name="metric_overview_performance_comparison">%1$s em relação à média anterior</string>
+    <string name="metric_overview_duration">Tempo de treino</string>
+    <string name="metric_overview_volume">Peso levantado</string>
+    <string name="metric_overview_density">Peso por minuto</string>
+    <string name="metric_overview_intensity">Peso médio</string>
+    <string name="metric_overview_repetitions">Repetições</string>
+    <string name="metric_overview_goal_score">Alinhamento do treino</string>
+    <string name="metric_overview_goal_analyzed">Treinos analisados no período: %1$d</string>
+    <string name="spotlight_progress_win_title">Mais volume de treino</string>
+    <string name="spotlight_needs_attention_title">Pausa mais longa</string>
+    <string name="spotlight_good_frequency_title">Prática consistente</string>
+    <string name="spotlight_near_best_title">Perto do seu melhor volume</string>
+    <string name="repetitions_input_hint">1–99 reps</string>
+    <string name="exercise_details_btn">Detalhes do exercício</string>
+    <string name="push_token">Token de notificações push</string>
+    <string name="start_new">Começar novo</string>
+    <string name="weight">Peso</string>
+    <string name="choose_your_experience_level">Escolha seu nível atual de experiência de treino.</string>
+    <string name="weight_input_hint">1–999 kg</string>
+    <string name="spotlight_progress_win_metric">+%1$s% de volume · sessões anteriores: %2$d</string>
+    <string name="spotlight_progress_win_context">Último: %1$s vs mediana de %2$s kg·reps em %3$d dias</string>
+    <string name="spotlight_progress_win_action">O volume registrado é o peso × repetições de todas as séries; mais volume não significa necessariamente mais força.</string>
+    <string name="spotlight_needs_attention_metric">Último registro há %1$d dias</string>
+    <string name="spotlight_needs_attention_context">Intervalo habitual recente de ~%1$d dias; pausa mais longa a partir de %2$d dias</string>
+    <string name="spotlight_needs_attention_action">Confira se este exercício ainda se encaixa no seu plano atual.</string>
+    <string name="spotlight_good_frequency_metric">%1$s dias de treino/semana ao longo de %2$d semanas</string>
+    <string name="spotlight_good_frequency_context">Registrado em %1$d de %2$d semanas, %3$d dias de treino</string>
+    <string name="spotlight_good_frequency_action">Várias sessões no mesmo dia contam como um dia de treino.</string>
+    <string name="spotlight_near_best_metric">Diferença para seu melhor volume: %1$s%</string>
+    <string name="spotlight_near_best_context">Registrado: %1$s vs melhor anterior de %2$s kg·reps em %3$d dias</string>
+    <string name="spotlight_near_best_action">Compare o volume com a mesma técnica e amplitude de movimento.</string>
+    <string name="dashboard">Painel</string>
+    <string name="highlight_muscle_focus">Foco muscular</string>
+    <string name="highlight_streaks">Sequências</string>
+    <string name="highlight_active_days">%1$s dias ativos</string>
+    <string name="highlight_streak">Sequência de %1$d dias</string>
+    <string name="highlight_streak_weekly_headline_primary">Sequência de %1$d semanas</string>
+    <string name="highlight_streak_weekly_target">Ritmo observado · %1$d dias de treino/semana</string>
+    <string name="highlight_streak_daily_target">Dias ativos consecutivos</string>
+    <string name="highlight_streak_rhythm">Sequência de %1$d ciclos</string>
+    <string name="highlight_streak_rhythm_target">Ritmo observado · %1$d dias ativos · %2$d dias de descanso</string>
+    <string name="highlight_streak_pattern_headline_primary">Sequência do padrão: %1$d ciclos</string>
+    <string name="highlight_streak_pattern_target">Ritmo observado · %1$d dias ativos / %2$d dias</string>
+    <string name="highlight_streak_mood_crushing">🔥 Você está indo muito bem. Continue assim.</string>
+    <string name="highlight_streak_mood_on_track">💪 Bom progresso. Mantenha a consistência.</string>
+    <string name="highlight_streak_mood_paused">Tudo bem fazer uma pausa. Volte quando quiser.</string>
+    <string name="highlight_streak_mood_restart">🚀 Recomece. Um passo já basta.</string>
+    <string name="performance_trend_desc_duration">Duração de cada treino no período selecionado. Mais longo ou mais curto não significa melhor. Cada comparação usa treinos anteriores nesse período com dados de duração disponíveis.</string>
+    <string name="performance_trend_desc_volume">Peso total movimentado: peso de trabalho × repetições. Cada treino é comparado com a média dos treinos anteriores neste período com dados de volume disponíveis. A escolha dos exercícios e a duração da sessão afetam esse total; ele não mede a força por si só.</string>
+    <string name="performance_trend_desc_density">Volume dividido pela duração total do treino em minutos, incluindo os descansos. Comparado com treinos anteriores neste período com dados de densidade disponíveis. Mais trabalho por minuto não significa, por si só, um treino melhor.</string>
+    <string name="performance_trend_desc_repetitions">Total de repetições por treino, comparado com treinos anteriores neste período com dados de repetições disponíveis. A escolha dos exercícios, as séries e as sessões mais leves planejadas afetam o total; menos repetições não comprovam fadiga.</string>
+    <string name="performance_trend_desc_intensity">Peso médio de trabalho por repetição com carga, comparado com treinos anteriores neste período com dados de peso disponíveis. A escolha dos exercícios afeta essa média; ela não mede o esforço nem a força por si só.</string>
+    <string name="sets_value">Séries (%1$s)</string>
+    <string name="percent">%</string>
+    <string name="selected">Selecionado</string>
+    <string name="cm">cm</string>
+    <string name="apply_btn">Aplicar</string>
+    <string name="got_it_btn">Entendi</string>
+    <string name="confirm_btn">Confirmar</string>
+    <string name="empty_training_exercises">Adicione seu primeiro exercício para começar a acompanhar este treino.</string>
+    <string name="empty_daily_trainings">Nenhum treino neste dia.</string>
+    <string name="empty_exercise_examples">Nenhum exercício corresponde à sua busca.</string>
+    <string name="exercise_library_suggestions_chip">Sugeridos</string>
+    <string name="daily">Diário</string>
+    <string name="yearly">Anual</string>
+    <string name="custom">Personalizado</string>
+    <string name="danger_zone">Zona de perigo</string>
+    <string name="weekly">Semanal</string>
+    <string name="monthly">Mensal</string>
+    <string name="details">Detalhes</string>
+    <string name="cancel_btn">Cancelar</string>
+    <string name="logout_btn">Sair</string>
+    <string name="delete_account">Excluir conta</string>
+    <string name="loading">Carregando…</string>
+    <string name="submit_btn">Enviar</string>
+    <string name="delete_btn">Excluir</string>
+    <string name="edit_btn">Editar</string>
+    <string name="change_btn">Alterar</string>
+    <string name="continue_btn">Continuar</string>
+    <string name="exercises">Exercícios</string>
+    <string name="add_exercise_btn">Adicionar exercício</string>
+    <string name="save_btn">Salvar</string>
+    <string name="update_btn">Atualizar</string>
+    <string name="workout_summary">Resumo do treino</string>
+    <string name="training_completed_title">Bom trabalho</string>
+    <string name="training_completed_description">Treino salvo. Veja o que você fez.</string>
+    <string name="training_completed_updated_title">Treino atualizado</string>
+    <string name="training_completed_updated_description">Suas alterações foram salvas no histórico de treinos.</string>
+    <string name="training_completed_session_title">Esta sessão</string>
+    <string name="training_completed_details_unavailable">Treino salvo. Você pode encontrá-lo no seu histórico.</string>
+    <string name="training_completed_result_unavailable">Não foi possível confirmar o resultado do treino. Confira seu histórico antes de tentar novamente.</string>
+    <string name="training_completed_done">Concluir</string>
+    <string name="total">Total</string>
+    <string name="per_group">Por grupo</string>
+    <string name="per_muscle">Por músculo</string>
+    <string name="add_set_btn">Adicionar série</string>
+    <string name="create_account_btn">Criar conta</string>
+    <string name="email_placeholder">Digite o e-mail</string>
+    <string name="accessibility_status_error">Erro</string>
+    <string name="accessibility_status_warning">Aviso</string>
+    <string name="accessibility_status_success">Sucesso</string>
+    <string name="input_clear">Limpar texto</string>
+    <string name="input_copy">Copiar para a área de transferência</string>
+    <string name="input_show_password">Mostrar senha</string>
+    <string name="input_hide_password">Ocultar senha</string>
+    <string name="password_placeholder_default">Digite a senha</string>
+    <string name="name_placeholder">Digite seu nome</string>
+    <string name="weight_placeholder">Digite seu peso</string>
+    <string name="volume_placeholder">Peso</string>
+    <string name="repetitions_placeholder">Repetições</string>
+    <string name="height_placeholder">Digite sua altura</string>
+    <string name="exercise_record">Registro do exercício</string>
+    <string name="history">Histórico</string>
+    <string name="achievements">Conquistas</string>
+
+
+    <string name="or_continue_with">Ou continue com</string>
+    <string name="login_title">Boas-vindas ao Grippo</string>
+    <string name="login_button_login">Entrar</string>
+    <string name="account_deletion">Exclusão da conta</string>
+    <string name="account_deletion_description">Sua conta e seus dados serão removidos permanentemente. Não será possível restaurá-los depois.</string>
+    <string name="continue_with_google">Google</string>
+    <string name="continue_with_apple">Apple</string>
+    <string name="track_real_progress_no_fluff">Treinos personalizados para seu nível, sua academia e seu progresso.</string>
+    <string name="login_button_registration_label">Não tem uma conta?</string>
+    <string name="login_button_registration">Cadastre-se</string>
+    <string name="at_least_six_characters">Pelo menos 6 caracteres</string>
+
+    <string name="registration_title">Vamos criar sua conta</string>
+    <string name="registration_description">Crie uma conta para salvar treinos e acompanhar seu progresso.</string>
+
+    <string name="registration_user_title">Vamos configurar seu perfil</string>
+
+    <string name="registration_name_description">Isso ajuda o Grippo a personalizar seus treinos.</string>
+
+    <string name="registration_experience_title">Há quanto tempo você treina?</string>
+    <string name="registration_experience_description">O Grippo se adapta a qualquer nível.</string>
+
+    <string name="registration_muscles_title">Quer deixar algo de fora?</string>
+    <string name="registration_muscles_description">Desative os músculos que você não quer treinar.</string>
+
+    <string name="registration_equipment_title">O que falta na sua academia?</string>
+    <string name="registration_equipment_description">Desative os equipamentos indisponíveis para ocultar os exercícios que precisam deles.</string>
+
+    <string name="welcome_title">Hora do seu primeiro treino</string>
+    <string name="welcome_subtitle">Comece a acompanhar seu progresso com a primeira sessão.</string>
+
+
+    <string name="welcome_check_profile">Perfil criado</string>
+    <string name="welcome_check_experience">Experiência selecionada</string>
+    <string name="welcome_check_muscles">Músculos configurados</string>
+    <string name="welcome_check_equipment">Equipamentos configurados</string>
+    <string name="welcome_check_goal">Objetivo definido</string>
+    <string name="welcome_section_progress_title">Progresso da configuração</string>
+    <string name="welcome_section_benefits_title">O que você tem</string>
+
+    <string name="welcome_facts_muscles_all">Todos os músculos</string>
+    <string name="welcome_facts_muscles_excluded">%1$d excluídos</string>
+    <string name="welcome_facts_equipment_all">Todos os equipamentos</string>
+    <string name="welcome_facts_equipment_missing">%1$d indisponíveis</string>
+
+    <string name="welcome_motto_beginner">A primeira série é a mais importante.</string>
+    <string name="welcome_motto_intermediate">Hora de subir de nível.</string>
+    <string name="welcome_motto_advanced">A consistência faz campeões.</string>
+    <string name="welcome_motto_pro">Hora de alcançar resultados.</string>
+
+    <string name="welcome_benefit_pack_title">Seu conjunto de exercícios está pronto</string>
+    <string name="welcome_benefit_pack_subtitle">Adaptado aos seus equipamentos e músculos.</string>
+    <string name="welcome_benefit_progress_title">Progresso acompanhado</string>
+    <string name="welcome_benefit_progress_subtitle">Volume, repetições e tempo registrados em cada treino.</string>
+    <string name="welcome_benefit_history_title">Histórico completo de treinos</string>
+    <string name="welcome_benefit_history_subtitle">Cada série salva, pronta para consultar a qualquer momento.</string>
+
+    <string name="height_picker_title">Selecione sua altura</string>
+    <string name="period_picker_title">Selecione o período</string>
+
+    <string name="profile">Perfil</string>
+
+    <string name="weight_picker_title">Selecione seu peso</string>
+    <string name="duration_picker_title">Selecione a duração</string>
+    <string name="hours_short">h</string>
+    <string name="minutes_short">min</string>
+
+    <string name="experience_beginner_title">Iniciante</string>
+    <string name="experience_intermediate_title">Intermediário</string>
+    <string name="experience_advanced_title">Avançado</string>
+    <string name="experience_pro_title">Profissional</string>
+    <string name="experience_beginner_description">Menos de um ano de treino — aprendendo os principais exercícios e construindo uma base.</string>
+    <string name="experience_intermediate_description">Mais de um ano de experiência, com segurança nos principais exercícios e uma base sólida.</string>
+    <string name="experience_advanced_description">2+ anos de treino, com boa técnica e progresso constante.</string>
+    <string name="experience_pro_description">5+ anos de experiência — excelente técnica e alto nível de desenvolvimento muscular.</string>
+
+
+    <string name="profile_menu_excluded_muscles">Músculos excluídos</string>
+    <string name="profile_menu_missing_equipment">Equipamentos indisponíveis</string>
+    <string name="profile_menu_experience">Experiência</string>
+
+    <string name="trainings">Treinos</string>
+    <string name="trainings_period_daily">Diário</string>
+    <string name="trainings_period_monthly">Mensal</string>
+    <string name="training">Treino</string>
+    <string name="duration">Duração</string>
+    <string name="sets">Séries</string>
+    <string name="statistics">Estatísticas</string>
+    <string name="community">Comunidade</string>
+    <string name="instagram">Instagram</string>
+    <string name="threads">Threads</string>
+    <string name="tiktok">TikTok</string>
+    <string name="youtube">YouTube</string>
+    <string name="social_hero_subtitle">Dicas de treino, novidades do produto e ideias práticas para treinar.</string>
+    <string name="value_statistics">Estatísticas de %1$s</string>
+    <string name="value_muscle_loading">Carga muscular de %1$s</string>
+    <string name="muscle_loading">Carga muscular</string>
+    <string name="muscle_load_no_data">Ainda não há dados.</string>
+    <string name="muscle_loading_distribution_title">Distribuição</string>
+    <string name="value_training_streak">Sequência de treinos de %1$s</string>
+    <string name="training_streak">Sequência de treinos</string>
+    <string name="value_performance_trend">%1$s — tendência de %2$s</string>
+    <string name="performance_trend">Tendência de %1$s</string>
+    <string name="training_streak_insights_title">Sobre este cálculo</string>
+    <string name="training_streak_history_value">Histórico observado: %1$d dias</string>
+    <string name="training_streak_timeline_title">Progresso ao longo do tempo</string>
+    <string name="training_streak_period_value">Dias ativos: %1$d / %2$d</string>
+    <string name="estimated_one_rm">Carga máxima estimada para uma repetição</string>
+    <string name="equipments">Equipamentos</string>
+    <string name="muscles">Músculos</string>
+    <string name="profile_equipment_description">Ative os equipamentos disponíveis para seus treinos.</string>
+    <string name="profile_muscles_description">Ative os músculos que você quer treinar.</string>
+    <string name="weight_history">Histórico de peso</string>
+    <string name="start_workout">Iniciar treino</string>
+    <string name="debug">Depuração</string>
+    <string name="clear_logs">Limpar logs</string>
+    <string name="settings">Configurações</string>
+    <string name="no_internet_connection">Sem conexão com a internet</string>
+    <string name="last_7_days">7 dias</string>
+    <string name="last_14_days">14 dias</string>
+    <string name="last_30_days">30 dias</string>
+    <string name="last_60_days">60 dias</string>
+    <string name="last_365_days">365 dias</string>
+    <string name="show_more">Mostrar mais</string>
+    <string name="show_less">Mostrar menos</string>
+    <string name="today">Hoje</string>
+    <string name="yesterday">Ontem</string>
+    <string name="tomorrow">Amanhã</string>
+    <string name="select_date">Selecione a data</string>
+    <string name="select_month">Selecione o mês</string>
+    <string name="x">x</string>
+    <string name="tonnage">Tonelagem</string>
+    <string name="progress">Progresso</string>
+    <string name="tonnage_chip">Tonelagem</string>
+    <string name="intensity_chip">Intensidade</string>
+    <string name="performance_metric_density">Ritmo de trabalho</string>
+    <string name="performance_metric_intensity">Peso médio</string>
+    <string name="repetitions_chip">Repetições</string>
+    <string name="volume">Volume</string>
+    <string name="training_progress_lost_title">Sair do treino</string>
+    <string name="training_progress_lost_description">Se fechar agora, todo o progresso desta sessão será descartado.</string>
+    <string name="planned_sets_unfinished_title">Séries não concluídas</string>
+    <string name="planned_sets_unfinished_description">Algumas séries planejadas ainda estão vazias. Elas serão descartadas ao concluir o treino.</string>
+    <string name="confirm_training_completion_title">Concluir treino</string>
+    <string name="confirm_training_completion_subtitle">Revise as séries concluídas e a duração antes de salvar.</string>
+    <string name="confirm_training_completion_hint">Toque na duração para ajustá-la.</string>
+    <string name="confirm_training_completion_exercises">Exercícios registrados</string>
+    <string name="confirm_training_completion_sets">Séries registradas</string>
+    <string name="confirm_training_completion_save">Salvar treino</string>
+    <string name="confirm_training_completion_continue">Continuar treinando</string>
+    <string name="something_went_wrong">Algo deu errado</string>
+    <string name="timeout_error">Tempo limite excedido</string>
+    <string name="unexpected_network_error">Erro de rede inesperado</string>
+    <string name="draft_training_alert_title_add">Retomar treino</string>
+    <string name="draft_training_alert_description_add">Seu rascunho de treino está salvo. Continue de onde parou.</string>
+    <string name="draft_training_alert_title_edit">Retomar edição</string>
+    <string name="draft_training_alert_description_edit">Suas alterações estão salvas em um rascunho, prontas para continuar.</string>
+    <string name="draft_training_summary_exercises">Exercícios</string>
+    <string name="draft_training_summary_sets">Séries preenchidas</string>
+    <string name="draft_training_summary_time">Tempo salvo</string>
+    <string name="draft_training_contents">Neste treino</string>
+    <string name="draft_training_empty">Nenhum exercício adicionado ainda. Continue para adicionar o primeiro.</string>
+    <string name="draft_training_start_new_hint_add">Iniciar um novo treino descartará este rascunho.</string>
+    <string name="draft_training_start_new_hint_edit">Iniciar um novo treino descartará estas edições. O treino salvo permanecerá inalterado.</string>
+    <string name="start_training_title">Iniciar treino</string>
+    <string name="start_training_option_empty_title">Monte seu treino</string>
+    <string name="start_training_option_empty_description">Escolha os exercícios de hoje e adicione séries e pesos enquanto treina.</string>
+    <string name="start_training_option_preset_title">Um plano inicial</string>
+    <string name="start_training_option_preset_description">Exercícios e séries sugeridos para seu objetivo e sua experiência. Ajuste o plano para hoje.</string>
+    <string name="start_training_option_recent_title">Treino recente</string>
+    <string name="start_training_choice_empty">Personalizado</string>
+    <string name="start_training_choice_preset">Sugerido</string>
+    <string name="start_training_choice_recent">Repetir</string>
+    <string name="start_training_choose_exercises_btn">Escolher exercícios</string>
+    <string name="start_training_use_preset_btn">Usar este plano</string>
+    <string name="start_training_repeat_btn">Repetir treino</string>
+    <string name="start_training_recent_description">Repita os exercícios e as séries. Adicione os pesos de hoje enquanto treina.</string>
+    <string name="start_training_recent_picker_label">Treinos dos últimos 14 dias</string>
+    <string name="start_training_plan_edit_hint">Você pode alterar o plano antes de registrar as séries.</string>
+    <string name="exercise_plan_sets_repetitions">Séries: %1$s · Reps: %2$s</string>
+    <string name="exercise_plan_sets">Séries: %1$s</string>
+    <string name="menu">Menu</string>
+    <string name="calendar">Calendário</string>
+
+    <string name="best_tonnage">Melhor tonelagem</string>
+    <string name="best_weight">Maior peso</string>
+    <string name="lifetime_volume">Volume acumulado</string>
+    <string name="max_repetitions">Máximo de repetições</string>
+    <string name="peak_intensity">Pico de intensidade</string>
+
+    <string name="exercise_example_last_used_value">Último uso: %1$s</string>
+    <string name="exercise_example_weight_type_value">Tipo de peso: %1$s</string>
+    <string name="exercise_library_replace_target">Exercício a substituir</string>
+
+
+    <!-- ForceTypeEnumState -->
+    <string name="force_type_pull">Puxar</string>
+    <string name="force_type_push">Empurrar</string>
+    <string name="force_type_hinge">Dobradiça de quadril</string>
+
+    <!-- CategoryEnumState -->
+    <string name="category_compound">Composto</string>
+    <string name="category_isolation">Isolado</string>
+
+    <!-- WeightTypeEnumState -->
+    <string name="weight_type_free">Livre</string>
+    <string name="weight_type_fixed">Fixo</string>
+    <string name="weight_type_body_weight">Corporal</string>
+
+    <!-- ResourceTypeEnumState -->
+    <string name="resource_type_youtube_video">Vídeo do YouTube</string>
+    <string name="resource_type_video">Vídeo</string>
+    <string name="resource_type_text">Texto</string>
+
+    <!-- EquipmentEnumState -->
+    <string name="equipment_dumbbells">Halteres</string>
+    <string name="equipment_barbell">Barra</string>
+    <string name="equipment_v_bar">Puxador em V</string>
+    <string name="equipment_wide_grip_handle">Puxador de pegada aberta</string>
+    <string name="equipment_close_grip_handle">Puxador de pegada fechada</string>
+    <string name="equipment_ez_bar">Barra EZ</string>
+    <string name="equipment_trap_bar">Barra hexagonal</string>
+    <string name="equipment_rope">Corda</string>
+    <string name="equipment_straight_bar">Barra reta</string>
+    <string name="equipment_cord_handles">Pegadores de cabo</string>
+
+    <string name="equipment_ab_machines">Máquinas de abdominais</string>
+    <string name="equipment_butterfly">Voador peitoral</string>
+    <string name="equipment_butterfly_reverse">Voador inverso</string>
+    <string name="equipment_leg_extension_machines">Cadeiras extensoras</string>
+    <string name="equipment_leg_curl_machines">Máquinas de flexão de pernas</string>
+    <string name="equipment_chest_press_machines">Máquinas de supino</string>
+    <string name="equipment_biceps_machines">Máquinas de bíceps</string>
+    <string name="equipment_smith_machines">Máquinas Smith</string>
+    <string name="equipment_hack_squat_machines">Máquinas de agachamento hack</string>
+    <string name="equipment_leg_press_machine">Máquina de leg press</string>
+    <string name="equipment_deadlift_machines">Máquinas de levantamento terra</string>
+    <string name="equipment_shoulder_press_machines">Máquinas de desenvolvimento de ombros</string>
+    <string name="equipment_lateral_raise_machines">Máquinas de elevação lateral</string>
+    <string name="equipment_triceps_machines">Máquinas de tríceps</string>
+    <string name="equipment_calf_raise_machines">Máquinas de panturrilhas</string>
+    <string name="equipment_glute_machines">Máquinas de glúteos</string>
+    <string name="equipment_adductor_machine">Cadeira adutora</string>
+    <string name="equipment_abductor_machine">Cadeira abdutora</string>
+
+    <string name="equipment_lat_pulldown">Puxador alto</string>
+    <string name="equipment_cable">Estação de polia</string>
+    <string name="equipment_cable_crossover">Crossover de polias</string>
+    <string name="equipment_row_cable">Remada na polia</string>
+
+    <string name="equipment_pull_up_bar">Barra fixa</string>
+    <string name="equipment_dip_bars">Barras paralelas</string>
+    <string name="equipment_roman_chair">Cadeira romana</string>
+    <string name="equipment_glute_ham_raise_bench">Banco de elevação de glúteos e posteriores</string>
+
+    <string name="equipment_flat_bench">Banco reto</string>
+    <string name="equipment_adjustable_bench">Banco ajustável</string>
+    <string name="equipment_decline_bench">Banco declinado</string>
+    <string name="equipment_flat_bench_with_rack">Banco reto com suporte</string>
+    <string name="equipment_incline_bench_with_rack">Banco inclinado com suporte</string>
+    <string name="equipment_decline_bench_with_rack">Banco declinado com suporte</string>
+    <string name="equipment_squat_rack">Suporte de agachamento</string>
+    <string name="equipment_preacher_curl_bench">Banco Scott</string>
+    <string name="equipment_row_bench">Banco de remada</string>
+
+    <!-- EquipmentGroupEnumState -->
+    <string name="equipment_group_free_weight">Pesos livres</string>
+    <string name="equipment_group_machines">Máquinas</string>
+    <string name="equipment_group_cable_machines">Máquinas de polia</string>
+    <string name="equipment_group_body_weight">Peso corporal</string>
+    <string name="equipment_group_benches_and_racks">Bancos e suportes</string>
+
+    <!-- MuscleEnumState -->
+    <string name="muscle_pectoralis_major_clavicular">Peitoral superior</string>
+    <string name="muscle_pectoralis_major_sternocostal">Peitoral médio</string>
+    <string name="muscle_pectoralis_major_abdominal">Peitoral inferior</string>
+    <string name="muscle_trapezius">Trapézio</string>
+    <string name="muscle_latissimus_dorsi">Latíssimo do dorso</string>
+    <string name="muscle_rhomboids">Romboides</string>
+    <string name="muscle_teres_major">Redondo maior</string>
+    <string name="muscle_rectus_abdominis">Reto abdominal</string>
+    <string name="muscle_obliques">Oblíquos</string>
+    <string name="muscle_calf">Panturrilhas</string>
+    <string name="muscle_gluteal">Glúteos</string>
+    <string name="muscle_hamstrings">Posteriores da coxa</string>
+    <string name="muscle_quadriceps">Quadríceps</string>
+    <string name="muscle_adductors">Adutores</string>
+    <string name="muscle_abductors">Abdutores</string>
+    <string name="muscle_anterior_deltoid">Deltoide anterior</string>
+    <string name="muscle_lateral_deltoid">Deltoides laterais</string>
+    <string name="muscle_posterior_deltoid">Deltoide posterior</string>
+    <string name="muscle_biceps">Bíceps braquial</string>
+    <string name="muscle_triceps">Tríceps braquial</string>
+    <string name="muscle_forearm">Músculos do antebraço</string>
+
+    <!-- MuscleGroupEnumState -->
+    <string name="muscle_group_chest_muscles">Peito</string>
+    <string name="muscle_group_back_muscles">Costas</string>
+    <string name="muscle_group_abdominal_muscles">Abdominais</string>
+    <string name="muscle_group_legs">Pernas</string>
+    <string name="muscle_group_arms_and_forearms">Braços</string>
+    <string name="muscle_group_shoulder_muscles">Ombros</string>
+
+    <!-- IterationFocus -->
+    <string name="iteration_focus_volume">Volume</string>
+    <string name="iteration_focus_repetitions">Repetições</string>
+    <string name="iteration_focus_unidentified">Não identificado</string>
+
+    <!-- Equipment hints -->
+    <string name="equipment_hint_common">Repetições: quantas você fez nesta série. Peso: siga as dicas abaixo.</string>
+    <string name="equipment_hint_none">Peso: se não houver peso adicional, digite 1. Se segurar uma anilha ou um halter, ou usar um colete, digite apenas o peso adicional.</string>
+
+    <string name="equipment_hint_dumbbells">Digite o total do par (2×20 → 40), mesmo em repetições alternadas.</string>
+    <string name="equipment_hint_barbell">Digite o peso total na barra. Se incluir a barra, inclua sempre.</string>
+    <string name="equipment_hint_v_bar">Segure o puxador em V com as duas mãos.</string>
+    <string name="equipment_hint_wide_grip_handle">Segure o puxador de pegada aberta com as duas mãos.</string>
+    <string name="equipment_hint_close_grip_handle">Segure o puxador de pegada fechada com as duas mãos.</string>
+    <string name="equipment_hint_ez_bar">Digite o peso total na barra EZ. Se incluir a barra, inclua sempre.</string>
+    <string name="equipment_hint_trap_bar">Digite o peso total na barra hexagonal. Se incluir a barra, inclua sempre.</string>
+    <string name="equipment_hint_rope">Segure a corda com uma ou duas mãos, conforme o exercício.</string>
+    <string name="equipment_hint_straight_bar">Segure a barra reta com as duas mãos.</string>
+    <string name="equipment_hint_cord_handles">Segure um pegador com uma mão ou use o par, conforme o exercício.</string>
+
+    <string name="equipment_hint_ab_machines">Digite o peso selecionado na máquina.</string>
+    <string name="equipment_hint_butterfly">Digite o peso da máquina. Se os lados esquerdo e direito mostrarem números diferentes, use um dos lados.</string>
+    <string name="equipment_hint_butterfly_reverse">Digite o peso da máquina. Se os lados esquerdo e direito mostrarem números diferentes, use um dos lados.</string>
+    <string name="equipment_hint_leg_extension_machines">Digite o peso selecionado na cadeira extensora.</string>
+    <string name="equipment_hint_leg_curl_machines">Digite o peso selecionado na máquina de flexão de pernas.</string>
+    <string name="equipment_hint_chest_press_machines">Digite o peso selecionado na máquina de supino.</string>
+    <string name="equipment_hint_biceps_machines">Digite o peso selecionado na máquina de bíceps.</string>
+    <string name="equipment_hint_smith_machines">Digite o peso total das anilhas. A barra da máquina Smith pode ser desconsiderada — mantenha o mesmo critério sempre.</string>
+    <string name="equipment_hint_hack_squat_machines">Digite o peso total das anilhas no agachamento hack.</string>
+    <string name="equipment_hint_leg_press_machine">Digite o peso total das anilhas no leg press.</string>
+    <string name="equipment_hint_deadlift_machines">Digite o peso total das anilhas na máquina de levantamento terra.</string>
+    <string name="equipment_hint_shoulder_press_machines">Digite o peso selecionado na máquina de ombros.</string>
+    <string name="equipment_hint_lateral_raise_machines">Digite o peso selecionado na máquina de elevação lateral.</string>
+    <string name="equipment_hint_triceps_machines">Digite o peso selecionado na máquina de tríceps.</string>
+    <string name="equipment_hint_calf_raise_machines">Digite o peso selecionado na máquina de panturrilhas.</string>
+    <string name="equipment_hint_glute_machines">Digite o peso selecionado na máquina de glúteos.</string>
+
+    <string name="equipment_hint_lat_pulldown">Digite o peso selecionado no puxador alto.</string>
+    <string name="equipment_hint_cable">Digite o peso selecionado na estação de polia.</string>
+    <string name="equipment_hint_cable_crossover">No crossover, digite o peso de um dos lados.</string>
+    <string name="equipment_hint_row_cable">Digite o peso selecionado na remada sentada.</string>
+
+    <string name="equipment_hint_pull_up_bar">Sem peso adicional — digite seu peso corporal. Com cinto ou colete — some o peso adicional.</string>
+    <string name="equipment_hint_dip_bars">Sem peso adicional — digite seu peso corporal. Com cinto ou colete — some o peso adicional.</string>
+    <string name="equipment_hint_romain_chair">Sem peso adicional — digite seu peso corporal. Se segurar uma anilha ou um halter — some esse peso.</string>
+    <string name="equipment_hint_glute_ham_raise_bench">Sem peso adicional — digite seu peso corporal. Com anilha ou colete — some esse peso.</string>
+
+    <string name="equipment_hint_flat_bench">Se usar peso externo, digite esse peso.</string>
+    <string name="equipment_hint_adjustable_bench">Se usar peso externo, digite esse peso.</string>
+    <string name="equipment_hint_adductor_machine">Digite o peso selecionado na cadeira adutora.</string>
+    <string name="equipment_hint_abductor_machine">Digite o peso selecionado na cadeira abdutora.</string>
+    <string name="equipment_hint_decline_bench">Se usar peso externo, digite esse peso.</string>
+    <string name="equipment_hint_flat_bench_with_rack">Digite o peso total da barra no suporte.</string>
+    <string name="equipment_hint_incline_bench_with_rack">Digite o peso total da barra no suporte.</string>
+    <string name="equipment_hint_decline_bench_with_rack">Digite o peso total da barra no suporte.</string>
+    <string name="equipment_hint_squat_rack">Digite o peso total da barra no suporte.</string>
+    <string name="equipment_hint_preacher_curl_bench">Digite o peso que você levanta no exercício.</string>
+    <string name="equipment_hint_row_bench">Digite o peso que você usa no exercício.</string>
+
+    <string name="notification_forgot_training_title">Treino ainda aberto 💪</string>
+    <string name="notification_forgot_training_description">Volte para concluir ou salvar seu progresso.</string>
+
+    <string name="notification_weight_title">Que tal se pesar? 👋</string>
+    <string name="notification_weight_description">Um peso atualizado mantém seu progresso e suas recomendações precisos.</string>
+
+    <string name="training_unusual_weight_title">Peso incomum</string>
+    <string name="training_unusual_weight_subtitle">Pode faltar ou sobrar um dígito</string>
+    <string name="training_unusual_reps_title">Número de repetições incomum</string>
+    <string name="training_unusual_reps_subtitle">Pode faltar ou sobrar um dígito</string>
+
+    <!-- Goal Profile -->
+    <string name="goal_title">Objetivo de treino</string>
+    <string name="goal_picker_primary_title">Objetivo principal</string>
+    <string name="goal_picker_secondary_title">Objetivo secundário</string>
+    <string name="goal_save_btn">Salvar objetivo</string>
+    <string name="goal_secondary_section">O que mais importa?</string>
+    <string name="goal_target_date_placeholder">Data-alvo</string>
+    <string name="personalizations_schedule_section">Agenda de treinos</string>
+    <string name="personalizations_session_duration_section">Duração da sessão</string>
+    <string name="personalizations_lifestyle_section">Estilo de vida</string>
+    <string name="personalizations_recovery_context_section">Contexto de recuperação</string>
+    <string name="personalizations_care_zones_section">Áreas de cuidado</string>
+    <string name="personalizations_health_conditions_section">Condições de saúde</string>
+    <string name="personalizations_movement_restrictions_section">Restrições de movimento</string>
+    <string name="personalizations_sports_section">Esportes</string>
+    <string name="personalizations_focus_areas_section">Áreas de foco</string>
+    <string name="personalizations_physical_qualities_section">Capacidades físicas</string>
+    <string name="personalizations_program_preferences_section">Preferências de programa</string>
+    <string name="personalizations_routine_structure_section">Estrutura da rotina</string>
+    <string name="personalizations_set_method_preferences_section">Preferências de séries / métodos</string>
+    <string name="personalizations_equipment_preferences_section">Preferências de equipamentos</string>
+    <string name="personalizations_training_phase_section">Fase de treino</string>
+    <string name="goal_optional">Opcional</string>
+    <string name="goal_routine_section">Rotina de treino</string>
+    <string name="goal_training_preferences_section">Preferências de treino</string>
+    <string name="goal_recovery_section">Recuperação e limitações</string>
+    <string name="goal_selected_options">Selecionadas: %1$d</string>
+    <string name="goal_options_expanded">Expandido</string>
+    <string name="goal_options_collapsed">Recolhido</string>
+    <string name="goal_target_date_invalid">Escolha uma data entre %1$s e %2$s.</string>
+    <string name="goal_menu">Objetivo de treino</string>
+
+    <!-- Primary goals -->
+    <string name="goal_primary_build_muscle">Ganhar massa muscular</string>
+    <string name="goal_primary_get_stronger">Ganhar força</string>
+    <string name="goal_primary_lose_fat">Perder gordura</string>
+    <string name="goal_primary_return_to_training">Voltar a treinar</string>
+    <string name="goal_primary_maintain">Manter a forma</string>
+    <string name="goal_primary_general_fitness">Condicionamento geral</string>
+
+    <!-- Secondary goals -->
+    <string name="goal_secondary_build_muscle">Ganho de massa muscular</string>
+    <string name="goal_secondary_get_stronger">Ganho de força</string>
+    <string name="goal_secondary_lose_fat">Perda de gordura</string>
+    <string name="goal_secondary_return_to_training">Retorno gradual</string>
+    <string name="goal_secondary_maintain">Manutenção</string>
+    <string name="goal_secondary_general_fitness">Condicionamento geral</string>
+    <string name="goal_secondary_consistency">Consistência</string>
+
+    <!-- Primary goal descriptions -->
+    <string name="goal_primary_build_muscle_desc">Treine para ganhar massa muscular com volume estruturado e progressão constante.</string>
+    <string name="goal_primary_get_stronger_desc">Concentre-se em cargas maiores, progressão clara e trabalho voltado à força.</string>
+    <string name="goal_primary_lose_fat_desc">Apoie a perda de gordura com treinos consistentes que preservam a massa muscular.</string>
+    <string name="goal_primary_return_to_training_desc">Reconstrua sua rotina aos poucos, com progressão controlada.</string>
+    <string name="goal_primary_maintain_desc">Mantenha sua forma com treinos equilibrados e regulares.</string>
+    <string name="goal_primary_general_fitness_desc">Crie uma rotina equilibrada de força, movimento e consistência.</string>
+
+    <!-- Secondary goal descriptions -->
+    <string name="goal_secondary_build_muscle_desc">Ganhe massa muscular junto com seu objetivo principal.</string>
+    <string name="goal_secondary_get_stronger_desc">Desenvolva força junto com seu foco principal.</string>
+    <string name="goal_secondary_lose_fat_desc">Apoie a perda de gordura junto com seu objetivo principal.</string>
+    <string name="goal_secondary_return_to_training_desc">Reconstrua sua base aos poucos enquanto busca seu objetivo principal.</string>
+    <string name="goal_secondary_maintain_desc">Mantenha seu nível atual sem perder o que já conquistou.</string>
+    <string name="goal_secondary_general_fitness_desc">Melhore sua energia, resistência e condicionamento geral.</string>
+    <string name="goal_secondary_consistency_desc">Crie um hábito duradouro de treino, semana após semana.</string>
+
+    <!-- Goal progress card -->
+    <string name="goal_card_title">Objetivo de treino</string>
+    <string name="goal_course_title">Seu caminho</string>
+    <string name="goal_period_label">Período do objetivo</string>
+    <string name="goal_card_status_on_track">No caminho certo</string>
+    <string name="goal_card_status_drifting">Há espaço para melhorar</string>
+    <string name="goal_card_status_off_track">Ajuste seu caminho</string>
+    <string name="goal_card_progress_days_left">Restam %1$d dias</string>
+    <string name="goal_card_progress_overdue">Prazo ultrapassado em %1$d dias</string>
+    <string name="goal_card_progress_due_today">Prazo termina hoje</string>
+    <string name="goal_card_update_btn">Atualizar</string>
+
+    <!-- Training goal details dialog -->
+    <string name="goal_details_title">Detalhes do objetivo</string>
+    <string name="goal_details_show_details">Sobre esta avaliação</string>
+    <string name="goal_details_hide_details">Ocultar detalhes</string>
+    <!-- Training goal details: unavailable assessment -->
+    <string name="goal_details_reason_no_data_detail">Não há séries registradas ou critérios disponíveis suficientes para avaliar este período.</string>
+    <string name="goal_details_reason_too_early_detail">São necessários pelo menos sete dias observados para avaliar os padrões semanais de treino.</string>
+
+    <!-- Goal-fit diagnostic sections -->
+    <string name="goal_fit_diagnostic_drifting_title">O que ajustar</string>
+    <string name="goal_fit_diagnostic_on_track_title">O que funciona</string>
+    <!-- Goal-fit target formats: actual / target line uses %1$s (actual), %2$s (target) -->
+    <string name="goal_fit_value_target">%1$s · alvo %2$s</string>
+    <string name="goal_fit_target_at_least">≥%1$s</string>
+    <string name="goal_fit_target_at_most">≤%1$s</string>
+    <string name="goal_fit_target_range">%1$s–%2$s</string>
+
+    <!-- Goal-fit unit suffixes (concatenated with numbers in code; never used as printf %d) -->
+    <string name="goal_fit_unit_sets_per_week">séries/sem</string>
+    <string name="goal_fit_unit_groups">grupos</string>
+    <string name="goal_fit_unit_ratio">×</string>
+
+    <!-- Goal-fit context labels (shown next to per-group sub-findings) -->
+
+    <!-- Goal-fit rule titles — BUILD_MUSCLE -->
+    <string name="goal_fit_rule_build_muscle_weekly_sets_per_primary_group_title">Séries estimadas por grupo muscular</string>
+    <string name="goal_fit_rule_build_muscle_weekly_frequency_per_primary_group_title">Dias de treino por grupo muscular</string>
+    <string name="goal_fit_rule_build_muscle_load_progression_title">Variação estimada da força no período</string>
+
+    <!-- Goal-fit rule titles — GET_STRONGER -->
+    <string name="goal_fit_rule_get_stronger_strength_rep_range_share_title">Faixa de repetições para força</string>
+    <string name="goal_fit_rule_get_stronger_strength_progression_title">Variação estimada da força no período</string>
+
+    <!-- Goal-fit rule titles — MAINTAIN -->
+    <string name="goal_fit_rule_maintain_group_coverage_title">Cobertura de peito, costas e pernas</string>
+    <string name="goal_fit_rule_maintain_weekly_frequency_title">Dias de treino por semana</string>
+    <string name="goal_fit_rule_maintain_weekly_volume_stability_title">Variação semanal do número de séries</string>
+
+    <!-- Goal-fit rule titles — GENERAL_FITNESS -->
+    <string name="goal_fit_rule_general_fitness_group_coverage_title">Cobertura de peito, costas e pernas</string>
+    <string name="goal_fit_rule_general_fitness_weekly_frequency_title">Dias de treino por semana</string>
+
+    <!-- Goal-fit rule titles — LOSE_FAT -->
+    <string name="goal_fit_rule_lose_fat_session_adherence_title">Dias de treino por semana</string>
+    <string name="goal_fit_rule_lose_fat_resistance_presence_title">Treino resistido por semana</string>
+    <string name="goal_fit_rule_lose_fat_weekly_volume_trend_title">Séries da última semana completa vs semana anterior</string>
+
+    <!-- Goal-fit rule titles — RETURN_TO_TRAINING -->
+    <string name="goal_fit_rule_return_to_training_weekly_frequency_title">Dias de treino por semana</string>
+    <string name="goal_fit_rule_return_to_training_load_ramp_gentle_title">Maior aumento semanal do número de séries</string>
+
+    <!-- Personalizations: schedule -->
+    <string name="personalization_low_frequency">1–2 vezes por semana</string>
+    <string name="personalization_moderate_frequency">3–4 vezes por semana</string>
+    <string name="personalization_high_frequency">5+ vezes por semana</string>
+    <string name="personalization_weekdays_only">Apenas dias de semana</string>
+    <string name="personalization_weekends_only">Apenas fins de semana</string>
+    <string name="personalization_flexible_schedule">Agenda flexível</string>
+    <string name="personalization_unpredictable_schedule">Agenda imprevisível</string>
+
+    <!-- Personalizations: session duration -->
+    <string name="personalization_minutes_up_to_45">Até 45 min</string>
+    <string name="personalization_minutes_45_to_90">45–90 min</string>
+    <string name="personalization_minutes_90_plus">90+ min</string>
+    <string name="personalization_flexible_duration">Duração flexível</string>
+
+    <!-- Personalizations: lifestyle -->
+    <string name="personalization_high_stress_lifestyle">Muito estresse</string>
+    <string name="personalization_poor_sleep_pattern">Sono ruim</string>
+    <string name="personalization_low_energy_tendency">Pouca energia frequente</string>
+    <string name="personalization_sedentary_job">Trabalho sedentário</string>
+    <string name="personalization_physically_active_job">Trabalho fisicamente ativo</string>
+
+    <!-- Personalizations: recovery context -->
+    <string name="personalization_returning_after_break">Retorno após uma pausa</string>
+    <string name="personalization_recovering_from_injury">Recuperação de lesão</string>
+    <string name="personalization_limited_range_of_motion">Amplitude de movimento limitada</string>
+    <string name="personalization_fatigue_management">Gerenciar fadiga</string>
+    <string name="personalization_recovery_focus">Foco na recuperação</string>
+    <string name="personalization_mobility_focus">Foco na mobilidade</string>
+
+    <!-- Personalizations: care zones -->
+    <string name="personalization_neck_care">Proteger o pescoço</string>
+    <string name="personalization_lower_back_care">Proteger a lombar</string>
+    <string name="personalization_upper_back_care">Proteger a parte superior das costas</string>
+    <string name="personalization_shoulder_care">Proteger os ombros</string>
+    <string name="personalization_elbow_care">Proteger os cotovelos</string>
+    <string name="personalization_wrist_care">Proteger os punhos</string>
+    <string name="personalization_hip_care">Proteger os quadris</string>
+    <string name="personalization_knee_care">Proteger os joelhos</string>
+    <string name="personalization_ankle_care">Proteger os tornozelos</string>
+
+    <!-- Personalizations: health conditions -->
+    <string name="personalization_hypertension">Hipertensão</string>
+    <string name="personalization_diabetes">Diabetes</string>
+    <string name="personalization_asthma">Asma</string>
+    <string name="personalization_osteoporosis">Osteoporose</string>
+    <string name="personalization_arthritis">Artrite</string>
+    <string name="personalization_herniated_disc">Hérnia de disco</string>
+    <string name="personalization_chronic_pain">Dor crônica</string>
+    <string name="personalization_pregnancy">Gravidez</string>
+    <string name="personalization_postpartum">Pós-parto</string>
+
+    <!-- Personalizations: movement restrictions -->
+    <string name="personalization_avoid_high_intensity">Evitar alta intensidade</string>
+    <string name="personalization_avoid_heavy_loading">Evitar cargas pesadas</string>
+    <string name="personalization_avoid_high_impact">Evitar alto impacto</string>
+    <string name="personalization_avoid_deep_squats">Sem agachamentos profundos</string>
+    <string name="personalization_avoid_lunges">Sem afundos</string>
+    <string name="personalization_avoid_overhead_work">Sem movimentos acima da cabeça</string>
+    <string name="personalization_avoid_heavy_spinal_loading">Sem carga pesada na coluna</string>
+    <string name="personalization_avoid_spinal_flexion">Sem flexão da coluna</string>
+    <string name="personalization_avoid_twisting">Sem torções</string>
+    <string name="personalization_avoid_floor_work">Sem exercícios no chão</string>
+    <string name="personalization_avoid_inversions">Sem posições invertidas</string>
+    <string name="personalization_avoid_valsalva">Sem prender a respiração</string>
+    <string name="personalization_needs_supported_movements">Movimentos com apoio</string>
+
+    <!-- Personalizations: sports -->
+    <string name="personalization_sport_powerlifting">Levantamento de potência</string>
+    <string name="personalization_sport_bodybuilding">Fisiculturismo</string>
+    <string name="personalization_sport_olympic_weightlifting">Levantamento de peso olímpico</string>
+    <string name="personalization_sport_crossfit">CrossFit</string>
+    <string name="personalization_sport_calisthenics">Calistenia</string>
+    <string name="personalization_sport_running">Corrida</string>
+    <string name="personalization_sport_cycling">Ciclismo</string>
+    <string name="personalization_sport_swimming">Natação</string>
+    <string name="personalization_sport_grappling">Luta agarrada / jiu-jítsu brasileiro</string>
+    <string name="personalization_sport_striking">Boxe / MMA</string>
+    <string name="personalization_sport_team_ball_sports">Esportes coletivos com bola</string>
+    <string name="personalization_sport_racquet_sports">Esportes de raquete</string>
+    <string name="personalization_sport_climbing">Escalada</string>
+    <string name="personalization_sport_winter_board_sports">Esqui / snowboard</string>
+    <string name="personalization_sport_yoga_or_pilates">Yoga / Pilates</string>
+
+    <!-- Personalizations: focus areas -->
+    <string name="personalization_focus_chest">Peito</string>
+    <string name="personalization_focus_back">Costas</string>
+    <string name="personalization_focus_shoulders">Ombros</string>
+    <string name="personalization_focus_rear_delts">Deltoides posteriores</string>
+    <string name="personalization_focus_arms">Braços</string>
+    <string name="personalization_focus_forearms_and_grip">Antebraços / pegada</string>
+    <string name="personalization_focus_abs_and_core">Abdominais &amp; core</string>
+    <string name="personalization_focus_legs">Pernas</string>
+    <string name="personalization_focus_glutes">Glúteos</string>
+    <string name="personalization_focus_quadriceps">Quadríceps</string>
+    <string name="personalization_focus_hamstrings">Posteriores da coxa</string>
+    <string name="personalization_focus_calves">Panturrilhas</string>
+
+    <!-- Personalizations: physical qualities -->
+    <string name="personalization_improve_cardio">Melhorar o condicionamento cardiovascular</string>
+    <string name="personalization_improve_muscular_endurance">Resistência muscular</string>
+    <string name="personalization_improve_explosive_power">Potência explosiva</string>
+    <string name="personalization_improve_speed">Velocidade</string>
+    <string name="personalization_improve_flexibility">Flexibilidade</string>
+    <string name="personalization_improve_balance">Equilíbrio</string>
+    <string name="personalization_improve_grip_strength">Força de pegada</string>
+    <string name="personalization_improve_core_stability">Estabilidade do core</string>
+
+    <!-- Personalizations: program preferences -->
+    <string name="personalization_simple_plan">Plano simples</string>
+    <string name="personalization_lower_volume">Menor volume</string>
+    <string name="personalization_higher_volume">Maior volume</string>
+    <string name="personalization_gradual_progression">Progressão gradual</string>
+    <string name="personalization_aggressive_progression">Progressão agressiva</string>
+
+    <!-- Personalizations: routine structure -->
+    <string name="personalization_prefer_full_body">Corpo inteiro</string>
+    <string name="personalization_prefer_upper_lower">Membros superiores / inferiores</string>
+    <string name="personalization_prefer_push_pull_legs">Empurrar / puxar / pernas</string>
+    <string name="personalization_prefer_split_routine">Rotina dividida</string>
+
+    <!-- Personalizations: set / method preferences -->
+    <string name="personalization_prefer_straight_sets">Séries tradicionais</string>
+    <string name="personalization_prefer_supersets">Superséries</string>
+    <string name="personalization_prefer_circuits">Circuitos</string>
+    <string name="personalization_prefer_heavy_compounds">Exercícios compostos pesados</string>
+
+    <!-- Personalizations: equipment preferences -->
+    <string name="personalization_prefer_free_weights">Pesos livres</string>
+    <string name="personalization_prefer_machines">Máquinas</string>
+    <string name="personalization_prefer_cables">Polias</string>
+    <string name="personalization_prefer_bodyweight">Peso corporal</string>
+
+    <!-- Personalizations: training phase -->
+    <string name="personalization_phase_bulking">Ganho de massa</string>
+    <string name="personalization_phase_cutting">Definição</string>
+    <string name="personalization_phase_maintenance">Manutenção</string>
+    <string name="personalization_phase_deload">Semana de redução de carga</string>
+    <string name="personalization_phase_competition_prep">Preparação para competição</string>
+
+    <!-- Muscle load summary -->
+
+    <!-- Goal setup suggestion dialog -->
+    <string name="goal_setup_suggestion_title">Qual é seu objetivo?</string>
+    <string name="goal_setup_suggestion_subtitle">Dê uma direção clara ao seu treino.</string>
+    <string name="goal_setup_suggestion_benefit_tailored_title">Treinos com um alvo</string>
+    <string name="goal_setup_suggestion_benefit_tailored_description">Repetições e intensidade ajustadas ao seu objetivo.</string>
+    <string name="goal_setup_suggestion_primary_btn">Definir meu objetivo</string>
+    <string name="goal_setup_suggestion_secondary_btn">Pular</string>
+
+    <!-- Home unlock banner -->
+    <string name="home_unlock_banner_header">Desbloqueie mais</string>
+    <string name="home_unlock_duration_trend_title">Tendência da duração dos treinos</string>
+    <string name="home_unlock_duration_trend_description">Veja como a duração das suas sessões muda ao longo do tempo</string>
+    <string name="home_unlock_performance_trends_title">Tendências de desempenho</string>
+    <string name="home_unlock_performance_trends_description">Veja tendências de volume, densidade, repetições e intensidade</string>
+    <string name="home_unlock_set_goal_title">Alinhamento com o objetivo</string>
+    <string name="home_unlock_set_goal_description">Veja como o treino corresponde ao seu objetivo</string>
+    <string name="home_unlock_set_goal_cta">Definir</string>
+    <string name="dialog_back">Voltar</string>
+    <string name="dialog_close">Fechar</string>
+    <string name="dialog_saved_workout">Treino salvo</string>
+    <string name="exercise_example_information">Informações</string>
+    <string name="exercise_sets_count">%1$d/%2$d séries</string>
+    <string name="exercise_max_weight">%1$s máx</string>
+    <string name="home">Início</string>
+    <string name="profile_body_section">Corpo</string>
+    <string name="profile_height">Altura</string>
+    <string name="profile_restrictions_section">Restrições</string>
+    <string name="profile_name_not_set">Nome não informado</string>
+    <string name="profile_value_not_set">—</string>
+    <string name="profile_account">Conta</string>
+    <string name="profile_settings_signed_in_as">Conectado como</string>
+    <string name="profile_settings_identity_unavailable">Os dados da conta estão indisponíveis no momento.</string>
+    <string name="profile_settings_privacy_title">Privacidade</string>
+    <string name="profile_settings_logout_description">Saia da conta neste dispositivo. Seus treinos salvos continuam na sua conta.</string>
+    <string name="profile_settings_delete_description">Exclua permanentemente sua conta e seu histórico de treinos. Esta ação não pode ser desfeita.</string>
+    <string name="iteration_picker_last_time">Última vez · %1$s</string>
+    <string name="iteration_picker_suggestions">Sugestões</string>
+    <string name="iteration_picker_weight_range">%1$s–1000 kg</string>
+    <string name="iteration_picker_repetitions_range">1–100 reps</string>
+    <string name="training_external_weight">Peso externo</string>
+    <string name="training_previous_set">Última vez: %1$s × %2$s</string>
+    <string name="training_no_sets">Ainda não há séries</string>
+    <string name="training_first_set_hint">Adicione sua primeira série para começar a acompanhar seu progresso.</string>
+    <string name="exercise_library">Biblioteca de exercícios</string>
+    <string name="library">Biblioteca</string>
+    <string name="analytics_consent_title">Análise de uso</string>
+    <string name="analytics_consent_description">Permita eventos de uso para ajudar a melhorar o aplicativo. Nenhum texto digitado ou medida corporal é enviado. Você pode desativar isso a qualquer momento.</string>
+    <string name="onboarding_get_started">Começar</string>
+    <string name="onboarding_title">Faça cada treino valer a pena</string>
+    <string name="onboarding_description">Seu diário de treino, feito para você. Registre suas sessões e veja quanto já progrediu.</string>
+    <string name="onboarding_workouts_title">Guarde cada série</string>
+    <string name="onboarding_workouts_description">Pesos, repetições e exercícios — tudo em um só lugar.</string>
+    <string name="onboarding_progress_title">Veja seu progresso</string>
+    <string name="onboarding_progress_description">Acompanhe sua força, consistência e histórico de treinos.</string>
+    <string name="onboarding_setup_title">Treine do seu jeito</string>
+    <string name="onboarding_setup_description">Escolha seus músculos, equipamentos e nível de experiência.</string>
+    <string name="input_invalid_value">Valor inválido</string>
+    <string name="accessibility_completed">Concluído</string>
+    <string name="accessibility_not_completed">Não concluído</string>
+    <string name="accessibility_previous_period">Período anterior</string>
+    <string name="accessibility_next_period">Próximo período</string>
+    <string name="exercise_history_total_volume">Volume total</string>
+    <string name="exercise_history_no_sets">Nenhuma série registrada</string>
+    <string name="exercise_history_unavailable">Este registro de exercício está indisponível</string>
+    <string name="exercise_history_max_load">Carga máxima</string>
+    <string name="exercise_history_trend_title">Histórico de volume</string>
+    <string name="exercise_history_current_date">%1$s · este registro</string>
+    <string name="exercise_history_no_previous">Nenhum registro anterior nos últimos 180 dias</string>
+    <string name="exercise_history_comparison_loading">Carregando treinos anteriores…</string>
+    <string name="exercise_history_volume_delta">%1$s de volume</string>
+    <string name="exercise_history_previous_set_date">Séries anteriores · %1$s</string>
+    <string name="exercise_history_chart_unavailable">Gráfico indisponível para estes valores de volume</string>
+    <string name="exercise_history_set_result">%1$s × %2$s</string>
+    <string name="exercise_history_previous_short">%1$s · %2$s</string>
+    <string name="exercise_history_vs_date">vs %1$s</string>
+    <string name="training_streak_calculation_description">Apenas os dias com séries concluídas contam. Vários treinos no mesmo dia contam uma vez. Os alvos semanais e por ciclo descrevem seu histórico recente.</string>
+    <string name="training_streak_current_progress">Último período: %1$d / %2$d dias ativos</string>
+    <string name="estimated_one_rm_source">A partir de %1$s × %2$s · %3$s</string>
+    <string name="estimated_one_rm_history_peak">Melhor neste histórico: %1$s</string>
+    <string name="estimated_one_rm_method">Melhor série de cada registro, com 1–10 repetições. As fórmulas de repetições pressupõem uma série próxima do seu limite; seu máximo real pode ser diferente.</string>
+    <string name="estimated_one_rm_effective_load">Carga efetiva = peso corporal × coeficiente + peso adicional − assistência. Não é apenas o peso adicional.</string>
+    <string name="estimated_one_rm_unavailable">Ainda não há dados adequados de 1RM. Registre uma série de 1–10 repetições com informações completas de carga.</string>
+    <string name="performance_comparison_unavailable">Comparação indisponível</string>
+    <string name="performance_history_empty">Nenhum treino neste período</string>
+    <string name="decimal_separator">,</string>
+    <string name="performance_status_record">Melhor do período</string>
+    <string name="performance_status_improved">Acima do habitual</string>
+    <string name="performance_status_declined">Abaixo do habitual</string>
+    <string name="performance_status_stable">Dentro da faixa habitual</string>
+    <string name="performance_best_value">Melhor no período até agora: %1$s</string>
+
+    <string name="digest_title">Resumo do mês</string>
+    <string name="digest_unavailable">—</string>
+    <string name="digest_zero_duration">0 min</string>
+    <string name="goal_card_status_not_evaluated">Ainda não avaliado</string>
+    <string name="goal_details_analysis_period">Analisado: %1$s – %2$s</string>
+    <string name="goal_details_analysis_evidence">%1$d dias · %2$d séries registradas</string>
+    <string name="goal_details_analysis_excluded">Séries excluídas por registros inválidos ou incompletos: %1$d</string>
+    <string name="goal_details_analysis_missing_metadata">Diagnóstico muscular indisponível: faltam dados de exercícios para %1$d séries.</string>
+    <string name="goal_details_analysis_unavailable">O período selecionado não se sobrepõe ao histórico do objetivo disponível hoje.</string>
+    <string name="goal_details_analysis_method">Compara seu treino registrado com padrões de referência para este objetivo. Isso estima o alinhamento do treino, não se o objetivo foi alcançado.</string>
+    <string name="training_streak_partial_period">Período parcialmente observado</string>
+    <string name="goal_fit_rule_build_muscle_weekly_frequency_title">Frequência de treino</string>
+    <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Frequência de treino</string>
+    <string name="goal_fit_rule_get_stronger_compound_set_share_title">Proporção de séries compostas</string>
+    <string name="goal_fit_unit_training_days_per_week">dias/sem</string>
+    <string name="muscle_load_set_share_note">Proporções estimadas de séries a partir dos detalhes disponíveis de exercícios com participação muscular conhecida.</string>
+    <string name="muscle_load_anatomy_note">Participação muscular estimada neste exercício.</string>
+    <string name="muscle_load_excluded_sets">Séries não contadas (sem repetições ou com medidas inválidas): %1$d.</string>
+    <string name="muscle_load_unassigned_sets">Séries registradas com participação muscular desconhecida: %1$d.</string>
+    <string name="muscle_load_focus_title">Maior proporção</string>
+    <string name="muscle_load_focus_note">Estas proporções descrevem o foco do treino, não a fadiga nem a recuperação.</string>
+    <string name="performance_history_scope">Até os 10 treinos mais recentes. O gráfico segue a ordem dos treinos e conecta os valores disponíveis. As comparações usam treinos anteriores no período selecionado.</string>
+    <string name="muscle_load_unmeasured_volume_sets">Séries com dados de carga incompletos: %1$d. As proporções musculares usam as séries registradas; o volume inclui apenas séries com medidas completas.</string>
+    <string name="goal_card_limited_data">Dados limitados</string>
+    <string name="available_training_details_notice">Calculado a partir dos detalhes disponíveis dos exercícios. Alguns registros podem estar indisponíveis.</string>
+    <string name="available_sets_label">Séries disponíveis</string>
+    <string name="available_exercises_label">Exercícios disponíveis</string>
+</resources>

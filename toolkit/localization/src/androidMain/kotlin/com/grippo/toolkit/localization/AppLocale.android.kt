@@ -9,27 +9,12 @@ public actual object AppLocale {
 
     public actual val current: String
         @Composable get() {
-            // Respect per-app locales if set via AppCompatDelegate (pre-Android 13)
-            val appTags = AppCompatDelegate.getApplicationLocales().toLanguageTags()
-            if (appTags.isNotBlank()) return appTags
-
-            // Else read from current configuration (triggers recomposition on config change)
             val conf = LocalConfiguration.current
-            val confTags = conf.locales.toLanguageTags()
-            if (confTags.isNotBlank()) return confTags
-
-            // Fallback to system default
-            return Locale.getDefault().toLanguageTag()
+            return effectiveLocale(conf.locales[0] ?: Locale.getDefault()).toLanguageTag()
         }
 
-    public actual fun current(): String = Locale.getDefault().toLanguageTag()
+    public actual fun current(): String = effectiveLocale(Locale.getDefault()).toLanguageTag()
 }
 
-private fun normalizeTag(tag: String): String {
-    // Ensure BCP-47 normalization like "uk-UA"
-    return try {
-        Locale.forLanguageTag(tag).toLanguageTag()
-    } catch (_: Throwable) {
-        Locale(tag).toLanguageTag()
-    }
-}
+private fun effectiveLocale(fallback: Locale): Locale =
+    AppCompatDelegate.getApplicationLocales()[0] ?: fallback

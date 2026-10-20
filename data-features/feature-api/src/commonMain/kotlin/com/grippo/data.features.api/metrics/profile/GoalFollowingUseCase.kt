@@ -25,7 +25,6 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
 import kotlin.math.floor
-import kotlin.math.roundToInt
 
 public class GoalFollowingUseCase(
     private val exerciseExampleFeature: ExerciseExampleFeature,

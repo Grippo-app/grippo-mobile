@@ -9,6 +9,7 @@
         android:theme="@style/Theme.Grippo"
         android:allowBackup="false"
         android:label="Grippo"
+        android:localeConfig="@xml/locales_config"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:usesCleartextTraffic="false">
