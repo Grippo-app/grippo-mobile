@@ -26,6 +26,7 @@ import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.performance.PerformanceTrendHistoryEntry
 import com.grippo.core.state.metrics.performance.PerformanceTrendStatusState
+import com.grippo.core.state.metrics.performance.stubEmptyPerformanceMetric
 import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
 import com.grippo.core.state.metrics.performance.stubPerformanceTrendHistory
 import com.grippo.design.components.datetime.DialogRangeHeader
