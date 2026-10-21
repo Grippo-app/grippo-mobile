@@ -1,13 +1,30 @@
 package com.grippo.training.streak.details
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
@@ -16,10 +33,14 @@ import com.grippo.core.state.metrics.engagement.TrainingStreakMood
 import com.grippo.core.state.metrics.engagement.TrainingStreakState
 import com.grippo.core.state.metrics.engagement.stubTrainingStreakProgress
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.datetime.DialogRangeHeader
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
-import com.grippo.design.components.metrics.engagement.streak.TrainingStreakInsightsCard
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakTimelineCard
 import com.grippo.design.components.utils.AnchorScrollBehavior
 import com.grippo.design.components.utils.rememberAnchoredLazyListState
@@ -27,12 +48,19 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.ArrowDown
+import com.grippo.design.resources.provider.icons.ArrowTop
 import com.grippo.design.resources.provider.training_streak_details_empty
+import com.grippo.design.resources.provider.training_streak_details_method_collapsed
+import com.grippo.design.resources.provider.training_streak_details_method_expanded
+import com.grippo.design.resources.provider.training_streak_insights_title
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
+
+private const val MethodAnimationDurationMillis = 200
 
 @Composable
 internal fun TrainingStreakDetailsScreen(
@@ -40,68 +68,141 @@ internal fun TrainingStreakDetailsScreen(
     loaders: ImmutableSet<TrainingStreakDetailsLoader>,
     contract: TrainingStreakDetailsContract,
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+    var isMethodExpanded by rememberSaveable(state.range) { mutableStateOf(false) }
+
     DialogRangeHeader(text = state.range.short())
 
+    TrainingStreakDetailsContent(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(weight = 1f, fill = false),
+        state = state,
+        isMethodExpanded = isMethodExpanded,
+        onToggleMethod = { isMethodExpanded = !isMethodExpanded },
+    )
+}
+
+@Composable
+private fun TrainingStreakDetailsContent(
+    modifier: Modifier = Modifier,
+    state: TrainingStreakDetailsDialogState,
+    isMethodExpanded: Boolean,
+    onToggleMethod: () -> Unit,
+) {
     val listState = rememberAnchoredLazyListState(
         behavior = AnchorScrollBehavior.Animated,
     )
     val streak = state.streak
 
-    LazyColumn(
-        state = listState,
-        modifier = Modifier
-            .fillMaxWidth()
-            .weight(weight = 1f, fill = false)
-            .navigationBarsPadding(),
-        contentPadding = PaddingValues(
-            start = AppTokens.dp.dialog.horizontalPadding,
-            end = AppTokens.dp.dialog.horizontalPadding,
-            bottom = AppTokens.dp.dialog.bottom,
-        ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
-    ) {
-        when {
-            streak == null -> {
-                item(key = "loading") {
-                    Loader(modifier = Modifier.fillMaxWidth())
-                }
-            }
+    BottomOverlayContainer(
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        overlay = AppTokens.colors.background.dialog,
+        content = { containerModifier, resolvedPadding ->
+            LazyColumn(
+                state = listState,
+                modifier = containerModifier.fillMaxWidth(),
+                contentPadding = resolvedPadding,
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
+            ) {
+                when {
+                    streak == null -> {
+                        item(key = "loading") {
+                            Loader(modifier = Modifier.fillMaxWidth())
+                        }
+                    }
 
-            streak.totalActiveDays == 0 -> {
-                item(key = "empty") {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = AppTokens.strings.res(Res.string.training_streak_details_empty),
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-                }
-            }
+                    streak.totalActiveDays == 0 -> {
+                        item(key = "empty") {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = AppTokens.strings.res(Res.string.training_streak_details_empty),
+                                style = AppTokens.typography.b14Med(),
+                                color = AppTokens.colors.text.secondary,
+                            )
+                        }
+                    }
 
-            else -> {
-                item(key = "summary") {
-                    TrainingStreakCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = streak,
-                    )
-                }
+                    else -> {
+                        item(key = "summary") {
+                            TrainingStreakCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = streak,
+                            )
+                        }
 
-                if (streak.timeline.isNotEmpty()) {
-                    item(key = "timeline") {
-                        TrainingStreakTimelineCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = streak,
-                        )
+                        if (streak.timeline.isNotEmpty()) {
+                            item(key = "timeline") {
+                                TrainingStreakTimelineCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = streak,
+                                )
+                            }
+                        }
+
+                        item(key = "method") {
+                            TrainingStreakMethodDisclosure(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = streak,
+                                isExpanded = isMethodExpanded,
+                                onToggle = onToggleMethod,
+                            )
+                        }
                     }
                 }
-
-                item(key = "method") {
-                    TrainingStreakInsightsCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = streak,
-                    )
-                }
             }
+        },
+        bottom = {
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+            Spacer(modifier = Modifier.navigationBarsPadding())
+        },
+    )
+}
+
+@Composable
+private fun TrainingStreakMethodDisclosure(
+    modifier: Modifier = Modifier,
+    value: TrainingStreakState,
+    isExpanded: Boolean,
+    onToggle: () -> Unit,
+) {
+    val expansionDescription = AppTokens.strings.res(
+        if (isExpanded) Res.string.training_streak_details_method_expanded
+        else Res.string.training_streak_details_method_collapsed,
+    )
+
+    Column(modifier = modifier) {
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics { stateDescription = expansionDescription },
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.training_streak_insights_title),
+                endIcon = ButtonIcon.Icon(
+                    value = if (isExpanded) AppTokens.icons.ArrowTop else AppTokens.icons.ArrowDown,
+                ),
+            ),
+            style = ButtonStyle.Tertiary,
+            onClick = onToggle,
+        )
+
+        AnimatedVisibility(
+            visible = isExpanded,
+            enter = expandVertically(
+                animationSpec = tween(MethodAnimationDurationMillis),
+                expandFrom = Alignment.Top,
+            ) + fadeIn(animationSpec = tween(MethodAnimationDurationMillis)),
+            exit = shrinkVertically(
+                animationSpec = tween(MethodAnimationDurationMillis),
+                shrinkTowards = Alignment.Top,
+            ) + fadeOut(animationSpec = tween(MethodAnimationDurationMillis)),
+        ) {
+            Text(
+                modifier = Modifier.padding(top = AppTokens.dp.contentPadding.content),
+                text = value.featured.calculationDescription(),
+                style = AppTokens.typography.b13Med(),
+                color = AppTokens.colors.text.secondary,
+            )
         }
     }
 }
@@ -267,6 +368,23 @@ private fun TrainingStreakNoActiveDaysPreview() {
             loaders = persistentSetOf(),
             contract = TrainingStreakDetailsContract.Empty,
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakExpandedMethodPreview() {
+    PreviewContainer {
+        val state = trainingStreakDetailsPreview(streak = dailyStreakPreview())
+        BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+            DialogRangeHeader(text = state.range.short())
+            TrainingStreakDetailsContent(
+                modifier = Modifier.fillMaxWidth().weight(1f, false),
+                state = state,
+                isMethodExpanded = true,
+                onToggleMethod = {},
+            )
+        }
     }
 }
 

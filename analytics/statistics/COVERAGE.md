@@ -58,16 +58,16 @@ error messages or request/response data enter the payload.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | StatisticsViewModel | mode / configured range or training ID | Runtime only | Existing DialogConfig inputs | Live dialog session; no editable filters or accepted results |
-| StatisticsViewModel | total, exerciseVolume, muscleLoad | Rebuild | observeTrainings/observeTraining plus metric use cases; muscleLoad also observes referenced anatomy through observeFromTrainings/observeFromExercises | Both modes calculate from available mapped exercise details. A static localized scope caption accompanies displayed totals/charts/muscle data, including zero; no completeness state is inferred. Anatomy changes recalculate shares and excluded/unassigned notices |
+| StatisticsViewModel | total, exerciseVolume, muscleLoad | Rebuild | observeTrainings/observeTraining plus metric use cases; muscleLoad also observes referenced anatomy through observeFromTrainings/observeFromExercises | Both modes calculate from available mapped exercise details; no scope caption is rendered and no completeness state is inferred. Anatomy changes recalculate shares and excluded/unassigned notices |
 | StatisticsViewModel | Charts loader, jobs, Back direction, telemetry | Runtime only | Foundation runtime owners | No archive supplier or serializer |
 | StatisticsComponent | ViewModel | Runtime retention | Existing retainedInstance | Ordinary configuration recreation retains VM; process restart closes dialog |
 | StatisticsScreen | Configured range label | Rebuild in composition | `DateRangeFormatState.short()` from the existing mode range | Uses the current locale without changing the range, VM state, inputs or dialog lifetime |
 
 No user-owned draft, selection or parent-flow output exists in this module.
 Therefore no StateKeeper key, initialState boundary or serialization is required.
-Both modes calculate from available mapped exercise details. The visible scope
-caption states that records may be unavailable; a detail-derived zero describes
-that available sample, rather than the entire saved history. Independent saved
+Both modes calculate from available mapped exercise details without a visible
+scope caption; a detail-derived zero describes that available sample, rather
+than the entire saved history. Independent saved
 training aggregates retain their existing owners. No completeness flag, extra
 draft, retry, cache or operation is added.
 Both shared dialog hosts use serializer=null intentionally. No dialog sessions,

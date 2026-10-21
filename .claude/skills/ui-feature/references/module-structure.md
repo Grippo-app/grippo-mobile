@@ -52,7 +52,7 @@ The current in-memory dialog API has no serialization plugin/json dependency. (`
 
 One module per bottom-sheet flow (`weight-picker`, `date-picker`, `confirmation`, `error-display`, ...). Identical to a screen feature **except**:
 - Component ctor params are typically `(componentContext, initial, onResult, back)`; no dialog Component takes a `close` parameter — the host closes sessions.
-- Ships **no** toolbar or duplicate title — `BaseComposeScreen(ScreenBackground.Color(...background.dialog))` with `Spacer(AppTokens.dp.dialog.top)`, body, `Spacer(AppTokens.dp.dialog.bottom)` + `Spacer(Modifier.navigationBarsPadding())`. The outer `:shared/dialog/DialogScreen.kt` host renders `BottomSheetToolbar` using the active config's `title: UiText`.
+- Ships **no** toolbar or duplicate title — `BaseComposeScreen(ScreenBackground.Color(...background.dialog))` with `Spacer(AppTokens.dp.dialog.top)`, body, `Spacer(AppTokens.dp.dialog.bottom)` + `Spacer(Modifier.navigationBarsPadding())`; a scrolling body wraps its scroll container in `BottomOverlayContainer` with those spacers in the `bottom` slot (owner: [dialogs](dialogs.md)). The outer `:shared/dialog/DialogScreen.kt` host renders `BottomSheetToolbar` using the active config's `title: UiText`.
 - Content rendered inside a `ModalBottomSheet` managed by `DialogComponent`, not the feature.
 - The dialog feature **never** holds a `StackNavigation` of its own; in-sheet multi-step flows use the shared `DialogContentComponent` inner `StackNavigation<DialogStep>` and the originating step's `DialogController.Session`. State is for mode/data, not navigation.
 

@@ -2,6 +2,7 @@ package com.grippo.exercise
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,6 +34,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -57,96 +59,108 @@ internal fun ExerciseScreen(
     loaders: ImmutableSet<ExerciseLoader>,
     contract: ExerciseContract,
 ) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
-    Column(
+    BottomOverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-    ) {
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-        when (state) {
-            ExerciseState.Loading -> Loader(modifier = Modifier.fillMaxWidth())
-            ExerciseState.Unavailable -> Text(
-                text = AppTokens.strings.res(Res.string.exercise_history_unavailable),
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.secondary,
-            )
-
-            is ExerciseState.Available -> {
-                val exercise = state.exercise
-                val isHistoryLoading = loaders.contains(ExerciseLoader.History)
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    ExerciseExampleImage(
-                        value = exercise.exerciseExample.imageUrl,
-                        style = ExerciseExampleImageStyle.MEDIUM,
-                    )
-
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-                    ) {
-                        Text(
-                            text = exercise.exerciseExample.name,
-                            style = AppTokens.typography.h4(),
-                            color = AppTokens.colors.text.primary,
-                        )
-
-                        if (exercise.createdAt.display.isNotEmpty()) {
-                            Text(
-                                text = exercise.createdAt.display,
-                                style = AppTokens.typography.b12Med(),
-                                color = AppTokens.colors.text.secondary,
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                if (exercise.iterations.isEmpty()) {
-                    Text(
-                        text = AppTokens.strings.res(Res.string.exercise_history_no_sets),
+            .weight(weight = 1f, fill = false),
+        contentPadding = PaddingValues(
+            start = AppTokens.dp.dialog.horizontalPadding,
+            end = AppTokens.dp.dialog.horizontalPadding,
+            top = AppTokens.dp.dialog.top,
+        ),
+        overlay = AppTokens.colors.background.dialog,
+        content = { containerModifier, resolvedPadding ->
+            Column(
+                modifier = containerModifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(resolvedPadding),
+            ) {
+                when (state) {
+                    ExerciseState.Loading -> Loader(modifier = Modifier.fillMaxWidth())
+                    ExerciseState.Unavailable -> Text(
+                        text = AppTokens.strings.res(Res.string.exercise_history_unavailable),
                         style = AppTokens.typography.b14Med(),
                         color = AppTokens.colors.text.secondary,
                     )
-                } else {
-                    ExerciseSetsContent(
-                        value = exercise.iterations,
-                        previous = state.history.lastOrNull(),
-                        isHistoryLoading = isHistoryLoading,
-                    )
 
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+                    is ExerciseState.Available -> {
+                        val exercise = state.exercise
+                        val isHistoryLoading = loaders.contains(ExerciseLoader.History)
 
-                    ExerciseProgressCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = state,
-                        isHistoryLoading = isHistoryLoading,
-                    )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            ExerciseExampleImage(
+                                value = exercise.exerciseExample.imageUrl,
+                                style = ExerciseExampleImageStyle.MEDIUM,
+                            )
+
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+                            ) {
+                                Text(
+                                    text = exercise.exerciseExample.name,
+                                    style = AppTokens.typography.h4(),
+                                    color = AppTokens.colors.text.primary,
+                                )
+
+                                if (exercise.createdAt.display.isNotEmpty()) {
+                                    Text(
+                                        text = exercise.createdAt.display,
+                                        style = AppTokens.typography.b12Med(),
+                                        color = AppTokens.colors.text.secondary,
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                        if (exercise.iterations.isEmpty()) {
+                            Text(
+                                text = AppTokens.strings.res(Res.string.exercise_history_no_sets),
+                                style = AppTokens.typography.b14Med(),
+                                color = AppTokens.colors.text.secondary,
+                            )
+                        } else {
+                            ExerciseSetsContent(
+                                value = exercise.iterations,
+                                previous = state.history.lastOrNull(),
+                                isHistoryLoading = isHistoryLoading,
+                            )
+
+                            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                            ExerciseProgressCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = state,
+                                isHistoryLoading = isHistoryLoading,
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                        Button(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = contract::onExampleDetailsClick,
+                            style = ButtonStyle.Secondary,
+                            content = ButtonContent.Text(
+                                text = AppTokens.strings.res(Res.string.exercise_details_btn),
+                            ),
+                        )
+                    }
                 }
-
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = contract::onExampleDetailsClick,
-                    style = ButtonStyle.Secondary,
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.exercise_details_btn),
-                    ),
-                )
             }
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-        Spacer(modifier = Modifier.navigationBarsPadding())
-    }
+        },
+        bottom = {
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+            Spacer(modifier = Modifier.navigationBarsPadding())
+        },
+    )
 }
 
 @AppPreview

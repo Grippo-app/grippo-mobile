@@ -14,7 +14,6 @@
     <string name="home_exercise_highlights_title">Твои упражнения</string>
     <string name="home_progress_details_hint">Нажми на карточку, чтобы увидеть подробности.</string>
     <string name="home_metrics_title">Цифры тренировки</string>
-    <string name="home_metrics_description">Последняя тренировка за этот период. Нажми на показатель, чтобы увидеть динамику.</string>
     <string name="home_metrics_empty_description">За этот период пока нет показателей. Попробуй другой период.</string>
     <string name="home_last_workout_in_period">Последняя тренировка за период</string>
     <string name="metric_overview_muscle_distribution">Как распределилась нагрузка</string>
@@ -287,8 +286,6 @@
     <string name="draft_training_summary_time">Сохранённое время</string>
     <string name="draft_training_contents">В этой тренировке</string>
     <string name="draft_training_empty">Упражнений пока нет. Продолжай, чтобы добавить первое.</string>
-    <string name="draft_training_start_new_hint_add">Если начать новую тренировку, этот черновик будет удалён.</string>
-    <string name="draft_training_start_new_hint_edit">Если начать новую тренировку, эти изменения будут отменены. Сохранённая тренировка останется без изменений.</string>
     <string name="start_training_title">Начать тренировку</string>
     <string name="start_training_option_empty_title">Собери свою тренировку</string>
     <string name="start_training_option_empty_description">Выбери упражнения на сегодня, а подходы и вес добавляй во время тренировки.</string>
@@ -302,8 +299,6 @@
     <string name="start_training_use_preset_btn">Использовать план</string>
     <string name="start_training_repeat_btn">Повторить тренировку</string>
     <string name="start_training_recent_description">Повтори упражнения и подходы. Сегодняшний вес добавляй во время тренировки.</string>
-    <string name="start_training_recent_picker_label">Тренировки за последние 14 дней</string>
-    <string name="start_training_plan_edit_hint">План можно изменить до записи подходов.</string>
     <string name="exercise_plan_sets_repetitions">Подходы: %1$s · Повторы: %2$s</string>
     <string name="exercise_plan_sets">Подходы: %1$s</string>
     <string name="menu">Меню</string>
@@ -577,7 +572,6 @@
     <string name="goal_card_update_btn">Обновить</string>
 
     <!-- Training goal details dialog -->
-    <string name="goal_details_alignment_hint">Оценка по записям тренировок, а не по достижению цели.</string>
     <string name="goal_details_title">Детали цели</string>
     <string name="goal_details_show_details">Подробнее об оценке</string>
     <string name="goal_details_hide_details">Скрыть подробности</string>
@@ -839,8 +833,6 @@
     <string name="training_streak_current_progress">Последний период: %1$d / %2$d активных дн.</string>
     <string name="estimated_one_rm_source">По подходу %1$s × %2$s · %3$s</string>
     <string name="estimated_one_rm_history_peak">Лучший в этой истории: %1$s</string>
-    <string name="estimated_one_rm_method">Лучший подход каждой записи, от 1 до 10 повторов. Формулы предполагают подход близко к пределу; фактический максимум может отличаться.</string>
-    <string name="estimated_one_rm_effective_load">Нагрузка = вес тела × коэффициент + отягощение − помощь. Это не только вес дополнительного груза.</string>
     <string name="estimated_one_rm_unavailable">Пока нет подходящих данных для 1ПМ. Нужен подход на 1–10 повторов с полными данными о нагрузке.</string>
     <string name="performance_comparison_unavailable">Нет данных для сравнения</string>
     <string name="performance_history_empty">В этом периоде нет тренировок</string>
@@ -865,18 +857,14 @@
     <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Регулярность тренировок</string>
     <string name="goal_fit_rule_get_stronger_compound_set_share_title">Доля многосуставных подходов</string>
     <string name="goal_fit_unit_training_days_per_week">дн./нед.</string>
-    <string name="muscle_load_set_share_note">Оценочная доля подходов по доступным данным упражнений с известным участием мышц.</string>
-    <string name="muscle_load_anatomy_note">Оценочное участие мышц в этом упражнении.</string>
     <string name="muscle_load_excluded_sets">Не учтено подходов без повторений или с некорректными измерениями: %1$d.</string>
     <string name="muscle_load_unassigned_sets">Подходов без данных об участии мышц: %1$d.</string>
     <string name="performance_history_scope">График соединяет доступные значения до 10 последних тренировок.</string>
     <string name="performance_trend_details_comparison_scope">Сравнение — со средним всех более ранних тренировок с данными в выбранном периоде.</string>
     <string name="muscle_load_unmeasured_volume_sets">Подходов с неполными данными о нагрузке: %1$d. Доли мышц рассчитаны по записанным подходам, тоннаж — только по полностью измеренным.</string>
     <string name="goal_card_limited_data">Ограниченные данные</string>
-    <string name="available_training_details_notice">Рассчитано по доступным данным упражнений. Часть записей может быть недоступна.</string>
     <string name="available_sets_label">Доступные подходы</string>
     <string name="available_exercises_label">Доступные упражнения</string>
-    <string name="muscle_loading_details_share_note">Примерные доли подходов с известным участием мышц.</string>
     <string name="muscle_loading_details_coverage">Подходов вне распределения: %1$d</string>
     <string name="muscle_loading_details_no_workouts_title">В этом периоде нет тренировок</string>
     <string name="muscle_loading_details_no_workouts_message">Запиши тренировку, чтобы увидеть, какие мышцы участвовали в подходах.</string>
@@ -898,7 +886,6 @@
     <string name="performance_trend_details_value_unavailable">Нет данных</string>
     <string name="performance_trend_details_value_unavailable_description">Данных этой тренировки недостаточно для расчёта показателя.</string>
     <string name="performance_trend_details_recent_workouts">Последние тренировки</string>
-    <string name="performance_trend_details_history_scope">Показаны %1$d из %2$d тренировок за этот период.</string>
     <string name="performance_trend_details_about">Как рассчитывается</string>
     <string name="performance_trend_details_expanded">Развёрнуто</string>
     <string name="performance_trend_details_collapsed">Свёрнуто</string>
@@ -928,4 +915,6 @@
     <string name="training_streak_details_day_unrecorded">Нет записи о тренировке</string>
     <string name="training_streak_details_day_description">%1$s · %2$s</string>
     <string name="training_streak_details_empty">В этом периоде ещё нет тренировочных дней. Сохранённые тренировки с выполненными повторениями помогут увидеть твой ритм.</string>
+    <string name="training_streak_details_method_expanded">Развёрнуто</string>
+    <string name="training_streak_details_method_collapsed">Свёрнуто</string>
 </resources>

@@ -39,7 +39,6 @@ import com.grippo.design.resources.provider.metric_overview_muscle_context
 import com.grippo.design.resources.provider.metric_overview_muscle_details
 import com.grippo.design.resources.provider.metric_overview_muscle_distribution
 import com.grippo.design.resources.provider.metric_overview_muscle_primary
-import com.grippo.design.resources.provider.muscle_load_set_share_note
 import com.grippo.design.resources.provider.muscle_load_no_data
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -177,12 +176,6 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
             }
         }
     }
-
-    Text(
-        text = AppTokens.strings.res(Res.string.muscle_load_set_share_note),
-        style = AppTokens.typography.b12Med(),
-        color = AppTokens.colors.text.secondary,
-    )
 
     MuscleLoadingDataNotice(summary = summary)
 

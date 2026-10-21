@@ -15,6 +15,7 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import com.grippo.design.components.cards.selectable.CheckSelectableCard
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -29,32 +30,37 @@ internal fun SecondaryGoalPickerScreen(
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-    LazyColumn(
+    BottomOverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f, false)
-            .navigationBarsPadding(),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        contentPadding = PaddingValues(
-            start = AppTokens.dp.dialog.horizontalPadding,
-            end = AppTokens.dp.dialog.horizontalPadding,
-            bottom = AppTokens.dp.dialog.bottom,
-        ),
-    ) {
-        items(state.goals, key = { it.ordinal }) { goal ->
-            CheckSelectableCard(
-                modifier = Modifier.fillMaxWidth(),
-                style = CheckSelectableCardStyle.Large(
-                    title = goal.label(),
-                    description = goal.description(),
-                    icon = goal.icon(),
-                ),
-                isSelected = state.value == goal,
-                onSelect = { contract.onSelectGoal(goal) },
-            )
-        }
-
-    }
+            .weight(weight = 1f, fill = false),
+        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        overlay = AppTokens.colors.background.dialog,
+        content = { containerModifier, resolvedPadding ->
+            LazyColumn(
+                modifier = containerModifier.fillMaxWidth(),
+                contentPadding = resolvedPadding,
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            ) {
+                items(state.goals, key = { it.ordinal }) { goal ->
+                    CheckSelectableCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        style = CheckSelectableCardStyle.Large(
+                            title = goal.label(),
+                            description = goal.description(),
+                            icon = goal.icon(),
+                        ),
+                        isSelected = state.value == goal,
+                        onSelect = { contract.onSelectGoal(goal) },
+                    )
+                }
+            }
+        },
+        bottom = {
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+            Spacer(modifier = Modifier.navigationBarsPadding())
+        },
+    )
 }
 
 @AppPreview

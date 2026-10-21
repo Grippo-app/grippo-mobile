@@ -8,11 +8,12 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +39,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.datetime.DialogRangeHeader
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCard
@@ -86,9 +88,7 @@ internal fun MuscleLoadingDetailsScreen(
     var isMethodExpanded by rememberSaveable(state.range) { mutableStateOf(false) }
 
     MuscleLoadingDetailsContent(
-        modifier = Modifier
-            .fillMaxSize()
-            .navigationBarsPadding(),
+        modifier = Modifier.fillMaxSize(),
         state = state,
         isMethodExpanded = isMethodExpanded,
         onToggleMethod = { isMethodExpanded = !isMethodExpanded },
@@ -109,82 +109,92 @@ private fun MuscleLoadingDetailsContent(
     }
     val listState = rememberAnchoredLazyListState(behavior = AnchorScrollBehavior.Animated)
 
-    LazyColumn(
+    BottomOverlayContainer(
         modifier = modifier,
-        state = listState,
-        contentPadding = PaddingValues(bottom = AppTokens.dp.dialog.bottom),
-    ) {
-        item(key = "range") {
-            DialogRangeHeader(text = state.range.short())
-        }
-
-        item(key = "distribution") {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        overlay = AppTokens.colors.background.dialog,
+        content = { containerModifier, resolvedPadding ->
+            LazyColumn(
+                modifier = containerModifier.fillMaxSize(),
+                state = listState,
+                contentPadding = resolvedPadding,
             ) {
-                val summary = state.summary
-                if (summary == null) {
-                    Loader(
+                item(key = "range") {
+                    DialogRangeHeader(text = state.range.short())
+                }
+
+                item(key = "distribution") {
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = AppTokens.dp.contentPadding.block),
-                    )
-                } else {
-                    if (summary.meta.trainingsCount > 0) {
-                        MuscleLoadingCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            summary = summary,
-                            style = MuscleLoadingCardStyle.Summary,
-                        )
-                    }
+                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                    ) {
+                        val summary = state.summary
+                        if (summary == null) {
+                            Loader(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = AppTokens.dp.contentPadding.block),
+                            )
+                        } else {
+                            if (summary.meta.trainingsCount > 0) {
+                                MuscleLoadingCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    summary = summary,
+                                    style = MuscleLoadingCardStyle.Summary,
+                                )
+                            }
 
-                    if (summary.perGroup.entries.isEmpty()) {
-                        MuscleLoadingMissingContent(summary = summary)
-                    } else {
-                        Segment(
-                            modifier = Modifier.fillMaxWidth(),
-                            items = segmentItems,
-                            selected = state.mode,
-                            onSelect = onSelectMode,
-                            segmentWidth = SegmentWidth.EqualFill,
-                            style = SegmentStyle.Outline,
-                        )
+                            if (summary.perGroup.entries.isEmpty()) {
+                                MuscleLoadingMissingContent(summary = summary)
+                            } else {
+                                Segment(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    items = segmentItems,
+                                    selected = state.mode,
+                                    onSelect = onSelectMode,
+                                    segmentWidth = SegmentWidth.EqualFill,
+                                    style = SegmentStyle.Outline,
+                                )
 
-                        MuscleLoadingImagesRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            summary = summary,
-                            mode = when (state.mode) {
-                                MuscleLoadingDetailsShowingMode.PerGroup -> MuscleLoadingImagesMode.PerGroup
-                                MuscleLoadingDetailsShowingMode.PerMuscle -> MuscleLoadingImagesMode.PerMuscle
-                            },
-                        )
+                                MuscleLoadingImagesRow(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    summary = summary,
+                                    mode = when (state.mode) {
+                                        MuscleLoadingDetailsShowingMode.PerGroup -> MuscleLoadingImagesMode.PerGroup
+                                        MuscleLoadingDetailsShowingMode.PerMuscle -> MuscleLoadingImagesMode.PerMuscle
+                                    },
+                                )
 
-                        MuscleLoading(
-                            modifier = Modifier.fillMaxWidth(),
-                            summary = summary,
-                            mode = when (state.mode) {
-                                MuscleLoadingDetailsShowingMode.PerGroup -> MuscleLoadingMode.PerGroup
-                                MuscleLoadingDetailsShowingMode.PerMuscle -> MuscleLoadingMode.PerMuscle
-                            },
-                            style = MuscleLoadingStyle.Breakdown,
-                        )
-                    }
+                                MuscleLoading(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    summary = summary,
+                                    mode = when (state.mode) {
+                                        MuscleLoadingDetailsShowingMode.PerGroup -> MuscleLoadingMode.PerGroup
+                                        MuscleLoadingDetailsShowingMode.PerMuscle -> MuscleLoadingMode.PerMuscle
+                                    },
+                                    style = MuscleLoadingStyle.Breakdown,
+                                )
+                            }
 
-                    if (summary.meta.trainingsCount > 0) {
-                        MuscleLoadingMethodDisclosure(
-                            modifier = Modifier.fillMaxWidth(),
-                            summary = summary,
-                            isExpanded = isMethodExpanded,
-                            onToggle = onToggleMethod,
-                        )
+                            if (summary.meta.trainingsCount > 0) {
+                                MuscleLoadingMethodDisclosure(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    summary = summary,
+                                    isExpanded = isMethodExpanded,
+                                    onToggle = onToggleMethod,
+                                )
+                            }
+                        }
                     }
                 }
             }
-        }
-    }
+        },
+        bottom = {
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+            Spacer(modifier = Modifier.navigationBarsPadding())
+        },
+    )
 }
 
 @Composable
@@ -434,9 +444,7 @@ private fun ExpandedMethodPreview() {
     PreviewContainer {
         BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
             MuscleLoadingDetailsContent(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .navigationBarsPadding(),
+                modifier = Modifier.fillMaxSize(),
                 state = previewState(
                     summary = summary.copy(meta = summary.meta.copy(excludedSets = 2, unassignedSets = 1)),
                 ),

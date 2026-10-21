@@ -31,7 +31,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.available_training_details_notice
 import com.grippo.design.resources.provider.goal_card_limited_data
 import com.grippo.design.resources.provider.goal_card_update_btn
 import com.grippo.design.resources.provider.goal_course_title
@@ -58,12 +57,6 @@ internal fun GoalCardContent(
     GoalCalendarPeriod(
         value = value,
         onUpdateClick = onUpdateClick,
-    )
-
-    Text(
-        text = AppTokens.strings.res(Res.string.available_training_details_notice),
-        style = AppTokens.typography.b12Med(),
-        color = AppTokens.colors.text.secondary,
     )
 }
 

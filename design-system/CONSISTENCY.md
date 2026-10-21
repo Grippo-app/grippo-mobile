@@ -106,7 +106,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   `muscle.inactive/background/outline`, without inventing zeros.
 - Bar length remains the linear 0–100% share with the existing formatted value
   outside. Recorded-set distribution remains weighted by exercise involvement;
-  exercise anatomy keeps its distinct participation explanation. Exclusions and
+  exercise anatomy shows the same bars without a participation caption. Exclusions and
   missing-data notices remain visible, and tied leaders receive equal emphasis.
   Muscle-load details request the full available sheet height from their local
   scrolling content, including loading and empty states; switching group/muscle
@@ -114,13 +114,14 @@ and Latin text in both themes; each role keeps its existing size and line height
   Centered `b14Med/text.secondary` date context precedes a cohesive evidence card:
   `MuscleLoadingCardStyle.Summary` uses `MetricSectionPanel.Large`, two neutral
   `h3/text.primary` counts with `b12Med/text.secondary` labels for available sets
-  and workouts, one known-set-share caption and a visible excluded/unknown-set
+  and workouts and a visible excluded/unknown-set
   count. The Summary is read-only, without a chevron, anatomy or a leading-share
   ring. `Overview` and `Detailed` remain variants of the same card family.
   An Outline segment selects groups versus muscles. The body map and exact share
   rows remain open on `background.dialog`; `MuscleLoadingStyle.Breakdown` avoids
   repeating the card's explanation. A Tertiary disclosure owns method detail.
-  `Annotated` keeps the existing explanation owner in all other contexts.
+  `Annotated` shows only its conditional data notices in other contexts; no share
+  caption repeats the method.
   The disclosure uses `b13Med/text.secondary` methodology and data-quality detail;
   volume-only caveats are absent from this set-share surface. Loading, no workouts,
   unavailable sets and unknown anatomy have distinct content without fabricated
@@ -368,8 +369,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   tonnage/repetitions form two equal rows: primary `h5` values and secondary
   `b11Med` labels, with complete wrapping values and `divider.subtle` separators.
   Its `h5` section title has a decorative `icon.secondary` detail chevron.
-  A secondary `b12Med` caption identifies the optional PerGroup breakdown as
-  estimated muscle-load shares; missing muscle data leaves the totals visible.
+  The optional PerGroup breakdown carries no share caption; missing muscle data
+  leaves the totals visible.
   Exercises stay open Medium rows on the screen surface, with only their owner's
   vertical padding; `contentPadding.block` separates the header, summary and list.
   Done retains ButtonStyle.Primary and resolved overlay insets in every terminal
@@ -444,9 +445,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   equal image slots with an 8 dp gap and centers the complete bodies vertically.
   The muscle-details image layout retains its original default spacing.
   Map and bars use the same relative green load tint from the complete
-  breakdown before choosing the three visible rows. Percentages remain labelled as estimated recorded-set
-  shares; the context counts selected-period workouts/sets. Useful anatomy and
-  values precede methodology and missing-data notes. A single group names its
+  breakdown before choosing the three visible rows. The context counts
+  selected-period workouts/sets; no share caption repeats the method. Useful anatomy and
+  values precede conditional missing-data notes. A single group names its
   uniquely leading individual muscle when that fact exists. Missing groups are
   not invented zeros.
 - The training-rhythm overview has the common heading/chevron and a compact row:
@@ -456,15 +457,16 @@ and Latin text in both themes; each role keeps its existing size and line height
 - Training-rhythm details use one Large neutral summary: `h3` result, `b14Med`
   cadence and a single `b13Med` active-day total. With recorded activity but no
   current series, that total becomes the result and is not repeated. Recent
-  evidence and the compact calculation explanation stay open on the dialog surface.
+  evidence stays open on the dialog surface; the calculation explanation sits behind
+  a Tertiary disclosure, initially collapsed, like Muscles and Performance.
   Daily history uses up to seven chronological date markers; recorded days use
   `charts.indicator.info`, blank markers mean no record rather than missed training.
   Each marker has a complete localized date and record-status description.
   Weeks and cycles use up to four newest-first ranges, blue indicators and explicit
   counted/reference days; incomplete observation is labelled, without warning or
   success colors. Cycle counts include only training days matching the inferred
-  rhythm. Section headings use `h4`; compact method heading uses `b13Semi` and
-  its supporting body uses `b13Med`. No duplicate summary progress, mood verdict,
+  rhythm. Section headings use `h4`; the method sits behind a Tertiary disclosure
+  whose body uses `b13Med`. No duplicate summary progress, mood verdict,
   observed-history counter or framed explanation competes with the evidence.
 - Goal cards lead with the shared goal mark and primary goal. Training alignment
   is a neutral numerical percentage with an explicit caption and a separate
@@ -476,8 +478,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   The sealed GoalCard family owns Overview, Assessment and Calendar styles.
   Goal details use its open Assessment style on `background.dialog`, with the shared
   copper GoalMark, an `h4` goal name, a modest neutral `h3` alignment value and a
-  secondary status label with its existing semantic marker. The visible short
-  explanation distinguishes training patterns from goal completion. Actual
+  secondary status label with its existing semantic marker. Actual
   analyzed dates, workouts/days/sets remain quiet secondary `b12Med` context.
   At most two non-PASS diagnostics lead in severity/rule order, followed by one
   PASS fact when available. Diagnostic sections use one quiet `background.card`
@@ -568,8 +569,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   sessions add secondary `b12Med` times in both summary and rows; `ContentDivider`
   separates adjacent rows only. The blue elapsed-date chart retains up to ten recent
   sessions with the compact `metrics.performance.trend.historyAspectRatio` of 3.2.
-  A secondary count caption includes the latest session when the selected period
-  contains more than the retained history. A single session has no history section.
+  A single session has no history section.
   A Tertiary calculation disclosure follows the content, initially collapsed with
   coordinated expand/shrink and fade. Metric definitions and their limits use
   secondary `b13Med`; chart scope and one shared comparison rule use `b12Med`.
@@ -675,7 +675,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   Statistics' muscle breakdown uses the same `h4` heading and `content` gap as
   other detail sections; expanded goal evidence has no leading rule. Dividers
   separate repeated list rows or meaningful groups inside a compound card,
-  rather than the sheet's date, controls or open sections.
+  rather than the sheet's date, controls or open sections; the one exception is
+  the host-edge rule that closes a pinned chip row above a scrolling list
+  (Start workout Repeat), the same boundary Library draws under its header.
 - Bottom-sheet toolbars reserve equal Small icon-button slots on both sides of
   the title, including when Back is absent, so titles and centered date ranges
   share the sheet's center line.
@@ -705,11 +707,12 @@ and Latin text in both themes; each role keeps its existing size and line height
   Custom centers the existing empty-exercises artwork in IllustratedEmptyState
   with a Large illustration, `h4` title and secondary `b14Med` description.
   Populated modes use a left-aligned `h3` introduction and secondary `b14Med`
-  explanation. Introduction and plan-edit guidance stay above the exercise scroll
+  explanation. The introduction stays above the exercise scroll
   area. Repeat pins its Small CheckSelectableCard historical dates after that
-  introduction. The date row
+  introduction without a caption. The date row
   uses the full dialog width with `dialog.horizontalPadding` as internal scroll
-  content padding; its label and the plan content retain the same gutter. Plan previews
+  content padding and ends with a host-edge `ContentDivider` with a `content`
+  gap on both sides, mirroring Library; the plan content retains the same gutter. Plan previews
   lead directly into ExerciseCardStyle.Planned with Compact exercise images, full
   wrapping `b14Semi` names and secondary planned sets/repetitions; they carry no
   completion counters, stale tonnage or detail chevrons.
@@ -725,9 +728,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   stay open with text-aligned dividers between adjacent rows. Introduction,
   summary and contents heading stay above the exercise scroll area. Full-width
   Primary Continue and Secondary Start new stay pinned over the shared
-  `background.dialog` bottom-action gradient with the navigation inset and a
-  secondary consequence caption; Edit
-  distinguishes discarded draft edits from the unchanged saved workout.
+  `background.dialog` bottom-action gradient with the navigation inset.
 - Workout completion confirmation keeps the host title and left-aligned secondary
   introduction. One Large neutral metrics panel groups only recorded exercise and
   set counts with `TrainingStat` (`h5` neutral values, secondary `b12Med` labels);

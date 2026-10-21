@@ -17,7 +17,7 @@ review of config, factory, Component, VM and rendered content.
 | Route / surface | Component | ViewModel | Presentation | Callbacks / operations | Omissions |
 |---|---|---|---|---|---|
 | HomeRouter.Home / Dashboard entry | HomeComponent | HomeViewModel | Existing HomeScreen.Home hook | onOpenTrainingStreak observes TrainingStreakClicked after the range guard | Other Home behavior belongs to analytics/home/COVERAGE.md |
-| DialogConfig.TrainingStreakDetails / read-only sheet | TrainingStreakDetailsComponent | TrainingStreakDetailsViewModel | Default null: dialog, outside independent-screen coverage | onBack observes DismissRequested; reactive calculations have no request operation | Host dismissal, passive reading and scrolling are not tracked |
+| DialogConfig.TrainingStreakDetails / read-only sheet | TrainingStreakDetailsComponent | TrainingStreakDetailsViewModel | Default null: dialog, outside independent-screen coverage | onBack observes DismissRequested; reactive calculations have no request operation | Host dismissal, passive reading, scrolling and the composition-owned method disclosure toggle (presentation only) are not tracked |
 
 | Owner / callback | Observation | Eligibility / payload |
 |---|---|---|
@@ -31,7 +31,7 @@ DialogViewModel.onDismiss(null); toolbar Back and Close are host-owned too.
 These paths, swipe and scrim dismissal can bypass the leaf VM and emit no
 training_streak_dismiss_requested event. The event therefore observes only the VM
 callback request, not every system Back, close, delivered dismissal or cancellation.
-Views/close, scrolling and passive cards are omitted. No callbacks, route context,
+Views/close, scrolling, passive cards and the local method disclosure toggle are omitted. No callbacks, route context,
 operation scaffolding, lifecycle jobs or reporting state are added solely for telemetry.
 No ranges, dates, training IDs, metric values, raw text or exceptions are encoded.
 The internal exhaustive encoder owns one versioned empty schema. The annotated
@@ -46,6 +46,7 @@ VM injection are reconciled against actual source.
 |---|---|---|---|---|
 | Component / VM | Immutable range input and its display | Runtime only for live dialog | Caller range, DateRangeFormatState.of, retainedInstance | Ordinary recreation retains VM; reopening uses current caller range |
 | VM | streak, recent evidence and calculation explanation | Rebuild | TrainingFeature.observeTrainings combined with currentDateFlow, TrainingStreakUseCase.fromTrainings(trainings, range) with now captured once by the calculator, existing toState mapper | Fresh VM starts with null streak and displays the shared loading component. Every emission, including an empty list, is calculated. Zero performed active days display empty guidance; positive active days display the summary and available evidence. Multiple sessions count once per local date; historical ranges are evaluated at their own end |
+| TrainingStreakDetailsScreen | Methodology disclosure state | Runtime only | Local rememberSaveable keyed by the range in the live dialog | Fresh opening starts collapsed; ordinary recomposition/recreation retains the current disclosure. No business draft or process-death dialog restoration |
 | Dialog host | Session, callbacks and Back direction | Runtime only | Slot and step serializer = null | Process death discards live dialog; reopening constructs a fresh session |
 | Foundation / widgets | Jobs, loaders, scrolling and telemetry provenance | Runtime only | Existing scope and widget ownership | No business draft supplier or synthetic callbacks |
 
@@ -73,8 +74,9 @@ navigation action is displayed for that state. A failed observation stays in the
 existing Flow.safeLaunch error pipeline and is not presented as an empty result.
 
 With active history, the sheet presents one summary, recent evidence when its
-timeline is nonempty, and one short calculation explanation. The components own
-their headings; the screen adds no duplicate insight or timeline titles. Active
+timeline is nonempty, and a Tertiary calculation disclosure that starts collapsed
+and reveals the short calculation explanation. The components own their headings;
+the screen adds no duplicate timeline titles. Active
 history with a zero current run remains populated so that earlier activity is not
 hidden. A missing timeline omits the entire evidence section. Dialog background,
 section spacing, text hierarchy and bottom/navigation insets use their existing

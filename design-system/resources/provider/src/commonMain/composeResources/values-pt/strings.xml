@@ -14,7 +14,6 @@
     <string name="home_exercise_highlights_title">Destaques dos seus exercícios</string>
     <string name="home_progress_details_hint">Toque em um cartão para ver os detalhes.</string>
     <string name="home_metrics_title">Números do treino</string>
-    <string name="home_metrics_description">Último treino neste período. Toque em uma métrica para ver as tendências.</string>
     <string name="home_metrics_empty_description">Ainda não há dados de métricas neste período. Tente outro período.</string>
     <string name="home_last_workout_in_period">Último treino no período</string>
     <string name="metric_overview_muscle_distribution">Distribuição da carga muscular</string>
@@ -288,8 +287,6 @@
     <string name="draft_training_summary_time">Tempo salvo</string>
     <string name="draft_training_contents">Neste treino</string>
     <string name="draft_training_empty">Nenhum exercício adicionado ainda. Continue para adicionar o primeiro.</string>
-    <string name="draft_training_start_new_hint_add">Iniciar um novo treino descartará este rascunho.</string>
-    <string name="draft_training_start_new_hint_edit">Iniciar um novo treino descartará estas edições. O treino salvo permanecerá inalterado.</string>
     <string name="start_training_title">Iniciar treino</string>
     <string name="start_training_option_empty_title">Monte seu treino</string>
     <string name="start_training_option_empty_description">Escolha os exercícios de hoje e adicione séries e pesos enquanto treina.</string>
@@ -303,8 +300,6 @@
     <string name="start_training_use_preset_btn">Usar este plano</string>
     <string name="start_training_repeat_btn">Repetir treino</string>
     <string name="start_training_recent_description">Repita os exercícios e as séries. Adicione os pesos de hoje enquanto treina.</string>
-    <string name="start_training_recent_picker_label">Treinos dos últimos 14 dias</string>
-    <string name="start_training_plan_edit_hint">Você pode alterar o plano antes de registrar as séries.</string>
     <string name="exercise_plan_sets_repetitions">Séries: %1$s · Reps: %2$s</string>
     <string name="exercise_plan_sets">Séries: %1$s</string>
     <string name="menu">Menu</string>
@@ -580,7 +575,6 @@
     <string name="goal_card_update_btn">Atualizar</string>
 
     <!-- Training goal details dialog -->
-    <string name="goal_details_alignment_hint">Uma estimativa baseada nos treinos registrados, não na conclusão do objetivo.</string>
     <string name="goal_details_title">Detalhes do objetivo</string>
     <string name="goal_details_show_details">Sobre esta avaliação</string>
     <string name="goal_details_hide_details">Ocultar detalhes</string>
@@ -851,8 +845,6 @@
     <string name="training_streak_current_progress">Último período: %1$d / %2$d dias ativos</string>
     <string name="estimated_one_rm_source">A partir de %1$s × %2$s · %3$s</string>
     <string name="estimated_one_rm_history_peak">Melhor neste histórico: %1$s</string>
-    <string name="estimated_one_rm_method">Melhor série de cada registro, com 1–10 repetições. As fórmulas de repetições pressupõem uma série próxima do seu limite; seu máximo real pode ser diferente.</string>
-    <string name="estimated_one_rm_effective_load">Carga efetiva = peso corporal × coeficiente + peso adicional − assistência. Não é apenas o peso adicional.</string>
     <string name="estimated_one_rm_unavailable">Ainda não há dados adequados de 1RM. Registre uma série de 1–10 repetições com informações completas de carga.</string>
     <string name="performance_comparison_unavailable">Comparação indisponível</string>
     <string name="performance_history_empty">Nenhum treino neste período</string>
@@ -877,18 +869,14 @@
     <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Frequência de treino</string>
     <string name="goal_fit_rule_get_stronger_compound_set_share_title">Proporção de séries compostas</string>
     <string name="goal_fit_unit_training_days_per_week">dias/sem</string>
-    <string name="muscle_load_set_share_note">Proporções estimadas de séries a partir dos detalhes disponíveis de exercícios com participação muscular conhecida.</string>
-    <string name="muscle_load_anatomy_note">Participação muscular estimada neste exercício.</string>
     <string name="muscle_load_excluded_sets">Séries não contadas (sem repetições ou com medidas inválidas): %1$d.</string>
     <string name="muscle_load_unassigned_sets">Séries registradas com participação muscular desconhecida: %1$d.</string>
     <string name="performance_history_scope">O gráfico conecta os valores disponíveis de até 10 treinos mais recentes.</string>
     <string name="performance_trend_details_comparison_scope">As comparações usam a média de todos os treinos anteriores com dados no período selecionado.</string>
     <string name="muscle_load_unmeasured_volume_sets">Séries com dados de carga incompletos: %1$d. As proporções musculares usam as séries registradas; o volume inclui apenas séries com medidas completas.</string>
     <string name="goal_card_limited_data">Dados limitados</string>
-    <string name="available_training_details_notice">Calculado a partir dos detalhes disponíveis dos exercícios. Alguns registros podem estar indisponíveis.</string>
     <string name="available_sets_label">Séries disponíveis</string>
     <string name="available_exercises_label">Exercícios disponíveis</string>
-    <string name="muscle_loading_details_share_note">Estimativa da distribuição das séries com músculos identificados.</string>
     <string name="muscle_loading_details_coverage">Séries fora desta distribuição: %1$d</string>
     <string name="muscle_loading_details_no_workouts_title">Nenhum treino neste período</string>
     <string name="muscle_loading_details_no_workouts_message">Registre um treino para ver quais músculos participaram das séries.</string>
@@ -910,7 +898,6 @@
     <string name="performance_trend_details_value_unavailable">Valor indisponível</string>
     <string name="performance_trend_details_value_unavailable_description">Este treino não tem dados suficientes para calcular este indicador.</string>
     <string name="performance_trend_details_recent_workouts">Treinos recentes</string>
-    <string name="performance_trend_details_history_scope">Exibindo %1$d de %2$d treinos neste período.</string>
     <string name="performance_trend_details_about">Como é calculado</string>
     <string name="performance_trend_details_expanded">Expandido</string>
     <string name="performance_trend_details_collapsed">Recolhido</string>
@@ -940,4 +927,6 @@
     <string name="training_streak_details_day_unrecorded">Sem treino registrado</string>
     <string name="training_streak_details_day_description">%1$s · %2$s</string>
     <string name="training_streak_details_empty">Nenhum dia de treino neste período. Treinos registrados com repetições concluídas vão revelar seu ritmo aqui.</string>
+    <string name="training_streak_details_method_expanded">Expandido</string>
+    <string name="training_streak_details_method_collapsed">Recolhido</string>
 </resources>

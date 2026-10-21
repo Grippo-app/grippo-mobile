@@ -15,8 +15,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.muscle_load_set_share_note
-import com.grippo.design.resources.provider.muscle_load_anatomy_note
 import com.grippo.design.resources.provider.muscle_load_no_data
 import kotlinx.collections.immutable.persistentListOf
 
@@ -66,16 +64,6 @@ public fun MuscleLoading(
             )
         }
         if (style == MuscleLoadingStyle.Annotated) {
-            if (entries.isNotEmpty() || summary.meta.trainingsCount > 0) {
-                Text(
-                    text = AppTokens.strings.res(
-                        if (summary.meta.trainingsCount == 0) Res.string.muscle_load_anatomy_note
-                        else Res.string.muscle_load_set_share_note
-                    ),
-                    style = AppTokens.typography.b12Med(),
-                    color = AppTokens.colors.text.secondary,
-                )
-            }
             MuscleLoadingDataNotice(summary = summary)
         }
     }
@@ -128,34 +116,6 @@ private fun MuscleLoadingEmptyPreview() {
                 perGroup = summary.perGroup.copy(entries = persistentListOf()),
                 perMuscle = summary.perMuscle.copy(entries = persistentListOf()),
             ),
-            mode = MuscleLoadingMode.PerGroup,
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun MuscleLoadingAnatomyEmptyPreview() {
-    PreviewContainer {
-        val summary = stubMuscleLoadSummary()
-        MuscleLoading(
-            summary = summary.copy(
-                meta = summary.meta.copy(trainingsCount = 0, totalSets = 0),
-                perGroup = summary.perGroup.copy(entries = persistentListOf()),
-                perMuscle = summary.perMuscle.copy(entries = persistentListOf()),
-            ),
-            mode = MuscleLoadingMode.PerGroup,
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun MuscleLoadingAnatomyPreview() {
-    PreviewContainer {
-        val summary = stubMuscleLoadSummary()
-        MuscleLoading(
-            summary = summary.copy(meta = summary.meta.copy(trainingsCount = 0, totalSets = 0)),
             mode = MuscleLoadingMode.PerGroup,
         )
     }

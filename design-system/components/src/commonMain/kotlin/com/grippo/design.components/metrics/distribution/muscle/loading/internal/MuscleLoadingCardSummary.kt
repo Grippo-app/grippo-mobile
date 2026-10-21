@@ -22,7 +22,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.available_sets_label
 import com.grippo.design.resources.provider.muscle_loading_details_coverage
-import com.grippo.design.resources.provider.muscle_loading_details_share_note
 import com.grippo.design.resources.provider.trainings
 
 @Composable
@@ -73,13 +72,6 @@ internal fun MuscleLoadingCardSummary(
             }
         }
 
-        if (summary.perGroup.entries.isNotEmpty()) {
-            Text(
-                text = AppTokens.strings.res(Res.string.muscle_loading_details_share_note),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-            )
-        }
         if (outsideSets > 0) {
             Text(
                 text = AppTokens.strings.res(Res.string.muscle_loading_details_coverage, outsideSets),

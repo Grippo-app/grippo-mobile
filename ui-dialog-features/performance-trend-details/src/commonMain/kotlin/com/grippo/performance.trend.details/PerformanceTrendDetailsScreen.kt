@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
@@ -31,6 +33,7 @@ import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
 import com.grippo.core.state.metrics.performance.stubPerformanceTrendHistory
 import com.grippo.design.components.datetime.DialogRangeHeader
 import com.grippo.design.components.divider.ContentDivider
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.performance.PerformanceMetricCard
 import com.grippo.design.components.metrics.performance.PerformanceTrendHistoryCard
@@ -42,7 +45,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.performance_history_empty
 import com.grippo.design.resources.provider.performance_trend_details_empty_message
-import com.grippo.design.resources.provider.performance_trend_details_history_scope
 import com.grippo.design.resources.provider.performance_trend_details_latest
 import com.grippo.design.resources.provider.performance_trend_details_recent_workouts
 import com.grippo.performance.trend.details.components.PerformanceHistoryRow
@@ -88,181 +90,170 @@ private fun PerformanceTrendDetailsContent(
     val hasChart = history != null && history.count { it.metric.chartValue() != null } >= 2
     val listState = rememberAnchoredLazyListState(behavior = AnchorScrollBehavior.Animated)
 
-    LazyColumn(
-        state = listState,
-        modifier = modifier.navigationBarsPadding(),
-        contentPadding = PaddingValues(
-            start = AppTokens.dp.dialog.horizontalPadding,
-            end = AppTokens.dp.dialog.horizontalPadding,
-            bottom = AppTokens.dp.dialog.bottom,
-        ),
-    ) {
-        if (history == null) {
-            item(key = "loading", contentType = "loading") {
-                Loader(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = AppTokens.dp.contentPadding.block),
-                )
-            }
-        } else {
-            if (history.isEmpty()) {
-                item(key = "empty", contentType = "empty") {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-                    ) {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = AppTokens.strings.res(Res.string.performance_history_empty),
-                            style = AppTokens.typography.h4(),
-                            color = AppTokens.colors.text.primary,
-                        )
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = AppTokens.strings.res(Res.string.performance_trend_details_empty_message),
-                            style = AppTokens.typography.b14Med(),
-                            color = AppTokens.colors.text.secondary,
+    BottomOverlayContainer(
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        overlay = AppTokens.colors.background.dialog,
+        content = { containerModifier, resolvedPadding ->
+            LazyColumn(
+                state = listState,
+                modifier = containerModifier.fillMaxWidth(),
+                contentPadding = resolvedPadding,
+            ) {
+                if (history == null) {
+                    item(key = "loading", contentType = "loading") {
+                        Loader(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = AppTokens.dp.contentPadding.block),
                         )
                     }
-                }
-            } else {
-                val latest = history.first()
-                val previousHistory = history.drop(1)
-
-                item(key = "latest", contentType = "summary") {
-                    val timestamp = latest.endDate.value
-                    val showTime = timestamp != null && history.any { entry ->
-                        entry.trainingId != latest.trainingId && entry.endDate.value?.date == timestamp.date
-                    }
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                modifier = Modifier.weight(1f),
-                                text = AppTokens.strings.res(Res.string.performance_trend_details_latest),
-                                style = AppTokens.typography.b14Semi(),
-                                color = AppTokens.colors.text.primary,
-                            )
+                } else {
+                    if (history.isEmpty()) {
+                        item(key = "empty", contentType = "empty") {
                             Column(
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier.fillMaxWidth(),
                                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-                                horizontalAlignment = Alignment.End,
                             ) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
-                                    text = latest.endDate.short(),
-                                    style = AppTokens.typography.b12Med(),
-                                    color = AppTokens.colors.text.secondary,
-                                    textAlign = TextAlign.End,
+                                    text = AppTokens.strings.res(Res.string.performance_history_empty),
+                                    style = AppTokens.typography.h4(),
+                                    color = AppTokens.colors.text.primary,
                                 )
-                                if (showTime && timestamp != null) {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = AppTokens.strings.res(Res.string.performance_trend_details_empty_message),
+                                    style = AppTokens.typography.b14Med(),
+                                    color = AppTokens.colors.text.secondary,
+                                )
+                            }
+                        }
+                    } else {
+                        val latest = history.first()
+                        val previousHistory = history.drop(1)
+
+                        item(key = "latest", contentType = "summary") {
+                            val timestamp = latest.endDate.value
+                            val showTime = timestamp != null && history.any { entry ->
+                                entry.trainingId != latest.trainingId && entry.endDate.value?.date == timestamp.date
+                            }
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
                                     Text(
-                                        text = DateCompose.rememberFormat(
-                                            value = timestamp,
-                                            format = DateFormat.TimeOnly.Time24hHm,
-                                        ),
-                                        style = AppTokens.typography.b12Med(),
-                                        color = AppTokens.colors.text.secondary,
+                                        modifier = Modifier.weight(1f),
+                                        text = AppTokens.strings.res(Res.string.performance_trend_details_latest),
+                                        style = AppTokens.typography.b14Semi(),
+                                        color = AppTokens.colors.text.primary,
+                                    )
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+                                        horizontalAlignment = Alignment.End,
+                                    ) {
+                                        Text(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            text = latest.endDate.short(),
+                                            style = AppTokens.typography.b12Med(),
+                                            color = AppTokens.colors.text.secondary,
+                                            textAlign = TextAlign.End,
+                                        )
+                                        if (showTime) {
+                                            Text(
+                                                text = DateCompose.rememberFormat(
+                                                    value = timestamp,
+                                                    format = DateFormat.TimeOnly.Time24hHm,
+                                                ),
+                                                style = AppTokens.typography.b12Med(),
+                                                color = AppTokens.colors.text.secondary,
+                                            )
+                                        }
+                                    }
+                                }
+                                PerformanceMetricCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    metric = latest.metric,
+                                )
+                            }
+                        }
+
+                        if (previousHistory.isNotEmpty()) {
+                            item(key = "history_header", contentType = "heading") {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = AppTokens.dp.contentPadding.block),
+                                    text = AppTokens.strings.res(Res.string.performance_trend_details_recent_workouts),
+                                    style = AppTokens.typography.h4(),
+                                    color = AppTokens.colors.text.primary,
+                                )
+                            }
+
+                            if (hasChart) {
+                                item(key = "chart", contentType = "chart") {
+                                    PerformanceTrendHistoryCard(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = AppTokens.dp.contentPadding.content),
+                                        history = history,
                                     )
                                 }
                             }
-                        }
-                        PerformanceMetricCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            metric = latest.metric,
-                        )
-                    }
-                }
 
-                if (previousHistory.isNotEmpty()) {
-                    item(key = "history_header", contentType = "heading") {
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = AppTokens.dp.contentPadding.block),
-                            text = AppTokens.strings.res(Res.string.performance_trend_details_recent_workouts),
-                            style = AppTokens.typography.h4(),
-                            color = AppTokens.colors.text.primary,
-                        )
-                    }
-
-                    if (hasChart) {
-                        item(key = "chart", contentType = "chart") {
-                            PerformanceTrendHistoryCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = AppTokens.dp.contentPadding.content),
-                                history = history,
-                            )
-                        }
-                    }
-
-                    if (state.trainingCount > history.size) {
-                        item(key = "history_scope", contentType = "caption") {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = AppTokens.dp.contentPadding.text),
-                                text = AppTokens.strings.res(
-                                    Res.string.performance_trend_details_history_scope,
-                                    history.size,
-                                    state.trainingCount,
-                                ),
-                                style = AppTokens.typography.b12Med(),
-                                color = AppTokens.colors.text.secondary,
-                            )
-                        }
-                    }
-
-                    itemsIndexed(
-                        items = previousHistory,
-                        key = { _, entry -> entry.trainingId },
-                        contentType = { _, _ -> "workout" },
-                    ) { index, entry ->
-                        val date = entry.endDate.value?.date
-                        val showTime = date != null && history.any { other ->
-                            other.trainingId != entry.trainingId && other.endDate.value?.date == date
-                        }
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            PerformanceHistoryRow(
-                                modifier = Modifier.fillMaxWidth(),
-                                entry = entry,
-                                showTime = showTime,
-                            )
-                            if (index < previousHistory.lastIndex) {
-                                ContentDivider()
+                            itemsIndexed(
+                                items = previousHistory,
+                                key = { _, entry -> entry.trainingId },
+                                contentType = { _, _ -> "workout" },
+                            ) { index, entry ->
+                                val date = entry.endDate.value?.date
+                                val showTime = date != null && history.any { other ->
+                                    other.trainingId != entry.trainingId && other.endDate.value?.date == date
+                                }
+                                Column(modifier = Modifier.fillMaxWidth()) {
+                                    PerformanceHistoryRow(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        entry = entry,
+                                        showTime = showTime,
+                                    )
+                                    if (index < previousHistory.lastIndex) {
+                                        ContentDivider()
+                                    }
+                                }
                             }
                         }
                     }
+
+                    item(key = "explanation", contentType = "disclosure") {
+                        PerformanceMetricExplanation(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = AppTokens.dp.contentPadding.block),
+                            metricType = state.metricType,
+                            showChartScope = hasChart,
+                            isExpanded = isExpanded,
+                            onToggle = onToggleExplanation,
+                        )
+                    }
                 }
             }
-
-            item(key = "explanation", contentType = "disclosure") {
-                PerformanceMetricExplanation(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = AppTokens.dp.contentPadding.block),
-                    metricType = state.metricType,
-                    showChartScope = hasChart,
-                    isExpanded = isExpanded,
-                    onToggle = onToggleExplanation,
-                )
-            }
-        }
-    }
+        },
+        bottom = {
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+            Spacer(modifier = Modifier.navigationBarsPadding())
+        },
+    )
 }
 
 private fun performanceDetailsPreviewState(
     history: ImmutableList<PerformanceTrendHistoryEntry>? = stubPerformanceTrendHistory(),
     metricType: PerformanceMetricTypeState = PerformanceMetricTypeState.Volume,
-    trainingCount: Int = history?.size ?: 0,
 ): PerformanceTrendDetailsDialogState = PerformanceTrendDetailsDialogState(
     range = DateRangeFormatState.of(
         from = LocalDateTime(2026, 10, 11, 0, 0),
@@ -270,7 +261,6 @@ private fun performanceDetailsPreviewState(
     ),
     metricType = metricType,
     history = history,
-    trainingCount = trainingCount,
 )
 
 @AppPreview
@@ -289,7 +279,7 @@ private fun PopulatedPreview() {
             )
         }.toPersistentList()
         PerformanceTrendDetailsScreen(
-            state = performanceDetailsPreviewState(history = history, trainingCount = 12),
+            state = performanceDetailsPreviewState(history = history),
             loaders = persistentSetOf(),
             contract = PerformanceTrendDetailsContract.Empty,
         )

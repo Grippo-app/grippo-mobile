@@ -74,14 +74,12 @@ Before the first cached-source emission, `history` is null and the sheet shows
 initial loading rather than an empty-period claim. The first emission resolves
 history to a populated or empty immutable list. The sheet observes the same cached
 selected-period source as before; it makes no separate refresh request or remote
-freshness claim. `trainingCount` counts every training in that emission, independently
-of the ten-entry display limit, and updates together with history.
+freshness claim.
 
 History retains up to ten newest sessions, including a first session when it is
 within that limit; each prefix uses all its available predecessors, even when older
 entries fall outside the ten retained. The screen derives up to nine previous-session
-rows without changing that history. A scope caption compares total trainingCount
-with the retained history size, including the latest summary. Stable training IDs
+rows without changing that history. Stable training IDs
 key history rows. The compact chart keeps the full retained history and shows
 available values in workout order with elapsed-day spacing and actual date labels. If a timestamp is
 unavailable, the whole series falls back to workout index spacing. Missing metric
@@ -98,7 +96,7 @@ no earlier measurement.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | PerformanceTrendDetailsComponent / VM | range and metricType | Runtime only for live dialog | Caller inputs and retainedInstance; no draft key | Retained VM survives ordinary recreation; fresh opening uses current Home inputs |
-| PerformanceTrendDetailsViewModel | history, total trainingCount, training identity, dates and metric presentation | Rebuild | TrainingFeature.observeTrainings for the selected range, PerformanceTrendUseCase and domain-to-state mapper | History starts null; the first emission resolves populated/empty data and its total count in one update. At most ten newest entries are retained for the summary and chart, with up to nine previous-session rows derived locally; their comparisons still use all predecessors |
+| PerformanceTrendDetailsViewModel | history, training identity, dates and metric presentation | Rebuild | TrainingFeature.observeTrainings for the selected range, PerformanceTrendUseCase and domain-to-state mapper | History starts null; the first emission resolves populated/empty data in one update. At most ten newest entries are retained for the summary and chart, with up to nine previous-session rows derived locally; their comparisons still use all predecessors |
 | PerformanceTrendDetailsScreen | Methodology disclosure state | Runtime only | Local rememberSaveable presentation state in the live dialog | Fresh opening starts collapsed; ordinary recomposition/recreation retains the current disclosure. No business draft or process-death dialog restoration |
 | Dialog host | Session, callbacks and pending Back | Runtime only | Slot/step serializer = null | Process death discards the session |
 | Foundation / widgets | Jobs, loaders and scroll/gesture state | Runtime only | Existing foundation and widget owners | No business snapshot or synthetic input events |

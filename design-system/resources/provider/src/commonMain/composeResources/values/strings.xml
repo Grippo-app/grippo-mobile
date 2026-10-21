@@ -14,7 +14,6 @@
     <string name="home_exercise_highlights_title">Your exercise highlights</string>
     <string name="home_progress_details_hint">Tap a card for details.</string>
     <string name="home_metrics_title">Workout numbers</string>
-    <string name="home_metrics_description">Latest workout in this period. Tap a metric for trends.</string>
     <string name="home_metrics_empty_description">No metric data for this period yet. Try another period.</string>
     <string name="home_last_workout_in_period">Latest workout in period</string>
     <string name="metric_overview_muscle_distribution">Muscle load distribution</string>
@@ -288,8 +287,6 @@
     <string name="draft_training_summary_time">Saved time</string>
     <string name="draft_training_contents">In this workout</string>
     <string name="draft_training_empty">No exercises added yet. Continue to add your first one.</string>
-    <string name="draft_training_start_new_hint_add">Starting a new workout will discard this draft.</string>
-    <string name="draft_training_start_new_hint_edit">Starting a new workout will discard these edits. The saved workout will stay unchanged.</string>
     <string name="start_training_title">Start workout</string>
     <string name="start_training_option_empty_title">Build your workout</string>
     <string name="start_training_option_empty_description">Choose exercises for today, then add sets and weights as you train.</string>
@@ -303,8 +300,6 @@
     <string name="start_training_use_preset_btn">Use this plan</string>
     <string name="start_training_repeat_btn">Repeat workout</string>
     <string name="start_training_recent_description">Repeat the exercises and sets. Add today’s weights as you train.</string>
-    <string name="start_training_recent_picker_label">Workouts from the last 14 days</string>
-    <string name="start_training_plan_edit_hint">You can change the plan before logging sets.</string>
     <string name="exercise_plan_sets_repetitions">Sets: %1$s · Reps: %2$s</string>
     <string name="exercise_plan_sets">Sets: %1$s</string>
     <string name="menu">Menu</string>
@@ -580,7 +575,6 @@
     <string name="goal_card_update_btn">Update</string>
 
     <!-- Training goal details dialog -->
-    <string name="goal_details_alignment_hint">Based on recorded training patterns, not goal completion.</string>
     <string name="goal_details_title">Goal details</string>
     <string name="goal_details_show_details">About this assessment</string>
     <string name="goal_details_hide_details">Hide details</string>
@@ -851,8 +845,6 @@
     <string name="training_streak_current_progress">Latest period: %1$d / %2$d active days</string>
     <string name="estimated_one_rm_source">From %1$s × %2$s · %3$s</string>
     <string name="estimated_one_rm_history_peak">Best in this history: %1$s</string>
-    <string name="estimated_one_rm_method">Best set in each record, using 1–10 reps. Rep formulas assume a set near your limit; your actual maximum may differ.</string>
-    <string name="estimated_one_rm_effective_load">Effective load = body weight × coefficient + added weight − assistance. This is not the added weight alone.</string>
     <string name="estimated_one_rm_unavailable">No suitable 1RM data yet. Record a set of 1–10 reps with complete load information.</string>
     <string name="performance_comparison_unavailable">Comparison unavailable</string>
     <string name="performance_history_empty">No workouts in this period</string>
@@ -877,18 +869,14 @@
     <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Training frequency</string>
     <string name="goal_fit_rule_get_stronger_compound_set_share_title">Compound set share</string>
     <string name="goal_fit_unit_training_days_per_week">days/wk</string>
-    <string name="muscle_load_set_share_note">Estimated set shares from available exercise details with known muscle involvement.</string>
-    <string name="muscle_load_anatomy_note">Estimated muscle involvement in this exercise.</string>
     <string name="muscle_load_excluded_sets">Sets not counted (missing repetitions or invalid measurements): %1$d.</string>
     <string name="muscle_load_unassigned_sets">Recorded sets with unknown muscle involvement: %1$d.</string>
     <string name="performance_history_scope">The chart connects available values from up to 10 latest workouts.</string>
     <string name="performance_trend_details_comparison_scope">Comparisons use the average of all earlier workouts with data in the selected period.</string>
     <string name="muscle_load_unmeasured_volume_sets">Sets with incomplete load data: %1$d. Muscle shares use recorded sets; volume includes fully measured sets only.</string>
     <string name="goal_card_limited_data">Limited data</string>
-    <string name="available_training_details_notice">Calculated from available exercise details. Some records may be unavailable.</string>
     <string name="available_sets_label">Available sets</string>
     <string name="available_exercises_label">Available exercises</string>
-    <string name="muscle_loading_details_share_note">Estimated shares of sets with known muscle involvement.</string>
     <string name="muscle_loading_details_coverage">Sets outside this breakdown: %1$d</string>
     <string name="muscle_loading_details_no_workouts_title">No workouts in this period</string>
     <string name="muscle_loading_details_no_workouts_message">Record a workout to see which muscles your sets involved.</string>
@@ -910,7 +898,6 @@
     <string name="performance_trend_details_value_unavailable">Value unavailable</string>
     <string name="performance_trend_details_value_unavailable_description">This workout does not have enough data for this metric.</string>
     <string name="performance_trend_details_recent_workouts">Recent workouts</string>
-    <string name="performance_trend_details_history_scope">Showing %1$d of %2$d workouts in this period.</string>
     <string name="performance_trend_details_about">How it is calculated</string>
     <string name="performance_trend_details_expanded">Expanded</string>
     <string name="performance_trend_details_collapsed">Collapsed</string>
@@ -940,4 +927,6 @@
     <string name="training_streak_details_day_unrecorded">No training recorded</string>
     <string name="training_streak_details_day_description">%1$s · %2$s</string>
     <string name="training_streak_details_empty">No training days in this period. Recorded workouts with completed reps will form your rhythm here.</string>
+    <string name="training_streak_details_method_expanded">Expanded</string>
+    <string name="training_streak_details_method_collapsed">Collapsed</string>
 </resources>

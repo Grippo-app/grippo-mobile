@@ -11,5 +11,4 @@ public data class PerformanceTrendDetailsDialogState(
     val range: DateRangeFormatState,
     val metricType: PerformanceMetricTypeState,
     val history: ImmutableList<PerformanceTrendHistoryEntry>? = null,
-    val trainingCount: Int = 0,
 )

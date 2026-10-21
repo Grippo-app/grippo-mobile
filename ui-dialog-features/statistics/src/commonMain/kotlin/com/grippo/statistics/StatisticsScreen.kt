@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
@@ -20,6 +21,7 @@ import com.grippo.core.state.metrics.volume.stubTotal
 import com.grippo.core.state.metrics.volume.stubVolumeSeries
 import com.grippo.design.components.chart.internal.BarChartXAxisLabels
 import com.grippo.design.components.datetime.DialogRangeHeader
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
@@ -29,7 +31,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.available_training_details_notice
 import com.grippo.design.resources.provider.muscles
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -55,79 +56,70 @@ internal fun StatisticsScreen(
     if (loaders.contains(StatisticsLoader.Charts)) {
         Loader(modifier = Modifier.fillMaxWidth().weight(1f))
     } else {
-        LazyColumn(
+        BottomOverlayContainer(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
-                .navigationBarsPadding(),
-            contentPadding = PaddingValues(
-                start = AppTokens.dp.dialog.horizontalPadding,
-                end = AppTokens.dp.dialog.horizontalPadding,
-                bottom = AppTokens.dp.dialog.bottom,
-            ),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
-        ) {
-            if (state.total != null ||
-                state.exerciseVolume?.entries?.isNotEmpty() == true ||
-                state.muscleLoad != null
-            ) {
-                item(key = "available_details_notice") {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = AppTokens.strings.res(Res.string.available_training_details_notice),
-                        style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-                }
-            }
-
-            state.total?.let { metrics ->
-                item(key = "total_chips") {
-                    TrainingTotalSection(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = metrics,
-                    )
-                }
-            }
-
-            state.exerciseVolume
-                ?.takeIf { it.entries.isNotEmpty() }
-                ?.let { data ->
-                    item(key = "exercise_volume") {
-                        VolumeMetricChart(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = data,
-                            xAxisLabels = when (state.mode) {
-                                StatisticsMode.Exercises -> BarChartXAxisLabels.WithoutLabels
-                                is StatisticsMode.Trainings -> BarChartXAxisLabels.WithLabels
-                            }
-                        )
-                    }
-                }
-
-            state.muscleLoad
-                ?.let { summary ->
-                    item(key = "muscle_load") {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                        ) {
-                            Text(
+                .weight(1f),
+            contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            overlay = AppTokens.colors.background.dialog,
+            content = { containerModifier, resolvedPadding ->
+                LazyColumn(
+                    modifier = containerModifier.fillMaxSize(),
+                    contentPadding = resolvedPadding,
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
+                ) {
+                    state.total?.let { metrics ->
+                        item(key = "total_chips") {
+                            TrainingTotalSection(
                                 modifier = Modifier.fillMaxWidth(),
-                                text = AppTokens.strings.res(Res.string.muscles),
-                                style = AppTokens.typography.h4(),
-                                color = AppTokens.colors.text.primary,
-                            )
-                            MuscleLoading(
-                                modifier = Modifier.fillMaxWidth(),
-                                summary = summary,
-                                mode = MuscleLoadingMode.PerGroup,
+                                value = metrics,
                             )
                         }
                     }
-                }
 
-        }
+                    state.exerciseVolume
+                        ?.takeIf { it.entries.isNotEmpty() }
+                        ?.let { data ->
+                            item(key = "exercise_volume") {
+                                VolumeMetricChart(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = data,
+                                    xAxisLabels = when (state.mode) {
+                                        StatisticsMode.Exercises -> BarChartXAxisLabels.WithoutLabels
+                                        is StatisticsMode.Trainings -> BarChartXAxisLabels.WithLabels
+                                    }
+                                )
+                            }
+                        }
+
+                    state.muscleLoad
+                        ?.let { summary ->
+                            item(key = "muscle_load") {
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                                ) {
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = AppTokens.strings.res(Res.string.muscles),
+                                        style = AppTokens.typography.h4(),
+                                        color = AppTokens.colors.text.primary,
+                                    )
+                                    MuscleLoading(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        summary = summary,
+                                        mode = MuscleLoadingMode.PerGroup,
+                                    )
+                                }
+                            }
+                        }
+                }
+            },
+            bottom = {
+                Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+                Spacer(modifier = Modifier.navigationBarsPadding())
+            },
+        )
     }
 }
 

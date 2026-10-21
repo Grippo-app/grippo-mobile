@@ -63,8 +63,7 @@ unchanged. Parent Home drafts and shell restoration retain their own inventories
 
 The dialog uses the shared GoalCard Assessment variant with GoalMark, primary goal,
 optional domain score and semantic status. Its modest neutral percentage is
-explicitly labelled training alignment. A short visible explanation distinguishes
-recorded training patterns from goal completion. The Home Overview card remains
+explicitly labelled training alignment. The Home Overview card remains
 unchanged. A null score has no corrective or positive diagnostic findings; a
 neutral notice distinguishes TooEarly, NoData and no analysis-range overlap.
 Null progress retains the existing neutral unavailable-assessment notice and

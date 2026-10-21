@@ -18,8 +18,8 @@ No host, route, lifecycle or screen identity changes are needed. The local
 scrolling content requests the full available height for all states, so the
 group/muscle row count does not select sheet height; no measured-height cache or
 shared-host policy is introduced. Date context precedes a read-only
-MuscleLoadingCardStyle.Summary: available-set and workout counts, the known-share
-note and visible excluded/unknown-set total. Home keeps the same Overview
+MuscleLoadingCardStyle.Summary: available-set and workout counts and the visible
+excluded/unknown-set total. Home keeps the same Overview
 content through the family style API; the Detailed variant is preserved.
 Available workout/set counts scope the data, and full group/muscle rows retain
 all tied leaders without a balance-quality score, gap recommendation or
@@ -30,7 +30,7 @@ accepted sets, and accepted sets without known anatomy have distinct localized
 messages. A visible count sums excluded and unassigned sets; the local animated
 method disclosure explains those counts separately and describes proportional
 set weighting and its limits. This surface uses MuscleLoadingStyle.Breakdown;
-existing shared callers keep Annotated explanations. No volume is displayed,
+existing shared callers keep Annotated conditional data notices. No volume is displayed,
 so unmeasured-volume caveats are absent from this dialog. Negative anatomy percentages
 leave the performed set unassigned; surviving shares are not silently reweighted.
 Positive anatomy shares allocate
@@ -48,7 +48,7 @@ consumers. Body fields follow domain validation: supplied body weight and multip
 must be finite and positive, with no invented multiplier cap. A negative effective
 machine resistance or nonfinite recorded body product leaves the performed set
 intact but makes its physical volume unmeasured. Required external zero is invalid;
-optional external zero and zero extra/assistance remain allowed. Only available mapped exercise details enter the calculation. The concise share note, proportional-set method and available-set label scope the analysis to
+optional external zero and zero extra/assistance remain allowed. Only available mapped exercise details enter the calculation. The proportional-set method disclosure and available-set label scope the analysis to
 available exercise details; no raw relation count,
 completeness flag or inferred repetitions/weights are retained. No control, hook, event or parameter is
 added by these calculated values or explanatory notices.

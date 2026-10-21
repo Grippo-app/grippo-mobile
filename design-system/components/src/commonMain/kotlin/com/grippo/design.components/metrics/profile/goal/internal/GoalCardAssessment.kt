@@ -24,7 +24,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_card_limited_data
 import com.grippo.design.resources.provider.goal_course_title
-import com.grippo.design.resources.provider.goal_details_alignment_hint
 import com.grippo.design.resources.provider.goal_details_analysis_evidence
 import com.grippo.design.resources.provider.goal_details_analysis_period
 import com.grippo.design.resources.provider.metric_overview_goal_analyzed
@@ -100,11 +99,6 @@ internal fun GoalCardAssessment(
                     color = AppTokens.colors.text.secondary,
                 )
             }
-            Text(
-                text = AppTokens.strings.res(Res.string.goal_details_alignment_hint),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-            )
             if (score != null &&
                 (value.evidence.excludedSetCount > 0 || value.evidence.missingMetadataSetCount > 0)
             ) {

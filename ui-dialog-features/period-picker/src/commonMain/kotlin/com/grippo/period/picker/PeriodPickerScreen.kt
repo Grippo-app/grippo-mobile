@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,6 +19,7 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.design.components.cards.selectable.CheckSelectableCard
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.toolbar.BottomSheetToolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -40,48 +43,57 @@ internal fun PeriodPickerScreen(
     loaders: ImmutableSet<PeriodPickerLoader>,
     contract: PeriodPickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
-    LazyColumn(
+    BottomOverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f, false)
-            .navigationBarsPadding(),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            .weight(weight = 1f, fill = false),
         contentPadding = PaddingValues(
             start = AppTokens.dp.dialog.horizontalPadding,
             end = AppTokens.dp.dialog.horizontalPadding,
             top = AppTokens.dp.dialog.top,
-            bottom = AppTokens.dp.dialog.bottom,
         ),
-    ) {
-        items(state.suggestions, key = { it.kind.name }) { item ->
-            val range = item.value
-            val description = if (range != null) {
-                val from = DateCompose.rememberFormat(
-                    value = range.from.date,
-                    format = DateFormat.DateOnly.DateDdMmm,
-                    contextual = false,
-                )
-                val to = DateCompose.rememberFormat(
-                    value = range.to.date,
-                    format = DateFormat.DateOnly.DateDdMmm,
-                    contextual = false,
-                )
-                "$from - $to"
-            } else {
-                item.display
-            }
+        overlay = AppTokens.colors.background.dialog,
+        content = { containerModifier, resolvedPadding ->
+            LazyColumn(
+                modifier = containerModifier.fillMaxWidth(),
+                contentPadding = resolvedPadding,
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            ) {
+                items(state.suggestions, key = { it.kind.name }) { item ->
+                    val range = item.value
+                    val description = if (range != null) {
+                        val from = DateCompose.rememberFormat(
+                            value = range.from.date,
+                            format = DateFormat.DateOnly.DateDdMmm,
+                            contextual = false,
+                        )
+                        val to = DateCompose.rememberFormat(
+                            value = range.to.date,
+                            format = DateFormat.DateOnly.DateDdMmm,
+                            contextual = false,
+                        )
+                        "$from - $to"
+                    } else {
+                        item.display
+                    }
 
-            CheckSelectableCard(
-                modifier = Modifier.fillMaxWidth(),
-                style = CheckSelectableCardStyle.Medium(
-                    title = item.label()?.text() ?: AppTokens.strings.res(Res.string.custom),
-                    description = description,
-                ),
-                isSelected = state.value.kind == item.kind,
-                onSelect = { contract.onSelectRange(item.kind) }
-            )
-        }
-    }
+                    CheckSelectableCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        style = CheckSelectableCardStyle.Medium(
+                            title = item.label()?.text() ?: AppTokens.strings.res(Res.string.custom),
+                            description = description,
+                        ),
+                        isSelected = state.value.kind == item.kind,
+                        onSelect = { contract.onSelectRange(item.kind) }
+                    )
+                }
+            }
+        },
+        bottom = {
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+            Spacer(modifier = Modifier.navigationBarsPadding())
+        },
+    )
 }
 
 @AppPreview

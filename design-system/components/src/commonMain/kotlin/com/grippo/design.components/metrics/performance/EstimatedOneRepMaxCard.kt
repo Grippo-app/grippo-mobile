@@ -12,7 +12,6 @@ import androidx.compose.ui.semantics.semantics
 import com.grippo.chart.sparkline.SparklineData
 import com.grippo.chart.sparkline.SparklinePoint
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.core.state.metrics.performance.EstimatedOneRepMaxLoadTypeState
 import com.grippo.core.state.metrics.performance.EstimatedOneRepMaxState
 import com.grippo.core.state.metrics.performance.stubEstimatedOneRepMax
 import com.grippo.design.components.chart.internal.Sparkline
@@ -21,9 +20,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.estimated_one_rm
-import com.grippo.design.resources.provider.estimated_one_rm_effective_load
 import com.grippo.design.resources.provider.estimated_one_rm_history_peak
-import com.grippo.design.resources.provider.estimated_one_rm_method
 import com.grippo.design.resources.provider.estimated_one_rm_source
 import com.grippo.design.resources.provider.estimated_one_rm_unavailable
 import com.grippo.toolkit.date.utils.DateCompose
@@ -117,20 +114,6 @@ public fun EstimatedOneRepMaxCard(
             data = SparklineData(points = points),
             valueFormatter = valueLabels::getValue,
         )
-
-        if (latest.loadType == EstimatedOneRepMaxLoadTypeState.Effective) {
-            Text(
-                text = AppTokens.strings.res(Res.string.estimated_one_rm_effective_load),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-            )
-        }
-
-        Text(
-            text = AppTokens.strings.res(Res.string.estimated_one_rm_method),
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.tertiary,
-        )
     }
 }
 
@@ -139,14 +122,6 @@ public fun EstimatedOneRepMaxCard(
 private fun EstimatedOneRepMaxCardPreview() {
     PreviewContainer {
         EstimatedOneRepMaxCard(state = stubEstimatedOneRepMax())
-    }
-}
-
-@AppPreview
-@Composable
-private fun EstimatedOneRepMaxCardEffectiveLoadPreview() {
-    PreviewContainer {
-        EstimatedOneRepMaxCard(state = stubEstimatedOneRepMax(loadType = EstimatedOneRepMaxLoadTypeState.Effective))
     }
 }
 

@@ -9,9 +9,11 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +40,7 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.metrics.profile.goal.GoalCardStyle
 import com.grippo.design.components.metrics.profile.goal.GoalFitDriftingCard
@@ -104,75 +107,85 @@ private fun TrainingGoalDetailsContent(
     val notice = state.notice()
     val listState = rememberAnchoredLazyListState(behavior = AnchorScrollBehavior.Animated)
 
-    LazyColumn(
-        state = listState,
-        modifier = modifier.navigationBarsPadding(),
+    BottomOverlayContainer(
+        modifier = modifier,
         contentPadding = PaddingValues(
             start = AppTokens.dp.dialog.horizontalPadding,
             end = AppTokens.dp.dialog.horizontalPadding,
             top = AppTokens.dp.dialog.top,
-            bottom = AppTokens.dp.dialog.bottom,
         ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-    ) {
-        if (progress != null) {
-            item(key = "summary") {
-                GoalCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = progress,
-                    style = GoalCardStyle.Assessment,
-                )
-            }
-        }
+        overlay = AppTokens.colors.background.dialog,
+        content = { containerModifier, resolvedPadding ->
+            LazyColumn(
+                state = listState,
+                modifier = containerModifier.fillMaxWidth(),
+                contentPadding = resolvedPadding,
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            ) {
+                if (progress != null) {
+                    item(key = "summary") {
+                        GoalCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = progress,
+                            style = GoalCardStyle.Assessment,
+                        )
+                    }
+                }
 
-        if (notice != null) {
-            item(key = "notice") {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = notice,
-                    style = AppTokens.typography.b13Med(),
-                    color = AppTokens.colors.text.secondary,
-                )
-            }
-        }
+                if (notice != null) {
+                    item(key = "notice") {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = notice,
+                            style = AppTokens.typography.b13Med(),
+                            color = AppTokens.colors.text.secondary,
+                        )
+                    }
+                }
 
-        if (priorityFindings.isNotEmpty()) {
-            item(key = "priority_findings") {
-                GoalAdjustmentSection(
-                    modifier = Modifier.fillMaxWidth(),
-                    findings = priorityFindings,
-                )
-            }
-        }
+                if (priorityFindings.isNotEmpty()) {
+                    item(key = "priority_findings") {
+                        GoalAdjustmentSection(
+                            modifier = Modifier.fillMaxWidth(),
+                            findings = priorityFindings,
+                        )
+                    }
+                }
 
-        if (positiveFindings.isNotEmpty()) {
-            item(key = "positive_finding") {
-                GoalSupportSection(
-                    modifier = Modifier.fillMaxWidth(),
-                    findings = positiveFindings,
-                )
-            }
-        }
+                if (positiveFindings.isNotEmpty()) {
+                    item(key = "positive_finding") {
+                        GoalSupportSection(
+                            modifier = Modifier.fillMaxWidth(),
+                            findings = positiveFindings,
+                        )
+                    }
+                }
 
-        if (progress != null) {
-            item(key = "calendar") {
-                GoalCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = progress,
-                    style = GoalCardStyle.Calendar(onUpdateClick = onAddGoal),
-                )
-            }
+                if (progress != null) {
+                    item(key = "calendar") {
+                        GoalCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = progress,
+                            style = GoalCardStyle.Calendar(onUpdateClick = onAddGoal),
+                        )
+                    }
 
-            item(key = "disclosure") {
-                GoalAssessmentDisclosure(
-                    modifier = Modifier.fillMaxWidth(),
-                    state = state,
-                    isExpanded = isExpanded,
-                    onToggleDetails = onToggleDetails,
-                )
+                    item(key = "disclosure") {
+                        GoalAssessmentDisclosure(
+                            modifier = Modifier.fillMaxWidth(),
+                            state = state,
+                            isExpanded = isExpanded,
+                            onToggleDetails = onToggleDetails,
+                        )
+                    }
+                }
             }
-        }
-    }
+        },
+        bottom = {
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+            Spacer(modifier = Modifier.navigationBarsPadding())
+        },
+    )
 }
 
 @Composable

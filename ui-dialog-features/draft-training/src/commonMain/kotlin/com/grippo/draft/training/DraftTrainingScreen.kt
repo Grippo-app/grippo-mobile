@@ -40,8 +40,6 @@ import com.grippo.design.resources.provider.draft_training_alert_title_add
 import com.grippo.design.resources.provider.draft_training_alert_title_edit
 import com.grippo.design.resources.provider.draft_training_contents
 import com.grippo.design.resources.provider.draft_training_empty
-import com.grippo.design.resources.provider.draft_training_start_new_hint_add
-import com.grippo.design.resources.provider.draft_training_start_new_hint_edit
 import com.grippo.design.resources.provider.start_new
 import com.grippo.draft.training.components.DraftTrainingSummary
 import kotlin.time.Duration
@@ -202,17 +200,6 @@ internal fun DraftTrainingScreen(
                     state = startNewState,
                     onClick = contract::onStartNew,
                 )
-                if (!isLoading) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = when (state.stage) {
-                            StageState.Add, StageState.Draft -> AppTokens.strings.res(Res.string.draft_training_start_new_hint_add)
-                            is StageState.Edit -> AppTokens.strings.res(Res.string.draft_training_start_new_hint_edit)
-                        },
-                        style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-                }
             }
         },
     )

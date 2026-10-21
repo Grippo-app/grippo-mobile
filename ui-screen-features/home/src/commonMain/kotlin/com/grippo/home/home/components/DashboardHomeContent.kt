@@ -42,7 +42,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.home_exercise_highlights_title
-import com.grippo.design.resources.provider.home_metrics_description
 import com.grippo.design.resources.provider.home_metrics_empty_description
 import com.grippo.design.resources.provider.home_metrics_title
 import com.grippo.design.resources.provider.home_progress_details_hint
@@ -207,17 +206,13 @@ internal fun DashboardHomeContent(
                         style = AppTokens.typography.h4(),
                         color = AppTokens.colors.text.primary,
                     )
-                    Text(
-                        text = AppTokens.strings.res(
-                            if (visiblePerformanceMetrics.all { it.isEmpty() }) {
-                                Res.string.home_metrics_empty_description
-                            } else {
-                                Res.string.home_metrics_description
-                            },
-                        ),
-                        style = AppTokens.typography.b13Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
+                    if (visiblePerformanceMetrics.all { it.isEmpty() }) {
+                        Text(
+                            text = AppTokens.strings.res(Res.string.home_metrics_empty_description),
+                            style = AppTokens.typography.b13Med(),
+                            color = AppTokens.colors.text.secondary,
+                        )
+                    }
                 }
             }
         }
