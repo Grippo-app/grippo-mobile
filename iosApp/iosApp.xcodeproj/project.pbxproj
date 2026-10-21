@@ -239,6 +239,17 @@
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/scripts/generate-embedded-framework-dsyms.sh",
+				"$(BUILT_PRODUCTS_DIR)/shared.framework/shared",
+				"$(BUILT_PRODUCTS_DIR)/FirebaseAnalytics.framework/FirebaseAnalytics",
+				"$(BUILT_PRODUCTS_DIR)/GoogleAdsOnDeviceConversion.framework/GoogleAdsOnDeviceConversion",
+				"$(BUILT_PRODUCTS_DIR)/GoogleAppMeasurement.framework/GoogleAppMeasurement",
+				"$(BUILT_PRODUCTS_DIR)/GoogleAppMeasurementIdentitySupport.framework/GoogleAppMeasurementIdentitySupport",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/shared.framework/shared",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/FirebaseAnalytics.framework/FirebaseAnalytics",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/GoogleAdsOnDeviceConversion.framework/GoogleAdsOnDeviceConversion",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/GoogleAppMeasurement.framework/GoogleAppMeasurement",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/GoogleAppMeasurementIdentitySupport.framework/GoogleAppMeasurementIdentitySupport",
 				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
 				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
 				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
@@ -247,10 +258,55 @@
 			);
 			name = "Upload Crashlytics symbols";
 			outputPaths = (
+				"$(DWARF_DSYM_FOLDER_PATH)/shared.framework.dSYM",
+				"$(DWARF_DSYM_FOLDER_PATH)/shared.framework.dSYM/Contents",
+				"$(DWARF_DSYM_FOLDER_PATH)/shared.framework.dSYM/Contents/Info.plist",
+				"$(DWARF_DSYM_FOLDER_PATH)/shared.framework.dSYM/Contents/Resources",
+				"$(DWARF_DSYM_FOLDER_PATH)/shared.framework.dSYM/Contents/Resources/DWARF",
+				"$(DWARF_DSYM_FOLDER_PATH)/shared.framework.dSYM/Contents/Resources/DWARF/shared",
+				"$(DWARF_DSYM_FOLDER_PATH)/shared.framework.dSYM/Contents/Resources/Relocations",
+				"$(DWARF_DSYM_FOLDER_PATH)/shared.framework.dSYM/Contents/Resources/Relocations/aarch64",
+				"$(DWARF_DSYM_FOLDER_PATH)/shared.framework.dSYM/Contents/Resources/Relocations/aarch64/shared.yml",
+				"$(DWARF_DSYM_FOLDER_PATH)/FirebaseAnalytics.framework.dSYM",
+				"$(DWARF_DSYM_FOLDER_PATH)/FirebaseAnalytics.framework.dSYM/Contents",
+				"$(DWARF_DSYM_FOLDER_PATH)/FirebaseAnalytics.framework.dSYM/Contents/Info.plist",
+				"$(DWARF_DSYM_FOLDER_PATH)/FirebaseAnalytics.framework.dSYM/Contents/Resources",
+				"$(DWARF_DSYM_FOLDER_PATH)/FirebaseAnalytics.framework.dSYM/Contents/Resources/DWARF",
+				"$(DWARF_DSYM_FOLDER_PATH)/FirebaseAnalytics.framework.dSYM/Contents/Resources/DWARF/FirebaseAnalytics",
+				"$(DWARF_DSYM_FOLDER_PATH)/FirebaseAnalytics.framework.dSYM/Contents/Resources/Relocations",
+				"$(DWARF_DSYM_FOLDER_PATH)/FirebaseAnalytics.framework.dSYM/Contents/Resources/Relocations/aarch64",
+				"$(DWARF_DSYM_FOLDER_PATH)/FirebaseAnalytics.framework.dSYM/Contents/Resources/Relocations/aarch64/FirebaseAnalytics.yml",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAdsOnDeviceConversion.framework.dSYM",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAdsOnDeviceConversion.framework.dSYM/Contents",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAdsOnDeviceConversion.framework.dSYM/Contents/Info.plist",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAdsOnDeviceConversion.framework.dSYM/Contents/Resources",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAdsOnDeviceConversion.framework.dSYM/Contents/Resources/DWARF",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAdsOnDeviceConversion.framework.dSYM/Contents/Resources/DWARF/GoogleAdsOnDeviceConversion",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAdsOnDeviceConversion.framework.dSYM/Contents/Resources/Relocations",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAdsOnDeviceConversion.framework.dSYM/Contents/Resources/Relocations/aarch64",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAdsOnDeviceConversion.framework.dSYM/Contents/Resources/Relocations/aarch64/GoogleAdsOnDeviceConversion.yml",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurement.framework.dSYM",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurement.framework.dSYM/Contents",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurement.framework.dSYM/Contents/Info.plist",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurement.framework.dSYM/Contents/Resources",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurement.framework.dSYM/Contents/Resources/DWARF",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurement.framework.dSYM/Contents/Resources/DWARF/GoogleAppMeasurement",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurement.framework.dSYM/Contents/Resources/Relocations",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurement.framework.dSYM/Contents/Resources/Relocations/aarch64",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurement.framework.dSYM/Contents/Resources/Relocations/aarch64/GoogleAppMeasurement.yml",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurementIdentitySupport.framework.dSYM",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurementIdentitySupport.framework.dSYM/Contents",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurementIdentitySupport.framework.dSYM/Contents/Info.plist",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurementIdentitySupport.framework.dSYM/Contents/Resources",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurementIdentitySupport.framework.dSYM/Contents/Resources/DWARF",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurementIdentitySupport.framework.dSYM/Contents/Resources/DWARF/GoogleAppMeasurementIdentitySupport",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurementIdentitySupport.framework.dSYM/Contents/Resources/Relocations",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurementIdentitySupport.framework.dSYM/Contents/Resources/Relocations/aarch64",
+				"$(DWARF_DSYM_FOLDER_PATH)/GoogleAppMeasurementIdentitySupport.framework.dSYM/Contents/Resources/Relocations/aarch64/GoogleAppMeasurementIdentitySupport.yml",
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "set -eu\nif [ \"$PLATFORM_NAME\" = \"iphoneos\" ] && [ \"$CONFIGURATION\" = \"Release\" ]; then\n    \"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nfi\n";
+			shellScript = "set -eu\nif [ \"$PLATFORM_NAME\" = \"iphoneos\" ] && [ \"$CONFIGURATION\" = \"Release\" ]; then\n    /bin/sh \"${SRCROOT}/scripts/generate-embedded-framework-dsyms.sh\"\n    \"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -408,7 +464,7 @@
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosAppDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 5NJAG8U639;
 				ENABLE_PREVIEWS = YES;
@@ -441,7 +497,7 @@
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosAppRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 5NJAG8U639;
 				ENABLE_PREVIEWS = YES;
