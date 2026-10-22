@@ -350,6 +350,7 @@
 
     <string name="equipment_ab_machines">Тренажёры для пресса</string>
     <string name="equipment_butterfly">Бабочка</string>
+    <string name="equipment_butterfly_forearm">Бабочка с упором на предплечья</string>
     <string name="equipment_butterfly_reverse">Обратная бабочка</string>
     <string name="equipment_leg_extension_machines">Тренажёры для разгибания ног</string>
     <string name="equipment_leg_curl_machines">Тренажёры для сгибания ног</string>
@@ -447,6 +448,7 @@
 
     <string name="equipment_hint_ab_machines">Укажи вес, который выставил на тренажёре.</string>
     <string name="equipment_hint_butterfly">Укажи вес на тренажёре. Если две стороны с разными цифрами — возьми одну.</string>
+    <string name="equipment_hint_butterfly_forearm">Укажи вес, который выставил на тренажёре.</string>
     <string name="equipment_hint_butterfly_reverse">Укажи вес на тренажёре. Если две стороны с разными цифрами — возьми одну.</string>
     <string name="equipment_hint_leg_extension_machines">Укажи вес на разгибании ног.</string>
     <string name="equipment_hint_leg_curl_machines">Укажи вес на сгибании ног.</string>

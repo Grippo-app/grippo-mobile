@@ -31,7 +31,8 @@ time pressure. Every edit must leave it more decidable, not longer.
 | Koin bindings and composition | `di-modules/SKILL.md` + references |
 | Tokens, components, resources, previews, visual checks and evidence | `design-system/references/*.md` (`visual-consistency.md` owns visual evidence) |
 | Visual intent, usage/state analysis, design acceptance | `brand-design/references/*.md` |
-| Artwork | `illustrations/SKILL.md` |
+| Decorative product artwork | `illustrations/SKILL.md` |
+| Equipment identifiers, catalog integration, native diagrams and backend task handoff | `add-equipment/SKILL.md` + references (`naming.md` owns the cross-layer identifier mapping) |
 | Analytics API, observation boundary, screen coverage gate, admin sync, consent | `feature-analytics/SKILL.md` + references |
 | Drafts and restoration | `state-preservation/SKILL.md` |
 | Conventions, catalog, new modules, toolkit, iOS framework, secrets, release | `platform-build-toolkit/references/*.md` |

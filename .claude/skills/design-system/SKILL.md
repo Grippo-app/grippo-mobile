@@ -26,9 +26,11 @@ Compose implementation and source review apply
 Expandable content follows its
 [disclosure transition contract](../compose-components/references/structure-and-runtime.md#disclosure-transitions).
 
-Product artwork creation, refinement and style review MUST apply
-[illustrations](../illustrations/SKILL.md). Resource/UI integration remains here;
-ordinary UI icons and existing logos do not trigger artwork generation.
+Equipment diagrams follow
+[add-equipment's vector pipeline](../add-equipment/references/imagevector-pipeline.md).
+Decorative product artwork follows [illustrations](../illustrations/SKILL.md).
+Resource/UI integration remains here; ordinary UI icons and existing logos do
+not trigger artwork generation.
 
 ## Implementation rules
 

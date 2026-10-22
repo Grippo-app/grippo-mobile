@@ -5,6 +5,10 @@ description: Create, refine or review Grippo product illustrations in the approv
 
 # Grippo illustrations
 
+Equipment catalog diagrams follow
+[add-equipment's ImageVector pipeline](../add-equipment/references/imagevector-pipeline.md).
+The reference, generation and export rules below apply to decorative product artwork.
+
 The owner approved the onboarding dumbbell illustration as the project's visual
 reference. New illustrations should feel like members of this same family,
 including when their subjects and screen roles differ.

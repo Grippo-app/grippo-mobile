@@ -35,6 +35,9 @@ Compose implementation and review use [compose-components](skills/compose-compon
 with [design-system](skills/design-system/SKILL.md) and [brand-design](skills/brand-design/SKILL.md)
 for visual work. Bugs follow `bug-investigation`; rule changes follow `rulebook-maintenance`.
 
+Equipment additions, native diagrams and backend task prompts follow
+[add-equipment](skills/add-equipment/SKILL.md).
+
 ## Working on the rulebook
 
 ```bash

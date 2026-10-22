@@ -11,6 +11,7 @@ import com.grippo.design.resources.provider.equipment.AdjustableBench
 import com.grippo.design.resources.provider.equipment.Barbell
 import com.grippo.design.resources.provider.equipment.BicepsMachine
 import com.grippo.design.resources.provider.equipment.Butterfly
+import com.grippo.design.resources.provider.equipment.ButterflyForearm
 import com.grippo.design.resources.provider.equipment.ButterflyReverse
 import com.grippo.design.resources.provider.equipment.Cable
 import com.grippo.design.resources.provider.equipment.CalfRaiseMachines
@@ -56,6 +57,7 @@ import com.grippo.design.resources.provider.equipment_adjustable_bench
 import com.grippo.design.resources.provider.equipment_barbell
 import com.grippo.design.resources.provider.equipment_biceps_machines
 import com.grippo.design.resources.provider.equipment_butterfly
+import com.grippo.design.resources.provider.equipment_butterfly_forearm
 import com.grippo.design.resources.provider.equipment_butterfly_reverse
 import com.grippo.design.resources.provider.equipment_cable
 import com.grippo.design.resources.provider.equipment_cable_crossover
@@ -81,6 +83,7 @@ import com.grippo.design.resources.provider.equipment_hint_adjustable_bench
 import com.grippo.design.resources.provider.equipment_hint_barbell
 import com.grippo.design.resources.provider.equipment_hint_biceps_machines
 import com.grippo.design.resources.provider.equipment_hint_butterfly
+import com.grippo.design.resources.provider.equipment_hint_butterfly_forearm
 import com.grippo.design.resources.provider.equipment_hint_butterfly_reverse
 import com.grippo.design.resources.provider.equipment_hint_cable
 import com.grippo.design.resources.provider.equipment_hint_cable_crossover
@@ -156,6 +159,7 @@ public enum class EquipmentEnumState {
 
     AB_MACHINES,
     BUTTERFLY,
+    BUTTERFLY_FOREARM,
     BUTTERFLY_REVERSE,
     LEG_EXTENSION_MACHINES,
     LEG_CURL_MACHINES,
@@ -212,6 +216,7 @@ public enum class EquipmentEnumState {
 
             AB_MACHINES -> AbMachine
             BUTTERFLY -> Butterfly
+            BUTTERFLY_FOREARM -> ButterflyForearm
             BUTTERFLY_REVERSE -> ButterflyReverse
             LEG_EXTENSION_MACHINES -> LegExtensionMachine
             LEG_CURL_MACHINES -> LegCurlMachine
@@ -268,6 +273,7 @@ public enum class EquipmentEnumState {
 
                     AB_MACHINES -> Res.string.equipment_ab_machines
                     BUTTERFLY -> Res.string.equipment_butterfly
+                    BUTTERFLY_FOREARM -> Res.string.equipment_butterfly_forearm
                     BUTTERFLY_REVERSE -> Res.string.equipment_butterfly_reverse
                     LEG_EXTENSION_MACHINES -> Res.string.equipment_leg_extension_machines
                     LEG_CURL_MACHINES -> Res.string.equipment_leg_curl_machines
@@ -323,6 +329,7 @@ public enum class EquipmentEnumState {
 
                     AB_MACHINES -> Res.string.equipment_hint_ab_machines
                     BUTTERFLY -> Res.string.equipment_hint_butterfly
+                    BUTTERFLY_FOREARM -> Res.string.equipment_hint_butterfly_forearm
                     BUTTERFLY_REVERSE -> Res.string.equipment_hint_butterfly_reverse
                     LEG_EXTENSION_MACHINES -> Res.string.equipment_hint_leg_extension_machines
                     LEG_CURL_MACHINES -> Res.string.equipment_hint_leg_curl_machines

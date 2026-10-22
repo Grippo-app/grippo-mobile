@@ -45,6 +45,9 @@ resource packaging/use needs its relevant inspection or manual scenario.
 
 ## Imagery and fonts
 
+Equipment catalog diagrams follow the
+[native equipment pipeline](../../add-equipment/references/imagevector-pipeline.md).
+
 - Product UI icons MUST be AppIcon ImageVector extensions with real path data; a
   raster or drawable substitute for a UI icon is a defect.
 - Raster illustrations/photos use WebP by default; PNG needs a documented

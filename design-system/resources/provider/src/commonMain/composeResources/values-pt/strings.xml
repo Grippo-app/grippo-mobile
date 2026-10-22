@@ -351,6 +351,7 @@
 
     <string name="equipment_ab_machines">Máquinas de abdominais</string>
     <string name="equipment_butterfly">Voador peitoral</string>
+    <string name="equipment_butterfly_forearm">Voador com apoio para os antebraços</string>
     <string name="equipment_butterfly_reverse">Voador inverso</string>
     <string name="equipment_leg_extension_machines">Cadeiras extensoras</string>
     <string name="equipment_leg_curl_machines">Máquinas de flexão de pernas</string>
@@ -448,6 +449,7 @@
 
     <string name="equipment_hint_ab_machines">Digite o peso selecionado na máquina.</string>
     <string name="equipment_hint_butterfly">Digite o peso da máquina. Se os lados esquerdo e direito mostrarem números diferentes, use um dos lados.</string>
+    <string name="equipment_hint_butterfly_forearm">Digite o peso selecionado na máquina.</string>
     <string name="equipment_hint_butterfly_reverse">Digite o peso da máquina. Se os lados esquerdo e direito mostrarem números diferentes, use um dos lados.</string>
     <string name="equipment_hint_leg_extension_machines">Digite o peso selecionado na cadeira extensora.</string>
     <string name="equipment_hint_leg_curl_machines">Digite o peso selecionado na máquina de flexão de pernas.</string>

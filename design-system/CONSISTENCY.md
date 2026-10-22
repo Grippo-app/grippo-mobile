@@ -248,7 +248,7 @@ and Latin text in both themes; each role keeps its existing size and line height
 
 - Equipment is recognized by its characteristic silhouette and complete localized
   name. `EquipmentEnumState.icon()` is the single exhaustive identity mapping for
-  all 45 types, using the existing graphite equipment vectors without tint or a
+  all 46 types, using the existing graphite equipment vectors without tint or a
   per-item color palette. Sorting, popularity, selection and exclusions do not
   change that mapping. Theme text and surfaces retain their existing neutral roles.
 - Concrete apparatus, bench/rack variants and cable attachments keep their own
@@ -258,6 +258,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   `CABLE_CROSSOVER`, `LAT_PULLDOWN` and `ROW_CABLE` use Cable, Crossover,
   LatPulldown and RowCable. Rope, StraightBar, VBar, WideGripHandle,
   CloseGripHandle and CordHandles remain six distinct attachment identities.
+  `BUTTERFLY` → Butterfly keeps its handgrips; `BUTTERFLY_FOREARM` →
+  ButterflyForearm has two upright forearm pads connected to the moving arms.
+  These are distinct equipment identities in every card composition.
   Existing aliases stay intentional: DUMBBELLS → Dumbbell, AB_MACHINES →
   AbMachine, BICEPS_MACHINES → BicepsMachine, SMITH_MACHINES → SmithMachine,
   LEG_EXTENSION_MACHINES → LegExtensionMachine, LEG_CURL_MACHINES → LegCurlMachine,

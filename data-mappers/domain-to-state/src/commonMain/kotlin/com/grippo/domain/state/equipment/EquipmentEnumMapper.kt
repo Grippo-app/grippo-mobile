@@ -18,6 +18,7 @@ public fun EquipmentEnum.toState(): EquipmentEnumState {
 
         EquipmentEnum.AB_MACHINES -> EquipmentEnumState.AB_MACHINES
         EquipmentEnum.BUTTERFLY -> EquipmentEnumState.BUTTERFLY
+        EquipmentEnum.BUTTERFLY_FOREARM -> EquipmentEnumState.BUTTERFLY_FOREARM
         EquipmentEnum.BUTTERFLY_REVERSE -> EquipmentEnumState.BUTTERFLY_REVERSE
         EquipmentEnum.LEG_EXTENSION_MACHINES -> EquipmentEnumState.LEG_EXTENSION_MACHINES
         EquipmentEnum.LEG_CURL_MACHINES -> EquipmentEnumState.LEG_CURL_MACHINES

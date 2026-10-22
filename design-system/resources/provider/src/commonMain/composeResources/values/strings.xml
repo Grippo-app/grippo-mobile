@@ -351,6 +351,7 @@
 
     <string name="equipment_ab_machines">AB Machines</string>
     <string name="equipment_butterfly">Butterfly</string>
+    <string name="equipment_butterfly_forearm">Pec Deck with Forearm Pads</string>
     <string name="equipment_butterfly_reverse">Butterfly Reverse</string>
     <string name="equipment_leg_extension_machines">Leg Extension Machines</string>
     <string name="equipment_leg_curl_machines">Leg Curl Machines</string>
@@ -448,6 +449,7 @@
 
     <string name="equipment_hint_ab_machines">Enter the weight you set on the machine.</string>
     <string name="equipment_hint_butterfly">Enter the machine weight. If left/right show different numbers, use one side.</string>
+    <string name="equipment_hint_butterfly_forearm">Enter the weight selected on the machine.</string>
     <string name="equipment_hint_butterfly_reverse">Enter the machine weight. If left/right show different numbers, use one side.</string>
     <string name="equipment_hint_leg_extension_machines">Enter the weight you set on leg extensions.</string>
     <string name="equipment_hint_leg_curl_machines">Enter the weight you set on leg curls.</string>

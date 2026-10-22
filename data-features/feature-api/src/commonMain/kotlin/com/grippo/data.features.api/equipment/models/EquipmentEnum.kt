@@ -14,6 +14,7 @@ public enum class EquipmentEnum(private val key: String) {
 
     AB_MACHINES("ab_machines"),
     BUTTERFLY("butterfly"),
+    BUTTERFLY_FOREARM("butterfly_forearm"),
     BUTTERFLY_REVERSE("butterfly_reverse"),
     LEG_EXTENSION_MACHINES("leg_extension_machines"),
     LEG_CURL_MACHINES("leg_curl_machines"),

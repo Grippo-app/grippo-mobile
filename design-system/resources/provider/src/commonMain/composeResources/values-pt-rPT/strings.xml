@@ -351,6 +351,7 @@
 
     <string name="equipment_ab_machines">Máquinas de abdominais</string>
     <string name="equipment_butterfly">Máquina de aberturas de peito</string>
+    <string name="equipment_butterfly_forearm">Máquina de aberturas com apoio para os antebraços</string>
     <string name="equipment_butterfly_reverse">Máquina de aberturas inversas</string>
     <string name="equipment_leg_extension_machines">Máquinas de extensão de pernas</string>
     <string name="equipment_leg_curl_machines">Máquinas de flexão de pernas</string>
@@ -448,6 +449,7 @@
 
     <string name="equipment_hint_ab_machines">Introduza o peso selecionado na máquina.</string>
     <string name="equipment_hint_butterfly">Introduza o peso da máquina. Se os lados esquerdo e direito mostrarem números diferentes, use um dos lados.</string>
+    <string name="equipment_hint_butterfly_forearm">Introduza o peso selecionado na máquina.</string>
     <string name="equipment_hint_butterfly_reverse">Introduza o peso da máquina. Se os lados esquerdo e direito mostrarem números diferentes, use um dos lados.</string>
     <string name="equipment_hint_leg_extension_machines">Introduza o peso selecionado na máquina de extensão de pernas.</string>
     <string name="equipment_hint_leg_curl_machines">Introduza o peso selecionado na máquina de flexão de pernas.</string>

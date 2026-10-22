@@ -289,7 +289,8 @@ for Claude Code and Codex launch, capabilities and protection.
 | [di-modules](.claude/skills/di-modules/SKILL.md) | Koin annotations, lifetimes, shared composition | Any binding/registration change |
 | [design-system](.claude/skills/design-system/SKILL.md) | Tokens, components, resources, previews, semantic role implementation, visual checks | Any visual change |
 | [brand-design](.claude/skills/brand-design/SKILL.md) | Visual intent, domain entity visual semantics, composition, usage/state analysis, acceptance | New or changed product UI |
-| [illustrations](.claude/skills/illustrations/SKILL.md) | Artwork style, generation, export, integration | Requested artwork |
+| [illustrations](.claude/skills/illustrations/SKILL.md) | Decorative artwork style, generation, export, integration | Requested decorative artwork |
+| [add-equipment](.claude/skills/add-equipment/SKILL.md) | Equipment identifiers, catalog integration, native diagrams and backend task handoff | New equipment types, independently selectable variants or equipment diagram work |
 | [platform-build-toolkit](.claude/skills/platform-build-toolkit/SKILL.md) | Conventions, catalog, new modules, toolkit, shells, iOS framework, secrets, release, dependency updates | Any build/platform change |
 | [runtime-verification](.claude/skills/runtime-verification/SKILL.md) | Build, install, run, drive and inspect the app on emulator/simulator | Manual runtime checks |
 | [bug-investigation](.claude/skills/bug-investigation/SKILL.md) | Reproduce, locate, root-cause, fix at the owner, regression gate | Any bug report |

@@ -71,6 +71,10 @@ public fun stubEquipments(): ImmutableList<EquipmentGroupState> = persistentList
                 EquipmentEnumState.BUTTERFLY
             ),
             EquipmentState(
+                id = "preview-butterfly-forearm",
+                type = EquipmentEnumState.BUTTERFLY_FOREARM
+            ),
+            EquipmentState(
                 "526347a3-ee32-473d-9b5d-049f526ae48e",
                 EquipmentEnumState.BUTTERFLY_REVERSE
             ),

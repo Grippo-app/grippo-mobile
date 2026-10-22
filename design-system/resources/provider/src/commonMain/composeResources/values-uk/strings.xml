@@ -349,6 +349,7 @@
 
     <string name="equipment_ab_machines">Тренажери для преса</string>
     <string name="equipment_butterfly">Метелик</string>
+    <string name="equipment_butterfly_forearm">Метелик з упором на передпліччя</string>
     <string name="equipment_butterfly_reverse">Зворотний метелик</string>
     <string name="equipment_leg_extension_machines">Тренажери для розгинання ніг</string>
     <string name="equipment_leg_curl_machines">Тренажери для згинання ніг</string>
@@ -446,6 +447,7 @@
 
     <string name="equipment_hint_ab_machines">Вкажи вагу, яку виставив на тренажері.</string>
     <string name="equipment_hint_butterfly">Вкажи вагу на тренажері. Якщо дві сторони з різними цифрами — візьми одну.</string>
+    <string name="equipment_hint_butterfly_forearm">Вкажи вагу, яку виставив на тренажері.</string>
     <string name="equipment_hint_butterfly_reverse">Вкажи вагу на тренажері. Якщо дві сторони з різними цифрами — візьми одну.</string>
     <string name="equipment_hint_leg_extension_machines">Вкажи вагу на розгинанні ніг.</string>
     <string name="equipment_hint_leg_curl_machines">Вкажи вагу на згинанні ніг.</string>

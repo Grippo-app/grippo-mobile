@@ -15,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.equipments.EquipmentEnumState
+import com.grippo.core.state.equipments.EquipmentGroupEnumState
 import com.grippo.core.state.equipments.EquipmentGroupState
 import com.grippo.core.state.equipments.stubEquipments
 import com.grippo.design.components.divider.ContentDivider
@@ -109,6 +111,25 @@ private fun EquipmentSelectionPreview() {
             groups = groups,
             selectedGroupId = groups.first().id,
             selectedEquipmentIds = groups.first().equipments.take(3).map { it.id }.toPersistentList(),
+            onGroupSelect = {},
+            onEquipmentSelect = {},
+            bottom = {},
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun EquipmentSelectionMachinesPreview() {
+    PreviewContainer {
+        val groups = stubEquipments()
+        val machines = groups.first { it.type == EquipmentGroupEnumState.MACHINES }
+        val forearm = machines.equipments.first { it.type == EquipmentEnumState.BUTTERFLY_FOREARM }
+        EquipmentSelection(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            groups = groups,
+            selectedGroupId = machines.id,
+            selectedEquipmentIds = persistentListOf(forearm.id),
             onGroupSelect = {},
             onEquipmentSelect = {},
             bottom = {},

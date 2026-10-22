@@ -52,7 +52,8 @@ private fun Equipment.sortPriority(): Int {
         EquipmentEnum.ABDUCTOR_MACHINE -> 44
         EquipmentEnum.AB_MACHINES -> 45
         EquipmentEnum.BUTTERFLY -> 46
-        EquipmentEnum.BUTTERFLY_REVERSE -> 47
+        EquipmentEnum.BUTTERFLY_FOREARM -> 47
+        EquipmentEnum.BUTTERFLY_REVERSE -> 48
 
         EquipmentEnum.FLAT_BENCH_WITH_RACK -> 60
         EquipmentEnum.INCLINE_BENCH_WITH_RACK -> 61

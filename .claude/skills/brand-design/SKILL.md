@@ -26,7 +26,8 @@ Very small-device appearance is outside the default design/review scope.
 | This skill | Visual intent, domain entity visual semantics, composition, usage/state analysis and brand acceptance |
 | [design-system](../design-system/SKILL.md) | Tokens, shared component contracts, resources, themes and previews |
 | [CONSISTENCY.md](../../../design-system/CONSISTENCY.md) | Concrete product role-to-token choices |
-| [illustrations](../illustrations/SKILL.md) | Artwork reference, generation, exports and asset acceptance |
+| [illustrations](../illustrations/SKILL.md) | Decorative artwork reference, generation, exports and acceptance |
+| [add-equipment](../add-equipment/SKILL.md) | Equipment diagrams and catalog integration |
 | [ui-feature](../ui-feature/SKILL.md) | Screen/dialog behavior, navigation and state ownership |
 | [visual evidence](../design-system/references/visual-consistency.md#evidence) | What a render establishes and how visual evidence is reported |
 | [task-orchestrator](../task-orchestrator/SKILL.md#execution-loop), [validation-gates](../validation-gates/SKILL.md) | Execution loop, independent review and completion checks |
@@ -68,8 +69,10 @@ Resolve conflicts at the owning document rather than adding a competing policy.
 | Controls, feedback, themes or animation | Relevant sections of [states and motion](references/states-and-motion.md) |
 | Implementation, migration or completion review | [Workflow and review](references/workflow-and-review.md) |
 
-Standalone artwork stays with illustrations. Apply this skill when its UI placement
-or composition is also in scope; a layout edit does not require new artwork.
+Standalone equipment diagrams follow [add-equipment](../add-equipment/SKILL.md);
+decorative artwork follows [illustrations](../illustrations/SKILL.md). Apply this
+skill when UI placement or composition is also in scope; a layout edit does not
+require new artwork.
 
 ## Visual invariants
 

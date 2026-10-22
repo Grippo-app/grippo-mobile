@@ -280,6 +280,7 @@ private fun EquipmentCardCompactPreview() {
 private fun EquipmentCardInlinePreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.BUTTERFLY_FOREARM,
             EquipmentEnumState.BARBELL,
             EquipmentEnumState.SMITH_MACHINES,
             EquipmentEnumState.ROPE,
@@ -299,6 +300,7 @@ private fun EquipmentCardInlinePreview() {
 private fun EquipmentCardDetailPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.BUTTERFLY_FOREARM,
             EquipmentEnumState.BARBELL,
             EquipmentEnumState.SMITH_MACHINES,
             EquipmentEnumState.ROPE,
@@ -318,6 +320,7 @@ private fun EquipmentCardDetailPreview() {
 private fun EquipmentCardSelectedPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.BUTTERFLY_FOREARM,
             EquipmentEnumState.ROPE,
             EquipmentEnumState.CORD_HANDLES,
             EquipmentEnumState.SMITH_MACHINES,
@@ -336,6 +339,7 @@ private fun EquipmentCardSelectedPreview() {
 private fun EquipmentCardUnselectedPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.BUTTERFLY_FOREARM,
             EquipmentEnumState.ROPE,
             EquipmentEnumState.CORD_HANDLES,
             EquipmentEnumState.SMITH_MACHINES,
