@@ -42,9 +42,9 @@ public val Barbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N400),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N450),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -96,9 +96,9 @@ public val Barbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N400),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N500),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -131,7 +131,7 @@ public val Barbell: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N550),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -178,7 +178,7 @@ public val Barbell: ImageVector
                 curveTo(51.6185f, 52.0756f, 50.6519f, 44.4208f, 60.3706f, 44.1073f)
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -188,11 +188,11 @@ public val Barbell: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(223.394f, 140.903f)
-                lineTo(60.1745f, 45.8707f)
-                curveTo(52.9638f, 45.8707f, 53.3818f, 51.749f, 54.4922f, 54.6881f)
-                lineTo(218.3f, 149.328f)
-                lineTo(223.394f, 140.903f)
+                moveTo(225.65602f, 137.003489f)
+                lineTo(60.197062f, 45.603639f)
+                curveTo(52.987935f, 45.75426f, 53.528633f, 51.622546f, 54.700184f, 54.53781f)
+                lineTo(220.159143f, 145.93766f)
+                lineTo(225.65602f, 137.003489f)
                 close()
             }
             path(
@@ -206,11 +206,11 @@ public val Barbell: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(72.5188f, 64.8771f)
-                curveTo(71.8918f, 60.6447f, 75.6539f, 57.2353f, 77.6133f, 56.0597f)
-                lineTo(104.849f, 71.931f)
-                curveTo(101.244f, 73.185f, 99.9507f, 78.3318f, 99.7548f, 80.7484f)
-                lineTo(72.5188f, 64.8771f)
+                moveTo(72.935684f, 64.348038f)
+                curveTo(72.220412f, 60.129658f, 75.910474f, 56.642418f, 77.84489f, 55.426145f)
+                lineTo(105.406175f, 70.725069f)
+                curveTo(101.828156f, 72.054098f, 100.642647f, 77.22679f, 100.497269f, 79.646955f)
+                lineTo(72.935684f, 64.348038f)
                 close()
             }
             path(
@@ -224,17 +224,17 @@ public val Barbell: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(167.229f, 119.937f)
-                curveTo(166.602f, 115.704f, 170.364f, 112.295f, 172.323f, 111.119f)
-                lineTo(199.559f, 126.991f)
-                curveTo(195.954f, 128.245f, 194.66f, 133.391f, 194.465f, 135.808f)
-                lineTo(167.229f, 119.937f)
+                moveTo(168.775339f, 117.417569f)
+                curveTo(168.060054f, 113.198589f, 171.750025f, 109.711751f, 173.684032f, 108.495087f)
+                lineTo(201.245632f, 123.794704f)
+                curveTo(197.667613f, 125.123733f, 196.481388f, 130.29564f, 196.336918f, 132.716186f)
+                lineTo(168.775339f, 117.417569f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N400),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N450),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -286,9 +286,9 @@ public val Barbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N400),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N500),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -306,7 +306,7 @@ public val Barbell: ImageVector
             path(
                 fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -374,7 +374,7 @@ public val Barbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,

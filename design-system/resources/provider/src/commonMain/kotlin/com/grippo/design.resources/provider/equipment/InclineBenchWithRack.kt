@@ -24,7 +24,7 @@ public val InclineBenchWithRack: ImageVector
             viewportHeight = 277f
         ).apply {
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -60,7 +60,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -70,33 +70,17 @@ public val InclineBenchWithRack: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(63.2491f, 194.802f)
-                lineTo(62.5835f, 184.275f)
+                moveTo(62.5835f, 184.275f)
+                lineTo(64.869863f, 185.707026f)
+                curveTo(69.199978f, 184.032869f, 71.188088f, 184.473616f, 75.6404f, 182.69f)
+                curveTo(107.259f, 202.06f, 128.564f, 210.532f, 160.182f, 229.902f)
                 lineTo(154.303f, 241.722f)
                 lineTo(153.374f, 255.198f)
                 lineTo(63.2491f, 194.802f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
-                fillAlpha = 1.0f,
-                stroke = null,
-                strokeAlpha = 1.0f,
-                strokeLineWidth = 1.0f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
-                strokeLineMiter = 1.0f,
-                pathFillType = PathFillType.NonZero
-            ) {
-                moveTo(160.182f, 229.902f)
-                curveTo(128.564f, 210.532f, 107.259f, 202.06f, 75.6404f, 182.69f)
-                curveTo(71.0748f, 184.519f, 69.1004f, 184.009f, 64.5347f, 185.839f)
-                lineTo(152.33f, 240.398f)
-                lineTo(160.182f, 229.902f)
-                close()
-            }
-            path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -150,7 +134,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -168,7 +152,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -186,7 +170,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -222,7 +206,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -240,7 +224,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -295,7 +279,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -331,7 +315,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -385,7 +369,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -421,7 +405,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -457,7 +441,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = SolidColor(AppPalette.NeutralDark.N250),
                 strokeAlpha = 1.0f,
@@ -474,8 +458,15 @@ public val InclineBenchWithRack: ImageVector
                 lineTo(121.771f, 22.0771f)
                 close()
             }
+            path(fill = SolidColor(AppPalette.NeutralDark.N450)) {
+                moveTo(x = 68.5f, y = 129.2f)
+                lineTo(x = 122.8f, y = 24.1f)
+                lineTo(x = 125.2f, y = 24.6f)
+                lineTo(x = 71f, y = 130.2f)
+                close()
+            }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = SolidColor(AppPalette.NeutralDark.N250),
                 strokeAlpha = 1.0f,
@@ -485,12 +476,12 @@ public val InclineBenchWithRack: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(66.72f, 132.884f)
-                lineTo(6.40726f, 157.476f)
-                lineTo(37.7552f, 178.485f)
-                lineTo(99.3217f, 145.926f)
-                lineTo(66.72f, 132.884f)
+                moveTo(x = 66.72f, y = 132.884f)
+                lineTo(x = 6.40726f, y = 157.476f)
+                lineTo(x = 37.9936f, y = 170.988f)
+                lineTo(x = 99.7177f, y = 146.229f)
                 close()
+
             }
             path(
                 fill = SolidColor(AppPalette.NeutralDark.N250),
@@ -521,11 +512,18 @@ public val InclineBenchWithRack: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(6.20053f, 163.972f)
-                lineTo(6.40723f, 157.476f)
-                lineTo(37.9936f, 170.988f)
-                lineTo(37.7392f, 178.984f)
-                lineTo(6.20053f, 163.972f)
+                moveTo(x = 6.40726f, y = 157.476f)
+                lineTo(x = 37.9936f, y = 170.988f)
+                lineTo(x = 37.7711f, y = 177.986f)
+                lineTo(x = 6.1848f, y = 164.474f)
+                close()
+
+            }
+            path(fill = SolidColor(AppPalette.NeutralDark.N450)) {
+                moveTo(x = 9f, y = 157.6f)
+                lineTo(x = 67f, y = 134.8f)
+                lineTo(x = 70f, y = 136f)
+                lineTo(x = 12f, y = 159.2f)
                 close()
             }
             path(
@@ -542,12 +540,12 @@ public val InclineBenchWithRack: ImageVector
                 moveTo(107.123f, 215.175f)
                 lineTo(109.163f, 151.059f)
                 lineTo(100.032f, 155.047f)
-                lineTo(97.9724f, 219.773f)
+                lineTo(97.9724f, 218.3f)
                 lineTo(107.123f, 215.175f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -558,8 +556,8 @@ public val InclineBenchWithRack: ImageVector
                 pathFillType = PathFillType.NonZero
             ) {
                 moveTo(87.2597f, 210.574f)
-                lineTo(98.7257f, 217.868f)
-                lineTo(100.679f, 156.475f)
+                lineTo(97.9724f, 218.3f)
+                lineTo(100.032f, 155.047f)
                 lineTo(89.9149f, 160.635f)
                 lineTo(87.2597f, 210.574f)
                 close()
@@ -583,7 +581,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -619,7 +617,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -637,7 +635,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -655,7 +653,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -691,7 +689,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -709,7 +707,7 @@ public val InclineBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,

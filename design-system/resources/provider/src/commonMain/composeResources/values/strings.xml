@@ -368,6 +368,9 @@
     <string name="equipment_calf_raise_machines">Calf Raise Machines</string>
     <string name="equipment_glute_machines">Glute Machines</string>
     <string name="equipment_assisted_pull_up_dip">Assisted Pull-Up / Dip</string>
+    <string name="equipment_plate_loaded_row">Chest-Supported Plate-Loaded Row</string>
+    <string name="equipment_belt_squat">Belt Squat</string>
+    <string name="equipment_plate_loaded_seated_dip">Plate-Loaded Seated Dip</string>
     <string name="equipment_adductor_machine">Adductor Machine</string>
     <string name="equipment_abductor_machine">Abductor Machine</string>
 
@@ -468,6 +471,9 @@
     <string name="equipment_hint_calf_raise_machines">Enter the weight you set on the calf machine.</string>
     <string name="equipment_hint_glute_machines">Enter the weight you set on the glute machine.</string>
     <string name="equipment_hint_assisted_pull_up_dip">Enter the assistance weight shown on the stack as a positive value. More assistance makes the exercise easier.</string>
+    <string name="equipment_hint_plate_loaded_row">Enter the total weight of plates on the arms you use. For one-arm rows, count only the plates on that side. Do not include resistance from the machine itself.</string>
+    <string name="equipment_hint_belt_squat">Enter the total weight of the plates used for resistance. Do not include your body weight or the resistance of the unloaded machine.</string>
+    <string name="equipment_hint_plate_loaded_seated_dip">Enter the total weight of plates on the working arms. Do not count storage plates or the machine’s own resistance.</string>
 
     <string name="equipment_hint_lat_pulldown">Enter the weight you set on lat pulldown.</string>
     <string name="equipment_hint_cable">Enter the weight you set on the cable station.</string>

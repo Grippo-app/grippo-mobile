@@ -24,7 +24,7 @@ public val LatPulldown: ImageVector
             viewportHeight = 336f
         ).apply {
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -60,7 +60,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -96,7 +96,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -420,7 +420,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -456,7 +456,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -498,7 +498,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -516,7 +516,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -552,7 +552,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -580,7 +580,7 @@ public val LatPulldown: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(173.151f, 84.21f)
+                moveTo(168.282749f, 84.21f)
                 curveToRelative(-0.179f, 4.394f, -5.198f, 4.389f, -5.198f, 4.389f)
                 reflectiveCurveToRelative(-4.181f, -0.04f, -3.988f, -4.764f)
                 curveToRelative(0.188f, -4.593f, 2.699f, -4.63f, 4.346f, -4.005f)
@@ -598,7 +598,7 @@ public val LatPulldown: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(173.186f, 83.375f)
+                moveTo(168.317749f, 83.375f)
                 curveToRelative(-0.18f, 4.394f, -5.199f, 4.389f, -5.199f, 4.389f)
                 reflectiveCurveToRelative(-4.181f, -0.04f, -3.988f, -4.764f)
                 curveToRelative(0.188f, -4.593f, 2.699f, -4.63f, 4.346f, -4.005f)
@@ -616,7 +616,7 @@ public val LatPulldown: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(164.475f, 81.603f)
+                moveTo(159.606749f, 81.603f)
                 lineToRelative(0.181f, -4.432f)
                 reflectiveCurveToRelative(2.541f, -1.569f, 4.244f, -1.5f)
                 curveToRelative(1.702f, 0.07f, 4.107f, 1.842f, 4.107f, 1.842f)
@@ -626,9 +626,9 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N550),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N300),
+                stroke = SolidColor(AppPalette.NeutralDark.N400),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = .3f,
                 strokeLineCap = StrokeCap.Butt,
@@ -657,7 +657,7 @@ public val LatPulldown: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N500),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -669,7 +669,7 @@ public val LatPulldown: ImageVector
                 curveToRelative(0.975f, -0.696f, 2.672f, -2.424f, 0.332f, -3.761f)
                 curveToRelative(-2.926f, -1.672f, -2.926f, 3.761f, -0.418f, 3.761f)
                 moveTo(168.324f, 97.215f)
-                verticalLineToRelative(-8.776f)
+                verticalLineTo(83.073377f)
             }
             path(
                 fill = SolidColor(AppPalette.NeutralDark.N300),
@@ -682,7 +682,7 @@ public val LatPulldown: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(169.828f, 83.656f)
+                moveTo(164.959749f, 83.656f)
                 curveToRelative(0.293f, 1.016f, -0.747f, 1.225f, -1.304f, 1.202f)
                 curveToRelative(-0.412f, -0.156f, -0.811f, -0.619f, -0.784f, -1.287f)
                 curveToRelative(0.017f, -0.417f, 0.017f, -0.417f, 0.452f, -0.818f)
@@ -690,7 +690,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -708,7 +708,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -726,7 +726,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -762,7 +762,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -798,7 +798,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -816,7 +816,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -834,7 +834,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -864,7 +864,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -908,7 +908,7 @@ public val LatPulldown: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -924,11 +924,39 @@ public val LatPulldown: ImageVector
                 lineToRelative(-6.687f, -4.18f)
                 lineToRelative(0.836f, -36.358f)
                 close()
+            }
+            path(
+                fill = SolidColor(AppPalette.NeutralDark.N700),
+                fillAlpha = 1.0f,
+                stroke = null,
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
                 moveTo(173.015f, 69.791f)
                 lineToRelative(0.418f, 12.537f)
                 lineToRelative(7.522f, -5.85f)
                 verticalLineTo(64.776f)
                 lineToRelative(-7.94f, 5.015f)
+                close()
+            }
+            path(fill = SolidColor(AppPalette.NeutralDark.N400)) {
+                moveTo(x = 120.131f, y = 131.172f)
+                lineTo(x = 143.9f, y = 123.36f)
+                lineTo(x = 145.3f, y = 127.11f)
+                lineTo(x = 120.598f, y = 135.445f)
+                curveTo(x1 = 117.293f, y1 = 133.87f, x2 = 118.909f, y2 = 131.94f, x3 = 120.131f, y3 = 131.172f)
+                close()
+            }
+            path(fill = SolidColor(AppPalette.NeutralDark.N400)) {
+                moveTo(x = 188.2f, y = 110.074f)
+                lineTo(x = 212.298f, y = 101.501f)
+                curveTo(x1 = 215.182f, y1 = 103.122f, x2 = 213.344f, y2 = 104.658f, x3 = 212.298f, y3 = 105.407f)
+                lineTo(x = 189.6f, y = 113.555f)
+                lineTo(x = 188.2f, y = 110.074f)
                 close()
             }
         }.build()

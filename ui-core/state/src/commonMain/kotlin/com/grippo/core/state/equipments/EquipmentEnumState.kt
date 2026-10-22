@@ -10,6 +10,7 @@ import com.grippo.design.resources.provider.equipment.AdductorMachine
 import com.grippo.design.resources.provider.equipment.AdjustableBench
 import com.grippo.design.resources.provider.equipment.AssistedPullUpDip
 import com.grippo.design.resources.provider.equipment.Barbell
+import com.grippo.design.resources.provider.equipment.BeltSquat
 import com.grippo.design.resources.provider.equipment.BicepsMachine
 import com.grippo.design.resources.provider.equipment.Butterfly
 import com.grippo.design.resources.provider.equipment.ButterflyForearm
@@ -38,6 +39,8 @@ import com.grippo.design.resources.provider.equipment.LateralRaiseMachines
 import com.grippo.design.resources.provider.equipment.LegCurlMachine
 import com.grippo.design.resources.provider.equipment.LegExtensionMachine
 import com.grippo.design.resources.provider.equipment.LegPressMachine
+import com.grippo.design.resources.provider.equipment.PlateLoadedRow
+import com.grippo.design.resources.provider.equipment.PlateLoadedSeatedDip
 import com.grippo.design.resources.provider.equipment.PreacherCurlBench
 import com.grippo.design.resources.provider.equipment.PullUpBar
 import com.grippo.design.resources.provider.equipment.RomanChair
@@ -58,6 +61,7 @@ import com.grippo.design.resources.provider.equipment_adductor_machine
 import com.grippo.design.resources.provider.equipment_adjustable_bench
 import com.grippo.design.resources.provider.equipment_assisted_pull_up_dip
 import com.grippo.design.resources.provider.equipment_barbell
+import com.grippo.design.resources.provider.equipment_belt_squat
 import com.grippo.design.resources.provider.equipment_biceps_machines
 import com.grippo.design.resources.provider.equipment_butterfly
 import com.grippo.design.resources.provider.equipment_butterfly_forearm
@@ -85,6 +89,7 @@ import com.grippo.design.resources.provider.equipment_hint_adductor_machine
 import com.grippo.design.resources.provider.equipment_hint_adjustable_bench
 import com.grippo.design.resources.provider.equipment_hint_assisted_pull_up_dip
 import com.grippo.design.resources.provider.equipment_hint_barbell
+import com.grippo.design.resources.provider.equipment_hint_belt_squat
 import com.grippo.design.resources.provider.equipment_hint_biceps_machines
 import com.grippo.design.resources.provider.equipment_hint_butterfly
 import com.grippo.design.resources.provider.equipment_hint_butterfly_forearm
@@ -113,6 +118,8 @@ import com.grippo.design.resources.provider.equipment_hint_lateral_raise_machine
 import com.grippo.design.resources.provider.equipment_hint_leg_curl_machines
 import com.grippo.design.resources.provider.equipment_hint_leg_extension_machines
 import com.grippo.design.resources.provider.equipment_hint_leg_press_machine
+import com.grippo.design.resources.provider.equipment_hint_plate_loaded_row
+import com.grippo.design.resources.provider.equipment_hint_plate_loaded_seated_dip
 import com.grippo.design.resources.provider.equipment_hint_preacher_curl_bench
 import com.grippo.design.resources.provider.equipment_hint_pull_up_bar
 import com.grippo.design.resources.provider.equipment_hint_romain_chair
@@ -134,6 +141,8 @@ import com.grippo.design.resources.provider.equipment_lateral_raise_machines
 import com.grippo.design.resources.provider.equipment_leg_curl_machines
 import com.grippo.design.resources.provider.equipment_leg_extension_machines
 import com.grippo.design.resources.provider.equipment_leg_press_machine
+import com.grippo.design.resources.provider.equipment_plate_loaded_row
+import com.grippo.design.resources.provider.equipment_plate_loaded_seated_dip
 import com.grippo.design.resources.provider.equipment_preacher_curl_bench
 import com.grippo.design.resources.provider.equipment_pull_up_bar
 import com.grippo.design.resources.provider.equipment_roman_chair
@@ -182,6 +191,9 @@ public enum class EquipmentEnumState {
     CALF_RAISE_MACHINES,
     GLUTE_MACHINES,
     ASSISTED_PULL_UP_DIP,
+    PLATE_LOADED_ROW,
+    BELT_SQUAT,
+    PLATE_LOADED_SEATED_DIP,
 
     LAT_PULLDOWN,
     CABLE,
@@ -241,6 +253,9 @@ public enum class EquipmentEnumState {
             CALF_RAISE_MACHINES -> CalfRaiseMachines
             GLUTE_MACHINES -> GluteMachines
             ASSISTED_PULL_UP_DIP -> AssistedPullUpDip
+            PLATE_LOADED_ROW -> PlateLoadedRow
+            BELT_SQUAT -> BeltSquat
+            PLATE_LOADED_SEATED_DIP -> PlateLoadedSeatedDip
 
             LAT_PULLDOWN -> LatPulldown
             CABLE -> Cable
@@ -300,6 +315,9 @@ public enum class EquipmentEnumState {
                     CALF_RAISE_MACHINES -> Res.string.equipment_calf_raise_machines
                     GLUTE_MACHINES -> Res.string.equipment_glute_machines
                     ASSISTED_PULL_UP_DIP -> Res.string.equipment_assisted_pull_up_dip
+                    PLATE_LOADED_ROW -> Res.string.equipment_plate_loaded_row
+                    BELT_SQUAT -> Res.string.equipment_belt_squat
+                    PLATE_LOADED_SEATED_DIP -> Res.string.equipment_plate_loaded_seated_dip
 
                     LAT_PULLDOWN -> Res.string.equipment_lat_pulldown
                     CABLE -> Res.string.equipment_cable
@@ -358,6 +376,9 @@ public enum class EquipmentEnumState {
                     CALF_RAISE_MACHINES -> Res.string.equipment_hint_calf_raise_machines
                     GLUTE_MACHINES -> Res.string.equipment_hint_glute_machines
                     ASSISTED_PULL_UP_DIP -> Res.string.equipment_hint_assisted_pull_up_dip
+                    PLATE_LOADED_ROW -> Res.string.equipment_hint_plate_loaded_row
+                    BELT_SQUAT -> Res.string.equipment_hint_belt_squat
+                    PLATE_LOADED_SEATED_DIP -> Res.string.equipment_hint_plate_loaded_seated_dip
 
                     LAT_PULLDOWN -> Res.string.equipment_hint_lat_pulldown
                     CABLE -> Res.string.equipment_hint_cable

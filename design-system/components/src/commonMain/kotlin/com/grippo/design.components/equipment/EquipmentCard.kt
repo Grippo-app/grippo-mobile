@@ -266,7 +266,9 @@ private fun EquipmentCardCompactPreview() {
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
         ) {
-            EquipmentEnumState.entries.forEach { type ->
+            val types = listOf(EquipmentEnumState.PLATE_LOADED_SEATED_DIP) + EquipmentEnumState.entries
+                .filterNot { it == EquipmentEnumState.PLATE_LOADED_SEATED_DIP }
+            types.forEach { type ->
                 EquipmentCard(
                     value = EquipmentState(id = type.name, type = type),
                     style = EquipmentCardStyle.Compact,
@@ -281,6 +283,10 @@ private fun EquipmentCardCompactPreview() {
 private fun EquipmentCardInlinePreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.PLATE_LOADED_SEATED_DIP,
+            EquipmentEnumState.TRICEPS_MACHINES,
+            EquipmentEnumState.BELT_SQUAT,
+            EquipmentEnumState.PLATE_LOADED_ROW,
             EquipmentEnumState.ASSISTED_PULL_UP_DIP,
             EquipmentEnumState.KETTLEBELLS,
             EquipmentEnumState.BUTTERFLY_FOREARM,
@@ -303,6 +309,10 @@ private fun EquipmentCardInlinePreview() {
 private fun EquipmentCardDetailPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.PLATE_LOADED_SEATED_DIP,
+            EquipmentEnumState.TRICEPS_MACHINES,
+            EquipmentEnumState.BELT_SQUAT,
+            EquipmentEnumState.PLATE_LOADED_ROW,
             EquipmentEnumState.ASSISTED_PULL_UP_DIP,
             EquipmentEnumState.KETTLEBELLS,
             EquipmentEnumState.BUTTERFLY_FOREARM,
@@ -325,6 +335,10 @@ private fun EquipmentCardDetailPreview() {
 private fun EquipmentCardSelectedPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.PLATE_LOADED_SEATED_DIP,
+            EquipmentEnumState.TRICEPS_MACHINES,
+            EquipmentEnumState.BELT_SQUAT,
+            EquipmentEnumState.PLATE_LOADED_ROW,
             EquipmentEnumState.ASSISTED_PULL_UP_DIP,
             EquipmentEnumState.KETTLEBELLS,
             EquipmentEnumState.BUTTERFLY_FOREARM,
@@ -346,6 +360,10 @@ private fun EquipmentCardSelectedPreview() {
 private fun EquipmentCardUnselectedPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.PLATE_LOADED_SEATED_DIP,
+            EquipmentEnumState.TRICEPS_MACHINES,
+            EquipmentEnumState.BELT_SQUAT,
+            EquipmentEnumState.PLATE_LOADED_ROW,
             EquipmentEnumState.ASSISTED_PULL_UP_DIP,
             EquipmentEnumState.KETTLEBELLS,
             EquipmentEnumState.BUTTERFLY_FOREARM,

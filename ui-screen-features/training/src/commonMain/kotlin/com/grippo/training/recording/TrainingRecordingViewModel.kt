@@ -8,6 +8,7 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.foundation.models.Result
 import com.grippo.core.foundation.models.ResultKey
 import com.grippo.core.foundation.models.ResultKeys
+import com.grippo.core.state.examples.ExerciseExampleComponentsState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.formatters.DateTimeFormatState
@@ -160,7 +161,7 @@ internal class TrainingRecordingViewModel(
                 analytics.trackEvent(TrainingEvent.Recording.StartConfirmed)
 
                 val refreshed = exercises
-                    .map { it.withRecalculatedTotal() }
+                    .map { recalculateTotal(it) }
                     .toPersistentList()
 
                 update { it.copy(exercises = refreshed) }
@@ -190,7 +191,7 @@ internal class TrainingRecordingViewModel(
 
             val exerciseState = exercise.toState(id = id, iterations = iterations)
 
-            exerciseState.withRecalculatedTotal()
+            recalculateTotal(exerciseState)
         }.toPersistentList()
 
         val now = DateTimeUtils.now()
@@ -210,12 +211,52 @@ internal class TrainingRecordingViewModel(
         update { it.copy(stage = stage, exercises = exercises, startAt = startAt) }
     }
 
-    private fun ExerciseState.withRecalculatedTotal(): ExerciseState {
-        val completed = iterations.filterNot { it.isPending }.toDomain()
+    private fun recalculateTotal(
+        exercise: ExerciseState,
+        components: ExerciseExampleComponentsState? = state.value.examples
+            .firstOrNull { it.value.id == exercise.exerciseExample.id }?.components,
+    ): ExerciseState {
+        val completed = exercise.iterations.filterNot { it.isPending }.toDomain()
 
         val totals = trainingTotalUseCase.fromSetIterations(completed).toState()
 
-        return copy(total = totals)
+        if (needsAssistanceCorrection(exercise = exercise, components = components)) {
+            val total = totals.copy(
+                volume = VolumeFormatState.Invalid(display = "", value = null),
+                intensity = IntensityFormatState.Invalid(display = "", value = null),
+            )
+
+            return exercise.copy(total = total)
+        }
+
+        return exercise.copy(total = totals)
+    }
+
+    private fun needsAssistanceCorrection(
+        exercise: ExerciseState,
+        components: ExerciseExampleComponentsState?,
+    ): Boolean {
+        if (components !is ExerciseExampleComponentsState.BodyAndAssist || !components.assistRequired) {
+            return false
+        }
+
+        return exercise.iterations.any { !it.isPending && it.assistWeight !is VolumeFormatState.Valid }
+    }
+
+    private fun openAssistanceCorrection(): Boolean {
+        val snapshot = state.value
+        val exercise = snapshot.exercises.orEmpty().firstOrNull { exercise ->
+            val components = snapshot.examples
+                .firstOrNull { it.value.id == exercise.exerciseExample.id }?.components
+
+            needsAssistanceCorrection(exercise = exercise, components = components)
+        } ?: return false
+
+        navigateTo(
+            TrainingRecordingDirection.ToExercise(exercise = exercise, resultKey = EXERCISE_RESULT_KEY)
+        )
+
+        return true
     }
 
     private fun provideTraining(value: Training?) {
@@ -226,7 +267,7 @@ internal class TrainingRecordingViewModel(
         }
 
         val exercises = value.exercises.toState()
-            .map { it.withRecalculatedTotal() }
+            .map { recalculateTotal(it) }
             .toPersistentList()
 
         val now = DateTimeUtils.now()
@@ -245,7 +286,13 @@ internal class TrainingRecordingViewModel(
     private fun provideExerciseExamples(value: List<ExerciseExample>) {
         val examples = value.toState()
 
-        update { it.copy(examples = examples) }
+        val exercises = state.value.exercises?.map { exercise ->
+            val components = examples.firstOrNull { it.value.id == exercise.exerciseExample.id }?.components
+
+            recalculateTotal(exercise = exercise, components = components)
+        }?.toPersistentList()
+
+        update { it.copy(examples = examples, exercises = exercises) }
     }
 
     private fun openExerciseLibrary() {
@@ -274,6 +321,10 @@ internal class TrainingRecordingViewModel(
     }
 
     private fun showCompletionDialog() {
+        if (openAssistanceCorrection()) {
+            return
+        }
+
         val snapshot = state.value
         val exercises = snapshot.exercises ?: return
 
@@ -292,6 +343,10 @@ internal class TrainingRecordingViewModel(
             initial = duration,
             exercises = exercises,
             onResult = { result ->
+                if (openAssistanceCorrection()) {
+                    return@ConfirmTrainingCompletion
+                }
+
                 analytics.trackEvent(TrainingEvent.Recording.CompletionConfirmed)
 
                 val now = DateTimeUtils.now()
@@ -449,7 +504,7 @@ internal class TrainingRecordingViewModel(
     fun updateExercise(value: ExerciseState) {
         analytics.trackEvent(TrainingEvent.Recording.ExerciseUpdated)
 
-        val refreshed = value.withRecalculatedTotal()
+        val refreshed = recalculateTotal(value)
 
         update { current ->
             val index = current.exercises.orEmpty().indexOfFirst { it.id == refreshed.id }

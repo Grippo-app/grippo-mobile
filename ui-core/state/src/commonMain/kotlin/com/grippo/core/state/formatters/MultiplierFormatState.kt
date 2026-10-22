@@ -56,6 +56,9 @@ public sealed class MultiplierFormatState : FormatState<Float> {
         }
 
         public fun of(value: Float?): MultiplierFormatState {
+            if (value != null && !value.isFinite()) {
+                return Invalid(display = value.toString(), value = null)
+            }
             val normalized = value?.let(::normalize2dp)
 
             return when {

@@ -25,7 +25,7 @@ public val DeadliftMachines: ImageVector
             viewportHeight = 279f
         ).apply {
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -43,7 +43,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -79,7 +79,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -97,7 +97,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -115,7 +115,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -133,7 +133,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -151,7 +151,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -187,7 +187,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -205,7 +205,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -223,7 +223,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -264,7 +264,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N150),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -282,7 +282,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -293,8 +293,8 @@ public val DeadliftMachines: ImageVector
                 pathFillType = PathFillType.NonZero
             ) {
                 moveTo(144.952f, 215.708f)
-                lineTo(146.144f, 67.5405f)
-                lineTo(156.869f, 67.1433f)
+                lineTo(146.144f, 64f)
+                lineTo(156.869f, 63.5f)
                 lineTo(159.649f, 217.297f)
                 lineTo(144.952f, 215.708f)
                 close()
@@ -310,7 +310,7 @@ public val DeadliftMachines: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(162.827f, 67.1433f)
+                moveTo(162.827f, 63.5f)
                 horizontalLineTo(156.869f)
                 lineTo(159.65f, 217.297f)
                 lineTo(164.814f, 216.105f)
@@ -318,7 +318,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -336,7 +336,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N050),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -354,7 +354,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -372,7 +372,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -391,7 +391,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -409,7 +409,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -451,7 +451,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N150),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -469,7 +469,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -481,8 +481,8 @@ public val DeadliftMachines: ImageVector
             ) {
                 moveTo(330.459f, 225.639f)
                 lineTo(316.556f, 224.844f)
-                lineTo(316.556f, 52.9602f)
-                lineTo(330.459f, 52.4458f)
+                lineTo(316.556f, 49.2f)
+                lineTo(330.459f, 48.6f)
                 lineTo(330.459f, 225.639f)
                 close()
             }
@@ -497,15 +497,15 @@ public val DeadliftMachines: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(334.829f, 57.6098f)
-                lineTo(330.459f, 52.843f)
+                moveTo(334.829f, 53.3668f)
+                lineTo(330.459f, 48.6f)
                 verticalLineTo(225.639f)
                 lineTo(336.417f, 222.064f)
                 lineTo(334.829f, 57.6098f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N050),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -523,7 +523,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -614,7 +614,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -632,7 +632,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N050),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -647,8 +647,15 @@ public val DeadliftMachines: ImageVector
                 curveTo(359.06f, 185.518f, 358.265f, 170.82f, 361.443f, 170.423f)
                 close()
             }
+            path(fill = SolidColor(AppPalette.NeutralDark.N550)) {
+                moveTo(x = 294f, y = 181.5f)
+                lineTo(x = 359f, y = 172f)
+                lineTo(x = 359f, y = 174f)
+                lineTo(x = 294f, y = 183.5f)
+                close()
+            }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -666,7 +673,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N050),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -684,7 +691,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -703,7 +710,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -721,7 +728,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N050),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -739,7 +746,7 @@ public val DeadliftMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,

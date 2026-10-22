@@ -42,9 +42,9 @@ public val EzBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N400),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N450),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -96,9 +96,9 @@ public val EzBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N400),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N500),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -131,7 +131,7 @@ public val EzBar: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N550),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -178,7 +178,7 @@ public val EzBar: ImageVector
                 curveTo(52.4001f, 53.7778f, 51.4503f, 47.2667f, 61f, 47f)
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -204,7 +204,7 @@ public val EzBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -214,9 +214,9 @@ public val EzBar: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(211.698f, 135.714f)
-                curveTo(216.035f, 142.448f, 210.589f, 143.659f, 207.324f, 144f)
-                lineTo(174.645f, 125.309f)
+                moveTo(212.314882f, 134.147333f)
+                curveTo(216.953124f, 140.677497f, 211.567717f, 142.134489f, 208.321564f, 142.623363f)
+                lineTo(174.827714f, 125.435211f)
                 lineTo(161.35f, 98.3472f)
                 curveTo(160.912f, 97.2529f, 159.517f, 95.3635f, 157.437f, 96.5606f)
                 curveTo(155.357f, 97.7577f, 142.178f, 104.466f, 134.5f, 108.5f)
@@ -225,8 +225,8 @@ public val EzBar: ImageVector
                 curveTo(128.498f, 101.233f, 130.825f, 101.107f, 131.713f, 100.981f)
                 curveTo(140.135f, 96.903f, 157.759f, 88.2989f, 160.879f, 86.5032f)
                 curveTo(163.999f, 84.7076f, 165.532f, 86.9024f, 165.908f, 88.2243f)
-                lineTo(180.385f, 117.39f)
-                lineTo(211.698f, 135.714f)
+                lineTo(180.202286f, 117.263789f)
+                lineTo(212.314882f, 134.147333f)
                 close()
             }
             path(
@@ -294,18 +294,18 @@ public val EzBar: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(162f, 98.5001f)
-                curveTo(163.744f, 94.5931f, 166.216f, 94.4395f, 168.5f, 94.5f)
-                lineTo(179.5f, 116.5f)
-                curveTo(175.808f, 115.627f, 173.986f, 118.036f, 172.528f, 119.963f)
-                lineTo(172.5f, 120f)
-                lineTo(162f, 98.5001f)
+                moveTo(162.004519f, 98.503222f)
+                curveTo(163.744541f, 94.593474f, 166.207143f, 94.433382f, 168.467916f, 94.477838f)
+                lineTo(179.341196f, 116.390305f)
+                curveTo(175.772606f, 115.602552f, 174.045f, 118.076755f, 172.6614f, 120.055147f)
+                lineTo(172.634819f, 120.093127f)
+                lineTo(162.004519f, 98.503222f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N400),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N450),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -357,9 +357,9 @@ public val EzBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N400),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N500),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -377,7 +377,7 @@ public val EzBar: ImageVector
             path(
                 fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -445,7 +445,7 @@ public val EzBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,

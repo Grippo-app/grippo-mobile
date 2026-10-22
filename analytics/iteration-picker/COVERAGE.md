@@ -21,13 +21,13 @@ exists here, so no operation API/model/decorator is added.
 
 | Callback | Wire schema, version 1 | Eligibility and observation |
 |---|---|---|
-| onExternalWeightChange / onAssistWeightChange / onExtraWeightChange / onRepetitionsChange | iteration_picker_input_changed | Existing formatter status changes only; typed input_field and input_status; equal statuses including Empty→Empty omitted |
+| onExternalWeightChange / onAssistWeightChange / onExtraWeightChange / onRepetitionsChange | iteration_picker_input_changed | Formatter status changes only; typed input_field and input_status; equal statuses including Empty→Empty omitted. Explicit assistance zero is Valid, distinct from Empty; negative fractions and nonfinite assistance are Invalid. Other input zero conventions are unchanged |
 | onWeightPickerClick | iteration_picker_body_weight_opened | Existing callback before navigation |
 | onBodyWeightSelected | iteration_picker_body_weight_confirmed | Accepted callback; typed formatter status only |
 | onPreviousIterationClick | iteration_picker_previous_selected | Only if previousIteration exists |
 | onIterationClick | iteration_picker_suggestion_selected | Only if the ID resolves in existing suggestions; ID never encoded |
 | onRepetitionSuggestionClick | iteration_picker_repetition_selected | Real chip click, only for a listed suggestion; ordinary Int UI callback, no value encoded |
-| onSubmit, Save and keyboard Done | iteration_picker_submit | After existing canSubmit guard for all four component kinds; invalid/empty required fields neither emit nor navigate |
+| onSubmit, Save and keyboard Done | iteration_picker_submit | After canSubmit; body modes require a Valid recorded multiplier; required assistance needs Valid (including zero), optional assistance accepts Empty or Valid. Invalid assistance, missing required assistance or an invalid/missing body multiplier neither emit nor navigate; Save uses the same eligibility. Accepted results clear load components outside the displayed family and preserve the displayed recorded multiplier |
 | onBack, including Component system Back | iteration_picker_dismiss_requested | Observed callback before existing navigation |
 
 Suggestion application emits its distinct selection event, without synthetic text
@@ -57,6 +57,16 @@ No reporting context is added to routes, configs, State or business Direction ty
 | Shared dialog host | sessions, nested body-weight step, pending result callback | Runtime only | Both host slot and content stack use serializer = null |
 | Analytics / loaders / callbacks | telemetry and execution state | Runtime only | No new state key/supplier, secret or lifecycle observer |
 
+Accepted assistance preserves explicit Valid(0) through domain/state mappers and
+the existing IterationState serializers; null remains Empty. The dialog adds no
+archive field or restoration flag. Zero now contributes the existing Valid input
+fact, and missing required assistance no longer contributes an accepted Submit;
+event codes, status meanings, schemas and tracking-call arguments are unchanged.
+Only an explicitly accepted edit clears hidden load components incompatible with
+the displayed example mode; reopening/cancelling does not rewrite a historical
+set. The recorded multiplier shown in that edit is retained, never replaced by a
+new catalog coefficient at submit.
+
 Parent addIteration/replaceIteration update the exercise in State; the existing
 supplier reads that latest state. Fresh edit dialog seeds from current iterations;
 a fresh add uses the parent's ordinary current defaults. Accepted body weight is
@@ -73,53 +83,19 @@ completed valid background checkpoint; abrupt active termination has no guarante
 
 ## Verification
 
-Source gates reviewed actual routes and parent hooks, accepted/rejected callbacks,
-all schema cases and bounded parameters, reporting isolation, retained injection,
-DI/catalog registration, parent supplier/serializer and fresh dialog seeds.
-Rendering/layout and existing preview fixtures remain unchanged.
-No automated test sources, dependencies or infrastructure were introduced.
+Source checks cover actual routes and parent hooks, accepted/rejected callbacks,
+status deduplication, typed parameters, retained injection and existing serializer
+owners. Explicit zero assistance, missing required assistance and invalid negative
+fractions have named AppPreview fixtures alongside the existing component modes.
+Nonfinite multipliers are represented as Invalid before rounding.
 
-Independent review was not performed: no permitted independent local reviewer is
-available, and subagent delegation was not authorized. Runtime payload delivery,
-reporting-failure injection and native restoration remain unverified.
+Manual runtime checks distinguish rendered fixture eligibility from real input,
+accepted results and restoration. Check zero versus cleared required input,
+negative/nonfinite values, Save and keyboard Done, valid/stale suggestions, Back,
+and accepted values after fresh edit entry. Parent restoration must use a fresh
+Component/InstanceKeeper and its existing archive; dialog sessions remain unsaved.
+Native screenshots and current build/review outcomes belong in the task reply;
+static no-op fixtures do not prove result delivery, saving or restoration.
 
-Manual checks: enter valid/invalid/empty text → recreate Activity → inspect retained
-input; choose each kind of suggestion and body weight → confirm → archive parent →
-destroy lifecycle/InstanceKeeper → fresh context/VM restore → verify exact accepted
-set and fresh edit seed; kill with unconfirmed/nested dialog → verify closed dialogs
-and previous accepted parent values. Check all four exercise component kinds,
-invalid keyboard Done, absent/stale suggestions, Back versus swipe and actual SDK
-payloads/status deduplication. Pause/resume must not reset current input.
-
-Scoped inline source invariants and `git diff --check` passed. Generated Koin source
-was inspected: it binds IterationPickerAnalyticsImpl to IterationPickerAnalytics
-and provides the qualified iteration_picker_analytics schema catalog.
-
-The first combined build waited on a file-cache lock and was interrupted only after
-its exact wrapper PID/command and Codex parent were verified. Retrying with a
-separate temporary project cache required `--no-watch-fs` (Gradle rejects its use
-with filesystem watching enabled). Early combined/Android attempts then failed
-outside this scope on missing commonMain.json transformed metadata in toolkit
-analytics API and screen-api. No unrelated infrastructure was changed.
-
-Final isolated analytics Android + iOS Simulator compilation passed:
-`:analytics:iteration-picker:compileAndroidMain` and
-`:analytics:iteration-picker:compileKotlinIosSimulatorArm64` (`BUILD SUCCESSFUL`,
-21s). After dependencies were rebuilt, the final integrated check passed:
-`./gradlew --no-configuration-cache --no-watch-fs --project-cache-dir /tmp/grippo-iteration-project-cache :ui-dialog-features:iteration-picker:compileAndroidMain :ui-dialog-features:iteration-picker:compileKotlinIosSimulatorArm64 :shared:compileKotlinIosSimulatorArm64`
-(`BUILD SUCCESSFUL`, 5m 57s). This verifies final UI compilation for Android and
-Simulator and shared composition/DI compilation. Earlier metadata failures are
-historical, not outstanding build blockers. APK assembly, framework linking,
-installation and native runtime were not run.
-
-## Follow-up tail review
-
-Re-reviewed actual source/diff, public facts and exhaustive payload mapping, all
-Contract/UI/preview callers, submit/status guards, schema/DI registration and
-local/global coverage references. No production-code defect or stale caller was
-found. The inventory now includes the downstream TrainingRecording owner and its
-existing Sync → updateExercise → saved exercises/business draft chain, previously
-missing from this scoped record. Independent review and native runtime remain
-unperformed under the limits above. Scoped source checks and git diff --check
-passed again; no code changed and no redundant build was run. The prior successful
-compilation results apply to the unchanged implementation.
+No automated test sources, dependencies, additional telemetry or persistence
+infrastructure are introduced by this validation change.

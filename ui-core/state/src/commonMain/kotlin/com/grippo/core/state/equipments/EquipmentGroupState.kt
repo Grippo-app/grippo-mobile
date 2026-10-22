@@ -67,6 +67,22 @@ public fun stubEquipments(): ImmutableList<EquipmentGroupState> = persistentList
         type = EquipmentGroupEnumState.MACHINES,
         equipments = persistentListOf(
             EquipmentState(
+                id = "preview-plate-loaded-seated-dip",
+                type = EquipmentEnumState.PLATE_LOADED_SEATED_DIP
+            ),
+            EquipmentState(
+                id = "preview-triceps-machines",
+                type = EquipmentEnumState.TRICEPS_MACHINES
+            ),
+            EquipmentState(
+                id = "preview-belt-squat",
+                type = EquipmentEnumState.BELT_SQUAT
+            ),
+            EquipmentState(
+                id = "preview-plate-loaded-row",
+                type = EquipmentEnumState.PLATE_LOADED_ROW
+            ),
+            EquipmentState(
                 id = "preview-assisted-pull-up-dip",
                 type = EquipmentEnumState.ASSISTED_PULL_UP_DIP
             ),

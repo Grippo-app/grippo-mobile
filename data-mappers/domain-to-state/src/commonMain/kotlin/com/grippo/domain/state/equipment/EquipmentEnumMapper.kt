@@ -35,6 +35,9 @@ public fun EquipmentEnum.toState(): EquipmentEnumState {
         EquipmentEnum.CALF_RAISE_MACHINES -> EquipmentEnumState.CALF_RAISE_MACHINES
         EquipmentEnum.GLUTE_MACHINES -> EquipmentEnumState.GLUTE_MACHINES
         EquipmentEnum.ASSISTED_PULL_UP_DIP -> EquipmentEnumState.ASSISTED_PULL_UP_DIP
+        EquipmentEnum.PLATE_LOADED_ROW -> EquipmentEnumState.PLATE_LOADED_ROW
+        EquipmentEnum.BELT_SQUAT -> EquipmentEnumState.BELT_SQUAT
+        EquipmentEnum.PLATE_LOADED_SEATED_DIP -> EquipmentEnumState.PLATE_LOADED_SEATED_DIP
 
         EquipmentEnum.LAT_PULLDOWN -> EquipmentEnumState.LAT_PULLDOWN
         EquipmentEnum.CABLE -> EquipmentEnumState.CABLE

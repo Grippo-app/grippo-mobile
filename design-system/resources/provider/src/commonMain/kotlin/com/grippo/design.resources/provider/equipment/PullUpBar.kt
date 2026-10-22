@@ -24,7 +24,7 @@ public val PullUpBar: ImageVector
             viewportHeight = 274f
         ).apply {
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -42,7 +42,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N100),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -78,7 +78,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -114,7 +114,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -150,7 +150,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -168,7 +168,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -186,7 +186,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N100),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -204,7 +204,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -222,7 +222,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N100),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -240,7 +240,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -276,7 +276,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -294,7 +294,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -312,7 +312,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -330,7 +330,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -348,7 +348,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -366,7 +366,7 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N100),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -384,9 +384,9 @@ public val PullUpBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N050),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.Common.Black),
+                stroke = SolidColor(AppPalette.NeutralDark.N500),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,

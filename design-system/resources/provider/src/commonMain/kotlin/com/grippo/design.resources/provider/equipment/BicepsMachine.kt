@@ -42,7 +42,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -60,7 +60,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -78,7 +78,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -96,7 +96,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -114,7 +114,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -150,7 +150,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -194,7 +194,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -230,7 +230,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -272,7 +272,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -308,9 +308,9 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N550),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N300),
+                stroke = SolidColor(AppPalette.NeutralDark.N400),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.3f,
                 strokeLineCap = StrokeCap.Butt,
@@ -335,6 +335,23 @@ public val BicepsMachine: ImageVector
                 curveTo(92.7613f, 115.612f, 69.7094f, 110.89f, 64.9879f, 108.113f)
                 close()
             }
+            path(fill = SolidColor(AppPalette.NeutralDark.N400)) {
+                moveTo(x = 3.3309f, y = 101.169f)
+                lineTo(x = 24.7164f, y = 102.836f)
+                lineTo(x = 26.3829f, y = 109.501f)
+                lineTo(x = 3.3309f, y = 108.113f)
+                curveTo(x1 = 1.572f, y1 = 107.094f, x2 = -0.8906f, y2 = 104.28f, x3 = 3.3309f, y3 = 101.169f)
+                close()
+            }
+            path(fill = SolidColor(AppPalette.NeutralDark.N400)) {
+                moveTo(x = 71f, y = 109.98f)
+                lineTo(x = 92.7613f, y = 115.612f)
+                curveTo(x1 = 94.7981f, y1 = 116.63f, x2 = 97.6495f, y2 = 119.444f, x3 = 92.7613f, y3 = 122.555f)
+                lineTo(x = 70.2649f, y = 117f)
+                lineTo(x = 71f, y = 109.98f)
+                close()
+            }
+
             path(
                 fill = SolidColor(AppPalette.NeutralDark.N100),
                 fillAlpha = 1.0f,
@@ -352,7 +369,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -370,7 +387,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -406,7 +423,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -424,7 +441,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -460,7 +477,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -478,7 +495,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -514,7 +531,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -532,7 +549,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -573,7 +590,7 @@ public val BicepsMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -610,6 +627,8 @@ public val BicepsMachine: ImageVector
                 curveTo(217.525f, 116.942f, 215.849f, 115.79f, 215.964f, 113.781f)
                 close()
             }
+
+
         }.build()
         return _BicepsMachine!!
     }

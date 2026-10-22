@@ -31,6 +31,9 @@ public enum class EquipmentEnum(private val key: String) {
     CALF_RAISE_MACHINES("calf_raise_machines"),
     GLUTE_MACHINES("glute_machines"),
     ASSISTED_PULL_UP_DIP("assisted_pull_up_dip"),
+    PLATE_LOADED_ROW("plate_loaded_row"),
+    BELT_SQUAT("belt_squat"),
+    PLATE_LOADED_SEATED_DIP("plate_loaded_seated_dip"),
 
     LAT_PULLDOWN("lat_pulldown"),
     CABLE("cable"),

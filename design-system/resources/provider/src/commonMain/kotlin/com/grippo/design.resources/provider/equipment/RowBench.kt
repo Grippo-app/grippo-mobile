@@ -42,7 +42,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
@@ -60,7 +60,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -78,7 +78,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
@@ -125,14 +125,14 @@ public val RowBench: ImageVector
                 pathFillType = PathFillType.NonZero
             ) {
                 moveTo(99.404f, 71.7358f)
-                lineTo(99.1306f, 62.7734f)
+                lineTo(99.1306f, 65.5f)
                 lineTo(127.657f, 82.1031f)
                 lineTo(127.762f, 91.7907f)
                 lineTo(99.404f, 71.7358f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -168,7 +168,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -204,7 +204,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -214,15 +214,15 @@ public val RowBench: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(58.0107f, 172.355f)
-                lineTo(70.8403f, 180.908f)
+                moveTo(58.0107f, 172.6f)
+                lineTo(70.8403f, 180.6f)
                 lineTo(70.8403f, 118.593f)
                 lineTo(58.0107f, 122.258f)
-                lineTo(58.0107f, 172.355f)
+                lineTo(58.0107f, 172.6f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -258,7 +258,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -276,7 +276,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = SolidColor(AppPalette.NeutralDark.N250),
                 strokeAlpha = 1.0f,
@@ -286,12 +286,12 @@ public val RowBench: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(190.338f, 29.4331f)
-                lineTo(31.7401f, 91.1002f)
-                lineTo(65.6333f, 114.48f)
-                curveTo(105.463f, 93.2094f, 181.67f, 62.7707f, 221.5f, 41.5f)
-                lineTo(190.338f, 29.4331f)
+                moveTo(x = 190.338f, y = 29.4331f)
+                lineTo(x = 30.4859f, y = 91.1006f)
+                lineTo(x = 64.5958f, y = 106.463f)
+                lineTo(x = 221.5f, y = 41.9998f)
                 close()
+
             }
             path(
                 fill = SolidColor(AppPalette.NeutralDark.N250),
@@ -304,29 +304,19 @@ public val RowBench: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(221.5f, 46.9998f)
-                lineTo(221.5f, 41.9998f)
-                lineTo(64.7007f, 106.863f)
-                lineTo(65.0166f, 115.995f)
-                lineTo(221.5f, 46.9998f)
-                close()
-            }
-            path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
-                fillAlpha = 1.0f,
-                stroke = null,
-                strokeAlpha = 1.0f,
-                strokeLineWidth = 1.0f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
-                strokeLineMiter = 1.0f,
-                pathFillType = PathFillType.NonZero
-            ) {
-                moveTo(30.4858f, 99.5324f)
-                lineTo(30.4859f, 91.1006f)
+                moveTo(30.4859f, 91.1006f)
                 lineTo(64.5958f, 106.463f)
+                lineTo(221.5f, 41.9998f)
+                lineTo(221.5f, 46.9998f)
                 lineTo(64.9118f, 115.594f)
                 lineTo(30.4858f, 99.5324f)
+                close()
+            }
+            path(fill = SolidColor(AppPalette.NeutralDark.N450)) {
+                moveTo(x = 32.7f, y = 91.3f)
+                lineTo(x = 190.5f, y = 31.2f)
+                lineTo(x = 193.8f, y = 32.5f)
+                lineTo(x = 35.5f, y = 93.1f)
                 close()
             }
             path(
@@ -348,7 +338,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -359,14 +349,14 @@ public val RowBench: ImageVector
                 pathFillType = PathFillType.NonZero
             ) {
                 moveTo(167.368f, 125.313f)
-                lineTo(177.995f, 132.644f)
+                lineTo(177.995f, 131.9f)
                 lineTo(177.995f, 70.6472f)
                 lineTo(167.368f, 75.4852f)
                 lineTo(167.368f, 125.313f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -384,7 +374,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
@@ -420,7 +410,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
@@ -438,7 +428,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
@@ -474,7 +464,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -492,7 +482,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -510,7 +500,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -546,7 +536,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -564,7 +554,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -619,7 +609,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -637,7 +627,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -655,7 +645,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -691,7 +681,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -709,7 +699,7 @@ public val RowBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,

@@ -119,29 +119,28 @@ public val Kettlebells: ImageVector
                 close()
             }
             path(fill = SolidColor(AppPalette.NeutralDark.N500)) {
-                moveTo(x = 39f, y = 91f)
-                curveTo(x1 = 48f, y1 = 84f, x2 = 56f, y2 = 79f, x3 = 65f, y3 = 77f)
+                moveTo(x = 25f, y = 116f)
+                curveTo(x1 = 31f, y1 = 97f, x2 = 46f, y2 = 83f, x3 = 65f, y3 = 77f)
                 curveTo(x1 = 91f, y1 = 72f, x2 = 121f, y2 = 82f, x3 = 138f, y3 = 105f)
                 curveTo(x1 = 115f, y1 = 91f, x2 = 89f, y2 = 85f, x3 = 67f, y3 = 89f)
-                curveTo(x1 = 57f, y1 = 90f, x2 = 48f, y2 = 94f, x3 = 39f, y3 = 100f)
+                curveTo(x1 = 49f, y1 = 92f, x2 = 35f, y2 = 104f, x3 = 25f, y3 = 116f)
                 close()
             }
             path(fill = SolidColor(AppPalette.NeutralDark.N450)) {
-                moveTo(x = 39f, y = 91f)
-                lineTo(x = 39f, y = 100f)
-                curveTo(x1 = 24f, y1 = 115f, x2 = 20f, y2 = 134f, x3 = 26f, y3 = 153f)
-                curveTo(x1 = 30f, y1 = 165f, x2 = 38f, y2 = 175f, x3 = 49f, y3 = 183f)
+                moveTo(x = 25f, y = 116f)
+                curveTo(x1 = 17f, y1 = 137f, x2 = 24f, y2 = 165f, x3 = 49f, y3 = 183f)
                 curveTo(x1 = 28f, y1 = 175f, x2 = 15f, y2 = 159f, x3 = 13f, y3 = 138f)
-                curveTo(x1 = 11f, y1 = 119f, x2 = 21f, y2 = 102f, x3 = 39f, y3 = 91f)
+                curveTo(x1 = 11f, y1 = 121f, x2 = 24f, y2 = 101f, x3 = 39f, y3 = 91f)
+                curveTo(x1 = 32f, y1 = 99f, x2 = 28f, y2 = 107f, x3 = 25f, y3 = 116f)
                 close()
             }
             path(fill = SolidColor(AppPalette.NeutralDark.N600)) {
-                moveTo(x = 42f, y = 89f)
+                moveTo(x = 40f, y = 92f)
                 curveTo(x1 = 50f, y1 = 83f, x2 = 58f, y2 = 79f, x3 = 66f, y3 = 78f)
                 curveTo(x1 = 82f, y1 = 75f, x2 = 99f, y2 = 78f, x3 = 113f, y3 = 84f)
                 lineTo(x = 107f, y = 86f)
                 curveTo(x1 = 93f, y1 = 81f, x2 = 79f, y2 = 79f, x3 = 66f, y3 = 82f)
-                curveTo(x1 = 57f, y1 = 83f, x2 = 49f, y2 = 87f, x3 = 42f, y3 = 92f)
+                curveTo(x1 = 57f, y1 = 83f, x2 = 49f, y2 = 87f, x3 = 40f, y3 = 92f)
                 close()
             }
             path(fill = SolidColor(AppPalette.NeutralDark.N500)) {

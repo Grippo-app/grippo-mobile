@@ -18,7 +18,7 @@ public val AdductorMachine: ImageVector
             viewportWidth = 165f,
             viewportHeight = 278f
         ).apply {
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(0f, 269.79f)
                 verticalLineTo(255.07f)
                 lineTo(14.73f, 263.19f)
@@ -34,7 +34,7 @@ public val AdductorMachine: ImageVector
                 lineTo(14.73f, 277.41f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(14.73f, 263.14f)
                 lineTo(0f, 255.02f)
                 lineTo(117.3f, 187.53f)
@@ -50,7 +50,7 @@ public val AdductorMachine: ImageVector
                 lineTo(130.5f, 196.16f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(106.64f, 193.63f)
                 lineTo(107.82f, 9.09f)
                 lineTo(119.5f, 3f)
@@ -222,7 +222,7 @@ public val AdductorMachine: ImageVector
                 lineTo(105.11f, 141.32f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(52.3f, 160.15f)
                 verticalLineTo(65.88f)
                 lineTo(57.89f, 63.7f)
@@ -238,7 +238,7 @@ public val AdductorMachine: ImageVector
                 curveTo(57.89f, 160.92f, 55.86f, 161.37f, 54.84f, 161.37f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(76.68f, 150.34f)
                 verticalLineTo(56.26f)
                 lineTo(82.26f, 54.17f)
@@ -262,7 +262,7 @@ public val AdductorMachine: ImageVector
                 lineTo(26.4f, 256.59f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(0f, 255.58f)
                 lineTo(0f, 65.89f)
                 lineTo(14.73f, 73f)
@@ -270,7 +270,7 @@ public val AdductorMachine: ImageVector
                 lineTo(0f, 255.58f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(0f, 80.23f)
                 verticalLineTo(65.5f)
                 lineTo(14.73f, 73.63f)
@@ -286,7 +286,7 @@ public val AdductorMachine: ImageVector
                 lineTo(14.73f, 87.85f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(14.73f, 73.58f)
                 lineTo(0f, 65.45f)
                 lineTo(116.28f, 0f)
@@ -294,7 +294,7 @@ public val AdductorMachine: ImageVector
                 lineTo(14.73f, 73.58f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(74.1f, 242f)
                 verticalLineTo(44f)
                 horizontalLineTo(86.1f)
@@ -310,7 +310,7 @@ public val AdductorMachine: ImageVector
                 lineTo(93.6f, 242.5f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(93f, 38.5f)
                 lineTo(81.5f, 34.5f)
                 lineTo(73.94f, 39.06f)
@@ -318,7 +318,7 @@ public val AdductorMachine: ImageVector
                 lineTo(93f, 38.5f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(74f, 54.1f)
                 lineTo(74f, 39f)
                 lineTo(86f, 43f)
@@ -326,7 +326,7 @@ public val AdductorMachine: ImageVector
                 lineTo(74f, 54.1f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(145f, 259f)
                 lineTo(93.5f, 232.5f)
                 lineTo(86f, 237f)
@@ -334,7 +334,7 @@ public val AdductorMachine: ImageVector
                 lineTo(145f, 259f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(75.5f, 242f)
                 lineTo(77f, 232.5f)
                 lineTo(139f, 264f)
@@ -358,7 +358,7 @@ public val AdductorMachine: ImageVector
                 curveTo(85.2f, 265.7f, 87.83f, 249.83f, 93.5f, 240.5f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(108.84f, 185.74f)
                 lineTo(105.14f, 187.33f)
                 lineTo(134.39f, 185.14f)
@@ -374,7 +374,7 @@ public val AdductorMachine: ImageVector
                 lineTo(135.65f, 189.5f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(107.72f, 191.35f)
                 lineTo(106.65f, 187.07f)
                 lineTo(134.5f, 185.11f)
@@ -390,7 +390,7 @@ public val AdductorMachine: ImageVector
                 lineTo(110.48f, 190.99f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(92.28f, 192.47f)
                 lineTo(90.28f, 195.57f)
                 lineTo(111.8f, 185.63f)
@@ -398,7 +398,7 @@ public val AdductorMachine: ImageVector
                 lineTo(92.28f, 192.47f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N200)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N550)) {
                 moveTo(137.5f, 184.33f)
                 curveTo(136.61f, 184.2f, 134.96f, 185.97f, 136.67f, 187.72f)
                 lineTo(151.47f, 186.6f)
@@ -422,7 +422,7 @@ public val AdductorMachine: ImageVector
                 lineTo(80.44f, 211.46f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N300)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N400)) {
                 moveTo(80.91f, 203.88f)
                 lineTo(111.37f, 208.99f)
                 lineTo(122.5f, 203f)
@@ -430,7 +430,7 @@ public val AdductorMachine: ImageVector
                 lineTo(80.91f, 203.88f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(53.17f, 209.25f)
                 lineTo(74.61f, 197.91f)
                 lineTo(79.52f, 198.29f)
@@ -456,7 +456,7 @@ public val AdductorMachine: ImageVector
                 lineTo(78f, 199.5f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N300)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N400)) {
                 moveTo(84.5f, 201.5f)
                 lineTo(84.5f, 128.5f)
                 lineTo(105.5f, 123f)
@@ -464,7 +464,7 @@ public val AdductorMachine: ImageVector
                 lineTo(84.5f, 201.5f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(58.83f, 206.19f)
                 lineTo(53.18f, 209.27f)
                 lineTo(90.48f, 210.99f)
@@ -480,7 +480,7 @@ public val AdductorMachine: ImageVector
                 lineTo(92.5f, 216f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N200)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N550)) {
                 moveTo(94.77f, 210.43f)
                 curveTo(93.64f, 210.26f, 91.33f, 212.21f, 93.33f, 214.24f)
                 lineTo(112.46f, 213.38f)
@@ -494,7 +494,7 @@ public val AdductorMachine: ImageVector
                 curveTo(113.76f, 211.17f, 114.08f, 212.18f, 112.46f, 213.38f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(55.31f, 215.24f)
                 lineTo(53.17f, 209.25f)
                 lineTo(90.56f, 210.55f)
@@ -540,7 +540,7 @@ public val AdductorMachine: ImageVector
                 curveTo(95.81f, 58.81f, 95.8f, 57.4f, 97f, 57f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N300)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N400)) {
                 moveTo(138f, 209f)
                 horizontalLineTo(135.24f)
                 lineTo(149.03f, 232.84f)
@@ -549,7 +549,7 @@ public val AdductorMachine: ImageVector
                 lineTo(138f, 209f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N250)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N300)) {
                 moveTo(151f, 212.5f)
                 lineTo(135f, 209f)
                 verticalLineTo(229f)
@@ -557,7 +557,7 @@ public val AdductorMachine: ImageVector
                 lineTo(151f, 212.5f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(103f, 255f)
                 curveTo(97f, 258.6f, 94.17f, 253.5f, 93.5f, 250.5f)
                 verticalLineTo(228f)
@@ -565,7 +565,7 @@ public val AdductorMachine: ImageVector
                 verticalLineTo(255f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(93.5f, 228.5f)
                 curveTo(95.67f, 225.67f, 100.6f, 222.4f, 103f, 232f)
                 curveTo(100f, 232.83f, 93.9f, 233.3f, 93.5f, 228.5f)
@@ -580,7 +580,7 @@ public val AdductorMachine: ImageVector
                 curveTo(163.56f, 238.06f, 162.5f, 238f, 162.5f, 238f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(126f, 241.49f)
                 curveTo(121.58f, 244.86f, 119.49f, 240.09f, 119f, 237.29f)
                 verticalLineTo(216.26f)
@@ -588,13 +588,13 @@ public val AdductorMachine: ImageVector
                 verticalLineTo(241.49f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(119f, 216.72f)
                 curveTo(120.6f, 214.07f, 124.23f, 211.02f, 126f, 219.99f)
                 curveTo(123.79f, 220.77f, 119.29f, 221.21f, 119f, 216.72f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(121f, 222.77f)
                 curveTo(125.5f, 221.5f, 129.05f, 228.9f, 141.11f, 215f)
                 lineTo(160.77f, 244.26f)
@@ -604,7 +604,7 @@ public val AdductorMachine: ImageVector
                 verticalLineTo(222.77f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(141f, 215f)
                 lineTo(141.5f, 217f)
                 curveTo(130.5f, 224f, 126.66f, 226.13f, 124.37f, 225.37f)
@@ -612,7 +612,7 @@ public val AdductorMachine: ImageVector
                 curveTo(130f, 221.5f, 136.5f, 218f, 141f, 215f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(141.29f, 222.46f)
                 lineTo(157.5f, 247f)
                 lineTo(155.5f, 246.5f)
@@ -620,7 +620,7 @@ public val AdductorMachine: ImageVector
                 lineTo(141.29f, 222.46f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(100f, 234.5f)
                 curveTo(101.83f, 238f, 108.8f, 241.2f, 122f, 226f)
                 lineTo(143.5f, 258f)
@@ -630,7 +630,7 @@ public val AdductorMachine: ImageVector
                 verticalLineTo(234.5f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(122f, 234.5f)
                 lineTo(123f, 236f)
                 curveTo(113f, 244.8f, 105.5f, 245.33f, 103f, 244.5f)
@@ -638,7 +638,7 @@ public val AdductorMachine: ImageVector
                 curveTo(108.7f, 245.4f, 118.17f, 238.33f, 122f, 234.5f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(124.5f, 226.5f)
                 lineTo(146f, 258f)
                 horizontalLineTo(143.5f)
@@ -671,7 +671,7 @@ public val AdductorMachine: ImageVector
                 arcToRelative(0.5f, 0.5f, 0f, isMoreThanHalf = true, isPositiveArc = true, 1f, 0f)
                 arcToRelative(0.5f, 0.5f, 0f, isMoreThanHalf = true, isPositiveArc = true, -1f, 0f)
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N300)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N400)) {
                 moveTo(120.13f, 214f)
                 horizontalLineTo(117f)
                 lineTo(131.76f, 245f)
@@ -680,7 +680,7 @@ public val AdductorMachine: ImageVector
                 lineTo(120.13f, 214f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N250)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N300)) {
                 moveTo(132f, 224.03f)
                 lineTo(117.91f, 214.91f)
                 lineTo(117f, 214f)

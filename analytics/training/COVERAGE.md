@@ -105,6 +105,25 @@ body-weight lookup and notification scheduling are not artificial operations; th
 exercise editor has no operations. No coroutine, retry, dispatcher, cancellation
 guard or business branch exists for telemetry.
 
+Recording exercise totals and Completed save payloads use TrainingTotalUseCase.
+Intensity averages nonnegative effective load over every measured repetition,
+including fully assisted sets at zero; assistance above body load contributes
+zero load without removing its repetitions. Missing/incomplete, conflicting,
+negative or nonfinite load components do not contribute tonnage or its intensity
+denominator; performed repetitions retain their existing independent count.
+Accepted assistance zero remains distinct from missing input through the existing
+Exercise → Recording state, domain mappers and durable draft. No event, operation,
+route or saved-state field is added. Existing saved totals are not rewritten.
+For locally known BodyAndAssist examples requiring assistance, retained sets
+without Valid assistance (including after replacing an example) keep their raw
+values and have Invalid(null) volume/intensity. Recording propagates unavailable
+tonnage to its header and suppresses an apparent maximum load. Save and the final
+duration-confirmation callback route the first affected exercise to the existing
+editor before completion; this automatic correction does not emit a synthetic
+EditExercise click or CompletionOpened/Confirmed. Incomplete drafts remain
+persisted for correction. Unknown catalog requirements are not inferred or fetched
+by this check. No historical multiplier is substituted.
+
 ## Catalog and reporting decision
 
 `TrainingAnalyticsModule` (`@Module @ComponentScan`) binds `TrainingAnalyticsImpl`
@@ -187,7 +206,7 @@ symbol, consent or persisted field changes.
 | Recording | `stage` | Preserve | `DRAFT = PersistenceKey("TrainingRecordingDraft", TrainingRecordingState.serializer())`; nullable initialState; `saveState` of the latest VM state | The route stage is used only without an archive; Draft loading rewrites the stage to Add or Edit(trainingId), and that resolved value is archived |
 | Recording | `exercises` (nullable immutable list) including iteration values with pending/empty formats, IDs, order, example identity, createdAt and totals | Preserve | ImmutableListSerializer; serializable ExerciseState/IterationState | Null means the initial source load is pending, a nonnull empty list is a real empty draft; the initialization chain runs only when restored exercises are null (Add also re-runs DeleteDraft and may reopen the Start dialog); providers return early once nonnull |
 | Recording | `startAt` | Preserve | Required field, no default | `DateTimeUtils.now()` only without an archive; Edit/Draft loading sets now minus duration; completion confirmation sets now minus the confirmed duration; the ticking text is rebuilt in the Screen |
-| Recording | `examples`, `muscles` | Rebuild | `@Transient`; example observation by current example IDs, muscle observation | Populated by flows without touching the exercises. Cards resolve only the displayed nested example name from this current catalog; saved exercise names, iterations and the draft remain unchanged, with the draft label as offline/missing fallback |
+| Recording | `examples`, `muscles` | Rebuild | `@Transient`; example observation by current example IDs, muscle observation | Local example emissions recalculate derived totals, retaining every set and its recorded fields. A known required-assistance set without Valid assistance has unavailable load/intensity until corrected; saved names and raw iterations remain unchanged. Cards resolve the displayed nested example name from this catalog, with the draft label as offline/missing fallback |
 | Recording | Room draft training (data layer) | Rebuild from the durable source | `setDraftTraining` after each accepted mutation, `deleteDraftTraining` on empty/discard/completion cleanup, `getDraftTraining` for the Draft stage | The draft deeplink and Main's Continue re-enter through `StageState.Draft` |
 | Recording | Reminder notification; StartTraining / Confirmation / ConfirmTrainingCompletion sessions | Runtime only | NotificationManager; live DialogConfig callbacks | Accepted results are applied to State before navigation; sessions are unsaved |
 | Recording | Accepted library result; accepted editor Sync/Remove | Preserve at parent | Result keys `exercise-library-add` and `exercise`; the accepted library example seeds the editor route; Sync/Remove update the parent and save the draft | Re-entry seeds the editor from the parent's accepted exercise; a popped editor archive is discarded with its child context |

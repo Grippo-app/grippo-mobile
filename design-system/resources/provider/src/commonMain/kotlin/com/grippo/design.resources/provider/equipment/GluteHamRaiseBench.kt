@@ -24,7 +24,7 @@ public val GluteHamRaiseBench: ImageVector
             viewportHeight = 280f
         ).apply {
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -46,7 +46,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = SolidColor(AppPalette.NeutralDark.N400),
                 strokeAlpha = 1.0f,
@@ -82,7 +82,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -104,7 +104,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -122,7 +122,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -139,8 +139,15 @@ public val GluteHamRaiseBench: ImageVector
                 curveTo(220.712f, 59.8052f, 220.47f, 62.6383f, 217.912f, 63.2088f)
                 close()
             }
+            path(fill = SolidColor(AppPalette.NeutralDark.N450)) {
+                moveTo(x = 130.5f, y = 49f)
+                lineTo(x = 205f, y = 49.8f)
+                lineTo(x = 207f, y = 52.3f)
+                lineTo(x = 128.5f, y = 51.6f)
+                close()
+            }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -151,28 +158,11 @@ public val GluteHamRaiseBench: ImageVector
                 pathFillType = PathFillType.NonZero
             ) {
                 moveTo(205.057f, 199.991f)
-                lineTo(206.464f, 214.433f)
-                lineTo(299.749f, 226.536f)
-                lineTo(299.749f, 211.1f)
-                lineTo(205.057f, 199.991f)
-                close()
-            }
-            path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
-                fillAlpha = 1.0f,
-                stroke = null,
-                strokeAlpha = 1.0f,
-                strokeLineWidth = 1.0f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
-                strokeLineMiter = 1.0f,
-                pathFillType = PathFillType.NonZero
-            ) {
-                moveTo(218.359f, 198.695f)
-                lineTo(205.057f, 199.991f)
-                lineTo(299.369f, 211.137f)
-                lineTo(313.811f, 209.73f)
                 lineTo(218.359f, 198.695f)
+                lineTo(314.191f, 209.693f)
+                lineTo(299.749f, 211.1f)
+                lineTo(299.749f, 226.536f)
+                lineTo(206.464f, 214.433f)
                 close()
             }
             path(
@@ -194,7 +184,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -205,28 +195,11 @@ public val GluteHamRaiseBench: ImageVector
                 pathFillType = PathFillType.NonZero
             ) {
                 moveTo(0f, 234.963f)
-                verticalLineTo(252.754f)
-                lineTo(114.233f, 279.439f)
-                verticalLineTo(259.776f)
-                lineTo(0f, 234.963f)
-                close()
-            }
-            path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
-                fillAlpha = 1.0f,
-                stroke = null,
-                strokeAlpha = 1.0f,
-                strokeLineWidth = 1.0f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
-                strokeLineMiter = 1.0f,
-                pathFillType = PathFillType.NonZero
-            ) {
-                moveTo(16.3859f, 234.963f)
-                horizontalLineTo(0f)
-                lineTo(113.765f, 259.776f)
-                horizontalLineTo(131.555f)
                 lineTo(16.3859f, 234.963f)
+                lineTo(132.023f, 259.776f)
+                lineTo(114.233f, 259.776f)
+                lineTo(114.233f, 279.439f)
+                lineTo(0f, 252.754f)
                 close()
             }
             path(
@@ -266,7 +239,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -302,7 +275,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -320,7 +293,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -356,7 +329,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -375,7 +348,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -393,7 +366,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -429,7 +402,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -448,7 +421,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -466,7 +439,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -502,7 +475,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -521,7 +494,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -539,7 +512,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -575,7 +548,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -594,7 +567,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -612,7 +585,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -648,7 +621,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -684,7 +657,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -702,7 +675,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -739,7 +712,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -757,7 +730,7 @@ public val GluteHamRaiseBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,

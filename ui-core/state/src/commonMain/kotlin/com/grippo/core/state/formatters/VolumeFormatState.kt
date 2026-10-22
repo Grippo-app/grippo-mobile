@@ -79,7 +79,7 @@ public sealed class VolumeFormatState : FormatState<Float> {
             return "$sign$intPart.$frac"
         }
 
-        public fun of(display: String): VolumeFormatState {
+        public fun of(display: String, allowZero: Boolean = false): VolumeFormatState {
             if (display.isEmpty()) return Empty()
 
             return try {
@@ -87,10 +87,13 @@ public sealed class VolumeFormatState : FormatState<Float> {
                 if (!parsed.isFinite()) {
                     return Invalid(display = display, value = null)
                 }
+                if (allowZero && parsed < 0f) {
+                    return Invalid(display = display, value = parsed)
+                }
                 val normalized = normalize1dp(parsed)
 
                 when {
-                    normalized == 0f -> Empty()
+                    normalized == 0f && !allowZero -> Empty()
 
                     VolumeValidator.isValid(normalized) -> Valid(
                         display = display,
@@ -107,15 +110,18 @@ public sealed class VolumeFormatState : FormatState<Float> {
             }
         }
 
-        public fun of(value: Float?): VolumeFormatState {
+        public fun of(value: Float?, allowZero: Boolean = false): VolumeFormatState {
             if (value != null && !value.isFinite()) {
                 return Invalid(display = value.toString(), value = null)
+            }
+            if (allowZero && value != null && value < 0f) {
+                return Invalid(display = value.toString(), value = value)
             }
             val normalized = value?.let(::normalize1dp)
 
             return when {
                 normalized == null -> Empty()
-                normalized == 0f -> Empty()
+                normalized == 0f && !allowZero -> Empty()
 
                 VolumeValidator.isValid(normalized) -> Valid(
                     display = display1dp(normalized),

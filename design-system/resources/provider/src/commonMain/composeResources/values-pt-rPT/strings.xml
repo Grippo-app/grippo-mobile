@@ -368,6 +368,9 @@
     <string name="equipment_calf_raise_machines">Máquinas de gémeos</string>
     <string name="equipment_glute_machines">Máquinas de glúteos</string>
     <string name="equipment_assisted_pull_up_dip">Elevações e fundos assistidos</string>
+    <string name="equipment_plate_loaded_row">Remada com apoio peitoral e discos</string>
+    <string name="equipment_belt_squat">Agachamento com cinto</string>
+    <string name="equipment_plate_loaded_seated_dip">Tríceps sentado com discos</string>
     <string name="equipment_adductor_machine">Máquina de adutores</string>
     <string name="equipment_abductor_machine">Máquina de abdutores</string>
 
@@ -468,6 +471,9 @@
     <string name="equipment_hint_calf_raise_machines">Introduza o peso selecionado na máquina de gémeos.</string>
     <string name="equipment_hint_glute_machines">Introduza o peso selecionado na máquina de glúteos.</string>
     <string name="equipment_hint_assisted_pull_up_dip">Introduza o peso de assistência selecionado na torre como um valor positivo. Quanto maior a assistência, mais fácil o exercício.</string>
+    <string name="equipment_hint_plate_loaded_row">Indique o peso total dos discos nos braços utilizados. Na remada unilateral, conte apenas os discos desse lado. Não inclua a resistência própria da máquina.</string>
+    <string name="equipment_hint_belt_squat">Indique o peso total dos discos utilizados como carga. Não inclua o peso corporal nem a resistência da máquina sem discos.</string>
+    <string name="equipment_hint_plate_loaded_seated_dip">Indique o peso total dos discos nos braços de carga. Não conte os discos nos suportes de arrumação nem a resistência própria da máquina.</string>
 
     <string name="equipment_hint_lat_pulldown">Introduza o peso selecionado na máquina de puxada alta.</string>
     <string name="equipment_hint_cable">Introduza o peso selecionado na estação de polia.</string>

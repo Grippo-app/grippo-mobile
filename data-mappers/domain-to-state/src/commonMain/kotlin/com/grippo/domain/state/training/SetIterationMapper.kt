@@ -12,7 +12,7 @@ public fun SetIteration.toState(id: String): IterationState {
         id = id,
         externalWeight = VolumeFormatState.of(externalWeight),
         extraWeight = VolumeFormatState.of(extraWeight),
-        assistWeight = VolumeFormatState.of(assistWeight),
+        assistWeight = VolumeFormatState.of(value = assistWeight, allowZero = true),
         bodyWeight = WeightFormatState.of(bodyWeight),
         bodyMultiplier = MultiplierFormatState.of(bodyMultiplier),
         repetitions = RepetitionsFormatState.of(repetitions),

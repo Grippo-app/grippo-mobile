@@ -122,20 +122,29 @@ internal fun IterationPickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-        val iterationSuggestions = remember(state.iterationSuggestions, state.previousIteration, state.example.components) {
+        val previousIteration = when (val components = state.example.components) {
+            is ExerciseExampleComponentsState.BodyAndAssist -> state.previousIteration?.takeIf {
+                it.assistWeight !is VolumeFormatState.Invalid &&
+                    (!components.assistRequired || it.assistWeight is VolumeFormatState.Valid)
+            }
+            else -> state.previousIteration
+        }
+        val iterationSuggestions = remember(state.iterationSuggestions, previousIteration, state.example.components) {
             state.iterationSuggestions
                 .filter { item ->
-                    item.repetitions is RepetitionsFormatState.Valid && when (state.example.components) {
+                    item.repetitions is RepetitionsFormatState.Valid && when (val components = state.example.components) {
                         is ExerciseExampleComponentsState.External -> item.externalWeight is VolumeFormatState.Valid
                         is ExerciseExampleComponentsState.BodyAndExtra -> item.extraWeight !is VolumeFormatState.Invalid
-                        is ExerciseExampleComponentsState.BodyAndAssist -> item.assistWeight !is VolumeFormatState.Invalid
+                        is ExerciseExampleComponentsState.BodyAndAssist ->
+                            item.assistWeight !is VolumeFormatState.Invalid &&
+                                (!components.assistRequired || item.assistWeight is VolumeFormatState.Valid)
                         is ExerciseExampleComponentsState.BodyOnly -> true
                     }
                 }
                 .distinctBy { it.suggestionKey(state.example.components) }
                 .filter { item ->
                     item.suggestionKey(state.example.components) !=
-                        state.previousIteration?.suggestionKey(state.example.components)
+                        previousIteration?.suggestionKey(state.example.components)
                 }
         }
         AnimatedContent(
@@ -152,7 +161,7 @@ internal fun IterationPickerScreen(
             label = "Iteration suggestions",
         ) { showRepetitionSuggestions ->
             Column(modifier = Modifier.fillMaxWidth()) {
-                if (showRepetitionSuggestions || state.previousIteration != null || iterationSuggestions.isNotEmpty()) {
+                if (showRepetitionSuggestions || previousIteration != null || iterationSuggestions.isNotEmpty()) {
                     Text(
                         modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                         text = AppTokens.strings.res(
@@ -181,7 +190,7 @@ internal fun IterationPickerScreen(
                                     )
                                 }
                             } else {
-                                state.previousIteration?.let { previous ->
+                                previousIteration?.let { previous ->
                                     SuggestionChip(
                                         value = AppTokens.strings.res(
                                             Res.string.iteration_picker_last_time,
@@ -312,17 +321,21 @@ internal fun IterationPickerScreen(
 
         val buttonState = remember(state.value, state.example.components) {
             val value = state.value
-            val validWeight = when (state.example.components) {
+            val validWeight = when (val components = state.example.components) {
                 is ExerciseExampleComponentsState.External ->
                     value.externalWeight is VolumeFormatState.Valid
                 is ExerciseExampleComponentsState.BodyOnly ->
-                    value.bodyWeight is WeightFormatState.Valid
+                    value.bodyWeight is WeightFormatState.Valid &&
+                        value.bodyMultiplier is MultiplierFormatState.Valid
                 is ExerciseExampleComponentsState.BodyAndExtra ->
                     value.bodyWeight is WeightFormatState.Valid &&
+                        value.bodyMultiplier is MultiplierFormatState.Valid &&
                         value.extraWeight !is VolumeFormatState.Invalid
                 is ExerciseExampleComponentsState.BodyAndAssist ->
                     value.bodyWeight is WeightFormatState.Valid &&
-                        value.assistWeight !is VolumeFormatState.Invalid
+                        value.bodyMultiplier is MultiplierFormatState.Valid &&
+                        value.assistWeight !is VolumeFormatState.Invalid &&
+                        (!components.assistRequired || value.assistWeight is VolumeFormatState.Valid)
             }
             if (value.repetitions is RepetitionsFormatState.Valid && validWeight) {
                 ButtonState.Enabled
@@ -401,7 +414,8 @@ private fun IterationState.suggestionLabel(components: ExerciseExampleComponents
         is ExerciseExampleComponentsState.BodyAndExtra ->
             if (extraWeight.value == null) zero else "+${extraWeight.short().removeSuffix(kg)} $kg"
         is ExerciseExampleComponentsState.BodyAndAssist ->
-            if (assistWeight.value == null) zero else "−${assistWeight.short().removeSuffix(kg)} $kg"
+            if (assistWeight.value == null || assistWeight.value == 0f) zero
+            else "−${assistWeight.short().removeSuffix(kg)} $kg"
         is ExerciseExampleComponentsState.BodyOnly -> ""
     }
     return "${if (weight.isEmpty()) "" else "$weight "}× ${repetitions.value ?: "–"}"
@@ -439,6 +453,39 @@ private fun AssistPreview() = PickerPreview(
 
 @AppPreview
 @Composable
+private fun RequiredAssistZeroPreview() = PickerPreview(
+    components = ExerciseExampleComponentsState.BodyAndAssist(
+        bodyRequired = true,
+        bodyMultiplier = 1f,
+        assistRequired = true,
+    ),
+    assistWeight = VolumeFormatState.of(value = 0f, allowZero = true),
+)
+
+@AppPreview
+@Composable
+private fun RequiredAssistMissingPreview() = PickerPreview(
+    components = ExerciseExampleComponentsState.BodyAndAssist(
+        bodyRequired = true,
+        bodyMultiplier = 1f,
+        assistRequired = true,
+    ),
+    assistWeight = VolumeFormatState.Empty(),
+)
+
+@AppPreview
+@Composable
+private fun RequiredAssistInvalidPreview() = PickerPreview(
+    components = ExerciseExampleComponentsState.BodyAndAssist(
+        bodyRequired = true,
+        bodyMultiplier = 1f,
+        assistRequired = true,
+    ),
+    assistWeight = VolumeFormatState.of(display = "-0.01", allowZero = true),
+)
+
+@AppPreview
+@Composable
 private fun WithoutSuggestionsPreview() {
     val example = stubExerciseExample()
     PreviewContainer {
@@ -469,14 +516,39 @@ private fun WithoutSuggestionsPreview() {
 }
 
 @Composable
-private fun PickerPreview(components: ExerciseExampleComponentsState) {
+private fun PickerPreview(
+    components: ExerciseExampleComponentsState,
+    assistWeight: VolumeFormatState = VolumeFormatState.of(15f),
+) {
+    val bodyMultiplier = when (components) {
+        is ExerciseExampleComponentsState.External -> MultiplierFormatState.Empty()
+        is ExerciseExampleComponentsState.BodyOnly -> MultiplierFormatState.of(components.bodyMultiplier)
+        is ExerciseExampleComponentsState.BodyAndExtra -> MultiplierFormatState.of(components.bodyMultiplier)
+        is ExerciseExampleComponentsState.BodyAndAssist -> MultiplierFormatState.of(components.bodyMultiplier)
+    }
     val value = IterationState(
         id = "current",
-        externalWeight = VolumeFormatState.of(80f),
-        extraWeight = VolumeFormatState.of(10f),
-        assistWeight = VolumeFormatState.of(15f),
-        bodyWeight = WeightFormatState.of(78f),
-        bodyMultiplier = MultiplierFormatState.of(0.65f),
+        externalWeight = if (components is ExerciseExampleComponentsState.External) {
+            VolumeFormatState.of(80f)
+        } else {
+            VolumeFormatState.Empty()
+        },
+        extraWeight = if (components is ExerciseExampleComponentsState.BodyAndExtra) {
+            VolumeFormatState.of(10f)
+        } else {
+            VolumeFormatState.Empty()
+        },
+        assistWeight = if (components is ExerciseExampleComponentsState.BodyAndAssist) {
+            assistWeight
+        } else {
+            VolumeFormatState.Empty()
+        },
+        bodyWeight = if (components is ExerciseExampleComponentsState.External) {
+            WeightFormatState.Empty()
+        } else {
+            WeightFormatState.of(78f)
+        },
+        bodyMultiplier = bodyMultiplier,
         repetitions = RepetitionsFormatState.of(8)
     )
     PreviewContainer {

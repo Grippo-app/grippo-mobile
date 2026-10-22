@@ -25,7 +25,7 @@ public val Crossover: ImageVector
             viewportHeight = 370f
         ).apply {
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -61,7 +61,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -97,7 +97,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -421,7 +421,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -457,7 +457,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -511,7 +511,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -529,7 +529,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -565,7 +565,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -583,7 +583,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -600,26 +600,9 @@ public val Crossover: ImageVector
                 lineTo(334.103f, 78.5f)
                 close()
             }
+
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
-                fillAlpha = 1.0f,
-                stroke = null,
-                strokeAlpha = 1.0f,
-                strokeLineWidth = 1.0f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
-                strokeLineMiter = 1.0f,
-                pathFillType = PathFillType.NonZero
-            ) {
-                moveTo(66.1033f, 57f)
-                verticalLineTo(43.5f)
-                lineTo(313.103f, 90.5f)
-                verticalLineTo(103f)
-                lineTo(66.1033f, 57f)
-                close()
-            }
-            path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -675,11 +658,11 @@ public val Crossover: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N400),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 2.5f,
                 strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineJoin = StrokeJoin.Round,
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
@@ -693,10 +676,10 @@ public val Crossover: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N500),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Butt,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Miter,
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
@@ -705,26 +688,9 @@ public val Crossover: ImageVector
                 curveTo(90.9365f, 143.167f, 89.3032f, 141.1f, 92.1032f, 139.5f)
                 curveTo(95.6032f, 137.5f, 95.6033f, 144f, 92.6033f, 144f)
             }
+
             path(
-                fill = null,
-                fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
-                strokeAlpha = 1.0f,
-                strokeLineWidth = 2.5f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
-                strokeLineMiter = 1.0f,
-                pathFillType = PathFillType.NonZero
-            ) {
-                moveTo(311.603f, 175f)
-                lineTo(302.603f, 178f)
-                verticalLineTo(193.5f)
-                lineTo(311.603f, 190f)
-                verticalLineTo(175f)
-                close()
-            }
-            path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -760,7 +726,25 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
+                fillAlpha = 1.0f,
+                stroke = null,
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Butt,
+                strokeLineJoin = StrokeJoin.Miter,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(66.1033f, 57f)
+                verticalLineTo(43.5f)
+                lineTo(313.103f, 90.5f)
+                verticalLineTo(103f)
+                lineTo(66.1033f, 57f)
+                close()
+            }
+            path(
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -796,7 +780,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -834,7 +818,7 @@ public val Crossover: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N450),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -920,7 +904,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -956,7 +940,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -992,7 +976,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1316,7 +1300,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1352,7 +1336,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1406,7 +1390,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1424,7 +1408,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1460,7 +1444,7 @@ public val Crossover: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1476,6 +1460,127 @@ public val Crossover: ImageVector
                 lineTo(399.103f, 55.6012f)
                 lineTo(283.329f, 122.577f)
                 close()
+            }
+            path(
+                fill = null,
+                fillAlpha = 1.0f,
+                stroke = SolidColor(AppPalette.NeutralDark.N450),
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(x = 303.103f, y = 176.5f)
+                verticalLineTo(y = 160.5f)
+            }
+            path(
+                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fillAlpha = 1.0f,
+                stroke = null,
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(x = 298.6032f, y = 150f)
+                curveTo(x1 = 293.3423f, y1 = 150f, x2 = 293.1033f, y2 = 156f, x3 = 293.1033f, y3 = 156f)
+                curveTo(x1 = 293.1033f, y1 = 156f, x2 = 292.9463f, y2 = 161f, x3 = 298.6032f, y3 = 161f)
+                curveTo(x1 = 304.103f, y1 = 161f, x2 = 304.2699f, y2 = 158f, x3 = 303.6031f, y3 = 156f)
+                curveTo(x1 = 303.6031f, y1 = 154f, x2 = 303.603f, y2 = 150f, x3 = 298.6032f, y3 = 150f)
+                close()
+            }
+            path(
+                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fillAlpha = 1.0f,
+                stroke = SolidColor(AppPalette.NeutralDark.N550),
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 0.2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(x = 299.6032f, y = 150f)
+                curveTo(x1 = 294.3423f, y1 = 150f, x2 = 294.1033f, y2 = 156f, x3 = 294.1033f, y3 = 156f)
+                curveTo(x1 = 294.1033f, y1 = 156f, x2 = 293.9463f, y2 = 161f, x3 = 299.6032f, y3 = 161f)
+                curveTo(x1 = 305.103f, y1 = 161f, x2 = 305.2699f, y2 = 158f, x3 = 304.6031f, y3 = 156f)
+                curveTo(x1 = 304.6031f, y1 = 154f, x2 = 304.603f, y2 = 150f, x3 = 299.6032f, y3 = 150f)
+                close()
+            }
+            path(
+                fill = SolidColor(AppPalette.NeutralDark.N700),
+                fillAlpha = 1.0f,
+                stroke = null,
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(x = 301.2966f, y = 160.5f)
+                horizontalLineTo(x = 306.603f)
+                curveTo(x1 = 306.603f, y1 = 160.5f, x2 = 308.103f, y2 = 157.539f, x3 = 308.103f, y3 = 155.5f)
+                curveTo(x1 = 308.103f, y1 = 153.461f, x2 = 306.603f, y2 = 150.5f, x3 = 306.603f, y3 = 150.5f)
+                horizontalLineTo(x = 301.2966f)
+                curveTo(x1 = 299.3611f, y1 = 150.5f, x2 = 295.6033f, y2 = 151f, x3 = 295.1033f, y3 = 154.944f)
+                curveTo(x1 = 294.4043f, y1 = 160.456f, x2 = 298.716f, y2 = 160.5f, x3 = 301.2966f, y3 = 160.5f)
+                close()
+            }
+            path(
+                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fillAlpha = 1.0f,
+                stroke = null,
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 1.0f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(x = 299.103f, y = 154f)
+                curveTo(x1 = 297.903f, y1 = 153.6f, x2 = 297.603f, y2 = 154.833f, x3 = 297.603f, y3 = 155.5f)
+                curveTo(x1 = 297.7697f, y1 = 156f, x2 = 298.303f, y2 = 156.5f, x3 = 299.103f, y3 = 156.5f)
+                curveTo(x1 = 299.603f, y1 = 156.5f, x2 = 299.603f, y2 = 156.5f, x3 = 300.103f, y3 = 156f)
+                curveTo(x1 = 300.2916f, y1 = 155.811f, x2 = 300.303f, y2 = 154.4f, x3 = 299.103f, y3 = 154f)
+                close()
+            }
+            path(
+                fill = null,
+                fillAlpha = 1.0f,
+                stroke = SolidColor(AppPalette.NeutralDark.N400),
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 2.5f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(x = 299.103f, y = 179.5f)
+                lineTo(x = 308.103f, y = 182.5f)
+                verticalLineTo(y = 198f)
+                lineTo(x = 299.103f, y = 194.5f)
+                verticalLineTo(y = 179.5f)
+                close()
+            }
+            path(
+                fill = null,
+                fillAlpha = 1.0f,
+                stroke = SolidColor(AppPalette.NeutralDark.N500),
+                strokeAlpha = 1.0f,
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
+                strokeLineMiter = 1.0f,
+                pathFillType = PathFillType.NonZero
+            ) {
+                moveTo(x = 304.1031f, y = 181f)
+                curveTo(x1 = 305.2698f, y1 = 180.167f, x2 = 306.9031f, y2 = 178.1f, x3 = 304.1031f, y3 = 176.5f)
+                curveTo(x1 = 300.6031f, y1 = 174.5f, x2 = 300.603f, y2 = 181f, x3 = 303.603f, y3 = 181f)
             }
         }.build()
         return _Crossover!!

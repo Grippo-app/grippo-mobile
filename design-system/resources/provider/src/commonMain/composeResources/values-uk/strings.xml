@@ -366,6 +366,9 @@
     <string name="equipment_calf_raise_machines">Тренажери для литок</string>
     <string name="equipment_glute_machines">Тренажери для сідниць</string>
     <string name="equipment_assisted_pull_up_dip">Гравітрон</string>
+    <string name="equipment_plate_loaded_row">Важільна тяга з упором грудьми</string>
+    <string name="equipment_belt_squat">Присідання з поясом</string>
+    <string name="equipment_plate_loaded_seated_dip">Важільний трицепс-прес сидячи</string>
     <string name="equipment_adductor_machine">Тренажер для приведення</string>
     <string name="equipment_abductor_machine">Тренажер для відведення</string>
 
@@ -466,6 +469,9 @@
     <string name="equipment_hint_calf_raise_machines">Вкажи вагу на тренажері для литок.</string>
     <string name="equipment_hint_glute_machines">Вкажи вагу на тренажері для сідниць.</string>
     <string name="equipment_hint_assisted_pull_up_dip">Вкажіть вагу допомоги, виставлену на стеку, додатним числом. Що більша допомога, то легша вправа.</string>
+    <string name="equipment_hint_plate_loaded_row">Вкажіть загальну вагу дисків на задіяних важелях. Для тяги однією рукою враховуйте лише диски з цього боку. Власний опір тренажера не додавайте.</string>
+    <string name="equipment_hint_belt_squat">Вкажіть загальну вагу дисків, які створюють навантаження. Вагу тіла та опір тренажера без дисків не додавайте.</string>
+    <string name="equipment_hint_plate_loaded_seated_dip">Вкажіть загальну вагу дисків на робочих важелях. Диски на тримачах для зберігання та власний опір тренажера не враховуйте.</string>
 
     <string name="equipment_hint_lat_pulldown">Вкажи вагу, яку виставив на тязі зверху.</string>
     <string name="equipment_hint_cable">Вкажи вагу, яку виставив на блоці.</string>

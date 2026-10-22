@@ -248,7 +248,7 @@ and Latin text in both themes; each role keeps its existing size and line height
 
 - Equipment is recognized by its characteristic silhouette and complete localized
   name. `EquipmentEnumState.icon()` is the single exhaustive identity mapping for
-  all 48 types, using the existing graphite equipment vectors without tint or a
+  all equipment types, using the existing graphite equipment vectors without tint or a
   per-item color palette. Sorting, popularity, selection and exclusions do not
   change that mapping. Theme text and surfaces retain their existing neutral roles.
 - Concrete apparatus, bench/rack variants and cable attachments keep their own
@@ -266,6 +266,16 @@ and Latin text in both themes; each role keeps its existing size and line height
   `ASSISTED_PULL_UP_DIP` → AssistedPullUpDip keeps its counterweight stack,
   moving knee platform, upper pull-up grips and dip handles, distinct from
   PULL_UP_BAR → PullUpBar and DIP_BARS → DipBar.
+  `PLATE_LOADED_ROW` → PlateLoadedRow has independently pivoting arms with
+  loaded plates, handgrips, a chest pad and seat, distinct from ROW_CABLE →
+  RowCable and ROW_BENCH → RowBench.
+  `BELT_SQUAT` → BeltSquat has an elevated split platform, a waist belt linked
+  to a pivoting loaded lever and upright handrails, distinct from SQUAT_RACK →
+  SquatRack, SMITH_MACHINES → SmithMachine and HACK_SQUAT_MACHINES → HackSquatMachines.
+  `PLATE_LOADED_SEATED_DIP` → PlateLoadedSeatedDip uses two downward-pressing
+  side handles on plate-loaded moving arms, a low frame and an inclined seated
+  support, distinct from the tall stack-based TRICEPS_MACHINES → TricepsMachines,
+  DIP_BARS → DipBar and ASSISTED_PULL_UP_DIP → AssistedPullUpDip.
   Existing aliases stay intentional: DUMBBELLS → Dumbbell, AB_MACHINES →
   AbMachine, BICEPS_MACHINES → BicepsMachine, SMITH_MACHINES → SmithMachine,
   LEG_EXTENSION_MACHINES → LegExtensionMachine, LEG_CURL_MACHINES → LegCurlMachine,

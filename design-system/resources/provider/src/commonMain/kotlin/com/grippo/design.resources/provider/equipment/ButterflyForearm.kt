@@ -25,7 +25,7 @@ public val ButterflyForearm: ImageVector
             viewportHeight = 321f
         ).apply {
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -61,7 +61,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -97,7 +97,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -421,7 +421,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -457,7 +457,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -511,7 +511,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -529,7 +529,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -565,7 +565,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -604,7 +604,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -642,7 +642,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -721,7 +721,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -741,7 +741,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N400),
+                fill = SolidColor(AppPalette.NeutralDark.N500),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -780,7 +780,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -800,7 +800,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N400),
+                fill = SolidColor(AppPalette.NeutralDark.N500),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -819,7 +819,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -873,7 +873,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -901,15 +901,15 @@ public val ButterflyForearm: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(x = 110.535f, y = 64.105f)
-                curveTo(x1 = 108.818f, y1 = 53.3071f, x2 = 120.307f, y2 = 42.0135f, x3 = 137.634f, y3 = 37.4665f)
-                curveTo(x1 = 156.557f, y1 = 32.5006f, x2 = 175.19f, y2 = 38.6164f, x3 = 177.064f, y3 = 50.4088f)
-                curveTo(x1 = 178.781f, y1 = 61.2067f, x2 = 167.292f, y2 = 72.5003f, x3 = 149.965f, y3 = 77.0473f)
-                curveTo(x1 = 131.042f, y1 = 82.0132f, x2 = 112.409f, y2 = 75.8974f, x3 = 110.535f, y3 = 64.105f)
+                moveTo(x = 110.535f, y = 65.3166f)
+                curveTo(x1 = 108.818f, y1 = 54.5187f, x2 = 120.307f, y2 = 43.2251f, x3 = 137.634f, y3 = 38.6781f)
+                curveTo(x1 = 156.557f, y1 = 33.7122f, x2 = 175.19f, y2 = 39.8280f, x3 = 177.064f, y3 = 51.6204f)
+                curveTo(x1 = 178.781f, y1 = 62.4183f, x2 = 167.292f, y2 = 73.7119f, x3 = 149.965f, y3 = 78.2589f)
+                curveTo(x1 = 131.042f, y1 = 83.2248f, x2 = 112.409f, y2 = 77.1090f, x3 = 110.535f, y3 = 65.3166f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -927,7 +927,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -945,7 +945,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -981,7 +981,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -999,7 +999,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1035,7 +1035,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1053,7 +1053,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1109,7 +1109,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1147,7 +1147,7 @@ public val ButterflyForearm: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,

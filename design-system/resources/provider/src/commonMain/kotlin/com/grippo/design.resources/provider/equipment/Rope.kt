@@ -24,9 +24,9 @@ public val Rope: ImageVector
             viewportHeight = 237f
         ).apply {
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N400),
+                fill = SolidColor(AppPalette.NeutralDark.N550),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N450),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -42,7 +42,7 @@ public val Rope: ImageVector
             path(
                 fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N450),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -83,7 +83,7 @@ public val Rope: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -91,13 +91,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(16.6519f, 193.91f)
-                curveTo(21.5032f, 192.861f, 31.5277f, 190.209f, 32.8149f, 187.986f)
+                moveTo(x = 18.2486f, y = 193.5492f)
+                curveTo(x1 = 22.846f, y1 = 192.4698f, x2 = 29.8641f, y2 = 190.4945f, x3 = 32.1805f, y3 = 188.6637f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -105,13 +105,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(17.2368f, 183.524f)
-                curveTo(22.0882f, 182.476f, 32.1127f, 179.824f, 33.3999f, 177.6f)
+                moveTo(x = 18.8335f, y = 183.1635f)
+                curveTo(x1 = 23.431f, y1 = 182.0847f, x2 = 30.4491f, y2 = 180.1094f, x3 = 32.7655f, y3 = 178.278f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -119,13 +119,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(17.822f, 172.261f)
-                curveTo(22.6734f, 171.213f, 32.6979f, 168.561f, 33.9851f, 166.337f)
+                moveTo(x = 19.4187f, y = 171.9005f)
+                curveTo(x1 = 24.0162f, y1 = 170.8217f, x2 = 31.0343f, y2 = 168.8464f, x3 = 33.3507f, y3 = 167.015f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -133,13 +133,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(18.407f, 162.754f)
-                curveTo(23.2583f, 161.706f, 33.2828f, 159.053f, 34.57f, 156.83f)
+                moveTo(x = 20.0037f, y = 162.3935f)
+                curveTo(x1 = 24.6011f, y1 = 161.3146f, x2 = 31.6192f, y2 = 159.3387f, x3 = 33.9356f, y3 = 157.5078f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -147,13 +147,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(18.8459f, 152.369f)
-                curveTo(23.6973f, 151.32f, 33.7218f, 148.668f, 35.009f, 146.445f)
+                moveTo(x = 20.4426f, y = 152.0082f)
+                curveTo(x1 = 25.0401f, y1 = 150.9288f, x2 = 32.0582f, y2 = 148.9535f, x3 = 34.3746f, y3 = 147.1227f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -161,13 +161,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(18.8459f, 141.106f)
-                curveTo(23.6973f, 140.057f, 33.7218f, 137.405f, 35.009f, 135.182f)
+                moveTo(x = 20.4426f, y = 140.7452f)
+                curveTo(x1 = 25.0401f, y1 = 139.6658f, x2 = 32.0582f, y2 = 137.6905f, x3 = 34.3746f, y3 = 135.8597f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -175,13 +175,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(18.6995f, 131.013f)
-                curveTo(23.5508f, 129.964f, 33.5753f, 127.312f, 34.8625f, 125.089f)
+                moveTo(x = 20.2962f, y = 130.6522f)
+                curveTo(x1 = 24.8936f, y1 = 129.5728f, x2 = 31.9117f, y2 = 127.5975f, x3 = 34.2281f, y3 = 125.7667f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -189,13 +189,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(19.4309f, 120.7f)
-                curveTo(24.0408f, 119.691f, 33.5663f, 117.137f, 34.7894f, 114.996f)
+                moveTo(x = 20.9481f, y = 120.3529f)
+                curveTo(x1 = 25.3168f, y1 = 119.3142f, x2 = 31.9855f, y2 = 117.4119f, x3 = 34.1866f, y3 = 115.6487f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -203,13 +203,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(19.7236f, 109.291f)
-                curveTo(24.3774f, 108.334f, 33.9937f, 105.911f, 35.2284f, 103.879f)
+                moveTo(x = 21.2553f, y = 108.9618f)
+                curveTo(x1 = 25.6656f, y1 = 107.9765f, x2 = 32.3978f, y2 = 106.1718f, x3 = 34.6199f, y3 = 104.4985f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -217,13 +217,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(20.6011f, 97.5896f)
-                curveTo(25.1231f, 96.606f, 34.4672f, 94.1173f, 35.6671f, 92.0312f)
+                moveTo(x = 22.0894f, y = 97.2513f)
+                curveTo(x1 = 26.3748f, y1 = 96.2388f, x2 = 32.9165f, y2 = 94.3852f, x3 = 35.0758f, y3 = 92.6672f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -231,13 +231,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(21.1863f, 87.4968f)
-                curveTo(25.7962f, 86.4874f, 35.3217f, 83.9332f, 36.5448f, 81.7922f)
+                moveTo(x = 22.7035f, y = 87.1496f)
+                curveTo(x1 = 27.0722f, y1 = 86.1106f, x2 = 33.7409f, y2 = 84.2082f, x3 = 35.942f, y3 = 82.4449f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -245,13 +245,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(22.2102f, 76.3803f)
-                curveTo(27.0835f, 75.3968f, 37.1534f, 72.9081f, 38.4464f, 70.822f)
+                moveTo(x = 23.8141f, y = 76.042f)
+                curveTo(x1 = 28.4324f, y1 = 75.0296f, x2 = 35.4823f, y2 = 73.176f, x3 = 37.8092f, y3 = 71.458f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -259,13 +259,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(23.6729f, 66.7262f)
-                curveTo(28.8096f, 65.5874f, 39.4237f, 62.7058f, 40.7867f, 60.2903f)
+                moveTo(x = 25.3635f, y = 66.3345f)
+                curveTo(x1 = 30.2314f, y1 = 65.1623f, x2 = 37.6622f, y2 = 63.016f, x3 = 40.115f, y3 = 61.0267f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -273,13 +273,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(26.8909f, 56.9261f)
-                curveTo(32.2471f, 55.8907f, 43.3149f, 53.2711f, 44.736f, 51.0752f)
+                moveTo(x = 28.6537f, y = 56.57f)
+                curveTo(x1 = 33.7297f, y1 = 55.5042f, x2 = 41.4781f, y2 = 53.5531f, x3 = 44.0356f, y3 = 51.7447f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -287,13 +287,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(31.4253f, 46.5407f)
-                curveTo(38.406f, 45.1689f, 52.8304f, 41.6979f, 54.6825f, 38.7883f)
+                moveTo(x = 33.7228f, y = 46.0688f)
+                curveTo(x1 = 40.3382f, y1 = 44.6568f, x2 = 50.4366f, y2 = 42.0716f, x3 = 53.7697f, y3 = 39.6754f)
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N400),
+                fill = SolidColor(AppPalette.NeutralDark.N550),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N450),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -309,7 +309,7 @@ public val Rope: ImageVector
             path(
                 fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N450),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -350,7 +350,7 @@ public val Rope: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -358,13 +358,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(109.68f, 193.91f)
-                curveTo(104.829f, 192.861f, 94.8041f, 190.209f, 93.5169f, 187.986f)
+                moveTo(x = 108.0834f, y = 193.5492f)
+                curveTo(x1 = 103.4861f, y1 = 192.4698f, x2 = 96.4678f, y2 = 190.4945f, x3 = 94.1513f, y3 = 188.6637f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -372,13 +372,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(109.095f, 183.524f)
-                curveTo(104.244f, 182.476f, 94.2191f, 179.824f, 92.9319f, 177.6f)
+                moveTo(x = 107.4984f, y = 183.1635f)
+                curveTo(x1 = 102.9011f, y1 = 182.0847f, x2 = 95.8828f, y2 = 180.1094f, x3 = 93.5663f, y3 = 178.278f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -386,13 +386,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(108.51f, 172.261f)
-                curveTo(103.658f, 171.213f, 93.6339f, 168.561f, 92.3467f, 166.337f)
+                moveTo(x = 106.9131f, y = 171.9005f)
+                curveTo(x1 = 102.3153f, y1 = 170.8217f, x2 = 95.2974f, y2 = 168.8464f, x3 = 92.9811f, y3 = 167.015f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -400,13 +400,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(107.925f, 162.754f)
-                curveTo(103.073f, 161.706f, 93.049f, 159.053f, 91.7618f, 156.83f)
+                moveTo(x = 106.3281f, y = 162.3935f)
+                curveTo(x1 = 101.7303f, y1 = 161.3146f, x2 = 94.7125f, y2 = 159.3387f, x3 = 92.3962f, y3 = 157.5078f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -414,13 +414,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(107.486f, 152.369f)
-                curveTo(102.634f, 151.32f, 92.61f, 148.668f, 91.3228f, 146.445f)
+                moveTo(x = 105.8891f, y = 152.0082f)
+                curveTo(x1 = 101.2913f, y1 = 150.9288f, x2 = 94.2735f, y2 = 148.9535f, x3 = 91.9572f, y3 = 147.1227f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -428,13 +428,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(107.486f, 141.106f)
-                curveTo(102.634f, 140.057f, 92.61f, 137.405f, 91.3228f, 135.182f)
+                moveTo(x = 105.8891f, y = 140.7452f)
+                curveTo(x1 = 101.2913f, y1 = 139.6658f, x2 = 94.2735f, y2 = 137.6905f, x3 = 91.9572f, y3 = 135.8597f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -442,13 +442,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(107.632f, 131.013f)
-                curveTo(102.781f, 129.964f, 92.7562f, 127.312f, 91.469f, 125.089f)
+                moveTo(x = 106.0354f, y = 130.6522f)
+                curveTo(x1 = 101.4381f, y1 = 129.5728f, x2 = 94.4199f, y2 = 127.5975f, x3 = 92.1034f, y3 = 125.7667f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -456,13 +456,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(106.901f, 120.7f)
-                curveTo(102.291f, 119.691f, 92.7655f, 117.137f, 91.5423f, 114.996f)
+                moveTo(x = 105.3838f, y = 120.3529f)
+                curveTo(x1 = 101.015f, y1 = 119.3142f, x2 = 94.3463f, y2 = 117.4119f, x3 = 92.1451f, y3 = 115.6487f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -470,13 +470,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(106.608f, 109.291f)
-                curveTo(101.954f, 108.334f, 92.3381f, 105.911f, 91.1033f, 103.879f)
+                moveTo(x = 105.0763f, y = 108.9618f)
+                curveTo(x1 = 100.6659f, y1 = 107.9765f, x2 = 93.9339f, y2 = 106.1718f, x3 = 91.7118f, y3 = 104.4985f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -484,13 +484,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(105.731f, 97.5896f)
-                curveTo(101.209f, 96.606f, 91.8645f, 94.1173f, 90.6647f, 92.0312f)
+                moveTo(x = 104.2427f, y = 97.2513f)
+                curveTo(x1 = 99.9572f, y1 = 96.2388f, x2 = 93.4153f, y2 = 94.3852f, x3 = 91.256f, y3 = 92.6672f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -498,13 +498,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(105.146f, 87.4968f)
-                curveTo(100.536f, 86.4874f, 91.0101f, 83.9332f, 89.787f, 81.7922f)
+                moveTo(x = 103.6287f, y = 87.1496f)
+                curveTo(x1 = 99.2599f, y1 = 86.1106f, x2 = 92.591f, y2 = 84.2082f, x3 = 90.3898f, y3 = 82.4449f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -512,13 +512,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(104.122f, 76.3803f)
-                curveTo(99.2483f, 75.3968f, 89.1784f, 72.9081f, 87.8854f, 70.822f)
+                moveTo(x = 102.518f, y = 76.042f)
+                curveTo(x1 = 97.8994f, y1 = 75.0296f, x2 = 90.8496f, y2 = 73.176f, x3 = 88.5226f, y3 = 71.458f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -526,13 +526,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(102.659f, 66.7262f)
-                curveTo(97.5222f, 65.5874f, 86.908f, 62.7058f, 85.5451f, 60.2903f)
+                moveTo(x = 100.9684f, y = 66.3345f)
+                curveTo(x1 = 96.1004f, y1 = 65.1623f, x2 = 88.6695f, y2 = 63.016f, x3 = 86.2168f, y3 = 61.0267f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -540,13 +540,13 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(99.4409f, 56.9261f)
-                curveTo(94.0847f, 55.8907f, 83.0169f, 53.2711f, 81.5958f, 51.0752f)
+                moveTo(x = 97.6781f, y = 56.57f)
+                curveTo(x1 = 92.6021f, y1 = 55.5042f, x2 = 84.8537f, y2 = 53.5531f, x3 = 82.2962f, y3 = 51.7447f)
             }
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                stroke = SolidColor(AppPalette.NeutralDark.N300),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -554,11 +554,11 @@ public val Rope: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(94.9065f, 46.5407f)
-                curveTo(87.9258f, 45.1689f, 73.5014f, 41.6979f, 71.6493f, 38.7883f)
+                moveTo(x = 92.609f, y = 46.0688f)
+                curveTo(x1 = 85.9936f, y1 = 44.6568f, x2 = 75.8952f, y2 = 42.0716f, x3 = 72.5621f, y3 = 39.6754f)
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -566,7 +566,7 @@ public val Rope: ImageVector
                 strokeLineCap = StrokeCap.Butt,
                 strokeLineJoin = StrokeJoin.Miter,
                 strokeLineMiter = 1.0f,
-                pathFillType = PathFillType.NonZero
+                pathFillType = PathFillType.EvenOdd
             ) {
                 moveTo(75.2336f, 46.3947f)
                 curveTo(67.2179f, 51.3094f, 55.3162f, 48.7351f, 50.3674f, 46.8335f)
@@ -580,23 +580,13 @@ public val Rope: ImageVector
                 curveTo(72.7616f, 24.2199f, 76.1112f, 27.4525f, 77.1351f, 29.1346f)
                 curveTo(69.3534f, 36.4482f, 72.6251f, 43.6887f, 75.2336f, 46.3947f)
                 close()
-            }
-            path(
-                fill = SolidColor(AppPalette.NeutralDark.N700),
-                fillAlpha = 1.0f,
-                stroke = null,
-                strokeAlpha = 1.0f,
-                strokeLineWidth = 1.0f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
-                strokeLineMiter = 1.0f,
-                pathFillType = PathFillType.NonZero
-            ) {
+
                 moveTo(60.8259f, 3.4639f)
                 curveTo(61.8986f, 6.1699f, 63.4003f, 12.5913f, 60.8259f, 16.6284f)
                 curveTo(57.608f, 21.6747f, 58.6319f, 0.6116f, 60.8259f, 3.4639f)
                 close()
             }
+
         }.build()
         return _Rope!!
     }

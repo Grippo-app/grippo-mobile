@@ -367,6 +367,9 @@
     <string name="equipment_calf_raise_machines">Тренажёры для икр</string>
     <string name="equipment_glute_machines">Тренажёры для ягодиц</string>
     <string name="equipment_assisted_pull_up_dip">Гравитрон</string>
+    <string name="equipment_plate_loaded_row">Рычажная тяга с упором грудью</string>
+    <string name="equipment_belt_squat">Приседания с поясом</string>
+    <string name="equipment_plate_loaded_seated_dip">Рычажный трицепс-пресс сидя</string>
     <string name="equipment_adductor_machine">Тренажёр для приводящих</string>
     <string name="equipment_abductor_machine">Тренажёр для отводящих</string>
 
@@ -467,6 +470,9 @@
     <string name="equipment_hint_calf_raise_machines">Укажи вес на тренажёре для икр.</string>
     <string name="equipment_hint_glute_machines">Укажи вес на тренажёре для ягодиц.</string>
     <string name="equipment_hint_assisted_pull_up_dip">Укажите вес помощи, выставленный на стеке, положительным числом. Чем больше помощь, тем легче упражнение.</string>
+    <string name="equipment_hint_plate_loaded_row">Укажите общий вес блинов на используемых рычагах. При тяге одной рукой учитывайте только блины на этой стороне. Собственное сопротивление тренажёра не включайте.</string>
+    <string name="equipment_hint_belt_squat">Укажите общий вес блинов, используемых как нагрузка. Вес тела и сопротивление тренажёра без блинов не добавляйте.</string>
+    <string name="equipment_hint_plate_loaded_seated_dip">Укажите общий вес блинов на рабочих рычагах. Блины на держателях для хранения и собственное сопротивление тренажёра не учитывайте.</string>
 
     <string name="equipment_hint_lat_pulldown">Укажи вес, который выставил на тяге сверху.</string>
     <string name="equipment_hint_cable">Укажи вес, который выставил на блоке.</string>

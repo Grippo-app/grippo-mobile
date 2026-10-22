@@ -368,6 +368,9 @@
     <string name="equipment_calf_raise_machines">Máquinas de panturrilhas</string>
     <string name="equipment_glute_machines">Máquinas de glúteos</string>
     <string name="equipment_assisted_pull_up_dip">Barra e paralelas assistidas</string>
+    <string name="equipment_plate_loaded_row">Remada com apoio peitoral e anilhas</string>
+    <string name="equipment_belt_squat">Agachamento com cinto</string>
+    <string name="equipment_plate_loaded_seated_dip">Tríceps sentado com anilhas</string>
     <string name="equipment_adductor_machine">Cadeira adutora</string>
     <string name="equipment_abductor_machine">Cadeira abdutora</string>
 
@@ -468,6 +471,9 @@
     <string name="equipment_hint_calf_raise_machines">Digite o peso selecionado na máquina de panturrilhas.</string>
     <string name="equipment_hint_glute_machines">Digite o peso selecionado na máquina de glúteos.</string>
     <string name="equipment_hint_assisted_pull_up_dip">Informe o peso de assistência selecionado na torre como um valor positivo. Quanto maior a assistência, mais fácil o exercício.</string>
+    <string name="equipment_hint_plate_loaded_row">Informe o peso total das anilhas nos braços utilizados. Na remada unilateral, conte apenas as anilhas desse lado. Não inclua a resistência própria da máquina.</string>
+    <string name="equipment_hint_belt_squat">Informe o peso total das anilhas utilizadas como carga. Não inclua o peso corporal nem a resistência da máquina sem anilhas.</string>
+    <string name="equipment_hint_plate_loaded_seated_dip">Informe o peso total das anilhas nos braços de carga. Não conte as anilhas nos suportes de armazenamento nem a resistência própria da máquina.</string>
 
     <string name="equipment_hint_lat_pulldown">Digite o peso selecionado no puxador alto.</string>
     <string name="equipment_hint_cable">Digite o peso selecionado na estação de polia.</string>

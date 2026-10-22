@@ -128,11 +128,18 @@ private fun EquipmentSelectionMachinesPreview() {
         val machines = groups.first { it.type == EquipmentGroupEnumState.MACHINES }
         val forearm = machines.equipments.first { it.type == EquipmentEnumState.BUTTERFLY_FOREARM }
         val assisted = machines.equipments.first { it.type == EquipmentEnumState.ASSISTED_PULL_UP_DIP }
+        val row = machines.equipments.first { it.type == EquipmentEnumState.PLATE_LOADED_ROW }
+        val beltSquat = machines.equipments.first { it.type == EquipmentEnumState.BELT_SQUAT }
+        val seatedDip = machines.equipments.first {
+            it.type == EquipmentEnumState.PLATE_LOADED_SEATED_DIP
+        }
         EquipmentSelection(
             modifier = Modifier.fillMaxWidth().weight(1f),
             groups = groups,
             selectedGroupId = machines.id,
-            selectedEquipmentIds = persistentListOf(assisted.id, forearm.id),
+            selectedEquipmentIds = persistentListOf(
+                seatedDip.id, beltSquat.id, row.id, assisted.id, forearm.id
+            ),
             onGroupSelect = {},
             onEquipmentSelect = {},
             bottom = {},

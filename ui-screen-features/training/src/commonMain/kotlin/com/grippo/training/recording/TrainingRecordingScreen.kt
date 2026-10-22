@@ -12,8 +12,11 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
+import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.formatters.WeightFormatState
+import com.grippo.core.state.examples.WeightTypeEnumState
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercise
@@ -70,10 +73,14 @@ private fun TrainingRecordingContent(
     background = ScreenBackground.Color(value = AppTokens.colors.background.screen),
 ) {
     val totalVolume = remember(state.exercises) {
-        val sum = state.exercises.orEmpty()
-            .sumOf { (it.total.volume.value ?: 0f).toDouble() }
-            .toFloat()
-        VolumeFormatState.of(sum)
+        if (state.exercises.orEmpty().any { it.total.volume is VolumeFormatState.Invalid }) {
+            VolumeFormatState.Invalid(display = "", value = null)
+        } else {
+            val sum = state.exercises.orEmpty()
+                .sumOf { (it.total.volume.value ?: 0f).toDouble() }
+                .toFloat()
+            VolumeFormatState.of(sum)
+        }
     }
 
     val totalRepetitions = remember(state.exercises) {
@@ -125,6 +132,38 @@ private fun TrainingRecordingContent(
         state = state,
         contract = contract,
     )
+}
+
+@AppPreview
+@Composable
+private fun ScreenAssistanceMissingPreview() {
+    val base = previewExercise(name = "Assisted Pull-Up", sets = 1, weights = emptyList())
+    val iteration = stubPendingIteration().copy(
+        bodyWeight = WeightFormatState.of(80f),
+        bodyMultiplier = MultiplierFormatState.of(1f),
+        repetitions = RepetitionsFormatState.of(8),
+    )
+    val exercise = base.copy(
+        exerciseExample = base.exerciseExample.copy(weightType = WeightTypeEnumState.BODY_WEIGHT),
+        iterations = persistentListOf(iteration),
+        total = base.total.copy(
+            repetitions = RepetitionsFormatState.ofTotal(8),
+            volume = VolumeFormatState.Invalid(display = "", value = null),
+            intensity = IntensityFormatState.Invalid(display = "", value = null),
+        ),
+    )
+
+    PreviewContainer {
+        TrainingRecordingContent(
+            state = TrainingRecordingState(
+                stage = StageState.Add,
+                startAt = previewStartAt,
+                exercises = persistentListOf(exercise),
+            ),
+            duration = "00:02:08",
+            contract = TrainingRecordingContract.Empty,
+        )
+    }
 }
 
 @AppPreview

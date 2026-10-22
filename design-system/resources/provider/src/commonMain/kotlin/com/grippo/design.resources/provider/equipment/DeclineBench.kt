@@ -18,13 +18,15 @@ public val DeclineBench: ImageVector
         }
         _DeclineBench = ImageVector.Builder(
             name = "DeclineBench",
-            defaultWidth = 255.dp,
-            defaultHeight = 182.dp,
-            viewportWidth = 255f,
-            viewportHeight = 182f
+            defaultWidth = 222.dp,
+            defaultHeight = 183.dp,
+            viewportWidth = 222f,
+            viewportHeight = 183f
         ).apply {
+            addGroup(translationX = -35f, translationY = -3f)
+
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -43,7 +45,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -61,7 +63,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -97,7 +99,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -115,7 +117,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -151,7 +153,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -170,7 +172,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -188,7 +190,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -224,7 +226,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -243,7 +245,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -261,7 +263,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -297,7 +299,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -315,7 +317,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -334,7 +336,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -352,7 +354,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -388,7 +390,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -398,12 +400,12 @@ public val DeclineBench: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(182.975f, 20.0454f)
-                lineTo(200.727f, 26.891f)
-                lineTo(121.28f, 83.5002f)
-                lineTo(103.574f, 71.645f)
-                lineTo(182.975f, 20.0454f)
+                moveTo(x = 182.975f, y = 23f)
+                lineTo(x = 200.727f, y = 31.3f)
+                lineTo(x = 121.28f, y = 83.5002f)
+                lineTo(x = 103.574f, y = 71.645f)
                 close()
+
             }
             path(
                 fill = SolidColor(AppPalette.NeutralDark.N700),
@@ -424,7 +426,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -442,7 +444,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -452,12 +454,12 @@ public val DeclineBench: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(168.783f, 14.9999f)
-                lineTo(40.2799f, 106.5f)
-                lineTo(66.7798f, 125.5f)
-                curveTo(87.8811f, 107.687f, 182.509f, 48.2433f, 203.61f, 30.4302f)
-                lineTo(168.783f, 14.9999f)
+                moveTo(x = 168.783f, y = 14.9999f)
+                lineTo(x = 40.2799f, y = 106.5f)
+                lineTo(x = 68.5511f, y = 122.778f)
+                lineTo(x = 201.78f, y = 31.2788f)
                 close()
+
             }
             path(
                 fill = SolidColor(AppPalette.NeutralDark.N250),
@@ -470,12 +472,12 @@ public val DeclineBench: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(204.78f, 38.5001f)
-                lineTo(201.78f, 31.2788f)
-                lineTo(68.6267f, 123f)
-                lineTo(71.7798f, 133.5f)
-                lineTo(204.78f, 38.5001f)
+                moveTo(x = 201.78f, y = 31.2788f)
+                lineTo(x = 204.78f, y = 38.5001f)
+                lineTo(x = 71.7798f, y = 133.5f)
+                lineTo(x = 68.5511f, y = 122.778f)
                 close()
+
             }
             path(
                 fill = SolidColor(AppPalette.NeutralDark.N250),
@@ -488,15 +490,22 @@ public val DeclineBench: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(40.6988f, 112.445f)
-                lineTo(39.982f, 105.089f)
-                lineTo(68.5511f, 122.778f)
-                lineTo(71.7798f, 132.5f)
-                lineTo(40.6988f, 112.445f)
+                moveTo(x = 40.2799f, y = 106.5f)
+                lineTo(x = 68.5511f, y = 122.778f)
+                lineTo(x = 71.7798f, y = 133.5f)
+                lineTo(x = 43.5086f, y = 117.222f)
+                close()
+
+            }
+            path(fill = SolidColor(AppPalette.NeutralDark.N450)) {
+                moveTo(x = 41.8f, y = 106.3f)
+                lineTo(x = 169f, y = 16.9f)
+                lineTo(x = 172.1f, y = 18.3f)
+                lineTo(x = 44.4f, y = 108.1f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -532,7 +541,7 @@ public val DeclineBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -561,14 +570,14 @@ public val DeclineBench: ImageVector
                 pathFillType = PathFillType.NonZero
             ) {
                 moveTo(89.5f, 157.5f)
-                verticalLineTo(122f)
+                verticalLineTo(121.937508f)
                 lineTo(99.5f, 114.5f)
                 verticalLineTo(154f)
                 lineTo(89.5f, 157.5f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -580,8 +589,8 @@ public val DeclineBench: ImageVector
             ) {
                 moveTo(79.5f, 150f)
                 lineTo(89.5f, 157.319f)
-                verticalLineTo(122f)
-                lineTo(79.5f, 129f)
+                verticalLineTo(121.937508f)
+                lineTo(79.5f, 128.774047f)
                 verticalLineTo(150f)
                 close()
             }
@@ -599,12 +608,12 @@ public val DeclineBench: ImageVector
                 moveTo(199.78f, 112.5f)
                 lineTo(199.78f, 46.4999f)
                 lineTo(184.78f, 53.5001f)
-                lineTo(185.116f, 114.382f)
+                lineTo(185.116f, 113.389713f)
                 lineTo(199.78f, 112.5f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -614,13 +623,14 @@ public val DeclineBench: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(176f, 108f)
+                moveTo(176f, 108.197481f)
                 lineTo(175.28f, 63f)
-                lineTo(185f, 55.4999f)
-                lineTo(186.5f, 112.5f)
-                lineTo(176f, 108f)
+                lineTo(184.78f, 53.5001f)
+                lineTo(185.116f, 113.389713f)
+                lineTo(176f, 108.197481f)
                 close()
             }
+            clearGroup()
         }.build()
         return _DeclineBench!!
     }

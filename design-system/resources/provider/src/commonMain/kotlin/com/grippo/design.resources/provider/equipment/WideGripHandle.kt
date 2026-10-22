@@ -18,7 +18,7 @@ public val WideGripHandle: ImageVector
             viewportWidth = 279f,
             viewportHeight = 181f
         ).apply {
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(46.63f, 13f)
                 lineTo(245.63f, 129.5f)
                 lineTo(268.5f, 172f)
@@ -78,7 +78,7 @@ public val WideGripHandle: ImageVector
                 lineTo(268.5f, 172.5f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N600)) {
                 moveTo(117.5f, 69.39f)
                 curveTo(117.9f, 66.19f, 122.46f, 60.72f, 124.13f, 59.39f)
                 curveTo(128.52f, 58.59f, 138.13f, 63.39f, 141.63f, 65.39f)

@@ -24,7 +24,7 @@ public val FlatBench: ImageVector
             viewportHeight = 234f
         ).apply {
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -34,11 +34,11 @@ public val FlatBench: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(46.126f, 194.484f)
+                moveTo(46.0882f, 194.562f)
                 lineTo(32.0385f, 185.376f)
                 lineTo(204.868f, 115.112f)
-                lineTo(218.074f, 121.537f)
-                lineTo(46.126f, 194.484f)
+                lineTo(218.075f, 121.054f)
+                lineTo(46.0882f, 194.562f)
                 close()
             }
             path(
@@ -53,14 +53,14 @@ public val FlatBench: ImageVector
                 pathFillType = PathFillType.NonZero
             ) {
                 moveTo(46.0882f, 212.395f)
-                lineTo(45.5478f, 195.103f)
+                lineTo(46.0882f, 194.562f)
                 lineTo(218.075f, 121.054f)
                 lineTo(218.075f, 135.487f)
                 lineTo(46.0882f, 212.395f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -96,7 +96,7 @@ public val FlatBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -107,14 +107,14 @@ public val FlatBench: ImageVector
                 pathFillType = PathFillType.NonZero
             ) {
                 moveTo(46.1025f, 179.973f)
-                lineTo(59.9683f, 189.159f)
+                lineTo(59.9683f, 188.5f)
                 lineTo(59.9682f, 125.496f)
                 lineTo(46.1025f, 129.457f)
                 lineTo(46.1025f, 179.973f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -150,7 +150,7 @@ public val FlatBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -168,57 +168,39 @@ public val FlatBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
-                fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N250),
-                strokeAlpha = 1.0f,
-                strokeLineWidth = 1.0f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
-                strokeLineMiter = 1.0f,
-                pathFillType = PathFillType.NonZero
+                fill = SolidColor(AppPalette.NeutralDark.N400)
             ) {
-                moveTo(184f, 31.5f)
-                lineTo(13.3871f, 97.9443f)
-                lineTo(50.0177f, 123.213f)
-                curveTo(93.0646f, 100.224f, 175.453f, 67.4887f, 218.5f, 44.5001f)
-                lineTo(184f, 31.5f)
+                moveTo(x = 13f, y = 98f)
+                lineTo(x = 184f, y = 31.5f)
+                lineTo(x = 219.4f, y = 44.9f)
+                lineTo(x = 49f, y = 115f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
-                fillAlpha = 1.0f,
-                stroke = null,
-                strokeAlpha = 1.0f,
-                strokeLineWidth = 1.0f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
-                strokeLineMiter = 1.0f,
-                pathFillType = PathFillType.NonZero
+                fill = SolidColor(AppPalette.NeutralDark.N300)
             ) {
-                moveTo(219.398f, 51.5f)
-                lineTo(219.398f, 44.9085f)
-                lineTo(49.0096f, 114.98f)
-                lineTo(49.3511f, 124.849f)
-                lineTo(219.398f, 51.5f)
+                moveTo(x = 49f, y = 115f)
+                lineTo(x = 219.4f, y = 44.9f)
+                lineTo(x = 219.4f, y = 52.1f)
+                lineTo(x = 49f, y = 124f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
-                fillAlpha = 1.0f,
-                stroke = null,
-                strokeAlpha = 1.0f,
-                strokeLineWidth = 1.0f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
-                strokeLineMiter = 1.0f,
-                pathFillType = PathFillType.NonZero
+                fill = SolidColor(AppPalette.NeutralDark.N250)
             ) {
-                moveTo(12.0317f, 107.057f)
-                lineTo(12.0318f, 97.9443f)
-                lineTo(48.8966f, 114.547f)
-                lineTo(49.238f, 124.416f)
-                lineTo(12.0317f, 107.057f)
+                moveTo(x = 13f, y = 98f)
+                lineTo(x = 49f, y = 115f)
+                lineTo(x = 49f, y = 124f)
+                lineTo(x = 13f, y = 107f)
+                close()
+            }
+            path(
+                fill = SolidColor(AppPalette.NeutralDark.N450)
+            ) {
+                moveTo(x = 13f, y = 98f)
+                lineTo(x = 184f, y = 31.5f)
+                lineTo(x = 188.1f, y = 33.1f)
+                lineTo(x = 17.1f, y = 100f)
                 close()
             }
             path(
@@ -240,7 +222,7 @@ public val FlatBench: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -251,7 +233,7 @@ public val FlatBench: ImageVector
                 pathFillType = PathFillType.NonZero
             ) {
                 moveTo(159.969f, 134.92f)
-                lineTo(171.454f, 142.844f)
+                lineTo(171.454f, 140.8f)
                 lineTo(171.454f, 75.8396f)
                 lineTo(159.969f, 81.0683f)
                 lineTo(159.969f, 134.92f)

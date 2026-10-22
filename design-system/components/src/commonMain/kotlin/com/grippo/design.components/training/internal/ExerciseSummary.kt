@@ -46,7 +46,7 @@ internal fun ExerciseSummary(
                 iteration.recordedVolume()?.takeIf { it.isFinite() && it >= 0f }
             }
         }
-    val maximum = if (completedLoads.any { it == null }) {
+    val maximum = if (value.total.volume is VolumeFormatState.Invalid || completedLoads.any { it == null }) {
         null
     } else {
         completedLoads.filterNotNull().maxOrNull()

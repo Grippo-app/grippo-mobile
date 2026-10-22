@@ -13,12 +13,14 @@ public val CloseGripHandle: ImageVector
         }
         _CloseGripHandle = ImageVector.Builder(
             name = "CloseGripHandle",
-            defaultWidth = 142.dp,
-            defaultHeight = 148.dp,
-            viewportWidth = 142f,
-            viewportHeight = 148f
+            defaultWidth = 104.dp,
+            defaultHeight = 96.dp,
+            viewportWidth = 104f,
+            viewportHeight = 96f
         ).apply {
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            addGroup(translationX = -19f, translationY = -25f)
+
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(91.3f, 70.51f)
                 lineTo(32.97f, 90.71f)
                 curveTo(32.97f, 90.71f, 26.32f, 91.25f, 24.06f, 83.74f)
@@ -48,7 +50,7 @@ public val CloseGripHandle: ImageVector
                 curveTo(29.44f, 75.1f, 32.84f, 76.91f, 34.57f, 80.31f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(79.99f, 59.5f)
                 lineTo(88.8f, 39.32f)
                 curveTo(90.26f, 39.95f, 92.62f, 41.97f, 92.62f, 41.97f)
@@ -57,7 +59,7 @@ public val CloseGripHandle: ImageVector
                 curveTo(80.43f, 60.95f, 79.99f, 59.5f, 79.99f, 59.5f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(35.71f, 71.95f)
                 lineTo(43.16f, 53.14f)
                 curveTo(44.64f, 53.58f, 46.16f, 53.72f, 46.16f, 53.72f)
@@ -88,7 +90,7 @@ public val CloseGripHandle: ImageVector
                 curveTo(96.39f, 47.51f, 107.37f, 40.67f, 91.96f, 34.24f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(51.7f, 92.4f)
                 lineTo(46.2f, 53.68f)
                 curveTo(46.2f, 53.68f, 45.9f, 51.72f, 48.17f, 51.43f)
@@ -98,7 +100,7 @@ public val CloseGripHandle: ImageVector
                 curveTo(52.96f, 94.39f, 51.7f, 92.4f, 51.7f, 92.4f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(105.55f, 76.57f)
                 lineTo(89.51f, 46.51f)
                 curveTo(89.51f, 46.51f, 89.09f, 44.92f, 90.75f, 44.02f)
@@ -108,7 +110,7 @@ public val CloseGripHandle: ImageVector
                 curveTo(107.03f, 77.88f, 105.55f, 76.57f, 105.55f, 76.57f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(116.28f, 88.68f)
                 lineTo(51.61f, 115.91f)
                 curveTo(51.61f, 115.91f, 42.52f, 118.5f, 38.92f, 108.91f)
@@ -138,6 +140,7 @@ public val CloseGripHandle: ImageVector
                 curveTo(45.34f, 95.68f, 49.29f, 96.73f, 52.35f, 101.31f)
                 close()
             }
+            clearGroup()
         }.build()
 
         return _CloseGripHandle!!

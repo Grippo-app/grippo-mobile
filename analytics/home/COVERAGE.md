@@ -78,6 +78,12 @@ without a second average value. The five metrics retain their order and click
 owners. Recorded zero remains available; a zero baseline has no percentage
 comparison, and density requires a positive duration denominator. These pure
 calculations add no telemetry or persisted fields.
+Intensity uses saved Training.intensity in Home and PerformanceTrendDetails.
+Newly saved totals retain measured zero-load repetitions in their average, so
+increasing assistance alone cannot raise that average by removing a set. Existing
+historical totals are not recalculated by these views. Exercise PeakIntensity is
+a server-supplied achievement, not a client recomputation. The change adds no
+Home analytics symbol or editable/archived metric state.
 The last-training recap labels its mapped exercise count as Available exercises,
 preserves saved duration/volume, identifies the selected-period scope and shows date,
 duration, volume and exercise count; its existing Calendar action opens history.

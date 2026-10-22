@@ -36,7 +36,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 70f, y = 257f)
                 lineTo(x = 191f, y = 317f)
@@ -58,7 +58,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 191f, y = 315f)
                 lineTo(x = 205f, y = 322f)
@@ -94,7 +94,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 75f, y = 20f)
                 lineTo(x = 81f, y = 17f)
@@ -103,7 +103,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 75f, y = 20f)
                 lineTo(x = 81f, y = 17f)
@@ -125,7 +125,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 77f, y = 256f)
                 lineTo(x = 137f, y = 286f)
@@ -145,7 +145,7 @@ public val AssistedPullUpDip: ImageVector
             }
             path(
                 fill = null,
-                stroke = SolidColor(AppPalette.NeutralDark.N800),
+                stroke = SolidColor(AppPalette.NeutralLight.N200),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round,
@@ -165,7 +165,7 @@ public val AssistedPullUpDip: ImageVector
             }
             path(
                 fill = null,
-                stroke = SolidColor(AppPalette.NeutralDark.N800),
+                stroke = SolidColor(AppPalette.NeutralLight.N200),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round,
@@ -456,7 +456,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 191f, y = 78f)
                 lineTo(x = 197f, y = 75f)
@@ -465,7 +465,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 191f, y = 78f)
                 lineTo(x = 197f, y = 75f)
@@ -485,7 +485,7 @@ public val AssistedPullUpDip: ImageVector
             }
             path(
                 fill = null,
-                stroke = SolidColor(AppPalette.NeutralDark.N800),
+                stroke = SolidColor(AppPalette.NeutralLight.N200),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round,
@@ -507,7 +507,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 161f, y = 297f)
                 lineTo(x = 180f, y = 306f)
@@ -529,7 +529,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 75f, y = 12f)
                 lineTo(x = 193f, y = 71f)
@@ -551,7 +551,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 76f, y = 17f)
                 lineTo(x = 83f, y = 21f)
@@ -573,7 +573,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 191f, y = 74f)
                 lineTo(x = 199f, y = 78f)
@@ -588,7 +588,7 @@ public val AssistedPullUpDip: ImageVector
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round,
             ) {
-                moveTo(x = 117f, y = 178f)
+                moveTo(x = 117f, y = 187f)
                 lineTo(x = 117f, y = 56f)
                 lineTo(x = 125f, y = 49f)
                 lineTo(x = 137f, y = 51f)
@@ -640,7 +640,7 @@ public val AssistedPullUpDip: ImageVector
             }
             path(
                 fill = null,
-                stroke = SolidColor(AppPalette.NeutralDark.N800),
+                stroke = SolidColor(AppPalette.NeutralLight.N200),
                 strokeLineWidth = 5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round,
@@ -742,7 +742,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 75f, y = 109f)
                 lineTo(x = 79f, y = 107f)
@@ -769,7 +769,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 191f, y = 167f)
                 lineTo(x = 195f, y = 165f)
@@ -843,7 +843,7 @@ public val AssistedPullUpDip: ImageVector
             }
             path(
                 fill = null,
-                stroke = SolidColor(AppPalette.NeutralDark.N800),
+                stroke = SolidColor(AppPalette.NeutralLight.N200),
                 strokeLineWidth = 5.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round,
@@ -885,7 +885,7 @@ public val AssistedPullUpDip: ImageVector
             }
             path(
                 fill = null,
-                stroke = SolidColor(AppPalette.NeutralDark.N800),
+                stroke = SolidColor(AppPalette.NeutralLight.N200),
                 strokeLineWidth = 5.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round,
@@ -924,7 +924,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 163f, y = 200f)
                 lineTo(x = 169f, y = 197f)
@@ -955,7 +955,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 167f, y = 216f)
                 lineTo(x = 174f, y = 220f)
@@ -1044,7 +1044,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 8f, y = 289f)
                 lineTo(x = 126f, y = 348f)
@@ -1066,7 +1066,7 @@ public val AssistedPullUpDip: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
             ) {
                 moveTo(x = 75f, y = 258f)
                 lineTo(x = 86f, y = 263f)
@@ -1250,7 +1250,7 @@ public val AssistedPullUpDip: ImageVector
             }
             path(
                 fill = null,
-                stroke = SolidColor(AppPalette.NeutralDark.N800),
+                stroke = SolidColor(AppPalette.NeutralLight.N200),
                 strokeLineWidth = 2.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round,
@@ -1260,7 +1260,7 @@ public val AssistedPullUpDip: ImageVector
             }
             path(
                 fill = null,
-                stroke = SolidColor(AppPalette.NeutralDark.N800),
+                stroke = SolidColor(AppPalette.NeutralLight.N200),
                 strokeLineWidth = 2.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round,

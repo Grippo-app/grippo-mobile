@@ -24,7 +24,7 @@ public val Cable: ImageVector
             viewportHeight = 321f
         ).apply {
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -60,7 +60,7 @@ public val Cable: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -96,7 +96,7 @@ public val Cable: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -420,7 +420,7 @@ public val Cable: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -456,7 +456,7 @@ public val Cable: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -510,7 +510,7 @@ public val Cable: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -528,7 +528,7 @@ public val Cable: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -564,7 +564,7 @@ public val Cable: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -582,7 +582,7 @@ public val Cable: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -600,7 +600,7 @@ public val Cable: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -618,7 +618,7 @@ public val Cable: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -654,9 +654,9 @@ public val Cable: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N550),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N300),
+                stroke = SolidColor(AppPalette.NeutralDark.N400),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.3f,
                 strokeLineCap = StrokeCap.Butt,
@@ -682,6 +682,23 @@ public val Cable: ImageVector
                 curveTo(60.6444f, 171.337f, 77.7296f, 165.947f, 81.0829f, 163.51f)
                 close()
             }
+            path(fill = SolidColor(AppPalette.NeutralDark.N400)) {
+                moveTo(x = 60.6444f, y = 171.337f)
+                lineTo(x = 76.8f, y = 165.93f)
+                lineTo(x = 78.25f, y = 170.31f)
+                lineTo(x = 61.2046f, y = 176.448f)
+                curveTo(x1 = 57.2499f, y1 = 174.564f, x2 = 59.1833f, y2 = 172.255f, x3 = 60.6444f, y3 = 171.337f)
+                close()
+            }
+            path(fill = SolidColor(AppPalette.NeutralDark.N400)) {
+                moveTo(x = 112.2f, y = 156.09f)
+                lineTo(x = 127.239f, y = 153.278f)
+                curveTo(x1 = 130.689f, y1 = 155.218f, x2 = 129.05f, y2 = 157.494f, x3 = 127.8f, y3 = 158.39f)
+                lineTo(x = 113.2f, y = 160.86f)
+                lineTo(x = 112.2f, y = 156.09f)
+                close()
+            }
+
             path(
                 fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
@@ -701,7 +718,7 @@ public val Cable: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N500),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -714,7 +731,7 @@ public val Cable: ImageVector
                 curveTo(95.6034f, 137.5f, 95.6035f, 144f, 92.6035f, 144f)
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -837,6 +854,8 @@ public val Cable: ImageVector
                 curveTo(95.9147f, 118.811f, 95.9033f, 117.4f, 97.1033f, 117f)
                 close()
             }
+
+
         }.build()
         return _Cable!!
     }

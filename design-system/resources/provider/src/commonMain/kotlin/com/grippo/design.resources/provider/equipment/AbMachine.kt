@@ -18,13 +18,15 @@ public val AbMachine: ImageVector
         }
         _AbMachine = ImageVector.Builder(
             name = "AbMachine",
-            defaultWidth = 281.dp,
-            defaultHeight = 203.dp,
-            viewportWidth = 281f,
-            viewportHeight = 203f
+            defaultWidth = 250.dp,
+            defaultHeight = 202.dp,
+            viewportWidth = 250f,
+            viewportHeight = 202f
         ).apply {
+            addGroup(translationX = -34f, translationY = -4f)
+
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -37,13 +39,13 @@ public val AbMachine: ImageVector
                 moveTo(187.686f, 92.9046f)
                 curveTo(175.314f, 88.4121f, 174.861f, 79.0728f, 177.675f, 75.4302f)
                 curveTo(178.215f, 75.6993f, 180.495f, 69.5288f, 188.634f, 69.9356f)
-                lineTo(222.36f, 81.1343f)
+                lineTo(221.109f, 81.5291f)
                 lineTo(218.501f, 104.27f)
                 curveTo(218.501f, 104.27f, 200.057f, 97.3971f, 187.686f, 92.9046f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -61,7 +63,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -97,7 +99,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -133,7 +135,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -151,7 +153,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -164,13 +166,13 @@ public val AbMachine: ImageVector
                 moveTo(230.859f, 110.289f)
                 curveTo(216.492f, 105.524f, 217.109f, 95.4589f, 220.126f, 91.5534f)
                 curveTo(220.705f, 91.8419f, 223.15f, 85.2262f, 231.876f, 85.6622f)
-                lineTo(268.036f, 97.6691f)
+                lineTo(266.695f, 98.0817f)
                 lineTo(263.898f, 122.474f)
                 curveTo(263.898f, 122.474f, 245.227f, 115.054f, 230.859f, 110.289f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -188,7 +190,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -224,7 +226,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -260,7 +262,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -278,7 +280,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -288,14 +290,12 @@ public val AbMachine: ImageVector
                 strokeLineMiter = 1.0f,
                 pathFillType = PathFillType.NonZero
             ) {
-                moveTo(42.197f, 133.219f)
-                lineTo(38.8731f, 122.989f)
-                lineTo(171.958f, 40.9066f)
-                lineTo(206.786f, 56.337f)
-                lineTo(142.126f, 110.063f)
-                lineTo(74.4592f, 154.102f)
-                lineTo(42.197f, 133.219f)
+                moveTo(x = 38.8731f, y = 122.989f)
+                lineTo(x = 171.958f, y = 40.9066f)
+                lineTo(x = 206.786f, y = 56.3375f)
+                lineTo(x = 71.4223f, y = 143.559f)
                 close()
+
             }
             path(
                 fill = SolidColor(AppPalette.NeutralDark.N250),
@@ -311,30 +311,21 @@ public val AbMachine: ImageVector
                 moveTo(209.133f, 63.5588f)
                 lineTo(206.786f, 56.3375f)
                 lineTo(71.4223f, 143.559f)
+                lineTo(38.8731f, 122.989f)
+                lineTo(42.197f, 133.219f)
                 lineTo(74.7463f, 153.789f)
                 lineTo(209.133f, 63.5588f)
                 close()
             }
-            path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
-                fillAlpha = 1.0f,
-                stroke = null,
-                strokeAlpha = 1.0f,
-                strokeLineWidth = 1.0f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
-                strokeLineMiter = 1.0f,
-                pathFillType = PathFillType.NonZero
-            ) {
-                moveTo(42.3059f, 133.16f)
-                lineTo(39.5901f, 124.802f)
-                lineTo(70.1582f, 143.493f)
-                lineTo(73.2866f, 153.121f)
-                lineTo(42.3059f, 133.16f)
+            path(fill = SolidColor(AppPalette.NeutralDark.N450)) {
+                moveTo(x = 41.5f, y = 123.2f)
+                lineTo(x = 172.2f, y = 42.8f)
+                lineTo(x = 175.2f, y = 44.1f)
+                lineTo(x = 44.1f, y = 125.3f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -347,13 +338,13 @@ public val AbMachine: ImageVector
                 moveTo(170.33f, 32.1984f)
                 curveTo(157.54f, 27.5542f, 157.072f, 17.8995f, 159.981f, 14.1339f)
                 curveTo(160.538f, 14.412f, 162.896f, 8.0332f, 171.31f, 8.4536f)
-                lineTo(206.175f, 20.0306f)
+                lineTo(204.882f, 20.4342f)
                 lineTo(202.185f, 43.9473f)
                 curveTo(202.185f, 43.9473f, 183.119f, 36.8426f, 170.33f, 32.1984f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -371,7 +362,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -407,7 +398,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -425,7 +416,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -438,13 +429,13 @@ public val AbMachine: ImageVector
                 moveTo(215.673f, 48.2803f)
                 curveTo(201.305f, 43.5153f, 201.922f, 33.4503f, 204.939f, 29.5449f)
                 curveTo(205.518f, 29.8334f, 207.963f, 23.2176f, 216.689f, 23.6537f)
-                lineTo(252.849f, 35.6606f)
+                lineTo(251.508f, 36.073f)
                 lineTo(248.712f, 60.4657f)
                 curveTo(248.712f, 60.4657f, 230.04f, 53.0453f, 215.673f, 48.2803f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -462,7 +453,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -498,7 +489,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -534,7 +525,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -563,14 +554,14 @@ public val AbMachine: ImageVector
                 pathFillType = PathFillType.NonZero
             ) {
                 moveTo(201.867f, 134.083f)
-                lineTo(221.914f, 58.4395f)
+                lineTo(221.914f, 57.9f)
                 lineTo(207.472f, 63.041f)
                 lineTo(186.13f, 134.701f)
                 lineTo(201.867f, 134.083f)
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -606,7 +597,7 @@ public val AbMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -623,6 +614,7 @@ public val AbMachine: ImageVector
                 lineTo(71.4995f, 175.023f)
                 close()
             }
+            clearGroup()
         }.build()
         return _AbMachine!!
     }

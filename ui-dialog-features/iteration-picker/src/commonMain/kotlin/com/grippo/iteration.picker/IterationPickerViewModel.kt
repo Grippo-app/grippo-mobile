@@ -6,6 +6,7 @@ import com.grippo.analytics.iteration.picker.models.IterationPickerField
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.examples.ExerciseExampleComponentsState
 import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
@@ -64,7 +65,7 @@ public class IterationPickerViewModel(
 
     override fun onAssistWeightChange(value: String) {
         val previous = state.value.value.assistWeight.inputStatus()
-        val next = parseWeight(value)
+        val next = VolumeFormatState.of(display = value, allowZero = true)
         update { it.copy(value = it.value.copy(assistWeight = next)) }
         if (previous != next.inputStatus()) {
             analytics.trackEvent(IterationPickerEvent.InputChanged(IterationPickerField.AssistWeight, next.inputStatus()))
@@ -136,11 +137,37 @@ public class IterationPickerViewModel(
     }
 
     override fun onSubmit() {
-        if (!canSubmit(state.value.value, state.value.example.components)) return
+        val snapshot = state.value
+        if (!canSubmit(snapshot.value, snapshot.example.components)) return
+
+        val value = when (snapshot.example.components) {
+            is ExerciseExampleComponentsState.External -> snapshot.value.copy(
+                bodyWeight = WeightFormatState.Empty(),
+                bodyMultiplier = MultiplierFormatState.Empty(),
+                extraWeight = VolumeFormatState.Empty(),
+                assistWeight = VolumeFormatState.Empty(),
+            )
+
+            is ExerciseExampleComponentsState.BodyOnly -> snapshot.value.copy(
+                externalWeight = VolumeFormatState.Empty(),
+                extraWeight = VolumeFormatState.Empty(),
+                assistWeight = VolumeFormatState.Empty(),
+            )
+
+            is ExerciseExampleComponentsState.BodyAndExtra -> snapshot.value.copy(
+                externalWeight = VolumeFormatState.Empty(),
+                assistWeight = VolumeFormatState.Empty(),
+            )
+
+            is ExerciseExampleComponentsState.BodyAndAssist -> snapshot.value.copy(
+                externalWeight = VolumeFormatState.Empty(),
+                extraWeight = VolumeFormatState.Empty(),
+            )
+        }
 
         analytics.trackEvent(IterationPickerEvent.Submit)
         val direction = IterationPickerDirection.BackWithResult(
-            value = state.value.value
+            value = value
         )
         navigateTo(direction)
     }
@@ -154,13 +181,17 @@ public class IterationPickerViewModel(
             is ExerciseExampleComponentsState.External ->
                 value.externalWeight is VolumeFormatState.Valid
             is ExerciseExampleComponentsState.BodyOnly ->
-                value.bodyWeight is WeightFormatState.Valid
+                value.bodyWeight is WeightFormatState.Valid &&
+                    value.bodyMultiplier is MultiplierFormatState.Valid
             is ExerciseExampleComponentsState.BodyAndExtra ->
                 value.bodyWeight is WeightFormatState.Valid &&
+                    value.bodyMultiplier is MultiplierFormatState.Valid &&
                     value.extraWeight !is VolumeFormatState.Invalid
             is ExerciseExampleComponentsState.BodyAndAssist ->
                 value.bodyWeight is WeightFormatState.Valid &&
-                    value.assistWeight !is VolumeFormatState.Invalid
+                    value.bodyMultiplier is MultiplierFormatState.Valid &&
+                    value.assistWeight !is VolumeFormatState.Invalid &&
+                    (!components.assistRequired || value.assistWeight is VolumeFormatState.Valid)
         }
     }
 

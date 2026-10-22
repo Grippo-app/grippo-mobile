@@ -24,7 +24,7 @@ public val RomanChair: ImageVector
             viewportHeight = 273f
         ).apply {
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N050),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -40,7 +40,7 @@ public val RomanChair: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -58,7 +58,7 @@ public val RomanChair: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -77,7 +77,7 @@ public val RomanChair: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -95,7 +95,7 @@ public val RomanChair: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -131,7 +131,7 @@ public val RomanChair: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -142,28 +142,11 @@ public val RomanChair: ImageVector
                 pathFillType = PathFillType.NonZero
             ) {
                 moveTo(193.573f, 197.786f)
-                lineTo(194.901f, 211.419f)
-                lineTo(282.961f, 222.844f)
-                lineTo(282.961f, 208.273f)
-                lineTo(193.573f, 197.786f)
-                close()
-            }
-            path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
-                fillAlpha = 1.0f,
-                stroke = null,
-                strokeAlpha = 1.0f,
-                strokeLineWidth = 1.0f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
-                strokeLineMiter = 1.0f,
-                pathFillType = PathFillType.NonZero
-            ) {
-                moveTo(206.129f, 196.563f)
-                lineTo(193.573f, 197.786f)
-                lineTo(282.602f, 208.308f)
-                lineTo(296.235f, 206.98f)
                 lineTo(206.129f, 196.563f)
+                lineTo(296.594f, 206.945f)
+                lineTo(282.961f, 208.273f)
+                lineTo(282.961f, 222.844f)
+                lineTo(194.901f, 211.419f)
                 close()
             }
             path(
@@ -185,7 +168,7 @@ public val RomanChair: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -196,28 +179,11 @@ public val RomanChair: ImageVector
                 pathFillType = PathFillType.NonZero
             ) {
                 moveTo(0f, 230.799f)
-                verticalLineTo(247.593f)
-                lineTo(107.835f, 272.784f)
-                verticalLineTo(254.222f)
-                lineTo(0f, 230.799f)
-                close()
-            }
-            path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
-                fillAlpha = 1.0f,
-                stroke = null,
-                strokeAlpha = 1.0f,
-                strokeLineWidth = 1.0f,
-                strokeLineCap = StrokeCap.Butt,
-                strokeLineJoin = StrokeJoin.Miter,
-                strokeLineMiter = 1.0f,
-                pathFillType = PathFillType.NonZero
-            ) {
-                moveTo(15.4681f, 230.799f)
-                horizontalLineTo(0f)
-                lineTo(107.393f, 254.223f)
-                horizontalLineTo(124.187f)
                 lineTo(15.4681f, 230.799f)
+                lineTo(124.629f, 254.223f)
+                lineTo(107.835f, 254.223f)
+                lineTo(107.835f, 272.784f)
+                lineTo(0f, 247.593f)
                 close()
             }
             path(
@@ -257,7 +223,7 @@ public val RomanChair: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -293,7 +259,7 @@ public val RomanChair: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -311,7 +277,7 @@ public val RomanChair: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -329,7 +295,7 @@ public val RomanChair: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N800),
+                fill = SolidColor(AppPalette.NeutralLight.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -365,7 +331,7 @@ public val RomanChair: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -389,7 +355,7 @@ public val RomanChair: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -408,7 +374,7 @@ public val RomanChair: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N300),
+                fill = SolidColor(AppPalette.NeutralDark.N450),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -426,7 +392,7 @@ public val RomanChair: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N250),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -482,6 +448,14 @@ public val RomanChair: ImageVector
                 curveTo(239.83f, 50.7805f, 231.58f, 63.7443f, 225.393f, 73.0252f)
                 curveTo(219.238f, 82.2578f, 218.322f, 85.8416f, 209.925f, 85.3997f)
                 curveTo(209.925f, 85.3997f, 125.425f, 85.7532f, 123.303f, 85.3997f)
+                close()
+            }
+            path(fill = SolidColor(AppPalette.NeutralDark.N450)) {
+                moveTo(x = 121.4f, y = 72.7f)
+                lineTo(x = 148.2f, y = 37.2f)
+                lineTo(x = 152.6f, y = 32.1f)
+                lineTo(x = 155.5f, y = 31.8f)
+                lineTo(x = 125.5f, y = 73f)
                 close()
             }
         }.build()

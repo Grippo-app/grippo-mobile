@@ -19,8 +19,8 @@ public val StraightBar: ImageVector
             viewportHeight = 113f
         ).apply {
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N500),
                 strokeLineWidth = 0.2f
             ) {
                 moveTo(3.39f, 3.01f)
@@ -30,7 +30,7 @@ public val StraightBar: ImageVector
                 curveTo(10.68f, 0.33f, 6.32f, 0.33f, 3.39f, 3.01f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
+            path(fill = SolidColor(AppPalette.NeutralLight.N200)) {
                 moveTo(177.39f, 100.9f)
                 lineTo(14.17f, 5.87f)
                 curveTo(7.5f, 7f, 8f, 11f, 8.49f, 14.69f)
@@ -62,7 +62,7 @@ public val StraightBar: ImageVector
                 lineTo(122.5f, 80.5f)
                 close()
             }
-            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N600)) {
                 moveTo(66f, 47f)
                 curveTo(66.4f, 43.8f, 69.83f, 40.33f, 71.5f, 39f)
                 curveTo(75.9f, 38.2f, 85.5f, 43f, 89f, 45f)
@@ -87,8 +87,8 @@ public val StraightBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(AppPalette.NeutralDark.N200),
-                stroke = SolidColor(AppPalette.NeutralDark.N100),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N500),
                 strokeLineWidth = 0.2f
             ) {
                 moveTo(169.38f, 99.01f)
