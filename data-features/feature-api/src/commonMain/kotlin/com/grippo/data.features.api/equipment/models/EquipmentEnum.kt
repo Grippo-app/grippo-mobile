@@ -2,6 +2,7 @@ package com.grippo.data.features.api.equipment.models
 
 public enum class EquipmentEnum(private val key: String) {
     DUMBBELLS("dumbbells"),
+    KETTLEBELLS("kettlebells"),
     BARBELL("barbell"),
     V_BAR("v_bar"),
     WIDE_GRIP_HANDLE("wide_grip_handle"),

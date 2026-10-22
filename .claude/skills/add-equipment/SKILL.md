@@ -66,6 +66,7 @@ integration tasks.
    that leaves server work pending. Generate a filled, ready-to-copy prompt in
    the user's language, preserving the requested backend outcome under that
    handoff's rules and using the final client contract and actual evidence.
+   Deliver it under [final response delivery](references/backend-task-prompt.md#final-response-delivery).
    If existing backend support is verified, report that no backend task is needed.
 
 Creating or invoking this skill does not grant deployment or live catalog-write
@@ -90,6 +91,7 @@ permissions. Apply the task's existing authorization and the backend's own rules
   integration, isolated artwork renders, application checks and deployed data.
 - Any remaining backend work has a concrete prompt whose contract facts,
   compatibility concerns and unresolved environment/data inputs are explicit.
+  The final response passes its [delivery gate](references/backend-task-prompt.md#final-response-delivery).
 
 ## References
 

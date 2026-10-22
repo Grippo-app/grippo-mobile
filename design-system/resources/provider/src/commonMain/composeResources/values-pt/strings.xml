@@ -339,6 +339,7 @@
 
     <!-- EquipmentEnumState -->
     <string name="equipment_dumbbells">Halteres</string>
+    <string name="equipment_kettlebells">Kettlebells</string>
     <string name="equipment_barbell">Barra</string>
     <string name="equipment_v_bar">Puxador em V</string>
     <string name="equipment_wide_grip_handle">Puxador de pegada aberta</string>
@@ -437,6 +438,7 @@
     <string name="equipment_hint_none">Peso: se não houver peso adicional, digite 1. Se segurar uma anilha ou um halter, ou usar um colete, digite apenas o peso adicional.</string>
 
     <string name="equipment_hint_dumbbells">Digite o total do par (2×20 → 40), mesmo em repetições alternadas.</string>
+    <string name="equipment_hint_kettlebells">Indique o peso total dos kettlebells usados: o peso de um kettlebell ou a soma dos pesos de dois.</string>
     <string name="equipment_hint_barbell">Digite o peso total na barra. Se incluir a barra, inclua sempre.</string>
     <string name="equipment_hint_v_bar">Segure o puxador em V com as duas mãos.</string>
     <string name="equipment_hint_wide_grip_handle">Segure o puxador de pegada aberta com as duas mãos.</string>

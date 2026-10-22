@@ -6,6 +6,7 @@ import com.grippo.data.features.api.equipment.models.EquipmentEnum
 public fun EquipmentEnum.toState(): EquipmentEnumState {
     return when (this) {
         EquipmentEnum.DUMBBELLS -> EquipmentEnumState.DUMBBELLS
+        EquipmentEnum.KETTLEBELLS -> EquipmentEnumState.KETTLEBELLS
         EquipmentEnum.BARBELL -> EquipmentEnumState.BARBELL
         EquipmentEnum.V_BAR -> EquipmentEnumState.V_BAR
         EquipmentEnum.WIDE_GRIP_HANDLE -> EquipmentEnumState.WIDE_GRIP_HANDLE

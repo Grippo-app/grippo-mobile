@@ -339,6 +339,7 @@
 
     <!-- EquipmentEnumState -->
     <string name="equipment_dumbbells">Dumbbells</string>
+    <string name="equipment_kettlebells">Kettlebells</string>
     <string name="equipment_barbell">Barbell</string>
     <string name="equipment_v_bar">V Bar</string>
     <string name="equipment_wide_grip_handle">Wide Grip Handle</string>
@@ -437,6 +438,7 @@
     <string name="equipment_hint_none">Weight: if there is no added weight, enter 1. If you hold a plate/dumbbell/vest, enter added weight only.</string>
 
     <string name="equipment_hint_dumbbells">Enter the total for the pair (2×20 → 40), even for alternating reps.</string>
+    <string name="equipment_hint_kettlebells">Enter the total weight of the kettlebells used: the weight of one kettlebell or the combined weight of two.</string>
     <string name="equipment_hint_barbell">Enter total weight on the bar. If you include the bar, include it every time.</string>
     <string name="equipment_hint_v_bar">Hold the V-handle with both hands.</string>
     <string name="equipment_hint_wide_grip_handle">Hold the wide handle with both hands.</string>

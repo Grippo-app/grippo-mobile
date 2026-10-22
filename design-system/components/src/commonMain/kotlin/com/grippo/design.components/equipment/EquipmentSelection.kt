@@ -106,11 +106,13 @@ public fun EquipmentSelection(
 private fun EquipmentSelectionPreview() {
     PreviewContainer {
         val groups = stubEquipments()
+        val freeWeight = groups.first { it.type == EquipmentGroupEnumState.FREE_WEIGHT }
+        val kettlebells = freeWeight.equipments.first { it.type == EquipmentEnumState.KETTLEBELLS }
         EquipmentSelection(
             modifier = Modifier.fillMaxWidth().weight(1f),
             groups = groups,
-            selectedGroupId = groups.first().id,
-            selectedEquipmentIds = groups.first().equipments.take(3).map { it.id }.toPersistentList(),
+            selectedGroupId = freeWeight.id,
+            selectedEquipmentIds = persistentListOf(kettlebells.id),
             onGroupSelect = {},
             onEquipmentSelect = {},
             bottom = {},

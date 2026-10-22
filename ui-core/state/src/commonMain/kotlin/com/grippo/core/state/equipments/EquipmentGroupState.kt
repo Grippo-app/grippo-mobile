@@ -21,6 +21,10 @@ public fun stubEquipments(): ImmutableList<EquipmentGroupState> = persistentList
                 EquipmentEnumState.DUMBBELLS
             ),
             EquipmentState(
+                id = "preview-kettlebells",
+                type = EquipmentEnumState.KETTLEBELLS
+            ),
+            EquipmentState(
                 "b17ae8af-2d78-4e77-b45b-39253c28247a",
                 EquipmentEnumState.BARBELL
             ),

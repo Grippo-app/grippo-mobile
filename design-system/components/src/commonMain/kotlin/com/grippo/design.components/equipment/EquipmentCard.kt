@@ -85,6 +85,7 @@ private fun EquipmentCardCompact(
     }
     val opticalPadding = when (value.type) {
         EquipmentEnumState.DUMBBELLS,
+        EquipmentEnumState.KETTLEBELLS,
         EquipmentEnumState.BARBELL,
         EquipmentEnumState.EZ_BAR,
         EquipmentEnumState.TRAP_BAR -> AppTokens.dp.equipmentCard.compactFreeWeightPadding
@@ -280,6 +281,7 @@ private fun EquipmentCardCompactPreview() {
 private fun EquipmentCardInlinePreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.KETTLEBELLS,
             EquipmentEnumState.BUTTERFLY_FOREARM,
             EquipmentEnumState.BARBELL,
             EquipmentEnumState.SMITH_MACHINES,
@@ -300,6 +302,7 @@ private fun EquipmentCardInlinePreview() {
 private fun EquipmentCardDetailPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.KETTLEBELLS,
             EquipmentEnumState.BUTTERFLY_FOREARM,
             EquipmentEnumState.BARBELL,
             EquipmentEnumState.SMITH_MACHINES,
@@ -320,6 +323,7 @@ private fun EquipmentCardDetailPreview() {
 private fun EquipmentCardSelectedPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.KETTLEBELLS,
             EquipmentEnumState.BUTTERFLY_FOREARM,
             EquipmentEnumState.ROPE,
             EquipmentEnumState.CORD_HANDLES,
@@ -339,6 +343,7 @@ private fun EquipmentCardSelectedPreview() {
 private fun EquipmentCardUnselectedPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.KETTLEBELLS,
             EquipmentEnumState.BUTTERFLY_FOREARM,
             EquipmentEnumState.ROPE,
             EquipmentEnumState.CORD_HANDLES,

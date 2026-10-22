@@ -31,9 +31,10 @@ private fun Equipment.sortPriority(): Int {
         EquipmentEnum.ROW_CABLE -> 13
 
         EquipmentEnum.DUMBBELLS -> 20
-        EquipmentEnum.BARBELL -> 21
-        EquipmentEnum.EZ_BAR -> 22
-        EquipmentEnum.TRAP_BAR -> 23
+        EquipmentEnum.KETTLEBELLS -> 21
+        EquipmentEnum.BARBELL -> 22
+        EquipmentEnum.EZ_BAR -> 23
+        EquipmentEnum.TRAP_BAR -> 24
 
         EquipmentEnum.SMITH_MACHINES -> 30
         EquipmentEnum.HACK_SQUAT_MACHINES -> 31

@@ -248,7 +248,7 @@ and Latin text in both themes; each role keeps its existing size and line height
 
 - Equipment is recognized by its characteristic silhouette and complete localized
   name. `EquipmentEnumState.icon()` is the single exhaustive identity mapping for
-  all 46 types, using the existing graphite equipment vectors without tint or a
+  all 47 types, using the existing graphite equipment vectors without tint or a
   per-item color palette. Sorting, popularity, selection and exclusions do not
   change that mapping. Theme text and surfaces retain their existing neutral roles.
 - Concrete apparatus, bench/rack variants and cable attachments keep their own
@@ -261,6 +261,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   `BUTTERFLY` → Butterfly keeps its handgrips; `BUTTERFLY_FOREARM` →
   ButterflyForearm has two upright forearm pads connected to the moving arms.
   These are distinct equipment identities in every card composition.
+  `KETTLEBELLS` → Kettlebells uses a broad open handle and rounded cast-iron body,
+  distinct from the paired DUMBBELLS → Dumbbell silhouette.
   Existing aliases stay intentional: DUMBBELLS → Dumbbell, AB_MACHINES →
   AbMachine, BICEPS_MACHINES → BicepsMachine, SMITH_MACHINES → SmithMachine,
   LEG_EXTENSION_MACHINES → LegExtensionMachine, LEG_CURL_MACHINES → LegCurlMachine,
@@ -272,7 +274,7 @@ and Latin text in both themes; each role keeps its existing size and line height
 
   | Role | Image and geometry | Label and state |
   | --- | --- | --- |
-  | Compact library metadata | `equipmentCard.compactIcon` (32 dp) cell, no tile or border; dense dumbbell/barbell/EZ-bar/trap-bar artwork uses `compactFreeWeightPadding` (2 dp) inside the cell; other types retain the full fit | Image only, with complete localized text semantics; one entry per distinct type in source order; full silhouettes keep their aspect ratio |
+  | Compact library metadata | `equipmentCard.compactIcon` (32 dp) cell, no tile or border; dense dumbbell/kettlebell/barbell/EZ-bar/trap-bar artwork uses `compactFreeWeightPadding` (2 dp) inside the cell; other types retain the full fit | Image only, with complete localized text semantics; one entry per distinct type in source order; full silhouettes keep their aspect ratio |
   | Inline labelled metadata | `equipmentCard.inlineIcon` (32 dp), no tile or border | Full `b13Med`, `text.secondary` name beside its image |
   | Detail information gallery | `equipmentCard.icon` (64 dp), `equipmentCard.width` (144 dp), unframed; `content` gap and caller edge gutters | Full centered `b14Semi`, `text.primary`; horizontal scrolling retains every supplied item |
   | Availability/exclusion selection | Existing ToggleSelectableCard Medium geometry: 64 dp image, 12 dp padding, 16 dp neutral frame and reserved passive switch | Full `h5`, `text.primary`; existing Switch action/state at the row, image unchanged when excluded |

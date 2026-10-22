@@ -338,6 +338,7 @@
 
     <!-- EquipmentEnumState -->
     <string name="equipment_dumbbells">Гантели</string>
+    <string name="equipment_kettlebells">Гири</string>
     <string name="equipment_barbell">Штанга</string>
     <string name="equipment_v_bar">V-рукоять</string>
     <string name="equipment_wide_grip_handle">Рукоять для широкого хвата</string>
@@ -436,6 +437,7 @@
     <string name="equipment_hint_none">Вес: если без доп. веса — введи 1. Если держишь блин/гантель/жилет — введи только доп. вес.</string>
 
     <string name="equipment_hint_dumbbells">Укажи суммарный вес пары (2×20 → 40), даже если делаешь поочерёдно.</string>
+    <string name="equipment_hint_kettlebells">Укажите общий вес используемых гирь: вес одной гири или сумму весов двух.</string>
     <string name="equipment_hint_barbell">Вводи общий вес на штанге. Если считаешь гриф, считай его всегда.</string>
     <string name="equipment_hint_v_bar">V-рукоятку держи двумя руками.</string>
     <string name="equipment_hint_wide_grip_handle">Широкую рукоятку держи двумя руками.</string>

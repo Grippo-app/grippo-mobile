@@ -339,6 +339,7 @@
 
     <!-- EquipmentEnumState -->
     <string name="equipment_dumbbells">Halteres</string>
+    <string name="equipment_kettlebells">Kettlebells</string>
     <string name="equipment_barbell">Barra</string>
     <string name="equipment_v_bar">Pega em V</string>
     <string name="equipment_wide_grip_handle">Pega larga</string>
@@ -437,6 +438,7 @@
     <string name="equipment_hint_none">Peso: se não houver peso adicional, introduza 1. Se segurar um disco ou um haltere, ou usar um colete, introduza apenas o peso adicional.</string>
 
     <string name="equipment_hint_dumbbells">Introduza o total do par (2×20 → 40), mesmo em repetições alternadas.</string>
+    <string name="equipment_hint_kettlebells">Introduza o peso total dos kettlebells utilizados: o peso de um kettlebell ou a soma dos pesos de dois.</string>
     <string name="equipment_hint_barbell">Introduza o peso total na barra. Se incluir a barra, inclua sempre.</string>
     <string name="equipment_hint_v_bar">Segure a pega em V com as duas mãos.</string>
     <string name="equipment_hint_wide_grip_handle">Segure a pega larga com as duas mãos.</string>

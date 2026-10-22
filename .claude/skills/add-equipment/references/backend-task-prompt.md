@@ -1,10 +1,10 @@
 # Backend task prompt
 
 Generate a filled, ready-to-copy prompt after an equipment integration leaves
-server work pending, including an explicit mobile-only task. Put the prompt in
-the reply in the user's language. A requested saved copy is an artifact, not a
-new review record. Sending it or creating another chat follows the user's
-explicit instructions and the existing task-coordination rules.
+server work pending, including an explicit mobile-only task. Deliver it under
+[final response delivery](#final-response-delivery). A requested saved copy is an
+artifact, not a new review record. Sending it or creating another chat follows
+the user's explicit instructions and the existing task-coordination rules.
 
 An artwork-only change needs no backend task. When the matching type and catalog
 row are already verified in the target environment, report that no backend work
@@ -159,9 +159,22 @@ Acceptance and delivery:
   planning or local preparation does not authorize those operations.
 ```
 
+## Final response delivery
+
+For every addition requiring this handoff, the final response MUST contain the
+complete, filled backend prompt in the user's language in one fenced `text`
+block. The user must be able to copy that block into a backend task without
+opening a file or following a link.
+
+A saved copy and its link may supplement the full inline prompt. A link alone,
+a summary, an unfilled template or an offer to provide the prompt later does
+not satisfy delivery. Check the actual final response before ending the turn;
+the handoff is incomplete until the full prompt is included there.
+
 ## Handoff check
 
-The resulting prompt contains the actual key or an explicit request to resolve
+The final response passes [final response delivery](#final-response-delivery).
+Its prompt contains the actual key or an explicit request to resolve
 it, the selected user outcome and backend skill, separate server name/localized
 labels, final client naming tuple, mobile revision/dirty state and separate
 build/release/install evidence. It preserves the original identities, exclusions,

@@ -31,6 +31,7 @@ import com.grippo.design.resources.provider.equipment.GluteHamRaiseBench
 import com.grippo.design.resources.provider.equipment.GluteMachines
 import com.grippo.design.resources.provider.equipment.HackSquatMachines
 import com.grippo.design.resources.provider.equipment.InclineBenchWithRack
+import com.grippo.design.resources.provider.equipment.Kettlebells
 import com.grippo.design.resources.provider.equipment.LatPulldown
 import com.grippo.design.resources.provider.equipment.LateralRaiseMachines
 import com.grippo.design.resources.provider.equipment.LegCurlMachine
@@ -103,6 +104,7 @@ import com.grippo.design.resources.provider.equipment_hint_glute_ham_raise_bench
 import com.grippo.design.resources.provider.equipment_hint_glute_machines
 import com.grippo.design.resources.provider.equipment_hint_hack_squat_machines
 import com.grippo.design.resources.provider.equipment_hint_incline_bench_with_rack
+import com.grippo.design.resources.provider.equipment_hint_kettlebells
 import com.grippo.design.resources.provider.equipment_hint_lat_pulldown
 import com.grippo.design.resources.provider.equipment_hint_lateral_raise_machines
 import com.grippo.design.resources.provider.equipment_hint_leg_curl_machines
@@ -123,6 +125,7 @@ import com.grippo.design.resources.provider.equipment_hint_triceps_machines
 import com.grippo.design.resources.provider.equipment_hint_v_bar
 import com.grippo.design.resources.provider.equipment_hint_wide_grip_handle
 import com.grippo.design.resources.provider.equipment_incline_bench_with_rack
+import com.grippo.design.resources.provider.equipment_kettlebells
 import com.grippo.design.resources.provider.equipment_lat_pulldown
 import com.grippo.design.resources.provider.equipment_lateral_raise_machines
 import com.grippo.design.resources.provider.equipment_leg_curl_machines
@@ -147,6 +150,7 @@ import org.jetbrains.compose.resources.StringResource
 @Immutable
 public enum class EquipmentEnumState {
     DUMBBELLS,
+    KETTLEBELLS,
     BARBELL,
     V_BAR,
     WIDE_GRIP_HANDLE,
@@ -204,6 +208,7 @@ public enum class EquipmentEnumState {
     public fun icon(): ImageVector {
         return when (this) {
             DUMBBELLS -> Dumbbell
+            KETTLEBELLS -> Kettlebells
             BARBELL -> Barbell
             V_BAR -> VBar
             WIDE_GRIP_HANDLE -> WideGripHandle
@@ -261,6 +266,7 @@ public enum class EquipmentEnumState {
             entries.associateWith {
                 when (it) {
                     DUMBBELLS -> Res.string.equipment_dumbbells
+                    KETTLEBELLS -> Res.string.equipment_kettlebells
                     BARBELL -> Res.string.equipment_barbell
                     V_BAR -> Res.string.equipment_v_bar
                     WIDE_GRIP_HANDLE -> Res.string.equipment_wide_grip_handle
@@ -317,6 +323,7 @@ public enum class EquipmentEnumState {
             entries.associateWith {
                 when (it) {
                     DUMBBELLS -> Res.string.equipment_hint_dumbbells
+                    KETTLEBELLS -> Res.string.equipment_hint_kettlebells
                     BARBELL -> Res.string.equipment_hint_barbell
                     V_BAR -> Res.string.equipment_hint_v_bar
                     WIDE_GRIP_HANDLE -> Res.string.equipment_hint_wide_grip_handle
