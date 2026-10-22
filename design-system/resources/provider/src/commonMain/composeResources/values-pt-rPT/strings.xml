@@ -367,6 +367,7 @@
     <string name="equipment_triceps_machines">Máquinas de tricípites</string>
     <string name="equipment_calf_raise_machines">Máquinas de gémeos</string>
     <string name="equipment_glute_machines">Máquinas de glúteos</string>
+    <string name="equipment_assisted_pull_up_dip">Elevações e fundos assistidos</string>
     <string name="equipment_adductor_machine">Máquina de adutores</string>
     <string name="equipment_abductor_machine">Máquina de abdutores</string>
 
@@ -466,6 +467,7 @@
     <string name="equipment_hint_triceps_machines">Introduza o peso selecionado na máquina de tricípites.</string>
     <string name="equipment_hint_calf_raise_machines">Introduza o peso selecionado na máquina de gémeos.</string>
     <string name="equipment_hint_glute_machines">Introduza o peso selecionado na máquina de glúteos.</string>
+    <string name="equipment_hint_assisted_pull_up_dip">Introduza o peso de assistência selecionado na torre como um valor positivo. Quanto maior a assistência, mais fácil o exercício.</string>
 
     <string name="equipment_hint_lat_pulldown">Introduza o peso selecionado na máquina de puxada alta.</string>
     <string name="equipment_hint_cable">Introduza o peso selecionado na estação de polia.</string>

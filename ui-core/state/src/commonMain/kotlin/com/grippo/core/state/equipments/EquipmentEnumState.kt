@@ -8,6 +8,7 @@ import com.grippo.design.resources.provider.equipment.AbMachine
 import com.grippo.design.resources.provider.equipment.AbductorMachine
 import com.grippo.design.resources.provider.equipment.AdductorMachine
 import com.grippo.design.resources.provider.equipment.AdjustableBench
+import com.grippo.design.resources.provider.equipment.AssistedPullUpDip
 import com.grippo.design.resources.provider.equipment.Barbell
 import com.grippo.design.resources.provider.equipment.BicepsMachine
 import com.grippo.design.resources.provider.equipment.Butterfly
@@ -55,6 +56,7 @@ import com.grippo.design.resources.provider.equipment_ab_machines
 import com.grippo.design.resources.provider.equipment_abductor_machine
 import com.grippo.design.resources.provider.equipment_adductor_machine
 import com.grippo.design.resources.provider.equipment_adjustable_bench
+import com.grippo.design.resources.provider.equipment_assisted_pull_up_dip
 import com.grippo.design.resources.provider.equipment_barbell
 import com.grippo.design.resources.provider.equipment_biceps_machines
 import com.grippo.design.resources.provider.equipment_butterfly
@@ -81,6 +83,7 @@ import com.grippo.design.resources.provider.equipment_hint_ab_machines
 import com.grippo.design.resources.provider.equipment_hint_abductor_machine
 import com.grippo.design.resources.provider.equipment_hint_adductor_machine
 import com.grippo.design.resources.provider.equipment_hint_adjustable_bench
+import com.grippo.design.resources.provider.equipment_hint_assisted_pull_up_dip
 import com.grippo.design.resources.provider.equipment_hint_barbell
 import com.grippo.design.resources.provider.equipment_hint_biceps_machines
 import com.grippo.design.resources.provider.equipment_hint_butterfly
@@ -178,6 +181,7 @@ public enum class EquipmentEnumState {
     TRICEPS_MACHINES,
     CALF_RAISE_MACHINES,
     GLUTE_MACHINES,
+    ASSISTED_PULL_UP_DIP,
 
     LAT_PULLDOWN,
     CABLE,
@@ -236,6 +240,7 @@ public enum class EquipmentEnumState {
             TRICEPS_MACHINES -> TricepsMachines
             CALF_RAISE_MACHINES -> CalfRaiseMachines
             GLUTE_MACHINES -> GluteMachines
+            ASSISTED_PULL_UP_DIP -> AssistedPullUpDip
 
             LAT_PULLDOWN -> LatPulldown
             CABLE -> Cable
@@ -294,6 +299,7 @@ public enum class EquipmentEnumState {
                     TRICEPS_MACHINES -> Res.string.equipment_triceps_machines
                     CALF_RAISE_MACHINES -> Res.string.equipment_calf_raise_machines
                     GLUTE_MACHINES -> Res.string.equipment_glute_machines
+                    ASSISTED_PULL_UP_DIP -> Res.string.equipment_assisted_pull_up_dip
 
                     LAT_PULLDOWN -> Res.string.equipment_lat_pulldown
                     CABLE -> Res.string.equipment_cable
@@ -351,6 +357,7 @@ public enum class EquipmentEnumState {
                     TRICEPS_MACHINES -> Res.string.equipment_hint_triceps_machines
                     CALF_RAISE_MACHINES -> Res.string.equipment_hint_calf_raise_machines
                     GLUTE_MACHINES -> Res.string.equipment_hint_glute_machines
+                    ASSISTED_PULL_UP_DIP -> Res.string.equipment_hint_assisted_pull_up_dip
 
                     LAT_PULLDOWN -> Res.string.equipment_hint_lat_pulldown
                     CABLE -> Res.string.equipment_hint_cable

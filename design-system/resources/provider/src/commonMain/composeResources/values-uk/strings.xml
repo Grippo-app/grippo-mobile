@@ -365,6 +365,7 @@
     <string name="equipment_triceps_machines">Тренажери для трицепса</string>
     <string name="equipment_calf_raise_machines">Тренажери для литок</string>
     <string name="equipment_glute_machines">Тренажери для сідниць</string>
+    <string name="equipment_assisted_pull_up_dip">Гравітрон</string>
     <string name="equipment_adductor_machine">Тренажер для приведення</string>
     <string name="equipment_abductor_machine">Тренажер для відведення</string>
 
@@ -464,6 +465,7 @@
     <string name="equipment_hint_triceps_machines">Вкажи вагу на тренажері для трицепса.</string>
     <string name="equipment_hint_calf_raise_machines">Вкажи вагу на тренажері для литок.</string>
     <string name="equipment_hint_glute_machines">Вкажи вагу на тренажері для сідниць.</string>
+    <string name="equipment_hint_assisted_pull_up_dip">Вкажіть вагу допомоги, виставлену на стеку, додатним числом. Що більша допомога, то легша вправа.</string>
 
     <string name="equipment_hint_lat_pulldown">Вкажи вагу, яку виставив на тязі зверху.</string>
     <string name="equipment_hint_cable">Вкажи вагу, яку виставив на блоці.</string>

@@ -281,6 +281,7 @@ private fun EquipmentCardCompactPreview() {
 private fun EquipmentCardInlinePreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.ASSISTED_PULL_UP_DIP,
             EquipmentEnumState.KETTLEBELLS,
             EquipmentEnumState.BUTTERFLY_FOREARM,
             EquipmentEnumState.BARBELL,
@@ -302,6 +303,7 @@ private fun EquipmentCardInlinePreview() {
 private fun EquipmentCardDetailPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.ASSISTED_PULL_UP_DIP,
             EquipmentEnumState.KETTLEBELLS,
             EquipmentEnumState.BUTTERFLY_FOREARM,
             EquipmentEnumState.BARBELL,
@@ -323,6 +325,7 @@ private fun EquipmentCardDetailPreview() {
 private fun EquipmentCardSelectedPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.ASSISTED_PULL_UP_DIP,
             EquipmentEnumState.KETTLEBELLS,
             EquipmentEnumState.BUTTERFLY_FOREARM,
             EquipmentEnumState.ROPE,
@@ -343,6 +346,7 @@ private fun EquipmentCardSelectedPreview() {
 private fun EquipmentCardUnselectedPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.ASSISTED_PULL_UP_DIP,
             EquipmentEnumState.KETTLEBELLS,
             EquipmentEnumState.BUTTERFLY_FOREARM,
             EquipmentEnumState.ROPE,

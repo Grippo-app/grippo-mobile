@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.equipments.EquipmentGroupEnumState
 import com.grippo.core.state.equipments.stubEquipments
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -106,11 +107,12 @@ internal fun ProfileEquipmentsScreen(
 private fun ProfileEquipmentsScreenPreview() {
     PreviewContainer {
         val groups = stubEquipments()
+        val machines = groups.first { it.type == EquipmentGroupEnumState.MACHINES }
         ProfileEquipmentsScreen(
             state = ProfileEquipmentsState(
                 suggestions = groups,
-                selectedGroupId = groups.first().id,
-                selectedEquipmentIds = groups.first().equipments.take(3).map { it.id }.toPersistentList(),
+                selectedGroupId = machines.id,
+                selectedEquipmentIds = machines.equipments.take(3).map { it.id }.toPersistentList(),
             ),
             loaders = persistentSetOf(),
             contract = ProfileEquipmentsContract.Empty

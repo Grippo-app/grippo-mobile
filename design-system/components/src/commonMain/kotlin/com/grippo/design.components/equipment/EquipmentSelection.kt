@@ -127,11 +127,12 @@ private fun EquipmentSelectionMachinesPreview() {
         val groups = stubEquipments()
         val machines = groups.first { it.type == EquipmentGroupEnumState.MACHINES }
         val forearm = machines.equipments.first { it.type == EquipmentEnumState.BUTTERFLY_FOREARM }
+        val assisted = machines.equipments.first { it.type == EquipmentEnumState.ASSISTED_PULL_UP_DIP }
         EquipmentSelection(
             modifier = Modifier.fillMaxWidth().weight(1f),
             groups = groups,
             selectedGroupId = machines.id,
-            selectedEquipmentIds = persistentListOf(forearm.id),
+            selectedEquipmentIds = persistentListOf(assisted.id, forearm.id),
             onGroupSelect = {},
             onEquipmentSelect = {},
             bottom = {},

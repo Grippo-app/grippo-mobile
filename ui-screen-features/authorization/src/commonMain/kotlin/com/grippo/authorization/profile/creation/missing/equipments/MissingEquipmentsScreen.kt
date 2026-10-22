@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.equipments.EquipmentGroupEnumState
 import com.grippo.core.state.equipments.stubEquipments
 import com.grippo.design.components.brand.BrandHeader
 import com.grippo.design.components.brand.BrandHeaderStyle
@@ -103,11 +104,12 @@ internal fun MissingEquipmentsScreen(
 private fun MissingEquipmentsSelectedPreview() {
     PreviewContainer {
         val groups = stubEquipments()
+        val machines = groups.first { it.type == EquipmentGroupEnumState.MACHINES }
         MissingEquipmentsScreen(
             state = MissingEquipmentsState(
                 suggestions = groups,
-                selectedEquipmentIds = groups.first().equipments.take(3).map { it.id }.toPersistentList(),
-                selectedGroupId = groups.first().id
+                selectedEquipmentIds = machines.equipments.take(3).map { it.id }.toPersistentList(),
+                selectedGroupId = machines.id
             ),
             loaders = persistentSetOf(),
             contract = MissingEquipmentsContract.Empty

@@ -367,6 +367,7 @@
     <string name="equipment_triceps_machines">Máquinas de tríceps</string>
     <string name="equipment_calf_raise_machines">Máquinas de panturrilhas</string>
     <string name="equipment_glute_machines">Máquinas de glúteos</string>
+    <string name="equipment_assisted_pull_up_dip">Barra e paralelas assistidas</string>
     <string name="equipment_adductor_machine">Cadeira adutora</string>
     <string name="equipment_abductor_machine">Cadeira abdutora</string>
 
@@ -466,6 +467,7 @@
     <string name="equipment_hint_triceps_machines">Digite o peso selecionado na máquina de tríceps.</string>
     <string name="equipment_hint_calf_raise_machines">Digite o peso selecionado na máquina de panturrilhas.</string>
     <string name="equipment_hint_glute_machines">Digite o peso selecionado na máquina de glúteos.</string>
+    <string name="equipment_hint_assisted_pull_up_dip">Informe o peso de assistência selecionado na torre como um valor positivo. Quanto maior a assistência, mais fácil o exercício.</string>
 
     <string name="equipment_hint_lat_pulldown">Digite o peso selecionado no puxador alto.</string>
     <string name="equipment_hint_cable">Digite o peso selecionado na estação de polia.</string>

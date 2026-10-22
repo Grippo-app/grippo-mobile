@@ -67,6 +67,10 @@ public fun stubEquipments(): ImmutableList<EquipmentGroupState> = persistentList
         type = EquipmentGroupEnumState.MACHINES,
         equipments = persistentListOf(
             EquipmentState(
+                id = "preview-assisted-pull-up-dip",
+                type = EquipmentEnumState.ASSISTED_PULL_UP_DIP
+            ),
+            EquipmentState(
                 "527227fe-8182-4aec-949a-66335c5ce25e",
                 EquipmentEnumState.AB_MACHINES
             ),

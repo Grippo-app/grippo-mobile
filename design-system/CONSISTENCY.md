@@ -248,7 +248,7 @@ and Latin text in both themes; each role keeps its existing size and line height
 
 - Equipment is recognized by its characteristic silhouette and complete localized
   name. `EquipmentEnumState.icon()` is the single exhaustive identity mapping for
-  all 47 types, using the existing graphite equipment vectors without tint or a
+  all 48 types, using the existing graphite equipment vectors without tint or a
   per-item color palette. Sorting, popularity, selection and exclusions do not
   change that mapping. Theme text and surfaces retain their existing neutral roles.
 - Concrete apparatus, bench/rack variants and cable attachments keep their own
@@ -263,6 +263,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   These are distinct equipment identities in every card composition.
   `KETTLEBELLS` → Kettlebells uses a broad open handle and rounded cast-iron body,
   distinct from the paired DUMBBELLS → Dumbbell silhouette.
+  `ASSISTED_PULL_UP_DIP` → AssistedPullUpDip keeps its counterweight stack,
+  moving knee platform, upper pull-up grips and dip handles, distinct from
+  PULL_UP_BAR → PullUpBar and DIP_BARS → DipBar.
   Existing aliases stay intentional: DUMBBELLS → Dumbbell, AB_MACHINES →
   AbMachine, BICEPS_MACHINES → BicepsMachine, SMITH_MACHINES → SmithMachine,
   LEG_EXTENSION_MACHINES → LegExtensionMachine, LEG_CURL_MACHINES → LegCurlMachine,
