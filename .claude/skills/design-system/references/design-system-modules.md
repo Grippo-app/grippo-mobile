@@ -10,11 +10,6 @@ Use settings.gradle.kts and actual build files as authority.
 | resources:provider-impl | `StringProviderImpl`, `ColorProviderImpl` (`internal/`) and the annotated `ResourcesProviderModule` |
 | preview | AppPreview and PreviewContainer |
 
-Existing defect, not a pattern to copy: `ColorProviderImpl.get()` returns `DarkColor`
-in both branches of its `AppTheme.current()` check, and `ColorProvider` has no consumer
-outside the provider modules; do not route a new non-composable color lookup through
-it until it is fixed within an authorized scope.
-
 Components may depend on existing pure UI contracts/state where their build files
 allow it. They MUST NOT import feature implementations or data/service business
 logic. A dependency exception does not authorize unrelated module access.

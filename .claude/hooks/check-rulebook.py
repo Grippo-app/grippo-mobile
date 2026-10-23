@@ -14,8 +14,8 @@ Checks:
      preloaded skills and a canonical PreToolUse Bash guard for its rights.
      Every backticked `.claude/...` path in the body (with {a,b} brace expansion)
      exists.
-  4. Every agent named in the CLAUDE.md roster table exists as a file, and every
-     agent file is listed in the roster.
+  4. The CLAUDE.md skills index and agent roster match their files; roster skills
+     match each agent's required skill list.
   5. No `.claude/skills/*/agents/openai.yaml` leftovers and no empty skill dirs.
   6. CLAUDE.md stays a map: at most 400 lines.
 Exit code 1 when any problem is found.
@@ -322,6 +322,39 @@ def check_roster(agents):
         problems.append(f"agent not in CLAUDE.md roster table: {a}")
     for a in sorted(listed - agents):
         problems.append(f"roster lists missing agent: {a}")
+    for line in text.splitlines():
+        match = re.match(r"^\| `([a-z][a-z0-9-]*)` \|", line)
+        if not match or match.group(1) not in agents:
+            continue
+        name = match.group(1)
+        columns = line.split("|")
+        if len(columns) != 6:
+            problems.append(f"agent roster row needs Agent/Role/Rights/Skills columns: {name}")
+            continue
+        listed_skills = {s.strip() for s in columns[-2].split(",") if s.strip() not in ("", "-")}
+        fm = frontmatter(os.path.join(ROOT, ".claude", "agents", name + ".md"))
+        required_skills = set(names_of(fm or {}, "skills"))
+        if listed_skills != required_skills:
+            problems.append(f"agent roster skills differ from definition: {name}; expected {', '.join(sorted(required_skills)) or '-'}")
+
+
+def check_skill_index(skills):
+    claude = os.path.join(ROOT, "CLAUDE.md")
+    if not os.path.exists(claude):
+        return
+    text = open(claude, encoding="utf-8").read()
+    rows = re.findall(r"^\| \[([^]]+)\]\(\.claude/skills/([^/]+)/SKILL\.md\) \|", text, flags=re.M)
+    listed = set()
+    for label, name in rows:
+        if label != name:
+            problems.append(f"skill index label differs from directory: {label} -> {name}")
+        if name in listed:
+            problems.append(f"duplicate skill in CLAUDE.md index: {name}")
+        listed.add(name)
+    for name in sorted(skills - listed):
+        problems.append(f"skill not in CLAUDE.md index: {name}")
+    for name in sorted(listed - skills):
+        problems.append(f"skill index lists missing skill: {name}")
 
 
 def check_map_size(limit=400):
@@ -339,6 +372,7 @@ def main():
     skills = check_skills()
     agents = check_agents(skills)
     check_roster(agents)
+    check_skill_index(skills)
     check_map_size()
     for p in problems:
         print(p)

@@ -41,7 +41,9 @@ The single wider-data-layer carve-out is `:ui-screen-features:authorization` (ad
 
 ### `:ui-dialog-features:dialog-api` (the contract module)
 
-Houses: in-memory `DialogConfig` (plain sealed class with caller-owned `title: UiText`, live `onDismiss`/result callbacks and `dismissBySwipe`; exhaustive `hasSameContentAs` compares typed content, excluding callbacks); `DialogController.open(config)` starts a new session after any current session closes. Its host-supplied `Session` exposes `push` / `replaceCurrent` / `back` / `close`, bound to the originating active step on the UI thread. `DialogProvider.openings: Flow<DialogConfig>` relays global openings through internal `DialogControllerImpl` (`@Single(binds = [DialogController::class, DialogProvider::class])`, conflated `Channel`). `DialogModule` is the existing public `@Module @ComponentScan`, registered in `:shared/Koin.kt` via its generated `.module`. `Constants.kt` exposes `DIALOG_EXIT_ANIMATION_DURATION = 300.milliseconds`. Configs have no serialization, transient callbacks or `key` / `buildKey` contract; shared host `DialogSession` / `DialogStep` IDs preserve live instances, and both navigators use `serializer = null` without process-death session restoration.
+Houses `DialogConfig`, `DialogController`, `DialogProvider` and their annotated
+`DialogModule`. The [dialog contract and host policy](dialogs.md) own their
+content, session navigation, delivery, retention and callback ordering.
 
 Build: Android/KMP/Compose conventions plus `koin.annotation.convention`;
 namespace `com.grippo.ui.dialog.features.dialog.api`; dependencies `uiCore.foundation`,
@@ -59,8 +61,8 @@ One module per bottom-sheet flow (`weight-picker`, `date-picker`, `confirmation`
 Build (typical): same plugins; each module overrides the default namespace with `com.grippo.ui.dialog.features.<name>`; deps `uiCore.foundation`, `analytics.analyticsApi`, `uiCore.state`, `designSystem.core/resources.provider/components/preview`, `compose.foundation`/`material3`, immutable-collections (pickers add `composeLibs.wheelPicker`). Dialog features do **not** depend on `:data-features:feature-api` unless they read/write domain data (rare).
 
 Every dialog module depends on `:analytics:analytics-api` and has its own
-`:analytics:<dialog>` implementation module registered in `shared/.../Koin.kt`
-(23 of 23 today). The dialog ViewModel observes its own callbacks through that
+`:analytics:<dialog>` implementation module registered in `shared/.../Koin.kt`.
+The dialog ViewModel observes its own callbacks through that
 service — `SelectionChanged`, `SubmitClicked`, `DismissRequested` in
 `WeightPickerViewModel` — and declares no `screenPresentation` hook. Caller
 open/result facts belong to the owning screen VM. Wiring:
@@ -96,21 +98,15 @@ Dialog feature: `ui-dialog-features/amount-picker/src/commonMain/kotlin/com/grip
 - One package per sub-screen / sub-dialog; the seven MVI files at its root, plus an optional `components/` subfolder.
 - Apply the [Compose extraction criteria](../../compose-components/references/structure-and-runtime.md#read-from-top-to-bottom) before splitting feature UI. Extracted feature composables live in the sibling `components/` folder, one entry composable per file named after it, with its private implementation helpers and previews co-located. Shared widget ownership follows [module ownership](#when-to-extract-a-widget-into-compose-libs).
 - Sub-screens are `internal`; the feature-root component is `public` (so `:shared`'s `RootComponent.createChild` can instantiate it).
-- A Component with a saved draft defines one typed `DRAFT = PersistenceKey("stable address", State.serializer())` in a private companion object at the bottom of the class and uses protected BaseComponent.restoreState/saveState. No separate metadata file, feature-wide matrix or raw draft StateKeeper.consume/register bindings.
+- Components with saved drafts follow [state-preservation's ownership and implementation](../../state-preservation/SKILL.md#ownership-and-implementation).
 - A screen feature exposes routes via `:ui-screen-features:screen-api`; a dialog feature exposes config via `:ui-dialog-features:dialog-api`. **Direct symbol imports between feature modules are forbidden.**
 - A feature may depend on `:compose-libs:*` for specialized widgets. It must **not** depend on another feature module.
 
 ## Anti-pattern: feature-to-feature cross-import (MUST)
 
-Two `:ui-screen-features:*` modules cannot import each other. If feature A needs to navigate to a screen in feature B:
-1. The route is declared in `:ui-screen-features:screen-api` (public `<B>Router` sealed class).
-2. `RootDirection` adds an entry; `RootViewModel` exposes a callback (`fun toB(...)`).
-3. Feature A's `RootComponent` receives the callback via its constructor (threaded from `:shared`'s `RootComponent.createChild`).
-4. Feature A's ViewModel emits a Direction; its Component invokes the constructor
-   callback. RootViewModel emits RootDirection.B and RootComponent.eventListener
-   translates it into navigation.push(RootRouter.B(...)).
-
-Direct symbol import between feature modules is **forbidden**. (Full recipe in `references/navigation.md`.)
+Cross-feature jumps follow the canonical
+[navigation recipe](navigation.md#cross-feature-navigation) and the
+[module dependency rules](../../../../CLAUDE.md#module-dependency-rules).
 
 ---
 

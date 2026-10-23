@@ -95,13 +95,9 @@ Choose the role before the hue. Inspect current
 
 MUST preserve these meanings. Selection is not completion; branding cannot recolor
 success, errors, destructive actions, warnings, muscle maps or chart series into
-one generic orange treatment. Do not infer a role from a group's name alone:
-`AppColor.brand` is a numbered categorical accent set (`color1`, `color2`, `color4`,
-`color5`, `color6`, mapped to magenta/coral/teal/sky/indigo in both themes), not the
-orange brand accent; that accent lives in `selection.accent`,
-`button.backgroundPrimary1`, `border.focus` and `timeline.marker`, and exercise
-category colors in `example.category.compound/isolation`
-([color tokens](../../design-system/references/color.md)).
+one generic orange treatment. Do not infer a role from a group's name alone;
+[color tokens](../../design-system/references/color.md) explain the `AppColor.brand`
+categorical palette and the actual orange accent owners.
 
 Keep ordinary weights, repetitions, dates and descriptions neutral unless their
 meaning warrants emphasis. Use owned semantic surface pairs; do not derive a

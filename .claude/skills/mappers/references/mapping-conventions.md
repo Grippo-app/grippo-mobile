@@ -1,11 +1,10 @@
 # Mapper signatures and representation
 
 Files follow existing slash-separated packages in `data-mappers/<direction>/src/commonMain/kotlin/com/grippo/`.
-Name the function for its target and expose nullability honestly. Current names (verified):
-`toState` (74), `toDomain` (46), `toEntityOrNull` (15), `toEntities` (11), `toDomainOrNull` (7),
-`toBody` (7), `toEntity` (4) and the area-specific `toDraftDomain` (5), `toSetDomain` (2) and
-`toStateValue` (1). Required-field guards use `AppLogger.Mapping.log(` 153 times; `data-mappers/**`
-contains no `!!`. Reuse the name the area already uses before adding a new one.
+Name the function for its target and expose nullability honestly. Inspect the area's
+source for its established name: equipment uses `toState`, `toDomain`, `toEntities`
+and `toEntityOrNull`; request-model mappings use `toBody`. Reuse the name the area
+already uses before adding a new one.
 
 - Non-null input does not guarantee non-null target: unknown enum keys, missing relations or
   invalid date conversion may require null-and-drop behavior. Inspect actual constructors/parsers.

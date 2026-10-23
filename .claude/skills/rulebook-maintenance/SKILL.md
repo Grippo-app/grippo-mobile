@@ -6,7 +6,7 @@ description: Maintain Grippo's AI rulebook - CLAUDE.md, AGENTS.md, .claude/skill
 # Rulebook maintenance
 
 The rulebook is a product with one audience: an agent executing a task under
-time pressure. Every edit must leave it more decidable, not longer.
+time pressure. Prefer concise rules with explicit triggers and owners.
 
 ## Ownership map
 
@@ -79,9 +79,11 @@ writing the rule anywhere else.
     repository) or `no-git-write` (implementers, maintainer) mode.
     Bash access requires the canonical `PreToolUse` command hook with matcher
     `Bash`; keep its structure and command explicit so the checker can validate it.
-  - Body sections in this order: Role, Rights, Inputs you must receive, Duties,
-    Report format.
-- `.claude/hooks/bash-guard.py` enforces agent rights for Bash; change its
+  - Body: role title and purpose, then Rights, Inputs you must receive, Duties,
+    Report format (an optional Severity section may precede Report format).
+- `.claude/hooks/bash-guard.py` checks Bash commands against the role's mode;
+  it supplements the runtime's sandbox and the role's procedural restrictions.
+  Change its
   allowlists together with the agent definitions that rely on them and re-run
   its test matrix (see the script header).
 - Agent loading and fallback follow the launch adapter; client-specific
@@ -101,15 +103,15 @@ writing the rule anywhere else.
   identifiers an agent must search for.
 - Prefer a short rule and a short reason over a MUST stack. Use MUST only
   where violation is a defect; use plain sentences for guidance.
-- Rules are written in English; the user-facing final reply is in Russian
-  (owned by validation-gates). Do not mix languages inside one document.
+- Rules are written in English; user-facing replies follow
+  [validation-gates](../validation-gates/SKILL.md#final-response-format).
+  Response examples may use the reply language and must be labelled illustrative.
 - No machine protocols, task-board vocabulary, transient IDs or negations of
   removed systems. Do not say what the rulebook is not; say what it is.
 - Examples that use invented APIs say so at the top of the file and never mix
   invented and real routes in one code block.
-- Records policy: dated narratives belong in `docs/records/` only on request;
-  current state belongs in the record files named in CLAUDE.md; a reply is not a
-  record.
+- Record destinations and creation triggers follow
+  [Records](../../../CLAUDE.md#records).
 
 ## Procedures
 
@@ -146,7 +148,8 @@ python3 -I .claude/hooks/check-rulebook.py
 
 It validates relative links and anchors, skill and agent identities, required
 models/tools/exclusions, required skill names, canonical Bash hook structure and
-the role's guard mode, plus the roster in `CLAUDE.md`. Read-only roles must exclude
+the role's guard mode, plus the skills index and agent roster (including required
+skills) in `CLAUDE.md`. Read-only roles must exclude
 editing tools; agents without allowed MCP tools must block MCP access, and every
 agent must exclude delegation. Zero problems is a precondition for reporting a
 rulebook change complete. The checker proves configuration structure, not runtime

@@ -3,18 +3,27 @@
 #   zsh .claude/hooks/bash-guard-tests.sh
 GUARD="$(cd "$(dirname "$0")" && pwd)/bash-guard.py"
 export CLAUDE_PROJECT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-ERR="${TMPDIR:-/tmp}/guard_err.txt"
+ERR="$(mktemp "${TMPDIR:-/tmp}/grippo-guard.XXXXXX")" || exit 1
+trap 'rm -f "$ERR"' EXIT
 fails=0
+check_payload() {
+  local mode="$1"; local payload="$2"; local expect="$3"; local label="$4"
+  printf "%s\n" "$payload" | python3 "$GUARD" "$mode" 2>"$ERR"
+  local rc=$?
+  local got="error"
+  case "$rc" in
+    0) got="allow" ;;
+    2) got="block" ;;
+  esac
+  local mark="OK "; if [[ "$got" != "$expect" ]]; then mark="FAIL"; fails=$((fails+1)); fi
+  printf "%s [%s] expect=%s got=%s :: %s\n" "$mark" "$mode" "$expect" "$got" "${label//$'\n'/⏎}"
+  [[ "$got" != "$expect" ]] && cat "$ERR"
+}
 run() {
   local mode="$1"; local cmd="$2"; local expect="$3"
   local payload
-  payload=$(jq -cn --arg c "$cmd" '{tool_name:"Bash", tool_input:{command:$c}}')
-  printf "%s\n" "$payload" | python3 "$GUARD" "$mode" 2>"$ERR"
-  local rc=$?
-  local got="allow"; [[ $rc -eq 2 ]] && got="block"
-  local mark="OK "; if [[ "$got" != "$expect" ]]; then mark="FAIL"; fails=$((fails+1)); fi
-  printf "%s [%s] expect=%s got=%s :: %s\n" "$mark" "$mode" "$expect" "$got" "${cmd//$'\n'/⏎}"
-  [[ "$got" != "$expect" ]] && cat "$ERR"
+  payload=$(jq -cn --arg c "$cmd" '{tool_name:"Bash", tool_input:{command:$c}}') || exit 1
+  check_payload "$mode" "$payload" "$expect" "$cmd"
 }
 NL=$'\n'
 # ---------- readonly: allowed inspection ----------
@@ -148,6 +157,60 @@ run no-git-write 'gh api repos/x/y' block
 run no-git-write 'gh api -X GET repos/x/y' allow
 run no-git-write 'gh api --method=GET repos/x/y' allow
 # ---------- adversarial additions ----------
+run readonly 'echo "$(touch /private/tmp/guard-probe)"' block
+run readonly 'echo "`touch /private/tmp/guard-probe`"' block
+run readonly 'echo "literal single quote '\''$(touch /private/tmp/guard-probe)'\''"' block
+run readonly 'rg '\''$(literal) and `literal`'\'' CLAUDE.md' allow
+run readonly 'echo "\$(literal)"' allow
+run readonly-build 'echo "$(git add -A)"' block
+run no-git-write 'echo "$(git add -A)"' block
+run readonly 'rg --pre=touch pattern CLAUDE.md' block
+run readonly 'rg --pre touch pattern CLAUDE.md' block
+run readonly 'rg --hostname-bin=touch pattern CLAUDE.md' block
+run readonly 'python3 -I .claude/hooks/bash-guard.py readonly' block
+run readonly 'python3 -I .claude/hooks/check-rulebook.py --extra' block
+run readonly 'adb shell input tap 10 10' block
+run readonly 'adb shell am force-stop com.grippo' block
+run readonly 'adb shell settings put system font_scale 2' block
+run readonly 'adb shell "getprop; input tap 10 10"' block
+run readonly "adb shell \"getprop${NL}input tap 10 10\"" block
+run readonly 'adb shell getprop ro.build.version.release' allow
+run readonly 'adb shell settings get system font_scale' allow
+run readonly 'adb shell wm size' allow
+run readonly 'adb shell wm size 100x100' block
+run readonly 'adb shell dumpsys battery set level 1' block
+run readonly 'adb -s emulator-5554 shell getprop ro.build.version.release' allow
+run readonly 'adb -s emulator-5554 shell input tap 10 10' block
+run readonly-build 'adb -s emulator-5554 shell rm -rf /sdcard/x' block
+run readonly-build 'adb -e shell rm -rf /sdcard/x' block
+run readonly-build 'adb -t 1 shell rm -rf /sdcard/x' block
+run readonly-build 'adb -d install -r build/app.apk' block
+run readonly-build 'adb -s physical-device install -r build/app.apk' block
+run readonly-build 'adb -s emulator-5554 install -r build/app.apk' allow
+run readonly-build 'adb -s emulator-5554 root' block
+run readonly-build "adb -s emulator-5554 pull /sdcard/x $CLAUDE_PROJECT_DIR" block
+run readonly-build "mkdir -p $CLAUDE_PROJECT_DIR" block
+run readonly 'gh pr view 12' block
+run readonly 'gh api -X GET repos/x/y' block
+run readonly 'git tag -a name -F /private/tmp/message' block
+run readonly-build 'git tag -a name -F /private/tmp/message' block
+run no-git-write 'git tag -a name -F /private/tmp/message' block
+run no-git-write 'git custom-alias' block
+run readonly 'git branch --set-upstream-to=refs/heads/main' block
+run readonly-build 'git branch --set-upstream-to=refs/heads/main' block
+run no-git-write 'git branch --set-upstream-to=refs/heads/main' block
+run readonly-build './gradlew :shared:build' block
+run readonly-build './gradlew :shared:assemble' block
+run readonly-build './gradlew :shared:check' block
+run readonly-build './gradlew :shared:test' block
+run readonly-build './gradlew syncSecureConfigs' block
+run no-git-write './gradlew syncSecureConfigs' block
+run readonly-build './gradlew :androidApp:assembleDebug --init-script=/private/tmp/init.gradle' block
+run readonly-build './gradlew :androidApp:assembleDebug -I/private/tmp/init.gradle' block
+check_payload readonly 'null' block 'null hook payload'
+check_payload readonly '[]' block 'array hook payload'
+check_payload readonly '{' block 'malformed JSON'
+check_payload readonly '{"tool_name":"Bash","tool_input":{}}' block 'missing command'
 run readonly 'gh api -X GET repos/x --input body.json' block
 run readonly 'gh api -X GET repos/x -f a=b' block
 run readonly 'HOME=/tmp git status' block

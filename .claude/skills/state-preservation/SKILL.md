@@ -68,7 +68,7 @@ Verified example rows for the trainings calendar (`TrainingsComponent`,
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
-| TrainingsComponent / TrainingsViewModel | `date` (selected range) and `period` (Daily/Monthly) | Preserve | `DRAFT = PersistenceKey("TrainingsDraft", TrainingsState.serializer())` | `initialState = restoreState(DRAFT)`; a null archive falls back to `TrainingsState(date = TrainingsTimelinePeriod.Monthly().defaultRange())`; check the restored month and mode on a fresh Component |
+| TrainingsComponent / TrainingsViewModel | `date` (selected range) and `period` (Daily/Monthly) | Preserve | Component-owned `DRAFT` with address `TrainingsDraft` and `TrainingsState.serializer()` | Component passes `restoreState(DRAFT)`; ViewModel creates the monthly default only for a null archive and rebuilds range-derived presentation through `selectRange`; check the restored month and mode on a fresh Component |
 | TrainingsViewModel | `limitations`, monthly `weeks`/`digest`, daily `items` | Rebuild | `@Transient`; `DateTimeUtils.trailingYear()` and the `observeTrainings` flow | Recomputed from the restored range; never in the archive |
 | TrainingsViewModel | `TrainingsLoader.Trainings` and the refresh job | Runtime only | `loaders` flow and `safeLaunch` | Not saved; the refresh restarts from the restored range |
 
@@ -78,9 +78,9 @@ Verified example rows for the trainings calendar (`TrainingsComponent`,
   Define one foundation `PersistenceKey<T>` as `val DRAFT` in a private companion
   object at the bottom of the owning Component. The key is the descriptor: it
   pairs the stable archive address with its matching serializer, and it is final
-  and invariant (the address does not change). No separate metadata file or
-  feature-wide matrix exists. Reuse the exact existing archive address when
-  refactoring. Never derive an address from class names, `toString`, route IDs or
+  and invariant (the address does not change). Keep descriptors at their owning
+  Components rather than in a separate descriptor registry. Reuse the exact
+  existing archive address when refactoring. Never derive an address from class names, `toString`, route IDs or
   live-instance identity. The descriptor is metadata; it does not belong in State
   or Router payloads or in DI.
 - **Wiring.** The owning Component calls the protected `restoreState(DRAFT)`
@@ -148,23 +148,12 @@ Verified example rows for the trainings calendar (`TrainingsComponent`,
   format/build invalidation when archive schemas change. Dialog sessions stay
   unsaved. Accepted results belong to the owning screen's draft.
 
-Current shape, verified against the code (re-inspect before relying on it):
-
-- `PersistenceKey<T>` (`ui-core/foundation/.../models/PersistenceKey.kt`) holds an
-  `internal` key and serializer. Features construct keys and pass them only to
-  `BaseComponent.restoreState`/`saveState`.
-- 18 Components define `val DRAFT = PersistenceKey("<Feature>Draft", <State>.serializer())`
-  in a private companion object. All 18 call `initialState = restoreState(DRAFT)`
-  and `saveState(DRAFT) { viewModel.state.value }`. Eleven Components append
-  `?: <State>(...)` because their ViewModel takes a non-null initial state. The
-  other seven ViewModels accept a nullable `initialState` and resolve the default
-  themselves.
-- `@JsonIgnoreUnknownKeys` is used on six States (five profile forms and
-  `LoginState`) and two `AuthRouter` variants. `@Transient` marks rebuilt fields
-  in 15 serializable State files. `ImmutableListSerializer` lives in
-  `ui-core/state/.../ImmutableListSerializer.kt` and is used by 10 State files.
-  `StageState` lives in `:ui-core:state` (`com.grippo.core.state.stage`).
-- No ViewModel has a private `var`; conditions derive from State.
+Inspect [PersistenceKey](../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/models/PersistenceKey.kt)
+for the descriptor and [TrainingsComponent](../../../ui-screen-features/trainings/src/commonMain/kotlin/com/grippo/trainings/trainings/TrainingsComponent.kt),
+[TrainingsViewModel](../../../ui-screen-features/trainings/src/commonMain/kotlin/com/grippo/trainings/trainings/TrainingsViewModel.kt)
+and [TrainingsState](../../../ui-screen-features/trainings/src/commonMain/kotlin/com/grippo/trainings/trainings/TrainingsState.kt)
+for a nullable initial-state boundary with rebuilt fields. Discover affected
+owners from the source rather than using a fixed Component/State census.
 
 ## Initialization from persistent settings
 
@@ -180,12 +169,13 @@ an additional StateKeeper copy solely for restoration. Record that source in the
 inventory. This does not replace local preservation of unfinished screen drafts.
 
 Keep an unfinished selection distinct from the committed source when both exist.
-For example, checking an analytics opt-in draft is not a stored permission to
-collect. Persist the unfinished input with the screen draft and rebuild the
-source. Do not let a late source emission erase the input, and do not let an old
-draft overwrite a known decision. Choose the smallest state representation that
-preserves these meanings. This does not mandate two fields for every settings
-control.
+Persist unfinished input with the screen draft and rebuild the committed source.
+Do not let a late source emission erase the input, and do not let an old draft
+overwrite a known decision. Controls that commit each accepted change need no
+separate unfinished draft; analytics consent follows its
+[collection policy](../feature-analytics/references/collection-and-core.md#collection-and-consent).
+Choose the smallest state representation that preserves these meanings; this
+does not mandate two fields for every settings control.
 
 When restored settings arrive asynchronously, review the interval before their
 first value as well as the loaded state. Dependent requests MUST NOT use a

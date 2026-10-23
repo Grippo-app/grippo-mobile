@@ -52,10 +52,6 @@ before relying on it):
   closes the presentation; `onDestroy` runs `onPause()` and unsubscribes.
   Exceptions thrown by `present`/`close` are swallowed; telemetry never
   interrupts lifecycle delivery.
-- Adoption today: 59 ViewModels extend `BaseViewModel`; 24 leaf screen VMs
-  override the hook; 12 containers/hosts keep null (Root, Dialog, DialogContent,
-  Auth, AuthProcess, ProfileCreation, HomeRoot, Main, Profile, ExercisesRoot,
-  Training, TrainingsRoot); the 23 dialog VMs keep null under the dialog policy.
 
 Graph/container VMs use null: no binding and no ScreenAnalytics resolution. Do not
 override a graph as a screen just because it owns a router. VM knows neither

@@ -3,17 +3,8 @@
 Inspect [AppDp](../../../../design-system/resources/provider/src/commonMain/kotlin/com/grippo/design.resources/provider/AppDp.kt)
 before choosing a slot. Current shape, for orientation (source owns changes):
 `public data object AppDp` is one static object, not a per-theme interface.
-Private `padding`/`size`/`radius`/`icon` scales feed the top-level component
-groups (inspect the file for the leaves):
-
-- bottomBar, bottomSheet, divider, contentPadding, screen, muscleSelection, dialog
-- input, button, loader, konfetti, segment, menu, checkSelectableCard
-- toggleSelectableCard, wheelPicker, achievementCard, equipmentCard, timeline, exerciseCard
-- exerciseExampleCard, weightHistoryCard, deleteUserCard, exerciseExampleImage, iterationCard, iterationsCard
-- chip, toggle, check, calendar, metrics, brandHeader
-- brandSplash, userCard, welcome, illustration, badge, bannerCard
-- focusFrame, tooltip, training, accent, stepProgressIndicator, periodPicker
-- pagerIndicator, swipe, shadow
+Private `padding`/`size`/`radius`/`icon` scales feed semantic component groups.
+Inspect the producer for current groups and leaves.
 There are no public `padding`, `size`, `radius`, `icon`, `card` or `toolbar` groups:
 toolbar dimensions live at `screen.toolbar` and `bottomSheet.toolbar`; `screen` also
 holds `onboardingHeroHeight`, `onboardingHeroRadius` and `verticalPadding`;

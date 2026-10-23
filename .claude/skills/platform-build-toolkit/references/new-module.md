@@ -14,12 +14,13 @@ plugin list and dependency shape; do not copy a blanket dependency scaffold.
    (`libs.*`, `projects.*`). No `repositories {}`, SDK versions, JVM target or
    `@OptIn` configuration in the module script.
 3. Package: `com.grippo.<area>.<name>` in slash-separated directories.
-4. Koin: when the module has bindings, a public `@Module @ComponentScan` class
-   and its generated `.module` registered explicitly in
+4. Koin: when the module has bindings, follow [DI](../../di-modules/SKILL.md)
+   for its annotated module shape and register its generated `.module` explicitly in
    `shared/src/commonMain/kotlin/com/grippo/shared/Koin.kt`; add the
    `implementation(projects...)` dependency to `shared/build.gradle.kts`.
-5. Build the consumers: default Android check; XCFramework when the module's
-   public API crosses to Swift or touches `iosMain`.
+5. Build the consumers under the
+   [verification policy](../../../../CLAUDE.md#verification-policy), using the
+   [build target catalog](../../runtime-verification/SKILL.md#build-target-catalog).
 
 ## Screen feature (`:ui-screen-features:<feature>`)
 

@@ -359,8 +359,8 @@ is DialogConfig.TagPicker -> Child.TagPicker(
 
 ### 6. Create `:analytics:tag-picker` and register it in `Koin.kt`
 
-Every dialog module has its own `:analytics:<dialog>` implementation module
-(23 of 23 today), registered in `shared/src/commonMain/kotlin/com/grippo/shared/Koin.kt`;
+Every dialog module has its own `:analytics:<dialog>` implementation module,
+registered in `shared/src/commonMain/kotlin/com/grippo/shared/Koin.kt`;
 the `TagPickerAnalytics` contract and its `TagPickerEvent` family live in
 `:analytics:analytics-api`. Follow the
 [new module checklist](../../platform-build-toolkit/references/new-module.md#dialog-feature-ui-dialog-featuresdialog)

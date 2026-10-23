@@ -209,12 +209,8 @@ A Component's constructor takes only `componentContext`, **navigation callbacks*
 Use protected `restoreState(PersistenceKey<T>): T?` inside the existing retainedInstance
 factory and `saveState(PersistenceKey<T>, supplier: () -> T)` once during construction.
 The latter registers a lazy supplier; the shell's StateKeeper.save reads current
-VM state. Keep defaults/route seeds explicit at the owning Component and restore
-parent data before children. Define `val DRAFT = PersistenceKey("stable address", State.serializer())`
-in a private companion object at the bottom of the owning Component. Use the typed
-helpers; no separate metadata file, feature-wide matrix, raw draft consume/register
-or identifier-derived keys.
-See [state-preservation](../../state-preservation/SKILL.md) for the mandatory gate.
+VM state. [State-preservation](../../state-preservation/SKILL.md#ownership-and-implementation)
+owns descriptors, draft precedence and initialization; apply its mandatory gate.
 
 ### Result observation
 
@@ -265,7 +261,7 @@ No `Toolbar` (the screen adds its own). No system-insets handling (edge-to-edge 
 - **`BaseRouter`** — `public interface BaseRouter`. Nav route marker in `:ui-screen-features:screen-api`. `@Serializable` on the sealed class and every subtype; subtypes carry only serializable payloads.
 - **`BaseResult`** + `Result<T>` — `Result<T : Any>(val data: T) : BaseResult` wraps every payload carried through `ResultManager`. Action protocols are plain sealed interfaces nested inside the producer's `*Router.<Screen>` (no `BaseResult` extension); `sendResult` wraps them in `Result<T>`.
 - **`ResultKey<T : BaseResult>(val key: String)`** + `ResultKeys.create(key)` — typed channel identifiers; equal by string. **One `ResultKey` per protocol, not per subtype.** The receiver defines the key in its companion object and passes an explicit `resultKey: ResultKey<Result<Payload>>` on the producer route; scope by receiver identity when multiple instances can coexist (see `references/results.md`).
-- **`PersistenceKey<T : Any>(key: String, serializer: KSerializer<T>)`** — a final class whose two properties are `internal`: a stable local archive address and its serializer. A feature constructs it and passes it only to the protected `restoreState(DRAFT)` / `saveState(DRAFT, supplier)`; the owning Component defines `val DRAFT` in its bottom private companion object. It does not identify a live instance or result channel; child ComponentContexts isolate equal keys. No separate metadata file or matrix.
+- **`PersistenceKey<T : Any>(key: String, serializer: KSerializer<T>)`** — a final class whose two properties are `internal`: a stable local archive address and its serializer. Descriptor ownership follows [state-preservation](../../state-preservation/SKILL.md#ownership-and-implementation).
 
 ### Rules (MUST)
 

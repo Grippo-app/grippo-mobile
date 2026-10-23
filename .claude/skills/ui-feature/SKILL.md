@@ -124,15 +124,9 @@ impact assessment defined in [CLAUDE.md](../../../CLAUDE.md#definitions).
    `RootDirection` → `RootContract` → `RootViewModel` → `RootComponent.eventListener`
    chain), never direct feature-to-feature imports. Deeplinks add the `Deeplink`
    enum entry + `RootViewModel.parseDeeplink` branch.
-6. **Apply the state-preservation gate** — all screen `*Router`/payloads `@Serializable`, no
-   lambdas in routes, data-backed state rebuilt through existing subscriptions,
-   route inputs seed ranges/filters; local StateKeeper drafts preserve the latest
-   selection. Use `key = "..."` on `childStack`.
-   Nonsecret editable drafts use a local Component StateKeeper supplier and
-   serializable initialState; rebuild catalogs from Flows without erasing choices.
-   Dialog configs/callbacks remain in memory; the session slot and step stack use
-   `serializer = null` and are not restored. Read
-   [process-death.md](references/process-death.md).
+6. **Apply the [state-preservation gate](../state-preservation/SKILL.md#mandatory-preservation-gate)**;
+   use [process-death.md](references/process-death.md) for route/shell restoration
+   and Component wiring.
 7. **For `:ui-core:state` work** — add `*State`/`*RowState`/`*EnumState`/
    `*FormatState` + `stub*()`; for a new error type, edit the
    `AppError` → `AppErrorState` → `ErrorProviderImpl` when-branch triad atomically.

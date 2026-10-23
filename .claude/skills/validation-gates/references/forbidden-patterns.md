@@ -158,10 +158,9 @@ Screen-result rules are defined in the ui-feature skill,
   inputs for one-time population; see
   [the draft policy](../../state-preservation/SKILL.md#data-backed-form-synchronization).
 - **`String` for localizable values.** Use `UiText`.
-- **Raw `String` where an existing `*FormatState` fits the input** (the 15 types
-  in `ui-core/state/.../formatters/`: Email, Password, Name, Date, DateTime,
-  DateRange, Duration, Weight, Height, Volume, Repetitions, Intensity, Density,
-  Multiplier, Percentage). Reuse its validation/display contract. A plain query
+- **Raw `String` where an existing `*FormatState` fits the input**. Inspect
+  `ui-core/state/src/commonMain/kotlin/com/grippo/core/state/formatters/` and reuse
+  the matching validation/display contract. A plain query
   may stay `String` only when no formatter fits; a new formatter needs a real
   unmet need, not a class per field.
 - **`var` in state classes.** All `val`.
@@ -178,7 +177,10 @@ Screen-result rules are defined in the ui-feature skill,
 - **Inline version strings** (`"2.3.21"`). Use the catalog.
 - **`apply(plugin = "...")`** instead of `plugins { id("...") }`.
 - **`repositories { ... }` in module scripts.** Forbidden by `FAIL_ON_PROJECT_REPOS`.
-- **`compileSdk`, `minSdk`, `targetSdk`, JVM toolchain or namespace in a module script**. The conventions own them (compileSdk 37, minSdk 26, targetSdk 36, JVM 19); only `:androidApp` adds its `applicationId`.
+- **`compileSdk`, `minSdk`, `targetSdk` or JVM toolchain in a module script**.
+  Inspect `build-logic/convention/` for the current values. Module-specific
+  namespaces follow [convention setup](../../platform-build-toolkit/references/convention-plugins.md);
+  only `:androidApp` adds its `applicationId`.
 - **`@OptIn(...)` for globally-opted-in experimentals**. Already in `KotlinMultiplatformConventionPlugin`.
 - **`api(...)` everywhere.** Default is `implementation`.
 - **`mavenLocal()`** in production builds.

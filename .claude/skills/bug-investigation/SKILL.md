@@ -5,8 +5,9 @@ description: Investigate and fix a reported Grippo defect - capture the report, 
 
 # Bug investigation
 
-A fix without a reproduced root cause is a guess. This skill turns a report into
-evidence, evidence into an owner, and the fix into a verified change.
+Establish the root cause from runtime evidence or a traced source path. This
+skill connects the report to its owner and verifies the correction with the
+checks available under the project's verification policy.
 
 ## 1. Capture the report
 
@@ -18,11 +19,11 @@ say which.
 
 ## 2. Reproduce
 
-Use [runtime-verification](../runtime-verification/SKILL.md) on the platform
-named in the report (both when unknown). Capture the failing state with a
-screenshot and the log window. Running the app needs the user's permission
-(verification policy); without it, trace the source path instead and label the
-root cause as source-inferred.
+Apply the [runtime authorization policy](../../../CLAUDE.md#verification-policy)
+and use [runtime-verification](../runtime-verification/SKILL.md) on the authorized
+platform. Capture the failing state with a screenshot and the log window. When
+runtime access is unavailable or declined, trace the source path, label the root
+cause as source-inferred and state which reproduction remains unverified.
 
 ## 3. Locate the owner
 
@@ -48,8 +49,10 @@ Debug screen shows the same file by category.
 
 Known trade-offs that are not bugs: conflated navigation may drop rapid-fire
 Directions; dialog sessions are never restored after process death; the
-destructive migration fallback is intentional, so a missing migration drops
-local data by design; `AppLogger` dispatches in release builds.
+destructive migration fallback is intentional; `AppLogger` dispatches in release
+builds. Schema changes still follow the
+[migration gate](../data-layer/references/persistence-room.md); the fallback
+does not waive it.
 
 ## 4. State the root cause
 
@@ -69,9 +72,12 @@ a defect in a locked decision or a backend contract is a question, not a patch.
 
 ## 6. Regression gate
 
-1. Re-run the exact reproduction and show the fixed state with evidence.
-2. Run the default build check and the gates the change triggers.
-3. Request independent review for behavior fixes.
+1. Re-run the exact reproduction when runtime access is authorized and available;
+   otherwise report that scenario as unverified.
+2. Run the checks and gates required by the
+   [verification policy](../../../CLAUDE.md#verification-policy).
+3. Obtain independent review under
+   [task execution](../task-orchestrator/SKILL.md#execution-loop).
 4. Report the root cause, the fix, what was verified and what remains unverified
    in the final response format.
 

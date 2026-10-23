@@ -2,7 +2,7 @@
 
 Owner of where version numbers live and which changes require a bump.
 Also owns the iOS TestFlight release workflow, including Crashlytics symbols.
-Version changes, release builds and store uploads require the user's request.
+Store version changes, release builds and store uploads require the user's request.
 An explicit request to upload to TestFlight, including a destination already
 settled in the task, authorizes the version update, signed archive, TestFlight
 upload and matching Crashlytics symbols without repeated confirmation.
@@ -22,9 +22,8 @@ Android and iOS versions are maintained independently and may differ.
 
 ## Compatibility bumps
 
-- **Room**: any entity/column/index change needs a migration object registered in
-  `DatabaseMigrations.all`, a version bump and the regenerated schema JSON
-  committed. Without a migration the destructive fallback drops user data.
+- **Room**: schema compatibility and version changes follow
+  [migration decisions](../../data-layer/references/cookbook-room-migration.md).
 - **Additive serialized fields**: adding an optional property with a default to a
   `@Serializable` State or route is backward-compatible and needs no bump;
   removing, renaming or retyping a field does.
@@ -40,7 +39,10 @@ Android and iOS versions are maintained independently and may differ.
 ## Release builds
 
 - Android release uses minification and resource shrinking with
-  `androidApp/proguard-rules.pro`; signing comes from `secure/keystore/`.
+  `androidApp/proguard-rules.pro`. The checked-in Gradle configuration has no
+  release signing configuration; files under `secure/keystore/` do not by
+  themselves produce a signed artifact. Inspect the effective configuration
+  before making any signing claim.
 - Agents may check Android release compilation when requested; they do not
   produce or upload Android store artifacts.
 - An iOS TestFlight request covers the workflow below. App Store review

@@ -1,7 +1,6 @@
 # Convention plugins and version catalog
 
-Actual definitions live in `build-logic/convention/src/main/kotlin/` (ignore the stale, gitignored
-copies under `build-logic/convention/bin/`); plugin ids are registered in
+Actual definitions live in `build-logic/convention/src/main/kotlin/`; plugin ids are registered in
 `build-logic/convention/build.gradle.kts`; aliases/versions live in `gradle/libs.versions.toml`;
 global flags in `gradle.properties`. Inspect them before relying on a detail below.
 
@@ -32,7 +31,7 @@ What each plugin does (verified):
   their own namespace locally); JVM toolchain 19.
 - `android.application.convention`: `com.android.application` with `compileSdk = 37`,
   `minSdk = 26`, `targetSdk = 36`, Java/JVM 19. `applicationId = "com.grippo.android"`,
-  `versionCode`/`versionName` (19 / "2.0" today) and `namespace = "com.grippo.android.app"`
+  `versionCode`/`versionName` and `namespace = "com.grippo.android.app"`
   stay in `androidApp/build.gradle.kts` ([release](release.md)).
 - `compose.multiplatform.convention`: applies `org.jetbrains.kotlin.plugin.compose` and
   `org.jetbrains.compose`; excludes `/META-INF/{AL2.0,LGPL2.1}` from Android packaging.
@@ -56,8 +55,8 @@ What each plugin does (verified):
 `org.gradle.parallel=true`, `org.gradle.vfs.watch=true`, `org.gradle.workers.max=1` (peak memory
 during native release linking), `kotlin.native.binary.smallBinary=true`,
 `kotlin.incremental.native=true`, `ksp.useKSP2=true`. No Kotlin/Native garbage-collector override
-is set (the former commented `gc=cms` line was removed on 2026-10-15); a commented flag is never
-an active setting. `settings.gradle.kts` enables
+is set; inspect active properties rather than treating comments as settings.
+`settings.gradle.kts` enables
 `TYPESAFE_PROJECT_ACCESSORS` and `RepositoriesMode.FAIL_ON_PROJECT_REPOS`, so module scripts
 declare no repositories.
 
@@ -77,7 +76,7 @@ any dependency version; platform pins belong to the convention sources above.
 
 ## Dependency updates
 
-A version change needs three things: the user's scope naming it; the vendor's release notes or
+A version change needs three things: authorized scope covering it; the vendor's release notes or
 migration guide for compatibility; and the verification set for the change -
 `:androidApp:assembleDebug`, `:shared:assembleSharedDebugXCFramework`, the KSP/Room generation
 both builds run, and an `iosApp` compile when the exported Swift API or Decompose-facing types

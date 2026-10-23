@@ -47,11 +47,11 @@ live in the owning skills under `.claude/skills/`; the code owns signatures.
   the task (`code-reviewer`, `design-reviewer`, `gate-auditor`). It is
   pre-authorized by this file; the author's self-review never counts as it.
 - **Permitted check** - source/diff review; the rulebook checker
-  (`python3 -I .claude/hooks/check-rulebook.py`); scoped Gradle builds; manual
+  (`python3 -I .claude/hooks/check-rulebook.py`) and its existing Bash guard
+  matrix (`zsh .claude/hooks/bash-guard-tests.sh`); scoped Gradle builds; manual
   runtime checks on an emulator/simulator through the `runtime-verification`
-  skill when the user allows running the app. The repository has no automated
-  tests, linters or screenshot tooling, and none may be added without an
-  explicit user request.
+  skill when the user allows running the app. Application tests, linters and
+  screenshot tooling may be added only on explicit user request.
 - **Record** - a durable file the rulebook names in [Records](#records). The
   reply to the user is the task report; nothing else is a record.
 - **Small editorial change** - a comment, a wording fix of one string key in all
@@ -170,7 +170,7 @@ Use [code style](.claude/skills/validation-gates/references/code-style.md),
 - Backend owns the API contract; no codegen; DTOs are hand-written.
 - Compose Multiplatform Resources for strings and drawables (not `androidx.compose.ui.res`, not Moko).
 - Dialog sessions are in-memory and never restored after process death.
-- No automated tests, linters or screenshot tooling unless the user explicitly asks.
+- No automated application tests, linters or screenshot tooling unless the user explicitly asks.
 
 Changing any of these is scope expansion and needs a question.
 
@@ -203,8 +203,8 @@ Changing any of these is scope expansion and needs a question.
   iOS framework check above. Source, resource or build changes included in the
   release retain their normal checks.
 - Builds needed within the authorized scope need no separate consent; an
-  explicit user restriction wins. Documentation-only work runs the rulebook
-  checker instead of a build.
+  explicit user restriction wins. Rulebook-only work runs the checker instead
+  of an app build; Bash guard changes also run the existing guard matrix.
 - A check that is available and authorized MUST run; "unverified" is acceptable
   only for checks that are unavailable or restricted by the user, and the reason
   is stated. A green build proves compilation, not runtime behavior.
@@ -230,7 +230,8 @@ A task is complete when all of the following hold:
    behavior/visual triggers in Definitions.
 3. Independent review (Definitions) found no unaccepted blocking finding, or the
    change is a small editorial change.
-4. The default build check ran and passed, or its absence is reported with the reason.
+4. The checks required by the verification policy passed, or their absence is
+   reported under that policy.
 5. Records named below are updated where the task changed what they describe.
 6. The reply follows the [final response format](.claude/skills/validation-gates/SKILL.md#final-response-format).
 
@@ -268,13 +269,13 @@ for Claude Code and Codex launch, capabilities and protection.
 | `gate-auditor` | Analytics coverage gate and preservation gate inventories and verdicts | Read-only | feature-analytics, state-preservation |
 | `backend-contract-auditor` | Backend evidence gathering and drift tables before wire changes | Read-only + WebFetch | backend-contract-client |
 | `analytics-admin-auditor` | Live admin reconciliation through the user's Chrome tab | Repo read-only; admin writes only when authorized | feature-analytics |
-| `ui-implementer` | Screens, dialogs, navigation, UI state, drafts, VM analytics hooks, the feature's analytics-api models and `:analytics:<feature>` implementation | Write within owned paths; scoped builds; no git | ui-feature, state-preservation, feature-analytics, compose-components |
-| `data-implementer` | Feature/Repository/UseCase, API/DTOs, Room, DataStore, mappers, Koin | Write within owned paths; scoped builds; no git | data-layer, mappers, di-modules, backend-contract-client |
-| `design-implementer` | Tokens, components, resources, previews, artwork integration | Write within owned paths; scoped builds; no git | design-system, brand-design, illustrations, compose-components |
-| `platform-implementer` | Conventions, catalog, modules, toolkit, shells, XCFramework | Write within owned paths; scoped builds; no git | platform-build-toolkit, di-modules |
+| `ui-implementer` | Screens, dialogs, navigation, UI state, drafts, VM analytics hooks, the feature's analytics-api models and `:analytics:<feature>` implementation | Write within owned paths; scoped builds; read-only git | ui-feature, state-preservation, feature-analytics, compose-components |
+| `data-implementer` | Feature/Repository/UseCase, API/DTOs, Room, DataStore, mappers, Koin | Write within owned paths; scoped builds; read-only git | data-layer, mappers, di-modules, backend-contract-client |
+| `design-implementer` | Tokens, components, resources, previews, artwork integration | Write within owned paths; scoped builds; read-only git | design-system, brand-design, illustrations, compose-components |
+| `platform-implementer` | Conventions, catalog, modules, toolkit, shells, XCFramework | Write within owned paths; scoped builds; read-only git | platform-build-toolkit, di-modules |
 | `build-verifier` | Runs scoped Gradle targets and reports compile errors | Bash builds; no edits | runtime-verification |
 | `runtime-verifier` | Runs the app on emulator/simulator, drives scenarios, screenshots, logs | Bash + simulator tools; no edits | runtime-verification |
-| `rulebook-maintainer` | Edits CLAUDE.md, AGENTS.md, skills, agents, hooks and records structure | Write within rulebook paths; no git | rulebook-maintenance |
+| `rulebook-maintainer` | Edits CLAUDE.md, AGENTS.md, skills, agents, hooks and records structure | Write within rulebook paths; read-only git | rulebook-maintenance |
 
 ## Skills index
 

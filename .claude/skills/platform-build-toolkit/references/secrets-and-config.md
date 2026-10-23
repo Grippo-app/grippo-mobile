@@ -7,17 +7,25 @@ and logging of sensitive data.
 
 | Item | Location | Tracked | Purpose |
 |---|---|---|---|
-| Sync task and copy logic | `secure/secure.gradle.kts` (applied from the root `build.gradle.kts`) | yes | `./gradlew syncSecureConfigs` copies the files below into the app shells |
+| Sync task and copy logic | `secure/secure.gradle.kts` (applied from the root `build.gradle.kts`) | yes | `./gradlew syncSecureConfigs` copies Firebase configs and updates Google identifiers in the app shells |
 | Firebase Android config | `secure/firebase/google-services.json` | no (gitignored) | synced into `androidApp/` for the google-services plugin |
 | Firebase iOS config | `secure/firebase/GoogleService-Info.plist` | no (gitignored) | synced into `iosApp/` for `FirebaseApp.configure()` |
 | Google sign-in properties | `secure/google/google-auth.properties` | no (gitignored) | server client id placeholders for both shells |
-| Release signing | `secure/keystore/release.jks`, `keystore.properties`, base APK | no (gitignored) | release builds only |
+| Android signing inputs | `secure/keystore/` | no (gitignored) | sensitive local material; the checked-in build does not configure release signing ([release](release.md#release-builds)) |
 | SDK paths | `local.properties` | no (gitignored) | Android SDK location |
 
-The synced copies inside `androidApp/` and `iosApp/` are generated outputs: never
-edit them by hand and never treat their presence as proof that `secure/` is
-current. A missing `secure/` makes the Android build fail at the google-services
-step; report that instead of inventing a config.
+The synced Firebase files inside `androidApp/` and `iosApp/` are generated
+outputs: never edit them by hand or treat their presence as proof that the
+secure inputs are current. The sync task also rewrites Google identifiers in
+tracked `androidApp/build.gradle.kts` and `iosApp/iosApp/Info.plist`. The main
+session owns any needed sync and reviews those source changes under
+[change attribution](../../task-orchestrator/references/change-attribution.md);
+read-only verifiers report missing inputs instead of running the task.
+
+Missing secure inputs block synchronization. A missing synced Android Firebase
+file blocks the google-services step; a missing `secure/secure.gradle.kts`
+blocks Gradle configuration itself. Report the actual missing input rather
+than inventing a config.
 
 ## Rules
 

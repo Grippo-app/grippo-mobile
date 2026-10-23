@@ -129,7 +129,10 @@ internal interface NoteEditorContract {
 
 Rules:
 - `@Immutable interface`, `internal`.
-- Methods: `onXxx*()` — past or present tense, describes a UI event ("user tapped X").
+- Methods describe observed UI events ("user tapped X"); callback naming follows
+  [code style](../../validation-gates/references/code-style.md). Preserve the
+  existing container/root relay APIs when threading child callbacks through
+  [cross-feature navigation](navigation.md#cross-feature-navigation).
 - Action callbacks MUST return Unit. Boolean is permitted only for a synchronous
   handled/consumed input-event protocol; it MUST NOT query UI/business data.
 - `companion object Empty` provides no-op defaults for previews.

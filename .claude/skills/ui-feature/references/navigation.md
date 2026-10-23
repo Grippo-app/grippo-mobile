@@ -19,17 +19,21 @@ in-memory configs and are not restored.
    with `ExercisesRouter.Library(ExercisesRouter.Mode.Browse)` and
    `ProfileComponent` for the `MainRouter` tabs), `TrainingsRootComponent`,
    `ProfileComponent`, `DebugComponent` and `TrainingComponent`.
-   `ExercisesRootComponent` is built from two places: `TrainingComponent` (picking
-   modes `Mode.Default` / `Mode.SimilarTo`, each carrying a `resultKey`) and
-   `MainComponent`'s Library tab (`Mode.Browse`, no key); `OnboardingComponent`
-   is an internal child of `AuthComponent` (there is no onboarding module).
+   `MainComponent`'s Library tab uses `Mode.Browse` without a result key.
+   Existing deviation: [TrainingComponent](../../../../ui-screen-features/training/src/commonMain/kotlin/com/grippo/training/TrainingComponent.kt)
+   imports and constructs `ExercisesRootComponent` for picking modes
+   `Mode.Default` / `Mode.SimilarTo`, each carrying a `resultKey`. This conflicts
+   with the [module dependency rules](../../../../CLAUDE.md#module-dependency-rules)
+   and is not a pattern for new cross-feature navigation.
+   `OnboardingComponent` is an internal child of `AuthComponent`.
 2. **`<Feature>Component`** (or `<Feature>RootComponent` — see naming below) in each `:ui-screen-features:<feature>` with more than one screen — owns a private `StackNavigation<<Feature>Router>`. Single-screen features skip the inner stack and just expose one `BaseComponent`.
 3. **`DialogComponent`** in `:shared` — owns `SlotNavigation<DialogSession>` parallel to the screen stack. `DialogContentComponent` owns the internal `StackNavigation<DialogStep>` for that session. Both use `serializer = null`; configs and typed callbacks remain live in memory. See [dialogs.md](dialogs.md).
 
 There is **no** other navigation mechanism. No global event bus for navigation, no Compose Navigation, no Voyager.
 
-An ordinary screen ViewModel uses `DialogController.open(config)` to start a new
-sheet session, closing any existing session first. The host supplies the
+An ordinary screen ViewModel uses `DialogController.open(config)` to request a new
+sheet session; [dialog retention and opening order](dialogs.md#dialogcontroller--dialogprovider)
+govern replacement and pending errors. The host supplies the
 originating step's `DialogController.Session` for nested `push`,
 `replaceCurrent`, `back` and `close`; it ignores inactive or removed steps.
 Nested features emit semantic directions and forward typed constructor callbacks;
@@ -103,9 +107,8 @@ A `sealed class Child(component: BaseComponent<*>)` lets `RootScreen` pattern-ma
 
 ## Naming convention (Component vs RootComponent)
 
-- The **default** feature-root name is the bare `<X>Component`: `AuthComponent`, `MainComponent`, `ProfileComponent`, `TrainingComponent`, `DebugComponent`.
-- The `<X>RootComponent` form is reserved for features whose first sub-screen reuses the feature name: `:home` has `home/HomeComponent` → `HomeRootComponent`; `:trainings` has `trainings/TrainingsComponent` → `TrainingsRootComponent`. `ExercisesRootComponent` (sub-screen `library/ExerciseLibraryComponent`) is an existing exception, not a precedent for new features.
-- Owning a private `StackNavigation` is **orthogonal** to this naming: `AuthComponent`/`ProfileComponent`/`TrainingComponent` own internal stacks despite the bare name, and `MainComponent` owns the tab shell. `DebugComponent` is the single-screen feature with no inner stack.
+Feature-root names and visibility follow
+[module structure](module-structure.md#ui-screen-featuresfeature).
 
 ## Returning data from a screen
 
@@ -150,9 +153,8 @@ override suspend fun eventListener(direction: RootDirection) {
 }
 ```
 
-`RootDirection` today: `Login`, `Close`, `Home`, `Debug`, `Trainings`,
-`Training(stage)`, `WeightHistory`, `Goal`, `Back` (verified 2026-10-15 after the
-dead Home/Profile directions were removed).
+Inspect `shared/src/commonMain/kotlin/com/grippo/shared/root/RootDirection.kt`
+for the current destinations and their payloads.
 
 Two patterns:
 - **Session-loss ownership**: Root checks only its own route; `RootDirection.Login` replaces
@@ -170,6 +172,10 @@ For sub-feature components, `eventListener` handles two kinds of directions:
 ## Cross-feature navigation
 
 Two `:ui-screen-features:*` modules **cannot** import each other. Direct symbol import between feature modules is **forbidden**. The mechanism, shown on the shipped Home → Profile/Goal jump (the "add goal" action on the Home dashboard):
+
+The `toX` names below describe existing root/container relay APIs, not a naming
+exception for new callbacks; [code style](../../validation-gates/references/code-style.md)
+owns naming. Inspect and reuse the actual chain before adding a destination.
 
 1. **Confirm/declare the destination route in `:ui-screen-features:screen-api`** — here `ProfileRouter.Goal`. If it doesn't exist, add it. `Auth`/`Profile` wrap nested routers; leaf root entries (`Home`, `Trainings`, `Debug`) are `data object`; payload-carrying ones (`Training(stage)`) are `data class`. When destination inputs change, inspect all callers and archived-route compatibility, including supported invalidation when archives become incompatible. Reuse the existing subtype for the same destination when a coherent migration is within scope; add a subtype only for a distinct destination or contract.
 
@@ -225,7 +231,10 @@ For result-back navigation (feature A opens B, expects a result), use `ResultMan
 - **Lambda parameter in a `Router` payload.** Routes are `@Serializable`; lambdas aren't.
 - **Skipping the `RootDirection` step.** Calling `RootRouter.push(...)` directly from a feature VM has no path.
 - **Forgetting to thread the callback** through every layer (`createChild` → child component constructor → its eventListener).
-- **Adding a `toX(...)` on `<Feature>Contract`** when it could be a constructor lambda. `Contract` is for the UI's own callbacks, not cross-feature routing.
+- **Adding a routing callback to a leaf UI Contract instead of emitting its
+  normal Direction.** The leaf Component invokes its constructor callback.
+  Container/root ViewModels may relay child callbacks through their existing
+  typed `toX` methods and Directions, as the recipe above shows.
 
 ## Animations
 

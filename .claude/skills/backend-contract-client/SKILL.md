@@ -6,11 +6,10 @@ description: Verify Grippo backend contracts before wire behavior changes in DTO
 # Grippo backend contract
 
 The backend owns endpoint methods, paths, fields, types, dictionary keys and semantics.
-Before a wire change MUST identify an authoritative backend OpenAPI/Swagger document or backend
-source and record its environment/revision ([contract evidence](references/overview.md) says
-where it comes from). An unavailable contract blocks only dependent wire decisions; continue
-independent work. Task text and existing mobile DTOs alone do not prove server behavior. Resolve
-missing details with the user before implementing them.
+Before a wire change apply the [evidence trigger](#evidence-trigger-canonical) and
+identify the facts the accepted evidence establishes. An unavailable contract blocks
+only dependent wire decisions; continue independent work and resolve missing facts
+with the user. Existing mobile DTOs alone do not prove server behavior.
 
 ## Evidence trigger (canonical)
 
@@ -24,7 +23,7 @@ Accepted evidence classes, in order of preference: (1) an OpenAPI/Swagger docume
 backend source at a named revision; (2) an **owner-attested contract** - the user, who owns the
 Grippo backend, states in chat the exact method, path, wire keys, types, null/omitted/empty
 semantics and error outcomes of the operation. An owner-attested contract is recorded verbatim
-in the task report with its date; facts it does not state are asked for in the quiz, never
+in the task report with its date; missing required facts are asked for directly, never
 inferred; a later OpenAPI/source that contradicts it is reported, not silently adopted.
 DTO collection properties MUST be nullable with `= null`; element nullability/types MUST follow
 the verified backend contract, not a blanket nullable-element convention.

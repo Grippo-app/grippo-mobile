@@ -16,13 +16,14 @@ on a detail below.
   `HttpTimeout` with request, connect and socket timeouts of 10 s; `Logging` at `LogLevel.INFO`
   through `ClientLogger`; `Auth` with `TokenProvider`; `ContentNegotiation` with the injected
   shared `Json`; `defaultRequest` with host `grippo-app.com`, `URLProtocol.HTTPS`, JSON content
-  type and `Accept-Language = AppLocale.current()` on every request.
-  `invoke(method, path, body, queryParams): HttpResponse` runs inside `withContext(Dispatchers.IO)`.
+  type and `Accept-Language = AppLocale.current()` unless the request supplies the
+  explicit locale override. Inspect `invoke` for method/path/body/query and locale
+  forwarding; it returns `HttpResponse` inside `withContext(Dispatchers.IO)`.
 - `ClientLogger` forwards every Ktor log line to `AppLogger.Network`, auth requests included; there
   is no auth-specific log sanitation or redaction marker. Do not widen logging or add bodies
   ([secrets and configuration](../../platform-build-toolkit/references/secrets-and-config.md)).
 - `GrippoApi` is `@Single public class GrippoApi internal constructor(client: BackendClient)` with
-  32 public throwing suspend endpoints and one private `request` helper; its sections,
+  public throwing suspend endpoints and one private `request` helper; its sections,
   helper semantics and quirks are described in [DTO/API](dtos-and-api.md).
 - `BackendModule` is `@Module(includes = [HttpModule, DatabaseModule, SerializationModule]) @ComponentScan`
   (`TokenProvider` reads the token DAOs).

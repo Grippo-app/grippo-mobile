@@ -8,18 +8,15 @@ before relying on a detail below.
 
 - `Koin.init(appDeclaration: KoinAppDeclaration = {}): ApplicationBootstrap` runs
   `KoinPlatformTools.defaultContext().startKoin { appDeclaration(); modules(...) }`.
-- The `modules(...)` call lists 63 generated modules explicitly as `<Name>Module().module`,
-  grouped in this order: `AnalyticsModule`; the 30 `<Feature>AnalyticsModule`s;
-  `CrashReportingModule`, `MessagingModule`, `ContextModule`; `DatabaseModule`,
-  `DataStoreModule`, `BackendModule`, `GoogleAuthModule`, `AppleAuthModule`; `CoreModule`,
-  `DialogModule`; the `<Feature>FeatureModule`s (with `ErrorModule` among them);
-  `FeatureApiModule().module`; the remaining toolkit modules (connectivity, link opener,
-  notifications, permissions, resources provider, serialization, http client, image loader).
+- The `modules(...)` call registers generated modules explicitly as
+  `<Name>Module().module`, alongside the hand-written `FeatureApiModule().module`.
+  Inspect the actual list for membership and grouping; the
+  [UseCase carve-out](annotations.md) remains the only hand-written module.
 - Resolution starts only after `startKoin` returns, so list position does not order
   resolution. Keep the file's grouping when adding a module.
 - `init` then resolves `analytics`, `crashReporting`, `messaging`, `LocalSettingsFeature` and the
   `Analytics` collection controller from the started context and returns `ApplicationBootstrap(...)`.
-- 29 of the 30 `:analytics:<feature>` modules register
+- Feature analytics modules register
   `@Single @Named("<feature>_analytics") internal fun provideSchema(): AnalyticsSchema`;
   `DebugAnalyticsModule` registers none. `AnalyticsModule.provideAnalyticsCatalog` collects them
   with `scope.getAll<AnalyticsSchema>()` the first time the analytics core is resolved.

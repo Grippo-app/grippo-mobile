@@ -67,7 +67,8 @@ fitness decoration attached to unrelated content.
 ## Generation
 
 New raster artwork is produced with the image-generation tool available in the
-session, if any; in Claude Code this may be the Figma MCP `generate_image` or none.
+session, if any; inspect its actual capabilities rather than assuming a provider
+or tool name.
 Generation runs in the main session (project agents have no MCP image tools); the
 `design-implementer` integrates the exported asset.
 When no tool is available, report generation as unavailable and deliver the

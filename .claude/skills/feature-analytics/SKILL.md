@@ -50,10 +50,9 @@ standard and source define the contract; historical review reports do not.
   Its maximal shape is three methods: `trackEvent(FeatureEvent)`,
   `suspend fun <T> trackOperation(FeatureOperation, block: suspend () -> T): T` and
   `presentScreen(FeatureScreen, reason): ScreenPresentation`. Each interface
-  exposes only the methods its feature implements. Current shape (overlapping
-  sets, verified 2026-10-15): 30 interfaces; 19 have only `trackEvent`; 9 also
-  have `trackOperation`; 7 also have `presentScreen` (six default `reason` to
-  `NavigationReason.Initial`); `DebugAnalytics` has `presentScreen` only. Events do not perform business actions. Screen-only
+  exposes only the methods its feature implements; inspect its declaration for
+  the exact subset and defaults. `DebugAnalytics` is a screen-only example.
+  Events do not perform business actions. Screen-only
   integration uses `presentScreen` and a screen enum. Add event/operation methods
   together with their actual instrumentation, without empty models or placeholder
   methods.
@@ -213,8 +212,7 @@ behavior and reports to the owning ViewModel, which decides what to observe.
 - Cancelling an in-surface edit (Cancel next to a field) is a `Clicked` fact on
   that control. `DismissRequested` is reserved for leaving the surface.
 - Use `DismissRequested` for an observed user request to leave or close a surface.
-  It is declared per feature in its `models/` (28 feature declarations plus the
-  common `ControlAction.DismissRequested` entry) and encoded as
+  It is declared per feature in its `models/` and encoded as
   `<feature>_dismiss_requested`. It records intent, not completed dismissal or
   cancellation. Keep navigation Back/onBack names where they describe navigation.
   Do not rename business contracts merely to match telemetry. Programmatic pop,

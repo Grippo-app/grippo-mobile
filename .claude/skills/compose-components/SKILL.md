@@ -69,6 +69,7 @@ Durable reports follow the project's [records policy](../../../CLAUDE.md#records
   owning target; all affected callers still satisfy the contract.
 - Product values, meaningful states and enclosing compositions pass the owning
   design-system/brand gates when the change is visual.
-- Self-review and independent review are complete; full audits reconcile every
-  production file. Report actual checks and unverified runtime/visual outcomes
+- Self-review is complete; independent review follows the project's
+  [definition of done](../../../CLAUDE.md#definition-of-done). Full audits reconcile
+  every production file. Report actual checks and unverified runtime/visual outcomes
   through [validation-gates](../validation-gates/SKILL.md).

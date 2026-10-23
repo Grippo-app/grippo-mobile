@@ -1,8 +1,9 @@
 # Completion response examples
 
 Apply the [canonical response rules](../SKILL.md#final-response-format). These
-examples illustrate tone and detail, not required sections or checks. Use actual
-current scope, paths and evidence; never copy example counts or outcomes as claims.
+examples are illustrative, not evidence of completed work or required checks.
+Use actual current scope, paths and evidence; never copy example counts or
+outcomes as claims.
 
 ### Example of useful detail
 

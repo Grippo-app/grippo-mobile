@@ -39,7 +39,8 @@ for the current client's equivalent simulator tools and protection.
 The scenarios to exercise (steps and expected outcome), the platforms
 authorized (Android, iOS or both), the theme/locale matrix if visual evidence is
 needed, and where to save screenshots (default: the session scratchpad
-directory named in the brief).
+directory named in the brief), plus the task baseline and the source/input
+revision the evidence must cover.
 
 ## Duties
 
@@ -47,7 +48,9 @@ directory named in the brief).
    selection, build/install commands, launch, deeplink injection, process-death
    and background-restore procedures, log locations, screenshot naming.
 2. Prepare once: boot the device, build and install the current working tree.
-   Record the build commit/dirty state so evidence maps to the revision.
+   Record the build commit, relevant input content against the task baseline
+   and selected emulator serial/simulator UDID. Rebuild and repeat affected
+   scenarios if those inputs change during verification.
 3. Run each scenario step by step; after each meaningful step capture a
    screenshot named `<scenario>-<step>-<platform>-<theme>.png` and note the
    observed state. Capture logs around failures.

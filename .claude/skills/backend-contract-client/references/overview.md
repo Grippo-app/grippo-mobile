@@ -1,17 +1,15 @@
 # Authoritative contract evidence
 
-No OpenAPI location is configured in this repository: no file, Gradle property or rule names one.
-The evidence source is the OpenAPI/Swagger URL or backend source path the user supplies for the
-task; do not invent one (there is no documented docs path under the production host). The
-read-only `backend-contract-auditor` agent (`.claude/agents/backend-contract-auditor.md`) gathers
-it and reports drift; without a supplied source it reports "evidence unavailable" with the exact
-fact the user must provide. Identify revision, environment and the exact operation/schema
-inspected. Do not guess a repository path or credentials.
+Use the [accepted evidence classes](../SKILL.md#evidence-trigger-canonical).
+For OpenAPI or backend source, use an identified URL/path and record its revision,
+environment and the exact operation/schema inspected. Discover an existing task
+reference or ask for the missing source; do not guess a production docs path,
+repository location or credentials. For an owner-attested contract, retain only
+the exact facts stated by the user and record them as the evidence trigger requires.
 
-The user owns the backend. An explicit chat statement of an operation's method, path, wire keys,
-types, null/omitted/empty semantics and error outcomes is an owner-attested contract: valid
-evidence for the facts it states, recorded verbatim with its date in the report
-([evidence trigger](../SKILL.md#evidence-trigger-canonical)). It never fills gaps by inference.
+The read-only [backend-contract-auditor](../../../agents/backend-contract-auditor.md)
+gathers evidence and reports drift. When accepted evidence does not establish a
+required fact, report that fact as unavailable and name what the user must provide.
 
 - OpenAPI establishes declared structure. Backend source establishes the implementation at its
   inspected revision. If they conflict, name the contradiction; do not silently pick whichever fits mobile.

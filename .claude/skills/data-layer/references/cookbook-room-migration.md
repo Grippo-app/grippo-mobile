@@ -12,7 +12,8 @@ builders and schema locations are listed in [Room persistence](persistence-room.
    Missing release/data-retention policy is a user decision; do not infer it from fallback settings.
 3. For an authorized migration use the existing `Migration<N>To<N+1>` object pattern with
    `SQLiteConnection`, register it in `DatabaseMigrations.all`, bump `@Database(version = N)` and
-   commit the regenerated `schemas/.../<N>.json` ([release](../../platform-build-toolkit/references/release.md)).
+   include the regenerated `schemas/.../<N>.json` in the change. Git actions follow
+   [delivery](../../delivery/SKILL.md).
 4. Simple additive changes may use ALTER TABLE. Recreate tables only when the delta requires it;
    copy all retained data and recreate required indices. `PRAGMA defer_foreign_keys = ON`
    defers constraints until transaction completion; it does not disable integrity checks.

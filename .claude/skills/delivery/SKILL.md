@@ -1,6 +1,6 @@
 ---
 name: delivery
-description: Git policy for Grippo AI work - who may commit, what gets staged, commit message and branch conventions, pull-request descriptions and the proposed-commit hand-off at the end of a task. Use when the user asks to commit, push, branch or open a pull request, or when ending a task that changed files.
+description: Deliver Grippo changes under the project's Git policy - staging, commit messages, branches, pull requests and the proposed-commit hand-off. Use for requested Git actions or when ending a task that changed files.
 ---
 
 # Delivery
@@ -59,9 +59,10 @@ and a proposed commit message; commits happen only when the user asks.
 
 ## Branches and pull requests
 
-- Branch name `<type>/<short-slug>` with `type` in `feature`, `fix`, `design`,
-  `analytics`, `rulebook`, `build`; lowercase, hyphenated, no ticket prefixes
-  unless the user supplies one.
+- Branch names honor the user's exact requested name and the current client's
+  required prefix. Codex defaults to `codex/<short-slug>`; otherwise use
+  `<type>/<short-slug>` with `type` in `feature`, `fix`, `design`, `analytics`,
+  `rulebook`, `build`. Slugs are lowercase and hyphenated.
 - Pull-request title equals the commit title style. Body in Russian with the
   sections **Что изменено**, **Проверено**, **Не проверено**, **Риски**, followed
   by the attribution line the environment requires. Do not enable auto-merge or

@@ -3,8 +3,9 @@
 > Note/Tag/AmountPicker/NoteDetail examples are educational, nonexistent APIs. They are not the current route, dependency or source catalog; inspect real callers and signatures before adapting them.
 
 Apply the mandatory [state-preservation gate](../../state-preservation/SKILL.md)
-for every new feature or affected existing state owner. This reference defines
-the implementation; the linked skill defines the field inventory and completion checks.
+for every new feature or affected existing state owner. That skill owns draft
+policy, field inventory and initialization. This reference owns route/shell
+restoration and illustrates Component wiring.
 
 Serializable screen routes support restoration when the platform shell supplies
 saved navigation state. Android's `MainActivity` creates the root through
@@ -106,31 +107,12 @@ The observer rebuilds list presentation from the existing data source; the reque
 
 ### Editable form drafts
 
-Nonsecret unfinished forms and independent-screen selections must preserve their
-latest immutable business draft through the owning Component's existing StateKeeper.
-Define `val DRAFT = PersistenceKey("stable address", State.serializer())` in a
-private companion object at the bottom of the owning Component.
-Restore through protected BaseComponent.restoreState
-when constructing a fresh retained ViewModel, pass it as `initialState`, and
-register the current VM state through saveState. Restore the parent flow's accepted
-data and register its lazy supplier before constructing children that use it. Child ComponentContexts
-have separate StateKeepers, so each screen owns its draft locally.
-
-Orientation (inspect the Components): 18 Components define
-`val DRAFT = PersistenceKey("<Feature>Draft", <State>.serializer())` in a private
-companion and call `restoreState(DRAFT)` plus `saveState(DRAFT) { viewModel.state.value }`.
-Seven ViewModels take a nullable `initialState` and receive `restoreState(DRAFT)`
-directly; the other eleven take a non-null `initialState`, so their Components pass
-`restoreState(DRAFT) ?: <State>(...)`. `PersistenceKey<T : Any>(key, serializer)` is
-a final class with `internal` properties: a feature constructs it and passes it only
-to `restoreState`/`saveState`. Six draft States and `AuthRouter.Onboarding`/`AuthProcess`
-carry `@JsonIgnoreUnknownKeys` because older archives may contain removed fields.
-
-A popped child can be destroyed, discarding its local draft. On re-entry, pass the
-parent flow's already accepted values as ordinary initial business inputs and
-use them only when `restoreState(DRAFT)` returns null. A retained VM wins over
-both the local archive and those inputs. The parent holds accepted values,
-not unfinished drafts copied from destroyed children; add no global draft store.
+Follow [draft ownership and implementation](../../state-preservation/SKILL.md#ownership-and-implementation)
+for descriptors, fields, precedence and parent/child inputs. The Component restores
+inside `retainedInstance` and registers one lazy supplier; the shell's
+`StateKeeper.save` reads the latest VM state. Child ComponentContexts isolate
+screen drafts. Inspect actual Component and ViewModel constructors to determine
+which owner resolves an absent archive rather than copying a fixed census.
 
 ```kotlin
 // UserComponent.kt — excerpts; the private companion is last in the class.
@@ -157,42 +139,9 @@ private companion object {
 }
 ```
 
-Keep passwords, tokens, provider credentials and other secrets out of the draft:
-mark secret inputs transient with safe empty defaults. A serializable formatter
-does not authorize storing its secret content. Saved invalid/empty nonsecret input
-must take precedence over route prefill; recompute current provider availability.
-
-Keep the typed descriptor private to its owning Component. Do not add separate
-metadata files, feature-wide matrices, aliases, extensions, DI or raw draft
-StateKeeper.consume/register bindings. PersistenceKey couples the type and
-serializer; no reflection or live identity determines an archive address. Preserve
-existing addresses when refactoring, without alias/fallback reads. Navigation
-childStack keeps its separate navigation key and Router serializer.
-Enable the owning module's serialization
-plugin; use `@Serializable` draft state and the existing ImmutableListSerializer
-for immutable lists. Preserve FormatState values, including invalid display text.
-Exclude catalogs, localized presentation data and other rebuilt suggestions with
-`@Transient` and a default; re-subscribe to their existing data Flows.
-For data-backed forms, follow the
-[draft initialization policy](../../state-preservation/SKILL.md#data-backed-form-synchronization):
-persist actual values, populate a fresh form once and preserve restored snapshots.
-Keep no private runtime flags, previous-source caches or shadow snapshots; later
-source updates rebuild presentation without replacing form inputs. An absent
-archive and a saved all-default snapshot are distinct; the VM can receive nullable
-initialState at this boundary while BaseViewModel always receives a complete state.
-Catalog selection must preserve which IDs were known and selected (or excluded),
-so the first restored emission cannot treat all known items as newly selected.
-An initial empty cache emission must not erase the draft before data arrives.
-
-This is business state ownership, separate from analytics. Add no generic
-BaseViewModel save/restore framework, provider, synchronization job or per-input
-route replacement. The supplier runs when StateKeeper saves, not on every edit.
-Dialog sessions and callbacks remain unsaved. Review save → serialization roundtrip
-→ destroy → fresh ComponentContext/InstanceKeeper → restore, including unfinished
-edits, Back and final operation inputs; retention alone is insufficient proof.
-This preserves drafts when the shell supplies saved state. Android recreation and
-iOS background checkpoints have different delivery policies; neither guarantees
-a draft on every arbitrary cold start.
+The [preservation gate](../../state-preservation/SKILL.md#mandatory-preservation-gate)
+owns fresh-instance verification and field evidence; retention alone proves no
+archive restoration. Platform delivery follows the shell policies below.
 
 ### 6. Route inputs seed filters; StateKeeper preserves the latest selection
 

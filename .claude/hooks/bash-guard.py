@@ -21,9 +21,10 @@ Exit 0 allows the call. Exit 2 blocks it; the stderr text reaches the agent, so
 every block names the rule and an alternative. Test matrix: bash-guard-tests.sh
 (run it from the main session; read-only agents cannot execute zsh).
 
-Design: quoted spans are masked before tokenizing so a quoted ">" or "&&" is
-data, never an operator; newlines are command separators; every simple command
-is checked after stripping transparent prefixes (env, nice, timeout, xcrun ...).
+Design: executable substitutions are rejected before masking quotes; quoted
+operators are data. Newlines separate commands; transparent prefixes are stripped
+before checking each command. This guard supplements role instructions and the
+host sandbox; it is not a complete shell interpreter or a filesystem sandbox.
 """
 import json
 import os
@@ -94,6 +95,27 @@ def mask_quotes(cmd: str):
         spans.append(m.group(0))
         return f"QSPAN{len(spans) - 1}Z"
     return QUOTED.sub(repl, cmd), spans
+
+
+def has_command_substitution(cmd: str) -> bool:
+    """Detect executable substitutions, retaining single-quoted literal data."""
+    quote = None
+    i = 0
+    while i < len(cmd):
+        ch = cmd[i]
+        if quote == "'":
+            if ch == "'":
+                quote = None
+        elif ch == "\\":
+            i += 1
+        elif ch == "'" and quote is None:
+            quote = "'"
+        elif ch == '"':
+            quote = None if quote == '"' else '"'
+        elif ch == "`" or cmd.startswith("$(", i):
+            return True
+        i += 1
+    return False
 
 
 def unmask(tok: str, spans):
@@ -230,7 +252,7 @@ LISTING_FLAGS = {"-l", "--list", "-a", "--all", "-r", "--remotes", "--contains",
                  "-n", "--sort", "--format", "--column", "--no-column"}
 
 
-def check_git(args, mode: str) -> None:
+def check_git(args) -> None:
     sub, rest = git_subcommand(args)
     if sub is None:
         return
@@ -239,9 +261,13 @@ def check_git(args, mode: str) -> None:
     if sub == "stash" and (not rest or rest[0] not in ("list", "show")):
         block("'git stash' (any form except list/show) hides the user's uncommitted work; not allowed")
     if sub in ("tag", "branch"):
-        listing = any(a in LISTING_FLAGS or a.startswith(("--sort", "--format", "--points-at", "--contains", "--merged")) for a in rest)
-        mutating = any(a in ("-d", "-D", "-m", "-M", "-c", "-C", "--delete", "--move", "--copy", "-u",
+        listing_flags = LISTING_FLAGS - {"-a"} if sub == "tag" else LISTING_FLAGS
+        listing = any(a in listing_flags or a.startswith(("--sort", "--format", "--points-at", "--contains", "--merged")) for a in rest)
+        mutating = any(a.split("=", 1)[0] in ("-d", "-D", "-m", "-M", "-c", "-C", "--delete", "--move", "--copy", "-u",
                              "--set-upstream-to", "--unset-upstream", "-f", "--force", "-e", "--edit-description") for a in rest)
+        if sub == "tag":
+            mutating = mutating or any(a in ("-a", "--annotate", "-s", "--sign", "-F", "--file", "--message")
+                                      or a.startswith(("--file=", "--message=")) for a in rest)
         if mutating or (not listing and any(not a.startswith("-") for a in rest)):
             block(f"creating, deleting, renaming or re-pointing a {sub} is not allowed")
     if sub == "worktree" and any(a in ("add", "remove", "prune", "move", "lock", "unlock", "repair") for a in rest):
@@ -254,7 +280,7 @@ def check_git(args, mode: str) -> None:
         block("'git remote' mutation is not allowed")
     if any(a == "--output" or a.startswith("--output=") for a in rest):
         block("git --output writes a file; pipe to a read-only program instead")
-    if mode in ("readonly", "readonly-build") and sub not in GIT_READONLY:
+    if sub not in GIT_READONLY:
         block(f"'git {sub}' is outside the read-only set")
 
 
@@ -277,13 +303,15 @@ def check_gh(args) -> None:
 
 def check_gradle(args) -> None:
     for a in args:
+        if a.rsplit(":", 1)[-1] == "syncSecureConfigs":
+            block("syncSecureConfigs rewrites tracked configuration; preparation belongs to the main session")
         if a == "clean" or a.endswith(":clean"):
             block("'clean' discards build outputs; build the specific target instead")
-        if a in ("build", "assemble", "check", "test"):
+        if a.rsplit(":", 1)[-1] in ("build", "assemble", "check", "test"):
             block(f"aggregate task '{a}' is not allowed; use a scoped target such as :androidApp:assembleDebug or :shared:assembleSharedDebugXCFramework")
         if a.startswith(("-D", "-P")) and a not in ("-Dorg.gradle.jvmargs", "-Dorg.gradle.workers.max"):
             block(f"Gradle property '{a}' changes how the build runs; verifiers build with the repository's settings")
-        if a in ("--init-script", "-I", "--rerun-tasks", "--no-build-cache"):
+        if a in ("--init-script", "-I", "--rerun-tasks", "--no-build-cache") or a.startswith(("--init-script=", "-I")):
             block(f"'{a}' changes how the build runs; not allowed for verifiers")
 
 
@@ -299,11 +327,21 @@ def check_readonly_program(prog, args, mode) -> None:
         block(f"'{prog}' can execute arbitrary code; not allowed in {mode} mode")
     if prog == "python3":
         script = args[1] if args[:1] == ["-I"] and len(args) > 1 else None
-        hooks_dir = os.path.join(PROJECT_DIR, ".claude", "hooks") + os.sep
-        if script is None or not os.path.realpath(os.path.expanduser(script)).startswith(hooks_dir):
-            block("python3 is allowed only as 'python3 -I <script under .claude/hooks/>'")
-        if any(a == "-c" for a in args):
-            block("python3 -c is not allowed")
+        checker = os.path.realpath(os.path.join(PROJECT_DIR, ".claude", "hooks", "check-rulebook.py"))
+        if script is None or os.path.realpath(os.path.expanduser(script)) != checker or len(args) != 2:
+            block("python3 is allowed only as 'python3 -I .claude/hooks/check-rulebook.py'")
+    if prog == "rg" and any(a in ("--pre", "--hostname-bin") or a.startswith(("--pre=", "--hostname-bin=")) for a in args):
+        block("rg preprocessors and hostname helpers execute commands; use plain rg")
+    if prog == "adb":
+        # Inspect the operation after adb's global device selector as well.
+        if args[:1] == ["-s"]:
+            if len(args) < 3 or not re.fullmatch(r"emulator-[0-9]+", args[1]):
+                block("adb -s must select a verified emulator serial")
+            args = args[2:]
+        elif args[:1] == ["-e"]:
+            args = args[1:]
+        if args and args[0].startswith("-"):
+            block("unsupported adb selector; use -s emulator-<port> or -e")
     if prog == "sed":
         for a in args:
             if a.startswith("-") and "i" in a[1:].replace("E", "").replace("n", "").replace("e", "").replace("r", "").replace("s", ""):
@@ -325,15 +363,32 @@ def check_readonly_program(prog, args, mode) -> None:
                 if a.startswith("-"):
                     continue
                 path = os.path.realpath(os.path.expanduser(a))
-                if not os.path.isabs(a) or path.startswith(PROJECT_DIR + os.sep):
+                if not os.path.isabs(a) or path == PROJECT_DIR or path.startswith(PROJECT_DIR + os.sep):
                     block("mkdir inside the repository is not allowed; create evidence folders in the scratchpad")
             return
         block(f"'{prog}' modifies the filesystem; this agent must not write")
     if mode == "readonly":
         if prog == "xcrun" and args[:2] != ["simctl", "list"]:
             block("only 'xcrun simctl list ...' is allowed in read-only mode")
-        if prog == "adb" and args[:1] not in (["devices"], ["shell"]):
-            block("only 'adb devices' and read-only 'adb shell' queries are allowed")
+        if prog == "adb":
+            query = args[1:]
+            if args[:1] == ["shell"]:
+                remote_command = " ".join(query)
+                if re.search(r"[\r\n;&|<>`$]", remote_command):
+                    block("adb shell queries cannot contain shell operators, newlines or expansions")
+                try:
+                    query = shlex.split(remote_command)
+                except ValueError:
+                    block("could not parse adb shell query")
+                read_query = (query[:1] in (["getprop"], ["pidof"])
+                              or query in (["dumpsys"], ["dumpsys", "battery"], ["dumpsys", "activity", "activities"],
+                                           ["dumpsys", "window", "windows"])
+                              or query[:2] in (["settings", "get"], ["settings", "list"], ["pm", "list"], ["pm", "path"])
+                              or query in (["wm", "size"], ["wm", "density"]))
+                if not read_query:
+                    block("adb shell is limited to read-only device queries; actions belong to runtime verification")
+            elif args[:1] != ["devices"]:
+                block("only 'adb devices' and read-only 'adb shell' queries are allowed")
     if prog == "adb":
         if args[:1] in (["root"], ["remount"], ["disable-verity"], ["sideload"], ["reboot"]):
             block(f"'adb {args[0]}' changes the device beyond verification needs; not allowed")
@@ -341,7 +396,7 @@ def check_readonly_program(prog, args, mode) -> None:
             block("adb shell rm/su/root/remount is not allowed")
         if args[:1] == ["pull"] and len(args) >= 3:
             dst = os.path.realpath(os.path.expanduser(args[-1]))
-            if not os.path.isabs(args[-1]) or dst.startswith(PROJECT_DIR + os.sep):
+            if not os.path.isabs(args[-1]) or dst == PROJECT_DIR or dst.startswith(PROJECT_DIR + os.sep):
                 block("adb pull into the repository is not allowed; pull to the scratchpad")
     if prog == "xcrun":
         if args[:1] == ["agvtool"] or args[:2] in (["simctl", "erase"], ["simctl", "delete"]) or (args[:1] == ["simctl"] and "erase" in args[1:3]):
@@ -360,6 +415,8 @@ def main() -> None:
         payload = json.load(sys.stdin)
     except Exception as exc:  # malformed input: fail closed
         block(f"invalid hook payload ({exc})")
+    if not isinstance(payload, dict):
+        block("hook payload must be a JSON object")
     if payload.get("tool_name") != "Bash":
         sys.exit(0)
     tool_input = payload.get("tool_input")
@@ -369,9 +426,9 @@ def main() -> None:
     if not cmd.strip():
         sys.exit(0)
 
+    if has_command_substitution(cmd):
+        block("command substitution can hide restricted operations; run the inner command separately")
     masked, spans = mask_quotes(cmd)
-    if mode in ("readonly", "readonly-build") and ("$(" in masked or "`" in masked):
-        block("command substitution is not allowed in read-only modes; run the inner command separately")
     if re.search(r"[<>]\(", masked):
         block("process substitution is not allowed")
 
@@ -386,9 +443,11 @@ def main() -> None:
         if prog is None:
             continue
         if prog == "git":
-            check_git(args, mode)
+            check_git(args)
             continue
         if prog == "gh":
+            if mode == "readonly":
+                block("gh uses the network; read-only shell roles inspect local sources")
             check_gh(args)
             continue
         if prog in ("gradle", "gradlew") or prog.endswith("gradlew"):

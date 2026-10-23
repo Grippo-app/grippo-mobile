@@ -6,12 +6,9 @@ and its current [palette](../../../../design-system/resources/provider/src/commo
 and [LightColor](../../../../design-system/resources/provider/src/commonMain/kotlin/com/grippo/design.resources/provider/colors/LightColor.kt).
 Source owns exact nested names and types; this reference does not duplicate the API.
 
-Current shape, for orientation: `AppColor` has 29 top-level groups: bottomBar,
-button, input, background, dialog, text, divider, timeline, semantic, overlay,
-shimmer, border, illustration, bannerCard, welcomeChecklist, brand, icon, toggle,
-muscle, segment, konfetti, charts, example, profile, palette, static, context,
-selection, stepProgressIndicator. `AppPalette` is an `internal object` holding the
-raw literals; `DarkColor` and `LightColor` are `public object : AppColor`. `brand`
+Current shape, for orientation: `AppPalette` holds raw literals; `DarkColor` and
+`LightColor` implement `AppColor`. Inspect `AppColor` for the current groups instead
+of treating a copied catalog as complete. `brand`
 is `BrandColors { color1, color2, color4, color5, color6 }` (no `color3`), a numbered
 categorical accent set mapped to magenta/coral/teal/sky/indigo in both themes; the
 orange brand accent lives in `selection.accent`, `button.backgroundPrimary1`,

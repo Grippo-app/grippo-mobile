@@ -59,7 +59,10 @@ public sealed interface FormatState<T> {
 Each concrete type has three subtypes (`Valid`/`Invalid`/`Empty`), `@Immutable @Serializable`:
 - **`Valid`** — parsed cleanly + passes domain limits.
 - **`Invalid`** — malformed (not a number) **or** out of range.
-- **`Empty`** — blank input, distinct from `Invalid("")`. Numeric formatters also collapse literal `0` to `Empty`.
+- **`Empty`** — absent input, distinct from an invalid supplied value. Zero handling
+  belongs to the concrete factory: some numeric inputs treat it as empty, while
+  `VolumeFormatState` has an `allowZero` mode and read-only aggregate factories
+  preserve recorded zero. Do not apply one numeric formatter's rule to another.
 
 Example: `WeightFormatState : FormatState<Float>` has a companion with `WeightLimitation: ClosedFloatingPointRange<Float>` (`30.0f..150.0f`), `of(display: String)` and `of(value: Float?)`; both normalize to one decimal and collapse `0` to `Empty()`.
 
@@ -72,27 +75,13 @@ Factories vary per type (not every formatter exposes both). Date types take a `r
 
 ### Standard types
 
-Fifteen concrete `*FormatState` sealed classes exist in `:ui-core:state`
-(`core/state/formatters/`), all `@Immutable @Serializable`; inspect the file for
-the exact factories:
-
-- **`EmailFormatState : FormatState<String>`** — `of(value: String?)`; regex-validated.
-- **`PasswordFormatState : FormatState<String>`** — `of(display: String)`; `@Composable fun hint(): String` (localized hint matching the active rule).
-- **`NameFormatState : FormatState<String>`** — `NameLimitation: IntRange = 1..60`; `of(display: String)`.
-- **`WeightFormatState : FormatState<Float>`** — `WeightLimitation` 30..150, one decimal; `of(display)`, `of(value: Float?)`.
-- **`HeightFormatState : FormatState<Int>`** — `HeightLimitation: IntRange = 100..250`; `of(display)`, `of(value: Int)`.
-- **`VolumeFormatState : FormatState<Float>`** — one decimal; `of(display)`, `of(value: Float?)`.
-- **`DurationFormatState : FormatState<Duration>`** — `DurationLimitation: ClosedRange<Duration>`; `of(display)`, `of(value: Duration?)`.
-- **`RepetitionsFormatState : FormatState<Int>`** — `of(display)`, `of(value: Int)`; `@Composable fun hint(): String`.
-- **`PercentageFormatState : FormatState<Int>`** — `of(display)`, `of(value: Int)`.
-- **`IntensityFormatState : FormatState<Float>`** — `of(value: Float)`.
-- **`MultiplierFormatState : FormatState<Float>`** — `of(value: Float?)`.
-- **`DensityFormatState : FormatState<Float>`** — `of(value: Float?)`.
-- **`DateFormatState : FormatState<LocalDate>`** — `abstract val format: DateFormat.DateOnly`; `of(value: LocalDate?, range: DateRange, format: DateFormat.DateOnly)`.
-- **`DateTimeFormatState : FormatState<LocalDateTime>`** — `abstract val format: DateFormat`; `of(value: LocalDateTime?, range: DateRange, format: DateFormat)`.
-- **`DateRangeFormatState : FormatState<DateRange>`** — `abstract val kind: DateRangeKind`; `fun label(): UiText?` ("Last 30 days"); `of(range)`, `of(kind)`, `of(from, to)`.
-
-A generic "amount" field reuses the unit-specific formatter above that matches it.
+Discover concrete types under
+[`core/state/formatters/`](../../../../ui-core/state/src/commonMain/kotlin/com/grippo/core/state/formatters/).
+Inspect the selected type's factories, limits, zero policy and display helpers;
+editable and read-only aggregate factories can have different contracts. For
+example, [VolumeFormatState](../../../../ui-core/state/src/commonMain/kotlin/com/grippo/core/state/formatters/VolumeFormatState.kt)
+owns both `of` input factories and `ofTotal` for recorded tonnage. A generic
+"amount" field reuses the existing unit-specific formatter that matches it.
 
 ### Usage
 
@@ -113,9 +102,19 @@ dialog configs remain in memory.
 
 ### `*FormatState` rules (MUST) & anti-patterns
 
-Rules: reuse a suitable existing `*FormatState`. Add a formatter only when the field
-needs genuinely different parsing, validation or display semantics, not merely
-because it belongs to another screen; absent input uses `Empty()` (not `Invalid("")`), while provided/retained drafts keep their existing formatter state; `of(...)` is the **only** construction path for supplied values (don't instantiate `Valid`/`Invalid` directly — bypasses validation); `Companion.Limitation` is the range for `Invalid` (keep static; tunable values belong in `:data-features:local-settings`); `hint()` Composables return localized strings.
+Rules:
+
+- Reuse a suitable existing `*FormatState`. Add a formatter only when the field
+  needs different parsing, validation or display semantics, not merely because
+  it belongs to another screen.
+- Absent input uses the concrete `Empty` factory/default, while supplied and
+  retained drafts keep their existing formatter state.
+- Construct supplied values through the appropriate existing factory (`of` or a
+  read-only aggregate factory), not directly through `Valid`/`Invalid`; direct
+  construction bypasses its validation and normalization.
+- Reuse the formatter's actual limits and validators. Product-configurable
+  settings retain their data-layer owner.
+- `hint()` Composables return localized strings.
 
 Anti-patterns: `String` for an email/password/weight field; `Float?` for a weight (loses raw display, can't validate); validating on submit only; computing button enablement from raw fields (use `state.field is Valid`); side effects inside `of(...)` (factories are pure).
 

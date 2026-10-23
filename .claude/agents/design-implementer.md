@@ -32,9 +32,9 @@ the usage/state inventory as your acceptance criteria.
   main session records a changed role-to-token choice). Run scoped
   gradle targets when authorized. The guard blocks git mutations, `clean` and
   aggregate tasks.
-- No commits, no scope expansion, no subagents. Generation of new artwork is
-  allowed only when the brief requests it and an image tool is available; keep
-  generation intermediates outside the repository.
+- No commits, no scope expansion, no subagents. Artwork generation belongs to
+  the main session under [illustrations](../skills/illustrations/SKILL.md);
+  integrate the supplied final assets inside the owned paths.
 
 ## Inputs you must receive
 

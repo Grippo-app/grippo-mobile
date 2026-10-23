@@ -30,7 +30,8 @@ live in `.claude/agents/`; the roster is in
 4. **Independent review.** Required for every change that is not a small
    editorial change ([definitions](../../../CLAUDE.md#definitions)):
    - `code-reviewer` for every reviewed change;
-   - `gate-auditor` for a behavior change (analytics coverage and preservation);
+   - `gate-auditor` for a behavior change or visual-only impact assessment
+     (analytics coverage and preservation);
    - `design-reviewer` for a visual change (with renders when available);
    - `analytics-admin-auditor` whenever the
      [admin-sync gate](../feature-analytics/references/admin-sync.md#trigger-and-access-gate-must)
@@ -65,7 +66,8 @@ live in `.claude/agents/`; the roster is in
   the app or using the browser tab respectively.
 - Implementer agents (`ui-`, `data-`, `design-`, `platform-implementer`) are used
   when a task spans two or more owning skills or when the user asks for delegation.
-  Otherwise implement in the main session.
+  Rulebook slices may use `rulebook-maintainer`. Otherwise implement in the main
+  session; independent inventories may still be delegated to `scout`.
 - One writer per file, always. Dependent edits run sequentially; independent
   slices on disjoint paths may run in parallel. Shared wiring files belong to one
   slice, by default the main session: `screen-api` routers, `shared/.../Koin.kt`,
@@ -103,6 +105,7 @@ Required additions per agent (each definition's "Inputs you must receive"):
 | `analytics-admin-auditor` | scope, audit-only or authorized to change, property/streams or "ask the user", release facts |
 | `scout` | the question, directories to search, facts wanted per hit |
 | implementers | target module and names, contracts and stubs available, decisions, build authorization |
+| `rulebook-maintainer` | rule owners, evidence for corrections, index updates required, owned rulebook paths |
 | `build-verifier` | targets, changed files, platform restrictions |
 | `runtime-verifier` | scenarios with expected outcomes, platforms, theme/locale matrix, literal absolute scratchpad path, sign-in arrangement |
 
