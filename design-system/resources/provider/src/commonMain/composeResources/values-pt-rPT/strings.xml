@@ -346,9 +346,11 @@
     <string name="equipment_close_grip_handle">Pega estreita</string>
     <string name="equipment_ez_bar">Barra EZ</string>
     <string name="equipment_trap_bar">Barra hexagonal</string>
+    <string name="equipment_landmine">Suporte landmine</string>
     <string name="equipment_rope">Corda</string>
     <string name="equipment_straight_bar">Barra reta</string>
     <string name="equipment_cord_handles">Pegas de cabo</string>
+    <string name="equipment_ankle_cuff">Tornozeleira para cabo</string>
 
     <string name="equipment_ab_machines">Máquinas de abdominais</string>
     <string name="equipment_butterfly">Máquina de aberturas de peito</string>
@@ -357,10 +359,13 @@
     <string name="equipment_leg_extension_machines">Máquinas de extensão de pernas</string>
     <string name="equipment_leg_curl_machines">Máquinas de flexão de pernas</string>
     <string name="equipment_chest_press_machines">Máquinas de press de peito</string>
+    <string name="equipment_plate_loaded_incline_chest_press">Press inclinado de peito com discos</string>
+    <string name="equipment_plate_loaded_decline_chest_press">Press declinado de peito com discos</string>
     <string name="equipment_biceps_machines">Máquinas de bicípites</string>
     <string name="equipment_smith_machines">Máquinas Smith</string>
     <string name="equipment_hack_squat_machines">Máquinas de agachamento hack</string>
     <string name="equipment_leg_press_machine">Máquina de leg press</string>
+    <string name="equipment_vertical_leg_press">Leg press vertical</string>
     <string name="equipment_deadlift_machines">Máquinas de peso morto</string>
     <string name="equipment_shoulder_press_machines">Máquinas de press de ombros</string>
     <string name="equipment_lateral_raise_machines">Máquinas de elevação lateral</string>
@@ -449,9 +454,11 @@
     <string name="equipment_hint_close_grip_handle">Segure a pega estreita com as duas mãos.</string>
     <string name="equipment_hint_ez_bar">Introduza o peso total na barra EZ. Se incluir a barra, inclua sempre.</string>
     <string name="equipment_hint_trap_bar">Introduza o peso total na barra hexagonal. Se incluir a barra, inclua sempre.</string>
+    <string name="equipment_hint_landmine">Indique o peso total dos discos na extremidade livre da barra. Não inclua o peso da barra nem do suporte.</string>
     <string name="equipment_hint_rope">Segure a corda com uma ou duas mãos, conforme o exercício.</string>
     <string name="equipment_hint_straight_bar">Segure a barra reta com as duas mãos.</string>
     <string name="equipment_hint_cord_handles">Segure uma pega com uma mão ou use o par, conforme o exercício.</string>
+    <string name="equipment_hint_ankle_cuff">Fixe a tornozeleira à volta do tornozelo e ligue-a ao cabo. Introduza o peso selecionado na torre de pesos.</string>
 
     <string name="equipment_hint_ab_machines">Introduza o peso selecionado na máquina.</string>
     <string name="equipment_hint_butterfly">Introduza o peso da máquina. Se os lados esquerdo e direito mostrarem números diferentes, use um dos lados.</string>
@@ -460,10 +467,13 @@
     <string name="equipment_hint_leg_extension_machines">Introduza o peso selecionado na máquina de extensão de pernas.</string>
     <string name="equipment_hint_leg_curl_machines">Introduza o peso selecionado na máquina de flexão de pernas.</string>
     <string name="equipment_hint_chest_press_machines">Introduza o peso selecionado na máquina de press de peito.</string>
+    <string name="equipment_hint_plate_loaded_incline_chest_press">Indique o peso total dos discos nos braços de carga utilizados. No press unilateral, conte apenas os discos desse lado. Não conte os discos nos suportes de arrumação nem a resistência própria da máquina.</string>
+    <string name="equipment_hint_plate_loaded_decline_chest_press">Indique o peso total dos discos nos braços de carga utilizados. No press unilateral, conte apenas os discos desse lado. Não conte os discos nos suportes de arrumação nem a resistência própria da máquina.</string>
     <string name="equipment_hint_biceps_machines">Introduza o peso selecionado na máquina de bicípites.</string>
     <string name="equipment_hint_smith_machines">Introduza o peso total dos discos. A barra da máquina Smith pode ser desconsiderada — mantenha o mesmo critério sempre.</string>
     <string name="equipment_hint_hack_squat_machines">Introduza o peso total dos discos no agachamento hack.</string>
     <string name="equipment_hint_leg_press_machine">Introduza o peso total dos discos no leg press.</string>
+    <string name="equipment_hint_vertical_leg_press">Indique o peso total dos discos de trabalho no leg press vertical. Não inclua o peso da plataforma nem do carro.</string>
     <string name="equipment_hint_deadlift_machines">Introduza o peso total dos discos na máquina de peso morto.</string>
     <string name="equipment_hint_shoulder_press_machines">Introduza o peso selecionado na máquina de ombros.</string>
     <string name="equipment_hint_lateral_raise_machines">Introduza o peso selecionado na máquina de elevação lateral.</string>

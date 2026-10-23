@@ -346,9 +346,11 @@
     <string name="equipment_close_grip_handle">Close Grip Handle</string>
     <string name="equipment_ez_bar">EZ Bar</string>
     <string name="equipment_trap_bar">Trap Bar</string>
+    <string name="equipment_landmine">Landmine Attachment</string>
     <string name="equipment_rope">Rope</string>
     <string name="equipment_straight_bar">Straight Bar</string>
     <string name="equipment_cord_handles">Cord Handles</string>
+    <string name="equipment_ankle_cuff">Ankle Cuff</string>
 
     <string name="equipment_ab_machines">AB Machines</string>
     <string name="equipment_butterfly">Butterfly</string>
@@ -357,10 +359,13 @@
     <string name="equipment_leg_extension_machines">Leg Extension Machines</string>
     <string name="equipment_leg_curl_machines">Leg Curl Machines</string>
     <string name="equipment_chest_press_machines">Chest Press Machines</string>
+    <string name="equipment_plate_loaded_incline_chest_press">Plate-Loaded Incline Chest Press</string>
+    <string name="equipment_plate_loaded_decline_chest_press">Plate-Loaded Decline Chest Press</string>
     <string name="equipment_biceps_machines">Biceps Machines</string>
     <string name="equipment_smith_machines">Smith Machines</string>
     <string name="equipment_hack_squat_machines">Hack Squat Machines</string>
     <string name="equipment_leg_press_machine">Leg Press Machine</string>
+    <string name="equipment_vertical_leg_press">Vertical Leg Press</string>
     <string name="equipment_deadlift_machines">Deadlift Machines</string>
     <string name="equipment_shoulder_press_machines">Shoulder Press Machines</string>
     <string name="equipment_lateral_raise_machines">Lateral Raise Machines</string>
@@ -449,9 +454,11 @@
     <string name="equipment_hint_close_grip_handle">Hold the close handle with both hands.</string>
     <string name="equipment_hint_ez_bar">Enter total weight on the EZ-bar. If you include the bar, include it every time.</string>
     <string name="equipment_hint_trap_bar">Enter total weight on the trap bar. If you include the bar, include it every time.</string>
+    <string name="equipment_hint_landmine">Enter the total weight of plates on the free end of the bar. Do not include the bar or the attachment.</string>
     <string name="equipment_hint_rope">Hold the rope with one or two hands — as the exercise requires.</string>
     <string name="equipment_hint_straight_bar">Hold the straight bar with both hands.</string>
     <string name="equipment_hint_cord_handles">Hold the handle with one hand or as a pair — as the exercise requires.</string>
+    <string name="equipment_hint_ankle_cuff">Secure the cuff around your ankle and attach it to the cable. Enter the weight selected on the stack.</string>
 
     <string name="equipment_hint_ab_machines">Enter the weight you set on the machine.</string>
     <string name="equipment_hint_butterfly">Enter the machine weight. If left/right show different numbers, use one side.</string>
@@ -460,10 +467,13 @@
     <string name="equipment_hint_leg_extension_machines">Enter the weight you set on leg extensions.</string>
     <string name="equipment_hint_leg_curl_machines">Enter the weight you set on leg curls.</string>
     <string name="equipment_hint_chest_press_machines">Enter the weight you set on the chest press machine.</string>
+    <string name="equipment_hint_plate_loaded_incline_chest_press">Enter the total weight of plates on the working arms you use. For a one-arm press, count only the plates on that side. Do not count storage plates or the machine’s own resistance.</string>
+    <string name="equipment_hint_plate_loaded_decline_chest_press">Enter the total weight of plates on the working arms you use. For a one-arm press, count only the plates on that side. Do not count storage plates or the machine’s own resistance.</string>
     <string name="equipment_hint_biceps_machines">Enter the weight you set on the biceps machine.</string>
     <string name="equipment_hint_smith_machines">Enter total plates. The Smith bar itself can be skipped — just be consistent every time.</string>
     <string name="equipment_hint_hack_squat_machines">Enter total plates on the hack squat.</string>
     <string name="equipment_hint_leg_press_machine">Enter total plates on the leg press.</string>
+    <string name="equipment_hint_vertical_leg_press">Enter the total weight of the working plates on the vertical leg press. Do not include the platform or carriage.</string>
     <string name="equipment_hint_deadlift_machines">Enter total plates on the deadlift machine.</string>
     <string name="equipment_hint_shoulder_press_machines">Enter the weight you set on the shoulder machine.</string>
     <string name="equipment_hint_lateral_raise_machines">Enter the weight you set on the lateral raise machine.</string>

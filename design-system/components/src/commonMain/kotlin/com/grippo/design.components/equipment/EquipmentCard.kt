@@ -266,8 +266,16 @@ private fun EquipmentCardCompactPreview() {
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
         ) {
-            val types = listOf(EquipmentEnumState.PLATE_LOADED_SEATED_DIP) + EquipmentEnumState.entries
-                .filterNot { it == EquipmentEnumState.PLATE_LOADED_SEATED_DIP }
+            val featured = listOf(
+                EquipmentEnumState.LANDMINE,
+                EquipmentEnumState.VERTICAL_LEG_PRESS,
+                EquipmentEnumState.LEG_PRESS_MACHINE,
+                EquipmentEnumState.PLATE_LOADED_DECLINE_CHEST_PRESS,
+                EquipmentEnumState.PLATE_LOADED_INCLINE_CHEST_PRESS,
+                EquipmentEnumState.CHEST_PRESS_MACHINES,
+                EquipmentEnumState.PLATE_LOADED_SEATED_DIP,
+            )
+            val types = featured + EquipmentEnumState.entries.filterNot { it in featured }
             types.forEach { type ->
                 EquipmentCard(
                     value = EquipmentState(id = type.name, type = type),
@@ -283,6 +291,14 @@ private fun EquipmentCardCompactPreview() {
 private fun EquipmentCardInlinePreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.LANDMINE,
+            EquipmentEnumState.VERTICAL_LEG_PRESS,
+            EquipmentEnumState.LEG_PRESS_MACHINE,
+            EquipmentEnumState.PLATE_LOADED_DECLINE_CHEST_PRESS,
+            EquipmentEnumState.PLATE_LOADED_INCLINE_CHEST_PRESS,
+            EquipmentEnumState.CHEST_PRESS_MACHINES,
+            EquipmentEnumState.ANKLE_CUFF,
+            EquipmentEnumState.CORD_HANDLES,
             EquipmentEnumState.PLATE_LOADED_SEATED_DIP,
             EquipmentEnumState.TRICEPS_MACHINES,
             EquipmentEnumState.BELT_SQUAT,
@@ -293,7 +309,6 @@ private fun EquipmentCardInlinePreview() {
             EquipmentEnumState.BARBELL,
             EquipmentEnumState.SMITH_MACHINES,
             EquipmentEnumState.ROPE,
-            EquipmentEnumState.CORD_HANDLES,
             EquipmentEnumState.DECLINE_BENCH_WITH_RACK,
         ).forEach { type ->
             EquipmentCard(
@@ -309,6 +324,14 @@ private fun EquipmentCardInlinePreview() {
 private fun EquipmentCardDetailPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.LANDMINE,
+            EquipmentEnumState.VERTICAL_LEG_PRESS,
+            EquipmentEnumState.LEG_PRESS_MACHINE,
+            EquipmentEnumState.PLATE_LOADED_DECLINE_CHEST_PRESS,
+            EquipmentEnumState.PLATE_LOADED_INCLINE_CHEST_PRESS,
+            EquipmentEnumState.CHEST_PRESS_MACHINES,
+            EquipmentEnumState.ANKLE_CUFF,
+            EquipmentEnumState.CORD_HANDLES,
             EquipmentEnumState.PLATE_LOADED_SEATED_DIP,
             EquipmentEnumState.TRICEPS_MACHINES,
             EquipmentEnumState.BELT_SQUAT,
@@ -319,7 +342,6 @@ private fun EquipmentCardDetailPreview() {
             EquipmentEnumState.BARBELL,
             EquipmentEnumState.SMITH_MACHINES,
             EquipmentEnumState.ROPE,
-            EquipmentEnumState.CORD_HANDLES,
             EquipmentEnumState.DECLINE_BENCH_WITH_RACK,
         ).forEach { type ->
             EquipmentCard(
@@ -335,6 +357,14 @@ private fun EquipmentCardDetailPreview() {
 private fun EquipmentCardSelectedPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.LANDMINE,
+            EquipmentEnumState.VERTICAL_LEG_PRESS,
+            EquipmentEnumState.LEG_PRESS_MACHINE,
+            EquipmentEnumState.PLATE_LOADED_DECLINE_CHEST_PRESS,
+            EquipmentEnumState.PLATE_LOADED_INCLINE_CHEST_PRESS,
+            EquipmentEnumState.CHEST_PRESS_MACHINES,
+            EquipmentEnumState.ANKLE_CUFF,
+            EquipmentEnumState.CORD_HANDLES,
             EquipmentEnumState.PLATE_LOADED_SEATED_DIP,
             EquipmentEnumState.TRICEPS_MACHINES,
             EquipmentEnumState.BELT_SQUAT,
@@ -343,7 +373,6 @@ private fun EquipmentCardSelectedPreview() {
             EquipmentEnumState.KETTLEBELLS,
             EquipmentEnumState.BUTTERFLY_FOREARM,
             EquipmentEnumState.ROPE,
-            EquipmentEnumState.CORD_HANDLES,
             EquipmentEnumState.SMITH_MACHINES,
             EquipmentEnumState.DECLINE_BENCH_WITH_RACK,
         ).forEach { type ->
@@ -360,6 +389,14 @@ private fun EquipmentCardSelectedPreview() {
 private fun EquipmentCardUnselectedPreview() {
     PreviewContainer {
         listOf(
+            EquipmentEnumState.LANDMINE,
+            EquipmentEnumState.VERTICAL_LEG_PRESS,
+            EquipmentEnumState.LEG_PRESS_MACHINE,
+            EquipmentEnumState.PLATE_LOADED_DECLINE_CHEST_PRESS,
+            EquipmentEnumState.PLATE_LOADED_INCLINE_CHEST_PRESS,
+            EquipmentEnumState.CHEST_PRESS_MACHINES,
+            EquipmentEnumState.ANKLE_CUFF,
+            EquipmentEnumState.CORD_HANDLES,
             EquipmentEnumState.PLATE_LOADED_SEATED_DIP,
             EquipmentEnumState.TRICEPS_MACHINES,
             EquipmentEnumState.BELT_SQUAT,
@@ -368,7 +405,6 @@ private fun EquipmentCardUnselectedPreview() {
             EquipmentEnumState.KETTLEBELLS,
             EquipmentEnumState.BUTTERFLY_FOREARM,
             EquipmentEnumState.ROPE,
-            EquipmentEnumState.CORD_HANDLES,
             EquipmentEnumState.SMITH_MACHINES,
             EquipmentEnumState.DECLINE_BENCH_WITH_RACK,
         ).forEach { type ->

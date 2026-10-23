@@ -35,12 +35,16 @@ private fun Equipment.sortPriority(): Int {
         EquipmentEnum.BARBELL -> 22
         EquipmentEnum.EZ_BAR -> 23
         EquipmentEnum.TRAP_BAR -> 24
+        EquipmentEnum.LANDMINE -> 25
 
         EquipmentEnum.SMITH_MACHINES -> 30
         EquipmentEnum.HACK_SQUAT_MACHINES -> 31
         EquipmentEnum.LEG_PRESS_MACHINE -> 32
+        EquipmentEnum.VERTICAL_LEG_PRESS -> 32
         EquipmentEnum.DEADLIFT_MACHINES -> 33
         EquipmentEnum.CHEST_PRESS_MACHINES -> 34
+        EquipmentEnum.PLATE_LOADED_INCLINE_CHEST_PRESS -> 34
+        EquipmentEnum.PLATE_LOADED_DECLINE_CHEST_PRESS -> 34
         EquipmentEnum.SHOULDER_PRESS_MACHINES -> 35
         EquipmentEnum.LATERAL_RAISE_MACHINES -> 36
         EquipmentEnum.TRICEPS_MACHINES -> 37
@@ -81,5 +85,6 @@ private fun Equipment.sortPriority(): Int {
         EquipmentEnum.WIDE_GRIP_HANDLE -> 103
         EquipmentEnum.CLOSE_GRIP_HANDLE -> 104
         EquipmentEnum.CORD_HANDLES -> 105
+        EquipmentEnum.ANKLE_CUFF -> 106
     }
 }

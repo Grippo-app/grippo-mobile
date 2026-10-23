@@ -33,6 +33,7 @@ private val ATTACHMENT_TYPES: Set<EquipmentEnumState> = setOf(
     EquipmentEnumState.WIDE_GRIP_HANDLE,
     EquipmentEnumState.CLOSE_GRIP_HANDLE,
     EquipmentEnumState.CORD_HANDLES,
+    EquipmentEnumState.ANKLE_CUFF,
 )
 
 private val PLACE_TYPES: Set<EquipmentEnumState> = setOf(
@@ -126,6 +127,7 @@ public data class ExerciseExampleState(
 
             val hasCrossover = EquipmentEnumState.CABLE_CROSSOVER in typeSet
             val hasRack = typeSet.any { it in RACK_TYPES }
+            val hasLandmine = EquipmentEnumState.LANDMINE in typeSet
 
             val hasPrimaryWeightSource =
                 equipmentTypes.any { it !in ATTACHMENT_TYPES && it !in PLACE_TYPES }
@@ -139,7 +141,8 @@ public data class ExerciseExampleState(
 
             val orderedRest: List<EquipmentEnumState> = equipmentTypes
                 .filter { it !in BASE_CABLE_TYPES && it !in ATTACHMENT_TYPES }
-                .filterNot { it == EquipmentEnumState.BARBELL && hasRack }
+                .filterNot { it == EquipmentEnumState.BARBELL && (hasRack || hasLandmine) }
+                .filterNot { hasLandmine && it in RACK_TYPES }
 
             val finalOrderedTypes: List<EquipmentEnumState> = if (orderedBaseCables.isNotEmpty()) {
                 buildList {

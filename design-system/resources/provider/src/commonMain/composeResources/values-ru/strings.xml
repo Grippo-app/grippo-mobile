@@ -345,9 +345,11 @@
     <string name="equipment_close_grip_handle">Рукоять для узкого хвата</string>
     <string name="equipment_ez_bar">EZ-штанга</string>
     <string name="equipment_trap_bar">Трэп-гриф</string>
+    <string name="equipment_landmine">Крепление лэндмайн</string>
     <string name="equipment_rope">Канат</string>
     <string name="equipment_straight_bar">Прямой гриф</string>
     <string name="equipment_cord_handles">Ручки для троса</string>
+    <string name="equipment_ankle_cuff">Манжета на голень</string>
 
     <string name="equipment_ab_machines">Тренажёры для пресса</string>
     <string name="equipment_butterfly">Бабочка</string>
@@ -356,10 +358,13 @@
     <string name="equipment_leg_extension_machines">Тренажёры для разгибания ног</string>
     <string name="equipment_leg_curl_machines">Тренажёры для сгибания ног</string>
     <string name="equipment_chest_press_machines">Тренажёры для жима</string>
+    <string name="equipment_plate_loaded_incline_chest_press">Наклонный рычажный жим груди</string>
+    <string name="equipment_plate_loaded_decline_chest_press">Рычажный жим груди вниз</string>
     <string name="equipment_biceps_machines">Тренажёры для бицепса</string>
     <string name="equipment_smith_machines">Машина Смита</string>
     <string name="equipment_hack_squat_machines">Хак-присед</string>
     <string name="equipment_leg_press_machine">Жим ногами</string>
+    <string name="equipment_vertical_leg_press">Вертикальный жим ногами</string>
     <string name="equipment_deadlift_machines">Тренажёры для становой тяги</string>
     <string name="equipment_shoulder_press_machines">Тренажёры для жима над головой</string>
     <string name="equipment_lateral_raise_machines">Тренажёры для махов в стороны</string>
@@ -448,9 +453,11 @@
     <string name="equipment_hint_close_grip_handle">Узкую рукоятку держи двумя руками.</string>
     <string name="equipment_hint_ez_bar">Вводи общий вес на EZ-грифе. Если считаешь гриф, считай его всегда.</string>
     <string name="equipment_hint_trap_bar">Вводи общий вес на трап-грифе. Если считаешь гриф, считай его всегда.</string>
+    <string name="equipment_hint_landmine">Укажите общий вес блинов на свободном конце штанги. Вес грифа и крепления не включайте.</string>
     <string name="equipment_hint_rope">Канат держи одной или двумя руками — как в упражнении.</string>
     <string name="equipment_hint_straight_bar">Прямой гриф держи двумя руками.</string>
     <string name="equipment_hint_cord_handles">Держи рукоятку одной рукой или парой — как в упражнении.</string>
+    <string name="equipment_hint_ankle_cuff">Закрепи манжету вокруг лодыжки и пристегни её к тросу. Укажи вес, выставленный на блоке.</string>
 
     <string name="equipment_hint_ab_machines">Укажи вес, который выставил на тренажёре.</string>
     <string name="equipment_hint_butterfly">Укажи вес на тренажёре. Если две стороны с разными цифрами — возьми одну.</string>
@@ -459,10 +466,13 @@
     <string name="equipment_hint_leg_extension_machines">Укажи вес на разгибании ног.</string>
     <string name="equipment_hint_leg_curl_machines">Укажи вес на сгибании ног.</string>
     <string name="equipment_hint_chest_press_machines">Укажи вес, который выставил на жиме в тренажёре.</string>
+    <string name="equipment_hint_plate_loaded_incline_chest_press">Укажите общий вес блинов на используемых рабочих рычагах. При жиме одной рукой учитывайте только блины на этой стороне. Блины на держателях для хранения и собственное сопротивление тренажёра не учитывайте.</string>
+    <string name="equipment_hint_plate_loaded_decline_chest_press">Укажите общий вес блинов на используемых рабочих рычагах. При жиме одной рукой учитывайте только блины на этой стороне. Блины на держателях для хранения и собственное сопротивление тренажёра не учитывайте.</string>
     <string name="equipment_hint_biceps_machines">Укажи вес, который выставил на бицепс-тренажёре.</string>
     <string name="equipment_hint_smith_machines">Вводи общий вес блинов. Гриф Смита можно не считать — главное, делай это одинаково каждый раз.</string>
     <string name="equipment_hint_hack_squat_machines">Укажи сумму блинов на гакк-приседе.</string>
     <string name="equipment_hint_leg_press_machine">Укажи сумму блинов на жиме ногами.</string>
+    <string name="equipment_hint_vertical_leg_press">Укажи суммарный вес рабочих блинов на вертикальном жиме ногами. Не учитывай вес платформы и каретки.</string>
     <string name="equipment_hint_deadlift_machines">Укажи сумму блинов на тяговом тренажёре.</string>
     <string name="equipment_hint_shoulder_press_machines">Укажи вес на тренажёре для плеч.</string>
     <string name="equipment_hint_lateral_raise_machines">Укажи вес на тренажёре для махов в стороны.</string>

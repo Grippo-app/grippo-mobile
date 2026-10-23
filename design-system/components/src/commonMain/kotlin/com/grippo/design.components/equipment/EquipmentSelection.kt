@@ -108,11 +108,12 @@ private fun EquipmentSelectionPreview() {
         val groups = stubEquipments()
         val freeWeight = groups.first { it.type == EquipmentGroupEnumState.FREE_WEIGHT }
         val kettlebells = freeWeight.equipments.first { it.type == EquipmentEnumState.KETTLEBELLS }
+        val landmine = freeWeight.equipments.first { it.type == EquipmentEnumState.LANDMINE }
         EquipmentSelection(
             modifier = Modifier.fillMaxWidth().weight(1f),
             groups = groups,
             selectedGroupId = freeWeight.id,
-            selectedEquipmentIds = persistentListOf(kettlebells.id),
+            selectedEquipmentIds = persistentListOf(kettlebells.id, landmine.id),
             onGroupSelect = {},
             onEquipmentSelect = {},
             bottom = {},
@@ -126,6 +127,15 @@ private fun EquipmentSelectionMachinesPreview() {
     PreviewContainer {
         val groups = stubEquipments()
         val machines = groups.first { it.type == EquipmentGroupEnumState.MACHINES }
+        val verticalLegPress = machines.equipments.first {
+            it.type == EquipmentEnumState.VERTICAL_LEG_PRESS
+        }
+        val decline = machines.equipments.first {
+            it.type == EquipmentEnumState.PLATE_LOADED_DECLINE_CHEST_PRESS
+        }
+        val incline = machines.equipments.first {
+            it.type == EquipmentEnumState.PLATE_LOADED_INCLINE_CHEST_PRESS
+        }
         val forearm = machines.equipments.first { it.type == EquipmentEnumState.BUTTERFLY_FOREARM }
         val assisted = machines.equipments.first { it.type == EquipmentEnumState.ASSISTED_PULL_UP_DIP }
         val row = machines.equipments.first { it.type == EquipmentEnumState.PLATE_LOADED_ROW }
@@ -138,8 +148,28 @@ private fun EquipmentSelectionMachinesPreview() {
             groups = groups,
             selectedGroupId = machines.id,
             selectedEquipmentIds = persistentListOf(
-                seatedDip.id, beltSquat.id, row.id, assisted.id, forearm.id
+                verticalLegPress.id, decline.id,
+                incline.id, seatedDip.id, beltSquat.id, row.id, assisted.id, forearm.id
             ),
+            onGroupSelect = {},
+            onEquipmentSelect = {},
+            bottom = {},
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun EquipmentSelectionCableMachinesPreview() {
+    PreviewContainer {
+        val groups = stubEquipments()
+        val cableMachines = groups.first { it.type == EquipmentGroupEnumState.CABLE_MACHINES }
+        val ankleCuff = cableMachines.equipments.first { it.type == EquipmentEnumState.ANKLE_CUFF }
+        EquipmentSelection(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            groups = groups,
+            selectedGroupId = cableMachines.id,
+            selectedEquipmentIds = persistentListOf(ankleCuff.id),
             onGroupSelect = {},
             onEquipmentSelect = {},
             bottom = {},

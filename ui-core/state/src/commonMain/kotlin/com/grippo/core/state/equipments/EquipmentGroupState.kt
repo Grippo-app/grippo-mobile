@@ -29,6 +29,10 @@ public fun stubEquipments(): ImmutableList<EquipmentGroupState> = persistentList
                 EquipmentEnumState.BARBELL
             ),
             EquipmentState(
+                id = "preview-landmine",
+                type = EquipmentEnumState.LANDMINE
+            ),
+            EquipmentState(
                 "ad130932-4b2f-4e7b-b3a4-c20b4a6b85ae",
                 EquipmentEnumState.EZ_BAR
             ),
@@ -66,6 +70,26 @@ public fun stubEquipments(): ImmutableList<EquipmentGroupState> = persistentList
         id = "fcfa00b0-820c-494a-ac9e-ff4cf4e69489",
         type = EquipmentGroupEnumState.MACHINES,
         equipments = persistentListOf(
+            EquipmentState(
+                id = "preview-vertical-leg-press",
+                type = EquipmentEnumState.VERTICAL_LEG_PRESS
+            ),
+            EquipmentState(
+                id = "preview-leg-press-machine",
+                type = EquipmentEnumState.LEG_PRESS_MACHINE
+            ),
+            EquipmentState(
+                id = "preview-plate-loaded-decline-chest-press",
+                type = EquipmentEnumState.PLATE_LOADED_DECLINE_CHEST_PRESS
+            ),
+            EquipmentState(
+                id = "preview-plate-loaded-incline-chest-press",
+                type = EquipmentEnumState.PLATE_LOADED_INCLINE_CHEST_PRESS
+            ),
+            EquipmentState(
+                "79e4532a-afda-421f-9b5f-8c2de5f63ec0",
+                EquipmentEnumState.CHEST_PRESS_MACHINES
+            ),
             EquipmentState(
                 id = "preview-plate-loaded-seated-dip",
                 type = EquipmentEnumState.PLATE_LOADED_SEATED_DIP
@@ -111,10 +135,6 @@ public fun stubEquipments(): ImmutableList<EquipmentGroupState> = persistentList
                 EquipmentEnumState.LEG_CURL_MACHINES
             ),
             EquipmentState(
-                "79e4532a-afda-421f-9b5f-8c2de5f63ec0",
-                EquipmentEnumState.CHEST_PRESS_MACHINES
-            ),
-            EquipmentState(
                 "0d0f8242-be68-4086-b665-0a11ff6a0dcd",
                 EquipmentEnumState.BICEPS_MACHINES
             ),
@@ -132,6 +152,10 @@ public fun stubEquipments(): ImmutableList<EquipmentGroupState> = persistentList
         id = "7f343be4-0ec8-458a-a45b-d5ab7c1973de",
         type = EquipmentGroupEnumState.CABLE_MACHINES,
         equipments = persistentListOf(
+            EquipmentState(
+                id = "preview-ankle-cuff",
+                type = EquipmentEnumState.ANKLE_CUFF
+            ),
             EquipmentState(
                 "18995b62-6971-4750-84fe-0c2bc712f352",
                 EquipmentEnumState.LAT_PULLDOWN

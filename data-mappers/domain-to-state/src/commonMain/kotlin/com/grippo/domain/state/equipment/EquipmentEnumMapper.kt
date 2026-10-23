@@ -13,9 +13,11 @@ public fun EquipmentEnum.toState(): EquipmentEnumState {
         EquipmentEnum.CLOSE_GRIP_HANDLE -> EquipmentEnumState.CLOSE_GRIP_HANDLE
         EquipmentEnum.EZ_BAR -> EquipmentEnumState.EZ_BAR
         EquipmentEnum.TRAP_BAR -> EquipmentEnumState.TRAP_BAR
+        EquipmentEnum.LANDMINE -> EquipmentEnumState.LANDMINE
         EquipmentEnum.ROPE -> EquipmentEnumState.ROPE
         EquipmentEnum.STRAIGHT_BAR -> EquipmentEnumState.STRAIGHT_BAR
         EquipmentEnum.CORD_HANDLES -> EquipmentEnumState.CORD_HANDLES
+        EquipmentEnum.ANKLE_CUFF -> EquipmentEnumState.ANKLE_CUFF
 
         EquipmentEnum.AB_MACHINES -> EquipmentEnumState.AB_MACHINES
         EquipmentEnum.BUTTERFLY -> EquipmentEnumState.BUTTERFLY
@@ -24,10 +26,13 @@ public fun EquipmentEnum.toState(): EquipmentEnumState {
         EquipmentEnum.LEG_EXTENSION_MACHINES -> EquipmentEnumState.LEG_EXTENSION_MACHINES
         EquipmentEnum.LEG_CURL_MACHINES -> EquipmentEnumState.LEG_CURL_MACHINES
         EquipmentEnum.CHEST_PRESS_MACHINES -> EquipmentEnumState.CHEST_PRESS_MACHINES
+        EquipmentEnum.PLATE_LOADED_INCLINE_CHEST_PRESS -> EquipmentEnumState.PLATE_LOADED_INCLINE_CHEST_PRESS
+        EquipmentEnum.PLATE_LOADED_DECLINE_CHEST_PRESS -> EquipmentEnumState.PLATE_LOADED_DECLINE_CHEST_PRESS
         EquipmentEnum.BICEPS_MACHINES -> EquipmentEnumState.BICEPS_MACHINES
         EquipmentEnum.SMITH_MACHINES -> EquipmentEnumState.SMITH_MACHINES
         EquipmentEnum.HACK_SQUAT_MACHINES -> EquipmentEnumState.HACK_SQUAT_MACHINES
         EquipmentEnum.LEG_PRESS_MACHINE -> EquipmentEnumState.LEG_PRESS_MACHINE
+        EquipmentEnum.VERTICAL_LEG_PRESS -> EquipmentEnumState.VERTICAL_LEG_PRESS
         EquipmentEnum.DEADLIFT_MACHINES -> EquipmentEnumState.DEADLIFT_MACHINES
         EquipmentEnum.SHOULDER_PRESS_MACHINES -> EquipmentEnumState.SHOULDER_PRESS_MACHINES
         EquipmentEnum.LATERAL_RAISE_MACHINES -> EquipmentEnumState.LATERAL_RAISE_MACHINES

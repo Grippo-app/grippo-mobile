@@ -344,9 +344,11 @@
     <string name="equipment_close_grip_handle">Рукоятка вузьким хватом</string>
     <string name="equipment_ez_bar">EZ-штанга</string>
     <string name="equipment_trap_bar">Трап-гриф</string>
+    <string name="equipment_landmine">Кріплення лендмайн</string>
     <string name="equipment_rope">Канат</string>
     <string name="equipment_straight_bar">Прямий гриф</string>
     <string name="equipment_cord_handles">Ручки для троса</string>
+    <string name="equipment_ankle_cuff">Манжета на гомілку</string>
 
     <string name="equipment_ab_machines">Тренажери для преса</string>
     <string name="equipment_butterfly">Метелик</string>
@@ -355,10 +357,13 @@
     <string name="equipment_leg_extension_machines">Тренажери для розгинання ніг</string>
     <string name="equipment_leg_curl_machines">Тренажери для згинання ніг</string>
     <string name="equipment_chest_press_machines">Тренажери для жиму</string>
+    <string name="equipment_plate_loaded_incline_chest_press">Похилий важільний жим грудей</string>
+    <string name="equipment_plate_loaded_decline_chest_press">Важільний жим грудьми вниз</string>
     <string name="equipment_biceps_machines">Тренажери для біцепса</string>
     <string name="equipment_smith_machines">Машина Сміта</string>
     <string name="equipment_hack_squat_machines">Хак-присідання</string>
     <string name="equipment_leg_press_machine">Жим ногами</string>
+    <string name="equipment_vertical_leg_press">Вертикальний жим ногами</string>
     <string name="equipment_deadlift_machines">Тренажери для станової тяги</string>
     <string name="equipment_shoulder_press_machines">Тренажери для жиму над головою</string>
     <string name="equipment_lateral_raise_machines">Тренажери для махів у боки</string>
@@ -447,9 +452,11 @@
     <string name="equipment_hint_close_grip_handle">Вузьку рукоятку тримай двома руками.</string>
     <string name="equipment_hint_ez_bar">Вводь загальну вагу на EZ-грифі. Якщо рахуєш гриф, рахуй його завжди.</string>
     <string name="equipment_hint_trap_bar">Вводь загальну вагу на трап-грифі. Якщо рахуєш гриф, рахуй його завжди.</string>
+    <string name="equipment_hint_landmine">Вкажіть загальну вагу дисків на вільному кінці штанги. Вагу грифа та кріплення не додавайте.</string>
     <string name="equipment_hint_rope">Канат тримай однією або двома руками — як у вправі.</string>
     <string name="equipment_hint_straight_bar">Прямий гриф тримай двома руками.</string>
     <string name="equipment_hint_cord_handles">Тримай рукоятку однією рукою або парою — як у вправі.</string>
+    <string name="equipment_hint_ankle_cuff">Закріпи манжету навколо щиколотки та пристебни її до троса. Вкажи вагу, виставлену на блоці.</string>
 
     <string name="equipment_hint_ab_machines">Вкажи вагу, яку виставив на тренажері.</string>
     <string name="equipment_hint_butterfly">Вкажи вагу на тренажері. Якщо дві сторони з різними цифрами — візьми одну.</string>
@@ -458,10 +465,13 @@
     <string name="equipment_hint_leg_extension_machines">Вкажи вагу на розгинанні ніг.</string>
     <string name="equipment_hint_leg_curl_machines">Вкажи вагу на згинанні ніг.</string>
     <string name="equipment_hint_chest_press_machines">Вкажи вагу, яку виставив на жимовому тренажері.</string>
+    <string name="equipment_hint_plate_loaded_incline_chest_press">Вкажіть загальну вагу дисків на задіяних робочих важелях. При жимі однією рукою враховуйте лише диски з цього боку. Диски на тримачах для зберігання та власний опір тренажера не враховуйте.</string>
+    <string name="equipment_hint_plate_loaded_decline_chest_press">Вкажіть загальну вагу дисків на задіяних робочих важелях. При жимі однією рукою враховуйте лише диски з цього боку. Диски на тримачах для зберігання та власний опір тренажера не враховуйте.</string>
     <string name="equipment_hint_biceps_machines">Вкажи вагу, яку виставив на біцепс-тренажері.</string>
     <string name="equipment_hint_smith_machines">Вводь загальну вагу дисків. Гриф Сміта можна не рахувати — головне, роби це однаково щоразу.</string>
     <string name="equipment_hint_hack_squat_machines">Вкажи суму дисків на гак-присіді.</string>
     <string name="equipment_hint_leg_press_machine">Вкажи суму дисків на жимі ногами.</string>
+    <string name="equipment_hint_vertical_leg_press">Вкажи сумарну вагу робочих дисків на вертикальному жимі ногами. Не враховуй вагу платформи та каретки.</string>
     <string name="equipment_hint_deadlift_machines">Вкажи суму дисків на тяговому тренажері.</string>
     <string name="equipment_hint_shoulder_press_machines">Вкажи вагу на тренажері для плечей.</string>
     <string name="equipment_hint_lateral_raise_machines">Вкажи вагу на тренажері для махів у сторони.</string>
