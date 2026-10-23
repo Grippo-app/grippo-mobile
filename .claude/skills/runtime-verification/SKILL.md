@@ -46,8 +46,8 @@ scenarios through `runtime-verifier`; the catalog below is theirs to follow.
 
 The Xcode project links the manually built XCFramework; the `iosApp/scripts/build-shared-framework.sh`
 helper is not wired into the project's build phases. The `iosApp` scheme is
-user-local (`xcuserdata`); if `xcodebuild -list` shows no scheme, share it from
-Xcode or report the limitation.
+user-local (`xcuserdata`); report a missing scheme to the main session for recovery
+under [CLI scheme recovery](../platform-build-toolkit/references/ios-framework.md#cli-scheme-recovery).
 
 ## Android
 

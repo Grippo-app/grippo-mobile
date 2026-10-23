@@ -1,12 +1,15 @@
 ---
 name: platform-build-toolkit
-description: Change Grippo Gradle conventions, module build wiring, platform toolkit utilities, reusable Compose libraries or thin app shells. Use for platform/build ownership rather than feature business logic.
+description: Change Grippo Gradle conventions, module build wiring, platform toolkit utilities, reusable Compose libraries or thin app shells, and release iOS builds to TestFlight. Use for platform/build work or an explicit request to upload to TestFlight.
 ---
 
 # Grippo platform and build foundation
 
 Read `CLAUDE.md` and actual affected build/platform source. Versions, targets, module list and
 startup signatures come from current source; do not copy a generic project template.
+
+For a TestFlight release request, follow the [terminal release workflow](references/release.md#ios-testflight-release)
+and its completion gate.
 
 ## Workflow and boundaries
 
@@ -31,10 +34,11 @@ startup signatures come from current source; do not copy a generic project templ
 
 ## Completion gate
 
-MUST review dependency direction, convention/alias usage, public API/export compatibility, platform actuals,
-startup ownership and privacy/cancellation. Which builds run, and that they need no separate
-consent, is decided by the [verification policy](../../../CLAUDE.md#verification-policy); record
-the checks that ran and the platform/runtime behavior left unverified.
+For changes to platform/build logic, review dependency direction, convention/alias usage,
+public API/export compatibility, platform actuals, startup ownership and privacy/cancellation.
+Release execution uses the [release completion gate](references/release.md#release-completion-gate).
+Checks follow the [verification policy](../../../CLAUDE.md#verification-policy); report actual
+results and relevant unverified platform/runtime behavior.
 
 Read the reference for the affected topic:
 
@@ -44,4 +48,4 @@ Read the reference for the affected topic:
 - [toolkit ownership](references/toolkit-utilities-core.md) and [platform utilities](references/toolkit-utilities-platform.md);
 - [iOS framework and shell](references/ios-framework.md) - XCFramework, Xcode project, `AppDelegate`;
 - [secrets and configuration](references/secrets-and-config.md) - `secure/`, synced configs, logging of sensitive data;
-- [release](references/release.md) - where versions live, compatibility bumps, release builds.
+- [release](references/release.md) - versioning, compatibility bumps and the terminal iOS/TestFlight workflow with Crashlytics symbols.

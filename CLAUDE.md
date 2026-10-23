@@ -198,6 +198,10 @@ Changing any of these is scope expansion and needs a question.
   Swift (`:shared`, `:toolkit:*:api`, Decompose-facing types); build conventions
   or the version catalog; any Room schema or migration; KSP configuration; or
   when the task is about iOS.
+- For a requested TestFlight release that changes only iOS version numbers,
+  a successful complete Release XCFramework and signed Xcode archive satisfy the
+  iOS framework check above. Source, resource or build changes included in the
+  release retain their normal checks.
 - Builds needed within the authorized scope need no separate consent; an
   explicit user restriction wins. Documentation-only work runs the rulebook
   checker instead of a build.
@@ -291,7 +295,7 @@ for Claude Code and Codex launch, capabilities and protection.
 | [brand-design](.claude/skills/brand-design/SKILL.md) | Visual intent, domain entity visual semantics, composition, usage/state analysis, acceptance | New or changed product UI |
 | [illustrations](.claude/skills/illustrations/SKILL.md) | Decorative artwork style, generation, export, integration | Requested decorative artwork |
 | [add-equipment](.claude/skills/add-equipment/SKILL.md) | Equipment identifiers, catalog integration, native diagrams and backend task handoff | New equipment types, independently selectable variants or equipment diagram work |
-| [platform-build-toolkit](.claude/skills/platform-build-toolkit/SKILL.md) | Conventions, catalog, new modules, toolkit, shells, iOS framework, secrets, release, dependency updates | Any build/platform change |
+| [platform-build-toolkit](.claude/skills/platform-build-toolkit/SKILL.md) | Conventions, catalog, new modules, toolkit, shells, iOS framework, secrets, TestFlight release, dependency updates | Any build/platform change or requested TestFlight release |
 | [runtime-verification](.claude/skills/runtime-verification/SKILL.md) | Build, install, run, drive and inspect the app on emulator/simulator | Manual runtime checks |
 | [bug-investigation](.claude/skills/bug-investigation/SKILL.md) | Reproduce, locate, root-cause, fix at the owner, regression gate | Any bug report |
 | [delivery](.claude/skills/delivery/SKILL.md) | Git policy, commit messages, branches, pull requests | When the user asks to commit/push/open a PR |

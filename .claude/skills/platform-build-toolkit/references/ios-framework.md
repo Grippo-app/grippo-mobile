@@ -16,8 +16,8 @@ Inspect `IosSwiftPackageConventionPlugin` under `build-logic/convention/src/main
   exists but is not wired into the project's build phases; the only shell-script phase is
   "Upload Crashlytics symbols" (Release device builds). Rebuild the XCFramework before an Xcode
   build; do not assume the linked framework is current.
-- The `iosApp` scheme is user-local (`xcuserdata` only), so `xcodebuild -list` may show no scheme
-  ([build target catalog](../../runtime-verification/SKILL.md#build-target-catalog)).
+- The `iosApp` scheme is user-local (`xcuserdata` only), so `xcodebuild -list` may show no scheme;
+  use [CLI scheme recovery](#cli-scheme-recovery).
 - `AppDelegate` calls `Koin().doInit(appDeclaration:)` once, keeps the returned `ApplicationBootstrap`
   and attaches the Swift Firebase adapters through its analytics, crash-reporting and messaging
   contracts ([composition root](../../di-modules/references/composition-root.md)).
@@ -37,3 +37,12 @@ Inspect `IosSwiftPackageConventionPlugin` under `build-logic/convention/src/main
   [runtime-verification](../../runtime-verification/SKILL.md).
 - Do not touch secure configuration ([secrets](secrets-and-config.md)) or unrelated shell behavior
   as a framework fix.
+
+## CLI scheme recovery
+
+The main session resolves a missing scheme for either simulator builds or archiving.
+Inspect existing `.xcscheme` files and the project's target references. Reuse/share
+a matching scheme through file tools; create a minimal one from those references
+only when absent, with the actions needed for the requested build. Verifiers report
+the missing scheme to the main session and keep their read-only rights. This setup
+needs no Xcode window and grants no archive or upload authorization.

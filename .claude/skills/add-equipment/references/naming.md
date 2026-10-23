@@ -29,8 +29,8 @@ before promising that two such rows will look different.
 
 ## Define the naming tuple
 
-For integration, record the final tuple in the task handoff and reconcile it with
-the source. The defaults below apply to new identifiers; they do not rename
+For integration, reconcile the final tuple with the source. The defaults below
+apply to new identifiers; they do not rename
 existing contracts or aliases.
 
 | Namespace | New-identifier default | Current forearm example |
@@ -52,7 +52,8 @@ This is a naming example, not an additional equipment request. First apply the
 identity check above; reuse `ButterflyForearm` when that existing geometry fits.
 An explicitly supplied asset name, an existing suitable asset or an authoritative
 legacy mapping takes precedence over deriving a new asset name. Carry the exact
-resulting mapping into the handoff rather than silently substituting a synonym.
+resulting mapping through the mobile implementation rather than silently
+substituting a synonym.
 
 For artwork-only work, choose a descriptive `PascalCase` mechanical name after
 the collision search and apply only the vector file/property/builder/cache rules.
@@ -96,6 +97,6 @@ into a new declaration or perform a catalog-wide cleanup.
 Search every finalized identifier for declarations, collisions and consumers.
 Verify the exact key, both enum members, explicit mapping, reused/new asset tuple,
 title/hint keys in every current locale, group tuple and preview identity against
-the [integration map](integration-map.md). Carry this same tuple into any
-[backend task](backend-task-prompt.md), marking client-only identifiers and
-unresolved persistent IDs. Name consistency does not establish deployed support.
+the [integration map](integration-map.md). For the backend prompt's contents,
+follow the [backend task](backend-task-prompt.md).
+Name consistency does not establish deployed support.

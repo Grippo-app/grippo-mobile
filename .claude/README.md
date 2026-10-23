@@ -38,6 +38,8 @@ for visual work. Bugs follow `bug-investigation`; rule changes follow `rulebook-
 Equipment additions, native diagrams and backend task prompts follow
 [add-equipment](skills/add-equipment/SKILL.md).
 
+iOS TestFlight releases follow the [terminal release workflow](skills/platform-build-toolkit/references/release.md#ios-testflight-release).
+
 ## Working on the rulebook
 
 ```bash

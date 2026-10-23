@@ -36,5 +36,5 @@ step; report that instead of inventing a config.
 - The analytics property and streams are identified from the synced Firebase
   configs and the user's selection in the admin console; never hardcode account
   or property ids in rules or code.
-- Crashlytics symbol upload runs only in the iOS Release build phase; agents do
-  not run release builds or uploads unless asked.
+- Release and Crashlytics upload authorization follows the
+  [release workflow](release.md#ios-testflight-release).

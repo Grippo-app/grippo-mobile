@@ -11,6 +11,9 @@ requested slice and report any server prerequisite for using it in the live cata
 Read [CLAUDE.md](../../../CLAUDE.md) and the affected source, then choose the
 requested scope before loading the references.
 
+A request only to prepare the backend handoff goes directly to the
+[backend prompt handoff](references/backend-task-prompt.md).
+
 ## Choose the scope
 
 - **Artwork only:** use the [ImageVector pipeline](references/imagevector-pipeline.md)
@@ -63,9 +66,7 @@ integration tasks.
    screen evidence follows [visual consistency](../design-system/references/visual-consistency.md).
 6. **Prepare the backend task.** Apply the
    [backend prompt handoff](references/backend-task-prompt.md) after an integration
-   that leaves server work pending. Generate a filled, ready-to-copy prompt in
-   the user's language, preserving the requested backend outcome under that
-   handoff's rules and using the final client contract and actual evidence.
+   that leaves server work pending, using the final mobile implementation.
    Deliver it under [final response delivery](references/backend-task-prompt.md#final-response-delivery).
    If existing backend support is verified, report that no backend task is needed.
 
@@ -89,9 +90,8 @@ permissions. Apply the task's existing authorization and the backend's own rules
   analytics and preservation gates are reconciled against the affected owners.
 - Required reviews and permitted checks have actual results. Distinguish source
   integration, isolated artwork renders, application checks and deployed data.
-- Any remaining backend work has a concrete prompt whose contract facts,
-  compatibility concerns and unresolved environment/data inputs are explicit.
-  The final response passes its [delivery gate](references/backend-task-prompt.md#final-response-delivery).
+- Any remaining backend work passes the
+  [handoff check](references/backend-task-prompt.md#handoff-check).
 
 ## References
 

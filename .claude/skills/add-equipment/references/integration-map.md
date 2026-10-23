@@ -63,9 +63,8 @@ This handling also affects rollout: an older client that does not recognize a
 new type drops that row during domain promotion, then `getEquipments` rejects
 the refreshed catalog before writing it. Publishing a new dictionary value
 therefore requires a compatibility decision for existing clients, not only a
-backend enum edit. Carry this consequence into the
-[backend task](backend-task-prompt.md); inspect actual release support rather
-than assuming all installed clients already know the key.
+backend enum edit. The [backend task](backend-task-prompt.md) owns the contents
+of the handoff for remaining server work.
 
 `stubEquipments` supplies preview data. Use a real known ID or an explicitly
 preview-only identity there; it never replaces the production catalog row.
