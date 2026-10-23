@@ -94,9 +94,8 @@ A ViewModel never calls composables; follow [base-class boundaries](../../ui-fea
 - **A Koin-injectable type as a `*Component` constructor parameter.** Feature
   interfaces, UseCases, `DialogController`, repositories, managers, auth/link
   providers and analytics services resolve with `getKoin().get()` inside
-  `componentContext.retainedInstance { <X>ViewModel(...) }`. A Component
-  constructor takes only the context, navigation callbacks and ordinary initial
-  business inputs from a route or accepted parent flow.
+  `componentContext.retainedInstance { <X>ViewModel(...) }`. Allowed composition
+  inputs follow [Component constructor parameters](../../ui-feature/references/base-classes.md#constructor-parameters-must).
 - **Feature-owned analytics lifecycle wiring** - a provider/route matrix, a manual
   `bind` or a lifecycle service resolved in the feature. Analytics stays in the
   ViewModel; foundation binds the screen hook. See

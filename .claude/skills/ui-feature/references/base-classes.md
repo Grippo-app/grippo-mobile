@@ -202,7 +202,13 @@ override val viewModel = componentContext.retainedInstance {
 
 ### Constructor parameters (MUST)
 
-A Component's constructor takes only `componentContext`, **navigation callbacks** (`back`, `close`, `toX`), and **ordinary initial business inputs** from a route or accepted parent flow (`initialRange`, `userId`, accepted selection). **Forbidden** in ctor params: Feature interfaces, UseCases, DialogControllers, repositories and analytics services — those come from Koin inside retained VM construction.
+A Component's constructor takes `componentContext`, **navigation callbacks**
+(`back`, `close`, `toX`), **ordinary initial business inputs** from a route or
+accepted parent flow (`initialRange`, `userId`, accepted selection), and
+**child-component factories** supplied by the composition root under
+[nested cross-feature flows](navigation.md#nested-cross-feature-flows).
+Feature interfaces, UseCases, DialogControllers, repositories and analytics
+services resolve from Koin inside retained VM construction.
 
 ### Business draft preservation
 

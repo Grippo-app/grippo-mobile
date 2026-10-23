@@ -20,11 +20,10 @@ in-memory configs and are not restored.
    `ProfileComponent` for the `MainRouter` tabs), `TrainingsRootComponent`,
    `ProfileComponent`, `DebugComponent` and `TrainingComponent`.
    `MainComponent`'s Library tab uses `Mode.Browse` without a result key.
-   Existing deviation: [TrainingComponent](../../../../ui-screen-features/training/src/commonMain/kotlin/com/grippo/training/TrainingComponent.kt)
-   imports and constructs `ExercisesRootComponent` for picking modes
-   `Mode.Default` / `Mode.SimilarTo`, each carrying a `resultKey`. This conflicts
-   with the [module dependency rules](../../../../CLAUDE.md#module-dependency-rules)
-   and is not a pattern for new cross-feature navigation.
+   [TrainingComponent](../../../../ui-screen-features/training/src/commonMain/kotlin/com/grippo/training/TrainingComponent.kt)
+   receives its `createExercises` factory from the same root for picking modes
+   `Mode.Default` / `Mode.SimilarTo`, each carrying a `resultKey`, while keeping
+   the picker in its own stack.
    `OnboardingComponent` is an internal child of `AuthComponent`.
 2. **`<Feature>Component`** (or `<Feature>RootComponent` — see naming below) in each `:ui-screen-features:<feature>` with more than one screen — owns a private `StackNavigation<<Feature>Router>`. Single-screen features skip the inner stack and just expose one `BaseComponent`.
 3. **`DialogComponent`** in `:shared` — owns `SlotNavigation<DialogSession>` parallel to the screen stack. `DialogContentComponent` owns the internal `StackNavigation<DialogStep>` for that session. Both use `serializer = null`; configs and typed callbacks remain live in memory. See [dialogs.md](dialogs.md).
@@ -171,7 +170,10 @@ For sub-feature components, `eventListener` handles two kinds of directions:
 
 ## Cross-feature navigation
 
-Two `:ui-screen-features:*` modules **cannot** import each other. Direct symbol import between feature modules is **forbidden**. The mechanism, shown on the shipped Home → Profile/Goal jump (the "add goal" action on the Home dashboard):
+Two `:ui-screen-features:*` modules **cannot** import each other. A destination
+owned by the root stack uses the callback chain below, shown on the shipped
+Home → Profile/Goal jump (the "add goal" action on the Home dashboard).
+Embedded flows follow [nested cross-feature flows](#nested-cross-feature-flows).
 
 The `toX` names below describe existing root/container relay APIs, not a naming
 exception for new callbacks; [code style](../../validation-gates/references/code-style.md)
@@ -225,11 +227,27 @@ Verbose but **explicit** — no shared global event bus, no service locator. The
 
 For result-back navigation (feature A opens B, expects a result), use `ResultManager` (`references/results.md`).
 
+### Nested cross-feature flows
+
+When a foreign feature belongs inside the host's stack or tabs, the host owns
+navigation and `shared` supplies a constructor factory for the child. Inspect
+`MainComponent`'s tab factories and `TrainingComponent.createExercises` with their
+wiring in `RootComponent`.
+
+The host invokes the factory from its child factory with the child
+`ComponentContext`, typed route inputs and its ordinary Back/close callback.
+The factory returns `BaseComponent<*>`; `shared` selects the concrete feature
+class. The host depends on `screen-api` and foundation, and renders the child
+through `Render()`. Its existing stack, route serializer and context keys retain
+their ownership. Factories stay in constructors; saved routes contain data and
+result keys. Screen results follow [the existing result protocol](results.md).
+
 ### Cross-feature common mistakes (MUST avoid)
 
 - **Direct feature-to-feature import.** Forbidden. Use `screen-api` + callbacks.
 - **Lambda parameter in a `Router` payload.** Routes are `@Serializable`; lambdas aren't.
-- **Skipping the `RootDirection` step.** Calling `RootRouter.push(...)` directly from a feature VM has no path.
+- **Skipping `RootDirection` for a root-stack transition.** A feature requests
+  that transition through its constructor callback; `RootComponent` owns the push.
 - **Forgetting to thread the callback** through every layer (`createChild` → child component constructor → its eventListener).
 - **Adding a routing callback to a leaf UI Contract instead of emitting its
   normal Direction.** The leaf Component invokes its constructor callback.
