@@ -28,11 +28,6 @@ public sealed class TrainingRouter : BaseRouter {
     }
 
     @Serializable
-    public data class Exercises(
-        val value: ExercisesRouter.Library
-    ) : TrainingRouter()
-
-    @Serializable
     public data class Completed(
         val stage: StageState,
         val exercises: List<ExerciseState>,

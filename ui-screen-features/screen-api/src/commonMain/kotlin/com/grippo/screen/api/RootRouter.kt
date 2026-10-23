@@ -24,4 +24,7 @@ public sealed class RootRouter : BaseRouter {
 
     @Serializable
     public data class Training(val stage: StageState) : RootRouter()
+
+    @Serializable
+    public data class Exercises(val value: ExercisesRouter.Library) : RootRouter()
 }

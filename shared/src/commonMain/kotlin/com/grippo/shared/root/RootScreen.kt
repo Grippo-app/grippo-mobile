@@ -37,5 +37,6 @@ private fun RootComponent.Child.animator(): StackAnimator =
         is RootComponent.Child.Debug -> platformStackAnimator()
         is RootComponent.Child.Profile -> platformStackAnimator()
         is RootComponent.Child.Training -> platformStackAnimator()
+        is RootComponent.Child.Exercises -> platformStackAnimator()
         is RootComponent.Child.Trainings -> platformStackAnimator()
     }

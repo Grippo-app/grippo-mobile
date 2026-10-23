@@ -21,9 +21,9 @@ in-memory configs and are not restored.
    `ProfileComponent`, `DebugComponent` and `TrainingComponent`.
    `MainComponent`'s Library tab uses `Mode.Browse` without a result key.
    [TrainingComponent](../../../../ui-screen-features/training/src/commonMain/kotlin/com/grippo/training/TrainingComponent.kt)
-   receives its `createExercises` factory from the same root for picking modes
-   `Mode.Default` / `Mode.SimilarTo`, each carrying a `resultKey`, while keeping
-   the picker in its own stack.
+   requests picking modes `Mode.Default` / `Mode.SimilarTo` through its
+   `toExercises` callback. Root pushes `RootRouter.Exercises`, preserving the
+   mode and `resultKey` while Training stays beneath the picker.
    `OnboardingComponent` is an internal child of `AuthComponent`.
 2. **`<Feature>Component`** (or `<Feature>RootComponent` — see naming below) in each `:ui-screen-features:<feature>` with more than one screen — owns a private `StackNavigation<<Feature>Router>`. Single-screen features skip the inner stack and just expose one `BaseComponent`.
 3. **`DialogComponent`** in `:shared` — owns `SlotNavigation<DialogSession>` parallel to the screen stack. `DialogContentComponent` owns the internal `StackNavigation<DialogStep>` for that session. Both use `serializer = null`; configs and typed callbacks remain live in memory. See [dialogs.md](dialogs.md).
@@ -53,6 +53,7 @@ public sealed class RootRouter : BaseRouter {
     @Serializable public data class Profile(val value: ProfileRouter) : RootRouter()
     @Serializable public data object Debug : RootRouter()
     @Serializable public data class Training(val stage: StageState) : RootRouter()
+    @Serializable public data class Exercises(val value: ExercisesRouter.Library) : RootRouter()
 }
 ```
 
@@ -98,7 +99,7 @@ Feature-root stacks use `initialStack = { listOf(initial) }` instead of `initial
 public sealed class Child(public open val component: BaseComponent<*>) {
     public data class Authorization(override val component: AuthComponent) : Child(component)
     public data class Home(override val component: MainComponent) : Child(component)
-    // ... Trainings, Profile, Debug, Training — one entry per route
+    // ... Trainings, Profile, Debug, Training, Exercises — one entry per route
 }
 ```
 
@@ -231,8 +232,9 @@ For result-back navigation (feature A opens B, expects a result), use `ResultMan
 
 When a foreign feature belongs inside the host's stack or tabs, the host owns
 navigation and `shared` supplies a constructor factory for the child. Inspect
-`MainComponent`'s tab factories and `TrainingComponent.createExercises` with their
-wiring in `RootComponent`.
+`MainComponent`'s tab factories with their wiring in `RootComponent`. Full-screen
+cross-feature destinations such as Training's exercise picker use the root
+callback flow above; they have a `RootRouter` entry and root-owned Back.
 
 The host invokes the factory from its child factory with the child
 `ComponentContext`, typed route inputs and its ordinary Back/close callback.
@@ -270,6 +272,7 @@ private fun RootComponent.Child.animator(): StackAnimator = when (this) {
     is RootComponent.Child.Debug -> platformStackAnimator()
     is RootComponent.Child.Profile -> platformStackAnimator()
     is RootComponent.Child.Training -> platformStackAnimator()
+    is RootComponent.Child.Exercises -> platformStackAnimator()
     is RootComponent.Child.Trainings -> platformStackAnimator()
 }
 ```

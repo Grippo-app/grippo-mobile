@@ -3,6 +3,7 @@ package com.grippo.shared.root
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
 import com.grippo.data.features.api.authorization.AuthorizationFeature
+import com.grippo.screen.api.ExercisesRouter
 import com.grippo.screen.api.deeplink.Deeplink
 import kotlinx.coroutines.flow.onEach
 
@@ -67,6 +68,10 @@ public class RootViewModel(
 
     override fun toTraining(stage: StageState) {
         navigateTo(RootDirection.Training(stage))
+    }
+
+    override fun toExercises(route: ExercisesRouter.Library) {
+        navigateTo(RootDirection.Exercises(route))
     }
 
     override fun toGoal() {

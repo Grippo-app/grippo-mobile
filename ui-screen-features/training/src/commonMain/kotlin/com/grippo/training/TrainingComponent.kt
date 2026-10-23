@@ -13,7 +13,7 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import com.grippo.exercises.ExercisesRootComponent
+import com.grippo.screen.api.ExercisesRouter
 import com.grippo.screen.api.TrainingRouter
 import com.grippo.training.completed.TrainingCompletedComponent
 import com.grippo.training.exercise.TrainingExerciseComponent
@@ -22,6 +22,7 @@ import com.grippo.training.recording.TrainingRecordingComponent
 public class TrainingComponent(
     componentContext: ComponentContext,
     initial: TrainingRouter,
+    private val toExercises: (ExercisesRouter.Library) -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<TrainingDirection>(componentContext) {
 
@@ -37,9 +38,7 @@ public class TrainingComponent(
 
     override suspend fun eventListener(direction: TrainingDirection) {
         when (direction) {
-            is TrainingDirection.ToLibrary -> navigation.push(
-                TrainingRouter.Exercises(direction.route)
-            )
+            is TrainingDirection.ToLibrary -> toExercises(direction.route)
 
             is TrainingDirection.ToRecording -> navigation.replaceAll(
                 TrainingRouter.Recording(direction.stage)
@@ -92,14 +91,6 @@ public class TrainingComponent(
                 ),
             )
 
-            is TrainingRouter.Exercises -> Child.Exercises(
-                ExercisesRootComponent(
-                    componentContext = context,
-                    initial = router.value,
-                    close = viewModel::onBack,
-                )
-            )
-
             is TrainingRouter.Completed -> Child.Completed(
                 TrainingCompletedComponent(
                     componentContext = context,
@@ -125,8 +116,6 @@ public class TrainingComponent(
 
         data class Exercise(override val component: TrainingExerciseComponent) :
             Child(component)
-
-        data class Exercises(override val component: ExercisesRootComponent) : Child(component)
 
         data class Completed(override val component: TrainingCompletedComponent) :
             Child(component)

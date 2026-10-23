@@ -101,6 +101,10 @@ public class RootComponent(
                 RootRouter.Training(direction.stage)
             )
 
+            is RootDirection.Exercises -> navigation.push(
+                RootRouter.Exercises(direction.route)
+            )
+
             RootDirection.WeightHistory -> navigation.push(
                 RootRouter.Profile(ProfileRouter.Body)
             )
@@ -199,7 +203,16 @@ public class RootComponent(
                 TrainingComponent(
                     componentContext = context,
                     initial = TrainingRouter.Recording(router.stage),
+                    toExercises = viewModel::toExercises,
                     close = viewModel::onBack
+                )
+            )
+
+            is RootRouter.Exercises -> Child.Exercises(
+                ExercisesRootComponent(
+                    componentContext = context,
+                    initial = router.value,
+                    close = viewModel::onBack,
                 )
             )
         }
@@ -240,6 +253,9 @@ public class RootComponent(
             Child(component)
 
         public data class Training(override val component: TrainingComponent) :
+            Child(component)
+
+        public data class Exercises(override val component: ExercisesRootComponent) :
             Child(component)
     }
 }

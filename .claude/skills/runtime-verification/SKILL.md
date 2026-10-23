@@ -101,13 +101,13 @@ adb -s "<emulator-serial>" logcat -d -v time | rg "System.out|AndroidRuntime|gri
 ## iOS simulator
 
 Identifiers: bundle id `com.grippo.app`, scheme `iosApp`, app product
-`<scratchpad>/ios-derived/Build/Products/Debug-iphonesimulator/iosApp.app` when
-built with the catalog command above.
+`<scratchpad>/ios-derived/Build/Products/Debug-iphonesimulator/Grippo.app` when
+built with the catalog command above (`PRODUCT_NAME` in `iosApp/Configuration/Config.xcconfig`).
 
 ```bash
 xcrun simctl list devices available
 xcrun simctl boot "<simulator-udid>"           # or use the simulator tool's attach/launch
-xcrun simctl install "<simulator-udid>" <scratchpad>/ios-derived/Build/Products/Debug-iphonesimulator/iosApp.app
+xcrun simctl install "<simulator-udid>" <scratchpad>/ios-derived/Build/Products/Debug-iphonesimulator/Grippo.app
 xcrun simctl launch "<simulator-udid>" com.grippo.app
 xcrun simctl io "<simulator-udid>" screenshot /private/tmp/<scratchpad from the brief>/<scenario>-<step>-ios-<theme>.png
 xcrun simctl ui "<simulator-udid>" appearance dark      # or light
