@@ -1,6 +1,7 @@
 package com.grippo.design.components.frames
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -17,8 +18,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -36,6 +42,7 @@ public fun BottomOverlayContainer(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     bottom: (@Composable ColumnScope.() -> Unit)? = null,
     overlay: Color,
+    fadeHeight: Dp? = null,
     content: @Composable (Modifier, PaddingValues) -> Unit
 ) {
     if (bottom == null) {
@@ -46,12 +53,14 @@ public fun BottomOverlayContainer(
     }
 
     val overlayAlpha = AppTokens.colors.overlay.bottomActionAlpha
-    val overlayBrush = remember(overlay, overlayAlpha) {
+    val fadeEnd = with(LocalDensity.current) { fadeHeight?.toPx() } ?: Float.POSITIVE_INFINITY
+    val overlayBrush = remember(overlay, overlayAlpha, fadeEnd) {
         Brush.verticalGradient(
             colors = listOf(
                 overlay.copy(alpha = 0f),
                 overlay.copy(alpha = overlayAlpha),
-            )
+            ),
+            endY = fadeEnd,
         )
     }
 
@@ -165,6 +174,52 @@ private fun BottomOverlayContainerPreview() {
                         .padding(padding)
                 ) {
                     Text("Main content with bottom overlay", color = AppTokens.colors.text.primary, style = AppTokens.typography.b14Med())
+                }
+            }
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun BottomOverlayContainerStackedActionsPreview() {
+    PreviewContainer {
+        BottomOverlayContainer(
+            overlay = AppTokens.colors.background.screen,
+            fadeHeight = AppTokens.dp.contentPadding.block,
+            bottom = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = AppTokens.dp.contentPadding.block),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                ) {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        content = ButtonContent.Text(text = "Primary action"),
+                        style = ButtonStyle.Primary,
+                        onClick = {},
+                    )
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        content = ButtonContent.Text(text = "Secondary action"),
+                        style = ButtonStyle.Secondary,
+                        onClick = {},
+                    )
+                }
+            },
+            content = { modifier, padding ->
+                Box(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .background(AppTokens.colors.background.dialog)
+                        .padding(padding)
+                ) {
+                    Text(
+                        text = "Main content behind stacked actions",
+                        color = AppTokens.colors.text.primary,
+                        style = AppTokens.typography.b14Med(),
+                    )
                 }
             }
         )

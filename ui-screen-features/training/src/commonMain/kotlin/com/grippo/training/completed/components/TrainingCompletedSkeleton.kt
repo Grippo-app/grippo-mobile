@@ -2,10 +2,15 @@ package com.grippo.training.completed.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
@@ -18,7 +23,6 @@ import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardStyle
 import com.grippo.design.components.metrics.performance.PerformanceComparisonCardSkeleton
 import com.grippo.design.components.metrics.volume.WeeklyVolumeCardSkeleton
-import com.grippo.design.components.training.TrainingRecapActionsSkeleton
 import com.grippo.design.components.training.TrainingRecapHeroSkeleton
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -28,43 +32,47 @@ import com.grippo.design.resources.provider.loading
 
 @Composable
 internal fun TrainingCompletedSkeleton(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     contentPadding: PaddingValues,
+    listState: LazyListState,
 ) {
     val loadingDescription = AppTokens.strings.res(Res.string.loading)
+    val cardModifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
 
     LazyColumn(
         modifier = modifier.semantics(mergeDescendants = true) {
             contentDescription = loadingDescription
             progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
         },
+        state = listState,
         contentPadding = contentPadding,
     ) {
         item(key = "completion_hero_skeleton") {
-            TrainingRecapHeroSkeleton(modifier = Modifier.fillMaxWidth())
-
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
-
-            TrainingRecapActionsSkeleton(modifier = Modifier.fillMaxWidth())
+            TrainingRecapHeroSkeleton(
+                modifier = Modifier.fillMaxWidth(),
+                windowInsets = WindowInsets.statusBars,
+            )
 
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
         }
 
         item(key = "performance_comparison_skeleton") {
-            PerformanceComparisonCardSkeleton(modifier = Modifier.fillMaxWidth())
+            PerformanceComparisonCardSkeleton(modifier = cardModifier)
         }
 
         item(key = "weekly_volume_skeleton") {
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
-            WeeklyVolumeCardSkeleton(modifier = Modifier.fillMaxWidth())
+            WeeklyVolumeCardSkeleton(modifier = cardModifier)
         }
 
         item(key = "training_streak_skeleton") {
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
             TrainingStreakCardSkeleton(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = cardModifier,
                 style = TrainingStreakCardStyle.Growth(previous = null),
             )
         }
@@ -73,7 +81,7 @@ internal fun TrainingCompletedSkeleton(
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
             MuscleLoadingCardSkeleton(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = cardModifier,
                 style = MuscleLoadingCardStyle.Session,
             )
         }
@@ -86,10 +94,8 @@ private fun TrainingCompletedSkeletonPreview() {
     PreviewContainer {
         TrainingCompletedSkeleton(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.content,
-            ),
+            contentPadding = PaddingValues(bottom = AppTokens.dp.contentPadding.content),
+            listState = rememberLazyListState(),
         )
     }
 }

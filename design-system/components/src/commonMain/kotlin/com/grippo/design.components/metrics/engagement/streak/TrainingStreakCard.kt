@@ -20,6 +20,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -284,6 +285,7 @@ private fun TrainingStreakGrowth(
                     StreakOutcomeLine(
                         previousLength = previousLength,
                         length = length,
+                        currentColor = headlineColor,
                         currentLengthAlpha = currentLengthAlpha,
                     )
                 }
@@ -305,6 +307,7 @@ private fun StreakOutcomeLine(
     modifier: Modifier = Modifier,
     previousLength: Int,
     length: Int,
+    currentColor: Color,
     currentLengthAlpha: State<Float>,
 ) {
     val lineColor = AppTokens.colors.text.secondary
@@ -323,7 +326,7 @@ private fun StreakOutcomeLine(
             ValueSlot.marker(0),
         )
         val line = AppTokens.strings.res(Res.string.joined_pair, outcome, change)
-        val lengthColor = lineColor.copy(alpha = lineColor.alpha * currentLengthAlpha.value)
+        val lengthColor = currentColor.copy(alpha = currentColor.alpha * currentLengthAlpha.value)
 
         buildValueSlotString(
             sentence = line,

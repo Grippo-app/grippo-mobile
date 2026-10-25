@@ -39,7 +39,6 @@ import com.grippo.design.resources.provider.exercise_details_btn
 import com.grippo.design.resources.provider.goal_details_title
 import com.grippo.design.resources.provider.metric_overview_streak_title
 import com.grippo.design.resources.provider.performance_trend
-import com.grippo.design.resources.provider.statistics
 import com.grippo.design.resources.provider.value_performance_trend
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
@@ -460,19 +459,6 @@ internal class TrainingCompletedViewModel(
         )
 
         return adherence.toState(now = now)
-    }
-
-    override fun onSummaryClick() {
-        val id = state.value.training?.id ?: return
-
-        analytics.trackEvent(event = TrainingEvent.Completed.SummaryOpened)
-
-        val dialog = DialogConfig.Statistics.Training(
-            title = UiText.Res(value = Res.string.statistics),
-            id = id,
-        )
-
-        dialogController.open(dialog)
     }
 
     override fun onShareClick(capture: suspend () -> ImageBitmap) {

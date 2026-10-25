@@ -35,7 +35,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import com.grippo.design.components.button.internal.defaultButtonTextStyle
 import com.grippo.design.components.button.internal.resolveButtonColors
 import com.grippo.design.components.button.internal.resolveButtonSize
 import com.grippo.design.components.modifiers.scalableClick
@@ -119,7 +118,10 @@ public fun Button(
     state: ButtonState = ButtonState.Enabled,
     size: ButtonSize = ButtonSize.Medium,
     onClick: () -> Unit,
-    textStyle: TextStyle = defaultButtonTextStyle(size),
+    textStyle: TextStyle = when (size) {
+        ButtonSize.Small -> AppTokens.typography.b12Semi()
+        ButtonSize.Medium -> AppTokens.typography.b14Bold()
+    },
 ) {
     val colors = resolveButtonColors(style, state)
     val metrics = resolveButtonSize(size)

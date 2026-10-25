@@ -30,7 +30,12 @@ What each plugin does (verified):
   Android target gets `compileSdk = 37`, `minSdk = 26`, `namespace = "com.grippo"` (modules set
   their own namespace locally); JVM toolchain 19.
 - `android.application.convention`: `com.android.application` with `compileSdk = 37`,
-  `minSdk = 26`, `targetSdk = 36`, Java/JVM 19. `applicationId = "com.grippo.android"`,
+  `minSdk = 26`, `targetSdk = 36`, Java/JVM 19; it excludes the Compose preview runtime
+  (`ui-tooling`, `ui-tooling-data` and their `-android` artifacts, both `androidx.compose.ui`
+  and `org.jetbrains.compose.ui`) from the runtime configuration of every `release` build-type
+  variant (AGP `onVariants`, flavors included), so `PreviewActivity` ships
+  only in debug while library modules keep `ui-tooling` for IDE previews and
+  `ui-tooling-preview` stays for the annotations. `applicationId = "com.grippo.android"`,
   `versionCode`/`versionName` and `namespace = "com.grippo.android.app"`
   stay in `androidApp/build.gradle.kts` ([release](release.md)).
 - `compose.multiplatform.convention`: applies `org.jetbrains.kotlin.plugin.compose` and

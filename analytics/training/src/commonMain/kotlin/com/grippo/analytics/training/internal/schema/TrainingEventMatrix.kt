@@ -43,7 +43,6 @@ internal object TrainingEventMatrix {
             InteractionAction.CompletionConfirmationDurationSelected -> "completion_confirmation_duration_selected"
             InteractionAction.CompletionConfirmationConfirm -> "completion_confirmation_confirm"
             InteractionAction.CompletionConfirmationDismissRequested -> "completion_confirmation_dismiss_requested"
-            InteractionAction.CompletedSummaryOpened -> "completed_summary_opened"
             InteractionAction.CompletedMetricOpened -> "completed_metric_opened"
             InteractionAction.CompletedStreakOpened -> "completed_streak_opened"
             InteractionAction.CompletedGoalOpened -> "completed_goal_opened"
@@ -91,7 +90,6 @@ internal object TrainingEventMatrix {
         TrainingEvent.CompletionConfirmation.DurationSelected -> InteractionAction.CompletionConfirmationDurationSelected
         TrainingEvent.CompletionConfirmation.ConfirmClicked -> InteractionAction.CompletionConfirmationConfirm
         TrainingEvent.CompletionConfirmation.DismissRequested -> InteractionAction.CompletionConfirmationDismissRequested
-        TrainingEvent.Completed.SummaryOpened -> InteractionAction.CompletedSummaryOpened
         TrainingEvent.Completed.MetricOpened -> InteractionAction.CompletedMetricOpened
         TrainingEvent.Completed.StreakOpened -> InteractionAction.CompletedStreakOpened
         TrainingEvent.Completed.GoalOpened -> InteractionAction.CompletedGoalOpened

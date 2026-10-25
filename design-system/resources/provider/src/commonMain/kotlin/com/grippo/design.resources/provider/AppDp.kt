@@ -492,17 +492,10 @@ public data object AppDp {
         }
 
         public data object Recap {
-            public val verdict: Verdict = Verdict
+            public val backdrop: Backdrop = Backdrop
 
-            public data object Verdict {
-                public val space: Dp = BannerCard.space
-                public val tile: Tile = Tile
-
-                public data object Tile {
-                    public val size: Dp = BannerCard.iconBackground
-                    public val radius: Dp = BannerCard.iconRadius
-                    public val icon: Dp = BannerCard.icon
-                }
+            public data object Backdrop {
+                public val rise: Dp = padding.medium
             }
         }
     }

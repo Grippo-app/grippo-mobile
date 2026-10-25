@@ -127,6 +127,7 @@ private fun GoalScoreLine(
     val unitColor = AppTokens.colors.text.secondary
     val numberStyle = SpanStyle(color = numberColor)
     val unitStyle = AppTokens.typography.b14Med().toSpanStyle().copy(color = unitColor)
+    val previousStyle = SpanStyle(color = AppTokens.colors.text.secondary)
 
     val text = when {
         previousScore == null || previousScore == score -> scoreRuns(
@@ -155,7 +156,7 @@ private fun GoalScoreLine(
                     },
                 ),
                 appendRest = { rest ->
-                    append(scoreRuns(text = rest, numberStyle = numberStyle, unitStyle = unitStyle))
+                    append(scoreRuns(text = rest, numberStyle = previousStyle, unitStyle = unitStyle))
                 },
             )
         }

@@ -2,15 +2,15 @@ package com.grippo.core.state.metrics.performance
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.ExperienceIntermediate
-import com.grippo.design.resources.provider.icons.LineDown
-import com.grippo.design.resources.provider.icons.LineFlat
-import com.grippo.design.resources.provider.icons.LineUp
-import com.grippo.design.resources.provider.icons.Sparkle
+import com.grippo.design.resources.provider.training.recapDeclinedBackdrop
+import com.grippo.design.resources.provider.training.recapFirstWorkoutBackdrop
+import com.grippo.design.resources.provider.training.recapImprovedBackdrop
+import com.grippo.design.resources.provider.training.recapRecordBackdrop
+import com.grippo.design.resources.provider.training.recapStableBackdrop
 import com.grippo.design.resources.provider.training_recap_first_description
 import com.grippo.design.resources.provider.training_recap_verdict_declined
 import com.grippo.design.resources.provider.training_recap_verdict_first
@@ -45,19 +45,18 @@ public enum class PerformanceVerdictState {
     }
 
     @Composable
-    public fun icon(): ImageVector = when (this) {
-        Record -> AppTokens.icons.ExperienceIntermediate
-        Improved -> AppTokens.icons.LineUp
-        Stable -> AppTokens.icons.LineFlat
-        Declined -> AppTokens.icons.LineDown
-        FirstWorkout -> AppTokens.icons.Sparkle
-    }
+    public fun rememberBackdrop(): ImageVector {
+        val accent = AppTokens.colors.illustration.accent
 
-    @Composable
-    public fun color(): Color = when (this) {
-        Record, Improved -> AppTokens.colors.semantic.success
-        Declined -> AppTokens.colors.semantic.decline
-        Stable, FirstWorkout -> AppTokens.colors.text.secondary
+        return remember(this, accent) {
+            when (this) {
+                Record -> recapRecordBackdrop(accent)
+                Improved -> recapImprovedBackdrop(accent)
+                Stable -> recapStableBackdrop(accent)
+                Declined -> recapDeclinedBackdrop(accent)
+                FirstWorkout -> recapFirstWorkoutBackdrop(accent)
+            }
+        }
     }
 
     @Composable

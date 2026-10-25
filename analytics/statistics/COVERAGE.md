@@ -15,8 +15,8 @@ Scope: `:ui-dialog-features:statistics`, 2026-10-13.
 ## Surface gate
 
 Both `DialogConfig.Statistics.Trainings` (TrainingsViewModel.onDailyDigestViewStats)
-and `DialogConfig.Statistics.Training` (TrainingsViewModel.onTrainingMenuClick → Details result → openTrainingOverview
-and TrainingCompletedViewModel.onSummaryClick) reach the shared
+and `DialogConfig.Statistics.Training` (TrainingsViewModel.onTrainingMenuClick → Details result → openTrainingOverview)
+reach the shared
 DialogContentComponent factory → StatisticsComponent → retained
 StatisticsViewModel → StatisticsScreen. The modes share one read-only bottom sheet;
 there are no nested or independent screens. The VM keeps default null
@@ -31,7 +31,7 @@ screen enum, view/close events or feature lifecycle wiring is introduced.
 | Trainings mode startup safeLaunch / Charts loader | StatisticsOperation.RefreshTrainings | statistics_task_started/completed/failed/interrupted v1; statistics_operation=refresh_trainings, terminal duration_ms; foundation supplies fresh operation identity |
 | Training mode observeTraining | Deliberate omission | Reactive source observation; no finite request |
 | observeTrainings and metric calculations | Deliberate omission | Reactive presentation rebuilding and local calculations |
-| Parent open callbacks | Existing parent analytics, unchanged | Remain owned by Trainings/Training; no context transported into this dialog |
+| Parent open callbacks | Existing parent analytics, unchanged | Remain owned by Trainings; no context transported into this dialog |
 
 DismissRequested describes the observed request, not delivered dismissal or
 cancellation. The shared Compose BackHandler calls DialogContract.onDismiss directly;

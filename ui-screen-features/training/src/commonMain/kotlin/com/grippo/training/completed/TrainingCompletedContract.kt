@@ -7,7 +7,6 @@ import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 
 @Immutable
 internal interface TrainingCompletedContract {
-    fun onSummaryClick()
     fun onShareClick(capture: suspend () -> ImageBitmap)
     fun onRecordClick(exampleId: String)
     fun onBaselineSelect(baseline: PerformanceBaselineState)
@@ -19,7 +18,6 @@ internal interface TrainingCompletedContract {
 
     @Immutable
     companion object Empty : TrainingCompletedContract {
-        override fun onSummaryClick() {}
         override fun onShareClick(capture: suspend () -> ImageBitmap) {}
         override fun onRecordClick(exampleId: String) {}
         override fun onBaselineSelect(baseline: PerformanceBaselineState) {}

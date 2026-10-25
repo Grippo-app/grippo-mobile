@@ -100,7 +100,6 @@
     <string name="add_exercise_btn">Add exercise</string>
     <string name="save_btn">Save</string>
     <string name="update_btn">Update</string>
-    <string name="workout_summary">Workout summary</string>
     <string name="training_completed_details_unavailable">Workout saved. You can find it in your history.</string>
     <string name="training_completed_result_unavailable">The workout result could not be confirmed. Check your history before trying again.</string>
     <string name="training_completed_done">Done</string>
@@ -110,7 +109,7 @@
     <string name="training_recap_verdict_stable">Right on your level</string>
     <string name="training_recap_verdict_declined">A lighter session</string>
     <string name="training_recap_verdict_first">Your starting point</string>
-    <string name="training_recap_first_description">Your next workouts will be compared with this one.</string>
+    <string name="training_recap_first_description">Your next workouts will be compared with this one</string>
     <string name="total">Total</string>
     <string name="per_group">Per group</string>
     <string name="per_muscle">Per muscle</string>

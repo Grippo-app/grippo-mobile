@@ -100,7 +100,6 @@
     <string name="add_exercise_btn">Adicionar exercício</string>
     <string name="save_btn">Guardar</string>
     <string name="update_btn">Atualizar</string>
-    <string name="workout_summary">Resumo do treino</string>
     <string name="training_completed_details_unavailable">Treino guardado. Pode encontrá-lo no seu histórico.</string>
     <string name="training_completed_result_unavailable">Não foi possível confirmar o resultado do treino. Consulte o seu histórico antes de tentar novamente.</string>
     <string name="training_completed_done">Concluir</string>
@@ -110,7 +109,7 @@
     <string name="training_recap_verdict_stable">No seu nível</string>
     <string name="training_recap_verdict_declined">Um treino mais leve</string>
     <string name="training_recap_verdict_first">O seu ponto de partida</string>
-    <string name="training_recap_first_description">Os seus próximos treinos serão comparados com este.</string>
+    <string name="training_recap_first_description">Os seus próximos treinos serão comparados com este</string>
     <string name="total">Total</string>
     <string name="per_group">Por grupo</string>
     <string name="per_muscle">Por músculo</string>

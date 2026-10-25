@@ -41,7 +41,6 @@ public sealed interface TrainingEvent {
         public data object DismissRequested : CompletionConfirmation
     }
     public sealed interface Completed : TrainingEvent {
-        public data object SummaryOpened : Completed
         public data object MetricOpened : Completed
         public data object StreakOpened : Completed
         public data object GoalOpened : Completed

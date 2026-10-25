@@ -1,25 +1,37 @@
 package com.grippo.training.completed
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import com.grippo.core.foundation.BaseComposeScreen
@@ -32,7 +44,6 @@ import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.engagement.TrainingStreakFeaturedState
-import com.grippo.core.state.metrics.engagement.TrainingStreakMood
 import com.grippo.core.state.metrics.engagement.TrainingStreakState
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
 import com.grippo.core.state.metrics.performance.PerformanceBaselineState
@@ -49,6 +60,7 @@ import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
@@ -67,21 +79,19 @@ import com.grippo.design.components.metrics.profile.goal.GoalCardStyle
 import com.grippo.design.components.metrics.volume.WeeklyVolumeCard
 import com.grippo.design.components.metrics.volume.WeeklyVolumeCardSkeleton
 import com.grippo.design.components.modifiers.scalableClick
-import com.grippo.design.components.toolbar.Toolbar
-import com.grippo.design.components.toolbar.ToolbarStyle
-import com.grippo.design.components.training.TrainingRecapActions
 import com.grippo.design.components.training.TrainingRecapHero
 import com.grippo.design.components.training.TrainingRecapHeroStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.Share
 import com.grippo.design.resources.provider.joined_pair
 import com.grippo.design.resources.provider.loading
+import com.grippo.design.resources.provider.share
 import com.grippo.design.resources.provider.training_completed_details_unavailable
 import com.grippo.design.resources.provider.training_completed_done
 import com.grippo.design.resources.provider.training_completed_result_unavailable
-import com.grippo.design.resources.provider.workout_summary
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.toolkit.date.utils.DateRangePresets
@@ -90,11 +100,10 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
-
-private const val PREVIEW_RHYTHM_STREAK_INDEX = 2
 
 @Composable
 internal fun TrainingCompletedScreen(
@@ -106,20 +115,20 @@ internal fun TrainingCompletedScreen(
         value = AppTokens.colors.background.screen,
     ),
 ) {
-    Toolbar(
-        modifier = Modifier.fillMaxWidth(),
-        style = ToolbarStyle.Transparent,
-        title = AppTokens.strings.res(Res.string.workout_summary),
-    )
-
-    val basePadding = PaddingValues(
-        start = AppTokens.dp.screen.horizontalPadding,
-        end = AppTokens.dp.screen.horizontalPadding,
-        top = AppTokens.dp.contentPadding.content,
-        bottom = AppTokens.dp.contentPadding.subContent,
-    )
-
+    val basePadding = PaddingValues(bottom = AppTokens.dp.contentPadding.subContent)
     val isSaving = loaders.contains(TrainingCompletedLoader.SaveTraining)
+    val isSharing = loaders.contains(TrainingCompletedLoader.ShareRecap)
+    val heroStyle = trainingCompletedHeroStyle(state)
+    val heroLayer = rememberGraphicsLayer()
+    val skeletonListState = rememberLazyListState()
+    val contentListState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    val shareState = when {
+        isSaving -> ButtonState.Disabled
+        isSharing -> ButtonState.Loading
+        heroStyle is TrainingRecapHeroStyle.Resolved -> ButtonState.Enabled
+        else -> ButtonState.Disabled
+    }
 
     BottomOverlayContainer(
         modifier = Modifier
@@ -132,16 +141,22 @@ internal fun TrainingCompletedScreen(
                     TrainingCompletedSkeleton(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = resolvedPadding,
+                        listState = skeletonListState,
                     )
                 } else {
                     TrainingCompletedContent(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = resolvedPadding,
+                        listState = contentListState,
                         state = state,
                         loaders = loaders,
+                        heroStyle = heroStyle,
+                        heroLayer = heroLayer,
                         contract = contract,
                     )
                 }
+
+                StatusBarScrim(listState = if (isSaving) skeletonListState else contentListState)
 
                 KonfettiParade(
                     show = state.recordCelebration == RecordCelebrationState.Playing && !isSaving,
@@ -150,25 +165,72 @@ internal fun TrainingCompletedScreen(
             }
         },
         overlay = AppTokens.colors.background.screen,
+        fadeHeight = AppTokens.dp.contentPadding.block,
         bottom = {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            Button(
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth(),
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.training_completed_done),
-                ),
-                style = ButtonStyle.Primary,
-                state = if (isSaving) ButtonState.Loading else ButtonState.Enabled,
-                onClick = contract::onBack,
-            )
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(
+                        start = AppTokens.dp.screen.horizontalPadding,
+                        end = AppTokens.dp.screen.horizontalPadding,
+                        top = AppTokens.dp.contentPadding.block,
+                        bottom = AppTokens.dp.screen.verticalPadding,
+                    ),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            ) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.training_completed_done),
+                    ),
+                    style = ButtonStyle.Primary,
+                    state = if (isSaving) ButtonState.Loading else ButtonState.Enabled,
+                    onClick = contract::onBack,
+                )
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
-            Spacer(modifier = Modifier.navigationBarsPadding())
+                if (isSaving || state.training != null) {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        content = ButtonContent.Text(
+                            text = AppTokens.strings.res(Res.string.share),
+                            startIcon = ButtonIcon.Icon(AppTokens.icons.Share),
+                        ),
+                        style = ButtonStyle.Secondary,
+                        state = shareState,
+                        onClick = {
+                            coroutineScope.launch {
+                                contentListState.animateScrollToItem(index = 0)
+                                // Skipping this frame shares the hero's stale layer from before the scroll.
+                                withFrameNanos { }
+                                contract.onShareClick { heroLayer.toImageBitmap() }
+                            }
+                        },
+                    )
+                }
+            }
         },
+    )
+}
+
+@Composable
+private fun BoxScope.StatusBarScrim(listState: LazyListState) {
+    val color = AppTokens.colors.background.screen
+
+    Spacer(
+        modifier = Modifier
+            .align(Alignment.TopCenter)
+            .fillMaxWidth()
+            .windowInsetsTopHeight(WindowInsets.statusBars)
+            .drawBehind {
+                val scrolled = if (listState.firstVisibleItemIndex > 0) {
+                    size.height
+                } else {
+                    listState.firstVisibleItemScrollOffset.toFloat()
+                }
+                val progress = if (size.height > 0f) (scrolled / size.height).coerceIn(0f, 1f) else 0f
+                drawRect(color = color, alpha = progress)
+            },
     )
 }
 
@@ -176,24 +238,35 @@ internal fun TrainingCompletedScreen(
 private fun TrainingCompletedContent(
     modifier: Modifier,
     contentPadding: PaddingValues,
+    listState: LazyListState,
     state: TrainingCompletedState,
     loaders: ImmutableSet<TrainingCompletedLoader>,
+    heroStyle: TrainingRecapHeroStyle,
+    heroLayer: GraphicsLayer,
     contract: TrainingCompletedContract,
 ) {
     val training = state.training
     val performance = state.performance
     val isLoadingRecords = loaders.contains(TrainingCompletedLoader.LoadRecords)
-    val isSharing = loaders.contains(TrainingCompletedLoader.ShareRecap)
     val loadingDescription = AppTokens.strings.res(Res.string.loading)
+    val cardModifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
 
     LazyColumn(
         modifier = modifier,
+        state = listState,
         contentPadding = contentPadding,
     ) {
         if (training == null) {
             item(key = "completion_unavailable") {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                        .padding(top = AppTokens.dp.contentPadding.content)
+                        .semantics { heading() },
                     text = AppTokens.strings.res(
                         if (state.savedTrainingId != null) {
                             Res.string.training_completed_details_unavailable
@@ -201,8 +274,8 @@ private fun TrainingCompletedContent(
                             Res.string.training_completed_result_unavailable
                         },
                     ),
-                    style = AppTokens.typography.b14Med(),
-                    color = AppTokens.colors.text.secondary,
+                    style = AppTokens.typography.h4(),
+                    color = AppTokens.colors.text.primary,
                 )
             }
             return@LazyColumn
@@ -211,11 +284,9 @@ private fun TrainingCompletedContent(
         item(key = "completion_hero") {
             TrainingCompletedHero(
                 modifier = Modifier.fillMaxWidth(),
-                state = state,
                 training = training,
-                isSharing = isSharing,
-                onStatisticsClick = contract::onSummaryClick,
-                onShareClick = contract::onShareClick,
+                style = heroStyle,
+                layer = heroLayer,
             )
 
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
@@ -225,16 +296,14 @@ private fun TrainingCompletedContent(
             item(key = "training_records") {
                 if (isLoadingRecords) {
                     TrainingRecordsCardSkeleton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .semantics(mergeDescendants = true) {
-                                contentDescription = loadingDescription
-                                progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
-                            },
+                        modifier = cardModifier.semantics(mergeDescendants = true) {
+                            contentDescription = loadingDescription
+                            progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
+                        },
                     )
                 } else {
                     TrainingRecordsCard(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = cardModifier,
                         records = state.records,
                         onRecordClick = contract::onRecordClick,
                     )
@@ -247,16 +316,14 @@ private fun TrainingCompletedContent(
         item(key = "performance_comparison") {
             if (performance == null) {
                 PerformanceComparisonCardSkeleton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .semantics(mergeDescendants = true) {
-                            contentDescription = loadingDescription
-                            progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
-                        },
+                    modifier = cardModifier.semantics(mergeDescendants = true) {
+                        contentDescription = loadingDescription
+                        progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
+                    },
                 )
             } else {
                 PerformanceComparisonCard(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = cardModifier,
                     metrics = performance.metrics,
                     baseline = performance.baseline,
                     onBaselineSelect = contract::onBaselineSelect,
@@ -270,27 +337,25 @@ private fun TrainingCompletedContent(
 
             if (state.weeklyVolume == null) {
                 WeeklyVolumeCardSkeleton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .semantics(mergeDescendants = true) {
-                            contentDescription = loadingDescription
-                            progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
-                        },
+                    modifier = cardModifier.semantics(mergeDescendants = true) {
+                        contentDescription = loadingDescription
+                        progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
+                    },
                 )
             } else {
                 WeeklyVolumeCard(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = cardModifier,
                     value = state.weeklyVolume,
                 )
             }
         }
 
-        if (state.performance == null) {
+        if (performance == null) {
             item(key = "training_streak_skeleton") {
                 Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
                 TrainingStreakCardSkeleton(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = cardModifier,
                     style = TrainingStreakCardStyle.Growth(previous = null),
                 )
             }
@@ -299,9 +364,7 @@ private fun TrainingCompletedContent(
                 Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
                 TrainingStreakCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .scalableClick(onClick = contract::onStreakClick),
+                    modifier = cardModifier.scalableClick(onClick = contract::onStreakClick),
                     value = state.streak,
                     style = TrainingStreakCardStyle.Growth(previous = state.previousStreak),
                 )
@@ -313,9 +376,7 @@ private fun TrainingCompletedContent(
                 Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
                 GoalCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .scalableClick(onClick = contract::onGoalClick),
+                    modifier = cardModifier.scalableClick(onClick = contract::onGoalClick),
                     value = state.goalProgress,
                     style = GoalCardStyle.Growth(previous = state.previousGoalProgress),
                 )
@@ -327,7 +388,7 @@ private fun TrainingCompletedContent(
                 Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
                 MuscleLoadingCard(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = cardModifier,
                     summary = state.muscleLoad,
                     style = MuscleLoadingCardStyle.Session,
                 )
@@ -339,42 +400,24 @@ private fun TrainingCompletedContent(
 @Composable
 private fun TrainingCompletedHero(
     modifier: Modifier = Modifier,
-    state: TrainingCompletedState,
     training: TrainingState,
-    isSharing: Boolean,
-    onStatisticsClick: () -> Unit,
-    onShareClick: (capture: suspend () -> ImageBitmap) -> Unit,
+    style: TrainingRecapHeroStyle,
+    layer: GraphicsLayer,
 ) {
-    val style = trainingCompletedHeroStyle(state)
     val captureBackground = AppTokens.colors.background.screen
-    val heroLayer = rememberGraphicsLayer()
 
-    Column(modifier = modifier) {
-        TrainingRecapHero(
-            modifier = Modifier
-                .fillMaxWidth()
-                .drawWithContent {
-                    heroLayer.record {
-                        drawRect(color = captureBackground)
-                        this@drawWithContent.drawContent()
-                    }
-                    drawLayer(heroLayer)
-                },
-            training = training,
-            style = style,
-        )
-
-        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
-
-        TrainingRecapActions(
-            modifier = Modifier.fillMaxWidth(),
-            shareEnabled = style is TrainingRecapHeroStyle.Resolved && !isSharing,
-            onStatisticsClick = onStatisticsClick,
-            onShareClick = {
-                onShareClick { heroLayer.toImageBitmap() }
-            },
-        )
-    }
+    TrainingRecapHero(
+        modifier = modifier.drawWithContent {
+            layer.record {
+                drawRect(color = captureBackground)
+                this@drawWithContent.drawContent()
+            }
+            drawLayer(layer)
+        },
+        training = training,
+        style = style,
+        windowInsets = WindowInsets.statusBars,
+    )
 }
 
 @Composable
@@ -397,17 +440,13 @@ private fun trainingCompletedHeroStyle(state: TrainingCompletedState): TrainingR
     )
 }
 
+private const val PREVIEW_RHYTHM_STREAK_INDEX = 2
+
 private fun previewRhythmStreak(length: Int): TrainingStreakState {
-    return stubTrainingStreaks()[PREVIEW_RHYTHM_STREAK_INDEX].copy(
-        featured = TrainingStreakFeaturedState.Rhythm(
-            length = length,
-            workDays = 2,
-            restDays = 1,
-            mood = TrainingStreakMood.OnTrack,
-            progressPercent = 50,
-            confidence = 0.9f,
-        ),
-    )
+    val streak = stubTrainingStreaks()[PREVIEW_RHYTHM_STREAK_INDEX]
+    val featured = streak.featured as? TrainingStreakFeaturedState.Rhythm ?: return streak
+
+    return streak.copy(featured = featured.copy(length = length))
 }
 
 private fun trainingCompletedPreviewState(): TrainingCompletedState {

@@ -100,7 +100,6 @@
     <string name="add_exercise_btn">Додати вправу</string>
     <string name="save_btn">Зберегти</string>
     <string name="update_btn">Оновити</string>
-    <string name="workout_summary">Підсумок тренування</string>
     <string name="training_completed_details_unavailable">Тренування збережено. Переглянути його можна в історії.</string>
     <string name="training_completed_result_unavailable">Не вдалося підтвердити результат тренування. Перевір історію перед повторною спробою.</string>
     <string name="training_completed_done">Готово</string>
@@ -110,7 +109,7 @@
     <string name="training_recap_verdict_stable">На своєму рівні</string>
     <string name="training_recap_verdict_declined">Легке тренування</string>
     <string name="training_recap_verdict_first">Точка відліку</string>
-    <string name="training_recap_first_description">Наступні тренування порівнюватимуться з цим.</string>
+    <string name="training_recap_first_description">Наступні тренування порівнюватимуться з цим</string>
     <string name="total">Всього</string>
     <string name="per_group">По групам</string>
     <string name="per_muscle">По м’язах</string>
