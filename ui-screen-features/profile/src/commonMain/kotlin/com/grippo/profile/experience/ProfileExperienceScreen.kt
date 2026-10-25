@@ -86,9 +86,7 @@ internal fun ProfileExperienceScreen(
         overlay = AppTokens.colors.background.screen,
         content = { resolvedPadding ->
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                 contentPadding = resolvedPadding
             ) {

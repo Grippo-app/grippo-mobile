@@ -415,10 +415,11 @@ and Latin text in both themes; each role keeps its existing size and line height
   verdict title leads, the `b14Med` description line joins
   the summary and the period label through `joined_pair` ("<summary> · <period>",
   with non-breaking spaces around the dot so it never ends or starts a line, here
-  or in the streak line) once the stored period is resolved. The period label is
-  the preset name ("30 days") when the comparison period is the current Home
-  period; an edited older workout is compared with the same kind of period ending
-  on its own date, so its label names those dates instead. The workout's own
+  or in the streak line) once the stored period is resolved. An edited older
+  workout is compared with the same kind of period around its own date (a rolling
+  preset ends on that day, a calendar preset is the week, month or year containing
+  it). The period label is the preset name ("30 days") whenever that comparison
+  period is the current Home period and its dates otherwise. The workout's own
   facts step down to
   `h3` with `b11Med` labels. The description lives on the types:
   `PerformanceVerdictState.summary(metrics, baseline)` gives

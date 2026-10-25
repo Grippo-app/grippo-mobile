@@ -401,7 +401,7 @@ private fun trainingCompletedHeroStyle(state: TrainingCompletedState): TrainingR
 
     val verdict = PerformanceVerdictState.of(performance.metrics)
     val summary = verdict.summary(metrics = performance.metrics, baseline = performance.baseline)
-    val rangeLabel = if (performance.period == state.range) {
+    val rangeLabel = if (performance.isOver(state.range.value)) {
         state.range.label()?.text()
     } else {
         performance.period.short()

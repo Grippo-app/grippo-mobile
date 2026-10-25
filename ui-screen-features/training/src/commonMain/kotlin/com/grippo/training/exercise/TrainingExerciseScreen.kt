@@ -167,9 +167,7 @@ internal fun TrainingExerciseScreen(
         overlay = AppTokens.colors.background.screen,
         content = { resolvedPadding ->
             AnimatedContent(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                modifier = Modifier.fillMaxWidth(),
                 transitionSpec = {
                     fadeIn(animationSpec = tween(durationMillis = 220, delayMillis = 90))
                         .togetherWith(fadeOut(animationSpec = tween(durationMillis = 90)))
