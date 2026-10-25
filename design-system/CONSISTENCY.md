@@ -349,7 +349,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   Chart points/arcs retain data geometry;
   chart tooltip surfaces use the compact 8 dp shape.
 - Loading card, gallery, image and button silhouettes follow their populated
-  owners; text-line skeletons keep their own small corner radius, while a bone
+  owners; text-line skeletons use the shared skeleton corner, while a bone
   standing in for a control or a tile takes that owner's shape.
 
 ## Layout and accessibility
@@ -365,9 +365,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   h3 name and neutral supporting email. Experience avatar colors retain their
   meaning; the menu's working sections stay neutral. Separate identity from menu
   content with contentPadding.block, keeping compact section gaps at content.
-  Loading name/email slots are as tall as one laid-out h3/b13Med line
-  (`rememberTextHeight`); HeaderLoading tokens retain their width fractions and
-  corner radius.
+  Loading name/email slots are `SkeletonText` lines of h3/b13Med with the shared
+  text-line corner at the `skeleton.line` short/medium widths. The avatar slot is
+  a circular `SkeletonBone`.
   Only the avatar slot shimmers; supporting name/email placeholders stay static.
 - UserProfileHeader uses role variants: Profile retains the warm avatar/name/email
   region; Account shows read-only signed-in identity on `background.card`, using
@@ -438,8 +438,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   verdict is still being computed - it then renders the facts for real and holds
   the verdict row and description with static decorative bones of the same
   geometry (the `training.recap.verdict.tile` bone in the tile's own radius, an
-  `h2`-line title bone at `training.recap.loading.title.widthFraction` (60%) and a
-  `b14Med`-line bone at `loading.description.widthFraction` (90%)); the bones carry no
+  `h2`-line title bone at `skeleton.line.medium` and a `b14Med`-line bone at
+  `skeleton.line.long`); the bones carry no
   semantics - the comparison and weekly skeletons below, and the records skeleton
   while the `LoadRecords` loader runs, each carry one loading semantics node; the
   streak placeholder shown while the period computes stays silent, since it resolves
@@ -536,8 +536,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   ("Workout time, 65 min").
   `TrainingRecapHeroSkeleton` lives beside the hero on the same warm surface:
   the verdict-row and description bones shared with `Pending` and one row of
-  three fact bones (`h3` value at `loading.fact.value.widthFraction` (50%),
-  `b11Med` label at `loading.fact.label.widthFraction` (70%)). The skeleton
+  three fact bones (`h3` value at `skeleton.line.medium`, `b11Med` label at
+  `skeleton.line.long`). The skeleton
   shares the hero's surface, rows and gaps, and every text bone is one laid-out
   line of its role tall (`SkeletonText`), so the skeleton, the `Pending` hero and
   the resolved hero are equally tall while the title, the description and the facts
@@ -551,9 +551,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   line (the Small text style) plus `button.small.horizontalPadding` on each side,
   `button.small.height` tall unless the label line with `button.verticalPadding`
   on each side is taller - end-aligned at the same `subContent` gap. Every hero
-  and actions bone is static; the text-bone fractions live in
-  `training.recap.loading`, one child object per bone (`title`, `description`,
-  `fact.value`, `fact.label`) holding its `widthFraction`.
+  and actions bone is static.
   The verdict reads only the metrics that `showsComparison()`
   (`PerformanceVerdictState.of()`); Duration never claims progress or regress.
 - MenuSection headings use `h4` and a 22 dp glyph centered in a 32 dp tile with
@@ -605,51 +603,45 @@ and Latin text in both themes; each role keeps its existing size and line height
   right of the heading. Calendar and Update remain their existing explicit buttons.
 - Home's initial loading and an active refresh without period content use
   noninteractive skeleton cards with the dashboard's toolbar, gutters and geometry.
-  Each card uses one broad `divider.default` block with shared clipped shimmer,
+  Each card uses one broad `colors.skeleton.bone` block with shared clipped shimmer,
   without simulated facts, icons or chart details. Panel geometry derives from
   the existing typography, image and spacing slots; section text placeholders
   are one laid-out line of their typography role tall and stay static. The highlights header keeps
-  one animated slot; the spotlight gallery uses one coarse panel without a
+  one animated slot, its `b13Med` hint line, beside the static period-picker bone
+  (the larger of the `h6` line and `periodPicker.icon`); the spotlight gallery uses one coarse panel without a
   nested loading scroll. One localized indeterminate loading
   node describes the skeleton; the real period picker remains independently
   accessible for returning users once the range resolves. Known goal/unlock
   availability controls those slots.
   Cached populated content stays visible during refresh; completed empty periods
   retain their real empty presentation. No minimum loading duration is introduced.
-- Shared skeleton primitives (`SkeletonBone`, `SkeletonText`, `SkeletonPanel`)
-  own that geometry: a bone is a `divider.default` block clipped to its `shape`
-  with the shared `shimmer.highlight` band applied after clip and background. The
-  shape defaults to the small `metrics.status.radius` text-line corner; a bone
+- The skeleton family (`skeleton/`: `SkeletonBone`, `SkeletonText`, `SkeletonPanel`)
+  owns that geometry: a bone is a `colors.skeleton.bone` block (the
+  `divider.default` value in both themes) clipped to its `shape` with the shared
+  `shimmer.highlight` band applied after clip and background. The shape defaults
+  to the `dp.skeleton.radius` text-line corner; a bone
   standing in for a control or a tile takes that owner's shape (the round Share
   button, `button.small.radius` for the Statistics button, the verdict tile
-  radius). A text bone is as tall as one laid-out line of the real typography
-  role it stands in for (`rememberTextHeight(style)`, measured the way a
-  one-line `Text` lays it out): Android lays a single line out at the font's own
-  height, not at the role's nominal sp line height (an Onest `b14Med` line is about
-  2 dp shorter than its 20 sp, an `h5` line about 3.6 dp shorter than its 24 sp),
-  so a nominal-height bone would make the populated content jump. The measured
-  sample is a digit, whose line metrics do not depend on the locale; the result is
-  keyed on the style, the measurer and the density. A text bone stays static unless
-  its host asks for shimmer (`SkeletonText(animated = false)` by default).
-  `SkeletonPanel` content heights sum the same measured lines: every card skeleton
-  hoists one `rememberTextMeasurer()` and passes it to each
-  `rememberTextHeight` call; a text the populated card wraps passes its line
-  count as `lines`. Fixed parts keep their tokens: icons, image slots, the Segment
-  minimum height, indicators, chip padding and dividers; a `MetricOverviewHeader`
+  radius). A text bone is one laid-out line of the real typography role it stands
+  in for, measured under [typography.md](../.claude/skills/design-system/references/typography.md)
+  so the populated content does not jump; the `dp.skeleton.line` scale is short
+  40%, medium 60% and long 80%. Width, animation and wrapped-text rules follow the
+  [skeleton family rule](../.claude/skills/design-system/references/components.md).
+  `SkeletonPanel` content heights sum the same measured lines. Fixed parts keep their tokens: icons, image
+  slots, the Segment minimum height, indicators, chip padding and dividers; a `MetricOverviewHeader`
   row is the larger of its `h5` line and the `metrics.overview.detailsIcon`
   chevron. A panel is the real
   `MetricSectionPanel` of its `SkeletonPanelStyle` (Small or Large) holding one
-  full-width shimmering bone of the populated content height. Bones carry no
-  semantics; the hosting loading content puts the single localized indeterminate
-  node on its root, or on each section skeleton that loads on its own, as a merged
-  `semantics` block with the `loading` description and indeterminate progress
-  written at that host. A shared card's loading
+  full-width shimmering bone of the populated content height. Loading semantics
+  follow the [skeleton family rule](../.claude/skills/design-system/references/components.md):
+  one node per loading region, on the host root or on each section skeleton that
+  loads on its own. A shared card's loading
   geometry lives beside the card as its `*CardSkeleton`
   (`PerformanceComparisonCardSkeleton` sized to the baseline segment and the five
   growth blocks with stacked bars; `TrainingStreakCardSkeleton(style)` and
   `MuscleLoadingCardSkeleton(style)` accept only the styles a loading host shows,
-  `TrainingStreakCardStyle.Loadable` (Overview, Growth) and
-  `MuscleLoadingCardStyle.Loadable` (Overview, Session), with no default, so each
+  `TrainingStreakCardStyle.Loadable` (Overview, Detailed, Growth) and
+  `MuscleLoadingCardStyle.Loadable` (Overview, Summary, Session), with no default, so each
   host names its style: the streak Overview for Home sizes the header, the
   headline/active-days row (the flame beside the headline alone), the indicator
   and the `training_streak_current_progress` line with three Large spacers; the
@@ -666,9 +658,40 @@ and Latin text in both themes; each role keeps its existing size and line height
   `WeeklyVolumeCardSkeleton` sized to the weekly
   header row, the `h3` volume sentence, indicator and `b12Med` count,
   `TrainingRecapHeroSkeleton` on the hero's warm surface and
-  `TrainingRecapActionsSkeleton` for its actions row), consumed by every host;
-  Home's remaining card skeletons stay private to Home until a second host needs
-  them.
+  `TrainingRecapActionsSkeleton` for its actions row, `MuscleLoadingImagesRowSkeleton`
+  sharing the front/back figure layout of `MuscleLoadingImagesRow` with bones at
+  `muscle.figure.aspectRatio`, `MuscleLoadingSkeleton` with the dominant and two
+  further group rows of `MuscleLoading`, and `VolumeMetricChartSkeleton` sized to
+  the tonnage caption and the width-derived bar chart), consumed by every host;
+  a skeleton with a single host stays private to that host until a second host
+  needs it.
+- Dialog content loads show a private `<Feature>LoadingContent` skeleton instead
+  of the `Loader` spinner, which remains only for the brand splash and debug
+  pages; section-level placeholders are `<Section>Skeleton`. Each mirrors its
+  populated content with the dialog's gutters and gaps, keeps real range headers
+  and carries one localized `loading` node on its root: Statistics (two
+  `chip.medium` total bones, `VolumeMetricChartSkeleton`, the `h4` Muscles line over
+  `MuscleLoadingSkeleton`); performance trend details (Latest row lines, a Small
+  metric panel, the `h4` Recent workouts line, a `trend.historyAspectRatio`
+  sparkline bone, three history rows with real dividers, a static `button.medium`
+  bone); training streak details (`TrainingStreakCardSkeleton(Detailed)`, static
+  `h4`/`b12Med` lines over four period blocks, a static `button.medium` bone);
+  muscle loading details (`MuscleLoadingCardSkeleton(Summary)`, a static
+  `segment.outline.height` bone, `MuscleLoadingImagesRowSkeleton`,
+  `MuscleLoadingSkeleton`, a static `button.medium` bone); start training (the
+  static fill Segment bone in `segment.fill.outRadius`, the circular
+  `illustration.large` halo, the `h4` title and two-line `b14Med` description);
+  draft training (the `h3` header and two-line description, the
+  `metrics.panel.large.radius` summary tile, the `h4` contents line and three
+  exercise-row bones); the completed exercise (`ExerciseLoadingContent`: the 64 dp
+  image-slot bone with `h4`/`b12Med` lines, `ExerciseSetsSkeleton` with three static
+  `IterationCard.Recorded` rows and dividers, `ExerciseProgressCardSkeleton` on the
+  card's real Large surface with the shared `ExerciseHistorySkeleton`, and a static
+  `button.medium` bone for the details action); and the exercise-details
+  Achievements tab (`ExerciseExampleDetailsAchievementsSkeleton`: a clipped row of
+  `achievementCard.width` bones, one default-corner bone for the unframed
+  estimated-1RM block, the `h4` History line, `VolumeMetricChartSkeleton` and three
+  `exerciseCard.small` bones).
 - The last-workout recap names its selected-period scope. Title/date and two
   training facts share a row with the unchanged compact journal illustration;
   exercise count and Calendar share the footer. It keeps the illustration gradient
@@ -756,7 +779,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   no colored edge stripe. Its image/title/chevron header shares the card hierarchy.
 - MenuValueRow keeps neutral labels/values and a quiet chevron, with a 56 dp
   minimum height and 12 dp vertical padding/gaps. A loading value is a shimmering
-  bone one laid-out `b14Med` line tall. Optional leading icons use a
+  `b14Med` `SkeletonText` at the `skeleton.line.short` width of its value slot. Optional leading icons use a
   32 dp card-surface tile with 8 dp corners; caller-supplied channel/destructive
   colors retain their meaning. Dividers align with the text after the tile.
 - MenuActionRow uses the same menu-row icon and spacing family for operations:
@@ -1194,10 +1217,11 @@ and Latin text in both themes; each role keeps its existing size and line height
   The ordered sets use
   `IterationCard.Recorded` first: a small passive number badge (`iterationCard.numberSize`),
   neutral `h5` load × repetitions and quiet dividers only between rows. Actual ordinal
-  prior values belong to the feature-provided trailing slot, using secondary `b12Med` in a fixed `iterationCard.historyContextWidth`
-  column, introduced once by a short previous-date header. Each context slot
-  reserves two laid-out secondary lines (`rememberTextHeight(lines = 2)`) in
-  loading, populated and absent-match states, its loading bone one line; no repeated Last time label competes with the current result.
+  prior values belong to the feature-provided trailing slot, using secondary
+  `b12Med` in a fixed `iterationCard.historyContextWidth` column, introduced once
+  by a short previous-date header. Each context slot reserves two laid-out
+  secondary lines in loading, populated and absent-match states, its loading bone
+  one line; no repeated Last time label competes with the current result.
   Bodyweight calculations stay beside their effective load. Missing per-set
   measurements remain unavailable; optional absent body mass does not hide known
   extra or assist weight.
@@ -1211,9 +1235,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   history uses a quiet `b12Med` heading, neutral signed percentage and one short
   prior-volume/date caption. The percentage has no status fill or success meaning.
   Both caption and chart retain reserved geometry while history loads, is empty
-  or contains unsupported tonnage. Skeletons use `divider.default` and
-  typography-derived text slots. Shared clipped shimmer animates only the
-  previous-date header and chart region; per-set and caption slots stay static
+  or contains unsupported tonnage. Skeletons are the shared `SkeletonText` caption
+  line and a `SkeletonBone` chart region with the small panel corner. Shared
+  clipped shimmer animates only the previous-date header and chart region; per-set and caption slots stay static
   regardless of set count. The card exposes one localized
   indeterminate node while individual bones remain decorative. No minimum loading
   duration or business animation is added.

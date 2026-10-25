@@ -154,6 +154,10 @@ public object DarkColor : AppColor {
         override val buttonError = AppPalette.Common.White.copy(alpha = 0.16f)
     }
 
+    override val skeleton: AppColor.SkeletonColors = object : AppColor.SkeletonColors {
+        override val bone = divider.default
+    }
+
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
         override val shadowSpotAlphaMultiplier: Float = 1.5f
         override val bottomActionAlpha: Float = 0.9f

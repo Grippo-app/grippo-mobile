@@ -40,7 +40,6 @@ import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.datetime.DialogRangeHeader
 import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCard
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardStyle
@@ -72,6 +71,7 @@ import com.grippo.design.resources.provider.muscle_loading_details_no_workouts_m
 import com.grippo.design.resources.provider.muscle_loading_details_no_workouts_title
 import com.grippo.design.resources.provider.muscle_loading_details_unknown_message
 import com.grippo.design.resources.provider.muscle_loading_details_unknown_title
+import com.grippo.muscle.loading.details.components.MuscleLoadingDetailsLoadingContent
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
@@ -131,11 +131,7 @@ private fun MuscleLoadingDetailsContent(
                     ) {
                         val summary = state.summary
                         if (summary == null) {
-                            Loader(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = AppTokens.dp.contentPadding.block),
-                            )
+                            MuscleLoadingDetailsLoadingContent(modifier = Modifier.fillMaxWidth())
                         } else {
                             if (summary.meta.trainingsCount > 0) {
                                 MuscleLoadingCard(

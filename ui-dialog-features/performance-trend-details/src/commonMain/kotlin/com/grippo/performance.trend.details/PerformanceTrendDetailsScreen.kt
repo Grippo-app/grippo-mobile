@@ -34,7 +34,6 @@ import com.grippo.core.state.metrics.performance.stubPerformanceTrendHistory
 import com.grippo.design.components.datetime.DialogRangeHeader
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.performance.PerformanceMetricCard
 import com.grippo.design.components.metrics.performance.PerformanceTrendHistoryCard
 import com.grippo.design.components.utils.AnchorScrollBehavior
@@ -49,6 +48,7 @@ import com.grippo.design.resources.provider.performance_trend_details_latest
 import com.grippo.design.resources.provider.performance_trend_details_recent_workouts
 import com.grippo.performance.trend.details.components.PerformanceHistoryRow
 import com.grippo.performance.trend.details.components.PerformanceMetricExplanation
+import com.grippo.performance.trend.details.components.PerformanceTrendDetailsLoadingContent
 import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
@@ -102,11 +102,7 @@ private fun PerformanceTrendDetailsContent(
             ) {
                 if (history == null) {
                     item(key = "loading", contentType = "loading") {
-                        Loader(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = AppTokens.dp.contentPadding.block),
-                        )
+                        PerformanceTrendDetailsLoadingContent(modifier = Modifier.fillMaxWidth())
                     }
                 } else {
                     if (history.isEmpty()) {

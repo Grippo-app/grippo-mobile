@@ -22,7 +22,6 @@ import com.grippo.core.state.metrics.volume.stubVolumeSeries
 import com.grippo.design.components.chart.internal.BarChartXAxisLabels
 import com.grippo.design.components.datetime.DialogRangeHeader
 import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
 import com.grippo.design.components.metrics.volume.TrainingTotalSection
@@ -32,6 +31,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.muscles
+import com.grippo.statistics.components.StatisticsLoadingContent
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.datetime.LocalDateTime
@@ -53,16 +53,19 @@ internal fun StatisticsScreen(
         }
     }
 
-    if (loaders.contains(StatisticsLoader.Charts)) {
-        Loader(modifier = Modifier.fillMaxWidth().weight(1f))
-    } else {
-        BottomOverlayContainer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            overlay = AppTokens.colors.background.dialog,
-            content = { containerModifier, resolvedPadding ->
+    BottomOverlayContainer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        overlay = AppTokens.colors.background.dialog,
+        content = { containerModifier, resolvedPadding ->
+            if (loaders.contains(StatisticsLoader.Charts)) {
+                StatisticsLoadingContent(
+                    modifier = containerModifier.fillMaxSize(),
+                    contentPadding = resolvedPadding,
+                )
+            } else {
                 LazyColumn(
                     modifier = containerModifier.fillMaxSize(),
                     contentPadding = resolvedPadding,
@@ -114,13 +117,13 @@ internal fun StatisticsScreen(
                             }
                         }
                 }
-            },
-            bottom = {
-                Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-                Spacer(modifier = Modifier.navigationBarsPadding())
-            },
-        )
-    }
+            }
+        },
+        bottom = {
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+            Spacer(modifier = Modifier.navigationBarsPadding())
+        },
+    )
 }
 
 @AppPreview

@@ -1,0 +1,95 @@
+package com.grippo.training.completed.components
+
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
+import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardSkeleton
+import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardStyle
+import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardSkeleton
+import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardStyle
+import com.grippo.design.components.metrics.performance.PerformanceComparisonCardSkeleton
+import com.grippo.design.components.metrics.volume.WeeklyVolumeCardSkeleton
+import com.grippo.design.components.training.TrainingRecapActionsSkeleton
+import com.grippo.design.components.training.TrainingRecapHeroSkeleton
+import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.loading
+
+@Composable
+internal fun TrainingCompletedLoadingContent(
+    modifier: Modifier,
+    contentPadding: PaddingValues,
+) {
+    val loadingDescription = AppTokens.strings.res(Res.string.loading)
+
+    LazyColumn(
+        modifier = modifier.semantics(mergeDescendants = true) {
+            contentDescription = loadingDescription
+            progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
+        },
+        contentPadding = contentPadding,
+    ) {
+        item(key = "completion_hero_loading") {
+            TrainingRecapHeroSkeleton(modifier = Modifier.fillMaxWidth())
+
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+
+            TrainingRecapActionsSkeleton(modifier = Modifier.fillMaxWidth())
+
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
+        }
+
+        item(key = "performance_comparison_loading") {
+            PerformanceComparisonCardSkeleton(modifier = Modifier.fillMaxWidth())
+        }
+
+        item(key = "weekly_volume_loading") {
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+
+            WeeklyVolumeCardSkeleton(modifier = Modifier.fillMaxWidth())
+        }
+
+        item(key = "training_streak_loading") {
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+
+            TrainingStreakCardSkeleton(
+                modifier = Modifier.fillMaxWidth(),
+                style = TrainingStreakCardStyle.Growth(previous = null),
+            )
+        }
+
+        item(key = "muscle_load_loading") {
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+
+            MuscleLoadingCardSkeleton(
+                modifier = Modifier.fillMaxWidth(),
+                style = MuscleLoadingCardStyle.Session,
+            )
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingCompletedLoadingContentPreview() {
+    PreviewContainer {
+        TrainingCompletedLoadingContent(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+                horizontal = AppTokens.dp.screen.horizontalPadding,
+                vertical = AppTokens.dp.contentPadding.content,
+            ),
+        )
+    }
+}

@@ -1,5 +1,6 @@
 package com.grippo.design.components.metrics.volume
 
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -17,6 +18,9 @@ import com.grippo.design.components.chart.internal.BarChart
 import com.grippo.design.components.chart.internal.BarChartXAxisLabels
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
+import com.grippo.design.components.skeleton.SkeletonPanel
+import com.grippo.design.components.skeleton.SkeletonPanelStyle
+import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -54,6 +58,23 @@ public fun VolumeMetricChart(
 }
 
 @Composable
+public fun VolumeMetricChartSkeleton(modifier: Modifier = Modifier) {
+    val captionLine = rememberTextHeight(style = AppTokens.typography.b12Med())
+
+    BoxWithConstraints(modifier = modifier) {
+        val panel = AppTokens.dp.metrics.panel.large
+        val chart = AppTokens.dp.metrics.volume.chart
+        val chartHeight = maxOf(chart.height, (maxWidth - panel.horizontalPadding * 2) / chart.aspectRatio)
+
+        SkeletonPanel(
+            modifier = Modifier.fillMaxWidth(),
+            contentHeight = captionLine + panel.spacer + chartHeight,
+            style = SkeletonPanelStyle.Large,
+        )
+    }
+}
+
+@Composable
 private fun VolumeSeriesState.toBarData(): BarData {
     val color = AppTokens.colors.palette.palette7BlueGrowth[2]
     return remember(entries, color) {
@@ -62,6 +83,14 @@ private fun VolumeSeriesState.toBarData(): BarData {
                 BarEntry(label = entry.label, value = entry.value, color = color)
             },
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun VolumeMetricChartSkeletonPreview() {
+    PreviewContainer {
+        VolumeMetricChartSkeleton(modifier = Modifier.fillMaxWidth())
     }
 }
 

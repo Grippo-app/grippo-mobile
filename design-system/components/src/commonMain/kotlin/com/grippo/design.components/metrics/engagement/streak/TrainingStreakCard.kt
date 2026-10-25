@@ -30,11 +30,11 @@ import com.grippo.core.state.metrics.engagement.TrainingStreakMood
 import com.grippo.core.state.metrics.engagement.TrainingStreakState
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
 import com.grippo.design.components.indicators.LineIndicator
-import com.grippo.design.components.loading.SkeletonPanel
-import com.grippo.design.components.loading.SkeletonPanelStyle
 import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
+import com.grippo.design.components.skeleton.SkeletonPanel
+import com.grippo.design.components.skeleton.SkeletonPanelStyle
 import com.grippo.design.components.utils.ValueSlot
 import com.grippo.design.components.utils.buildValueSlotString
 import com.grippo.design.components.utils.rememberTextHeight
@@ -62,7 +62,7 @@ public sealed interface TrainingStreakCardStyle {
     public data object Overview : Loadable
 
     @Immutable
-    public data object Detailed : TrainingStreakCardStyle
+    public data object Detailed : Loadable
 
     @Immutable
     public data class Growth(
@@ -368,6 +368,12 @@ public fun TrainingStreakCardSkeleton(
             val headlineHeight = maxOf(AppTokens.dp.metrics.overview.rhythmIcon, headlineLine) + textGap + cadenceLine
             val activeDaysHeight = countLine + textGap + captionLine
             headerHeight + maxOf(headlineHeight, activeDaysHeight) + indicatorHeight + captionLine + spacer * 3
+        }
+
+        TrainingStreakCardStyle.Detailed -> {
+            val summaryLine = rememberTextHeight(style = AppTokens.typography.h3(), textMeasurer = textMeasurer)
+            val descriptionLine = rememberTextHeight(style = AppTokens.typography.b14Med(), textMeasurer = textMeasurer)
+            summaryLine + descriptionLine + cadenceLine + spacer * 2
         }
 
         is TrainingStreakCardStyle.Growth -> {

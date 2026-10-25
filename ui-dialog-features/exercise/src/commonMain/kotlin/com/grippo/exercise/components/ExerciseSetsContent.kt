@@ -1,14 +1,13 @@
 package com.grippo.exercise.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -16,13 +15,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
-import com.grippo.core.state.formatters.MultiplierFormatState
+import androidx.compose.ui.unit.Dp
 import com.grippo.core.state.formatters.DateTimeFormatState
+import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
@@ -31,9 +32,10 @@ import com.grippo.core.state.trainings.IterationState
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.divider.ContentDivider
+import com.grippo.design.components.skeleton.SkeletonBone
+import com.grippo.design.components.skeleton.SkeletonText
 import com.grippo.design.components.training.IterationCard
 import com.grippo.design.components.training.IterationCardStyle
-import com.grippo.design.components.modifiers.shimmer
 import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -52,6 +54,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDateTime
 
+private const val SKELETON_SET_COUNT = 3
+
 @Composable
 internal fun ExerciseSetsContent(
     modifier: Modifier = Modifier,
@@ -59,9 +63,8 @@ internal fun ExerciseSetsContent(
     previous: ExerciseState?,
     isHistoryLoading: Boolean,
 ) {
-    val contextStyle = AppTokens.typography.b12Med()
     val textMeasurer = rememberTextMeasurer()
-    val contextLine = rememberTextHeight(style = contextStyle, textMeasurer = textMeasurer)
+    val contextStyle = AppTokens.typography.b12Med()
     val contextMinHeight = rememberTextHeight(style = contextStyle, lines = 2, textMeasurer = textMeasurer)
 
     Column(modifier = modifier) {
@@ -78,36 +81,13 @@ internal fun ExerciseSetsContent(
                 style = AppTokens.typography.h4(),
                 color = AppTokens.colors.text.primary,
             )
-            Box(
-                modifier = Modifier
-                    .width(AppTokens.dp.iterationCard.historyContextWidth)
-                    .heightIn(min = contextMinHeight),
-                contentAlignment = Alignment.CenterEnd,
-            ) {
-                when {
-                    isHistoryLoading -> ExerciseComparisonBone(
-                        modifier = Modifier.fillMaxWidth().height(contextLine),
-                        animated = true,
-                    )
-
-                    previous != null -> {
-                        val date = previous.createdAt.value?.let { date ->
-                            DateTimeUtils.format(value = date, format = DateFormat.DateOnly.DateDdMmm)
-                        } ?: previous.createdAt.display
-                        val description = AppTokens.strings.res(
-                            Res.string.exercise_history_previous_set_date,
-                            previous.createdAt.display,
-                        )
-                        Text(
-                            modifier = Modifier.clearAndSetSemantics { contentDescription = description },
-                            text = AppTokens.strings.res(Res.string.exercise_history_vs_date, date),
-                            style = contextStyle,
-                            color = AppTokens.colors.text.secondary,
-                            textAlign = TextAlign.End,
-                        )
-                    }
-                }
-            }
+            ExerciseSetsPreviousDate(
+                value = previous,
+                style = contextStyle,
+                minHeight = contextMinHeight,
+                isLoading = isHistoryLoading,
+                textMeasurer = textMeasurer,
+            )
         }
         value.forEachIndexed { index, iteration ->
             key(iteration.id) {
@@ -119,7 +99,10 @@ internal fun ExerciseSetsContent(
                         trailing = {
                             ExerciseSetComparison(
                                 value = previousSet,
+                                style = contextStyle,
+                                minHeight = contextMinHeight,
                                 isLoading = isHistoryLoading,
+                                textMeasurer = textMeasurer,
                             )
                         },
                     ),
@@ -133,16 +116,78 @@ internal fun ExerciseSetsContent(
 }
 
 @Composable
-private fun ExerciseSetComparison(
-    modifier: Modifier = Modifier,
-    value: IterationState?,
-    isLoading: Boolean,
-) {
-    val style = AppTokens.typography.b12Med()
+internal fun ExerciseSetsSkeleton(modifier: Modifier = Modifier) {
     val textMeasurer = rememberTextMeasurer()
-    val line = rememberTextHeight(style = style, textMeasurer = textMeasurer)
-    val minHeight = rememberTextHeight(style = style, lines = 2, textMeasurer = textMeasurer)
+    val contextStyle = AppTokens.typography.b12Med()
+    val contextMinHeight = rememberTextHeight(style = contextStyle, lines = 2, textMeasurer = textMeasurer)
 
+    Column(modifier = modifier) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = AppTokens.dp.contentPadding.subContent),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                SkeletonText(
+                    modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.short),
+                    style = AppTokens.typography.h4(),
+                    textMeasurer = textMeasurer,
+                )
+            }
+            ExerciseSetsPreviousDate(
+                value = null,
+                style = contextStyle,
+                minHeight = contextMinHeight,
+                isLoading = true,
+                textMeasurer = textMeasurer,
+            )
+        }
+        repeat(SKELETON_SET_COUNT) { index ->
+            if (index > 0) {
+                ContentDivider()
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = AppTokens.dp.contentPadding.subContent),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SkeletonBone(
+                    modifier = Modifier.size(AppTokens.dp.iterationCard.numberSize),
+                    shape = RoundedCornerShape(AppTokens.dp.iterationCard.radius),
+                    animated = false,
+                )
+                Box(modifier = Modifier.weight(1f)) {
+                    SkeletonText(
+                        modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.medium),
+                        style = AppTokens.typography.h5(),
+                        textMeasurer = textMeasurer,
+                    )
+                }
+                ExerciseSetComparison(
+                    value = null,
+                    style = contextStyle,
+                    minHeight = contextMinHeight,
+                    isLoading = true,
+                    textMeasurer = textMeasurer,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExerciseSetsPreviousDate(
+    modifier: Modifier = Modifier,
+    value: ExerciseState?,
+    style: TextStyle,
+    minHeight: Dp,
+    isLoading: Boolean,
+    textMeasurer: TextMeasurer,
+) {
     Box(
         modifier = modifier
             .width(AppTokens.dp.iterationCard.historyContextWidth)
@@ -150,7 +195,52 @@ private fun ExerciseSetComparison(
         contentAlignment = Alignment.CenterEnd,
     ) {
         if (isLoading) {
-            ExerciseComparisonBone(modifier = Modifier.fillMaxWidth().height(line))
+            SkeletonText(
+                modifier = Modifier.fillMaxWidth(),
+                style = style,
+                textMeasurer = textMeasurer,
+                animated = true,
+            )
+        } else if (value != null) {
+            val date = value.createdAt.value?.let { date ->
+                DateTimeUtils.format(value = date, format = DateFormat.DateOnly.DateDdMmm)
+            } ?: value.createdAt.display
+            val description = AppTokens.strings.res(
+                Res.string.exercise_history_previous_set_date,
+                value.createdAt.display,
+            )
+            Text(
+                modifier = Modifier.clearAndSetSemantics { contentDescription = description },
+                text = AppTokens.strings.res(Res.string.exercise_history_vs_date, date),
+                style = style,
+                color = AppTokens.colors.text.secondary,
+                textAlign = TextAlign.End,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ExerciseSetComparison(
+    modifier: Modifier = Modifier,
+    value: IterationState?,
+    style: TextStyle,
+    minHeight: Dp,
+    isLoading: Boolean,
+    textMeasurer: TextMeasurer,
+) {
+    Box(
+        modifier = modifier
+            .width(AppTokens.dp.iterationCard.historyContextWidth)
+            .heightIn(min = minHeight),
+        contentAlignment = Alignment.CenterEnd,
+    ) {
+        if (isLoading) {
+            SkeletonText(
+                modifier = Modifier.fillMaxWidth(),
+                style = style,
+                textMeasurer = textMeasurer,
+            )
         } else if (value != null) {
             val rawVolume = value.recordedVolume()
             val volume = VolumeFormatState.of(rawVolume)
@@ -172,20 +262,6 @@ private fun ExerciseSetComparison(
             )
         }
     }
-}
-
-@Composable
-private fun ExerciseComparisonBone(
-    modifier: Modifier = Modifier,
-    animated: Boolean = false,
-) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(AppTokens.dp.metrics.status.radius))
-            .background(AppTokens.colors.divider.default)
-            .shimmer(enabled = animated)
-            .clearAndSetSemantics {},
-    )
 }
 
 @AppPreview
@@ -317,5 +393,13 @@ private fun ExerciseSetsContentLoadingPreviousPreview() {
             previous = null,
             isHistoryLoading = true,
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseSetsSkeletonPreview() {
+    PreviewContainer {
+        ExerciseSetsSkeleton(modifier = Modifier.fillMaxWidth())
     }
 }

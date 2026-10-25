@@ -45,8 +45,11 @@ internal fun ExerciseExampleDetailsAchievementsContent(
     state: ExerciseExampleDetailsState,
     loaders: ImmutableSet<ExerciseExampleDetailsLoader>,
 ) {
-    if (ExerciseExampleDetailsLoader.RecentExercises in loaders || ExerciseExampleDetailsLoader.Achievements in loaders) {
-        ExerciseExampleDetailsAchievementsShimmer(modifier = modifier)
+    val isLoading = ExerciseExampleDetailsLoader.RecentExercises in loaders ||
+        ExerciseExampleDetailsLoader.Achievements in loaders
+
+    if (isLoading) {
+        ExerciseExampleDetailsAchievementsSkeleton(modifier = modifier)
         return
     }
 

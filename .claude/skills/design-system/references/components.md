@@ -6,12 +6,12 @@ Visual creation/changes first pass
 Source owns complete signatures, token paths and callback behavior; this reference
 records component-specific constraints.
 
-Current shape, for orientation: 36 top-level packages under
+Current shape, for orientation: 38 top-level packages under
 `design-system/components/src/commonMain/kotlin/com/grippo/design.components/`:
 achievement, badge, banner, brand, button, cards, chart, chip, datetime, divider, dragdrop,
-empty, equipment, example, frames, illustration, indicators, inputs, konfetti,
-loading, menu, metrics, modifiers, muscle, navigation, segment, selectors, spliter,
-swipe, toolbar, tooltip, training, user, utils, welcome, wheel. There is no
+empty, equipment, example, frames, goal, illustration, indicators, inputs, konfetti,
+loading, menu, metrics, modifiers, muscle, navigation, segment, selectors, skeleton,
+spliter, swipe, toolbar, tooltip, training, user, utils, welcome, wheel. There is no
 `EmptyState` composable; the empty-list owner is `IllustratedEmptyState`.
 
 ## Entity component families
@@ -55,6 +55,7 @@ behavior and cover the added variant under the existing preview rules.
 | Bottom CTA/insets | [BottomOverlayContainer.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/frames/BottomOverlayContainer.kt); apply its resolved content Modifier and PaddingValues to the scrolling content |
 | Neutral horizontal boundary | [ContentDivider.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/divider/ContentDivider.kt); caller-owned geometry follows [divider usage](../../../../design-system/CONSISTENCY.md#content-dividers) |
 | Button | [Button.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/button/Button.kt); loading keeps label/icons/width, shimmers, blocks interaction and exposes indeterminate progress |
+| Skeleton family | [skeleton/](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/skeleton/); owns `colors.skeleton` and `dp.skeleton`. `SkeletonBone` is any block (default `skeleton.radius` text-line corner, a tile or control passes its owner's shape), `SkeletonText` is one laid-out line of a typography role (optional shared `textMeasurer`), `SkeletonPanel` is a metric panel holding one bone; the primitives add no semantics: the host puts one merged node with the localized `loading` description and indeterminate progress on its root, or on the bone's modifier when the bone is the whole loading region |
 | Input | [inputs/](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/inputs/); editable fields accept matching FormatState and raw text callbacks, picker-backed fields use typed selection and onClick; the core `Input` is internal, so a new field kind gets a public `Input*` wrapper here even for a single consumer |
 | Equipment selection | [EquipmentSelection.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/equipment/EquipmentSelection.kt); fixed group tabs and scrolling EquipmentCard Selection list; selection and bottom actions belong to the caller |
 | BannerCard | [BannerCard.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/banner/BannerCard.kt); Custom tint and surface are supplied by token colors; semantic and disabled surfaces are owned by the themes |
@@ -79,6 +80,17 @@ behavior and cover the added variant under the existing preview rules.
   adds highlight only, not skeleton shape/loading semantics. Apply
   it after clip/background; owning component supplies shape/semantics. Opacity
   belongs to shimmer tokens. MUST NOT migrate unrelated loaders incidentally.
+- A placeholder that stands in for content while it loads is built from the
+  skeleton primitives above, with its size taken from the content it replaces;
+  MUST NOT hand-roll a clip/background/shimmer box or add per-component bone
+  color, corner or width tokens: a text bone's width is a `dp.skeleton.line`
+  step, the full width of a wrapped line or of a fixed-width slot. A wrapped text
+  keeps its measured line count. Text bones and bones standing in for controls
+  (buttons, segments, pickers) are static unless the host animates one slot on
+  purpose; block and panel bones shimmer. A skeleton of a shared component lives
+  beside it as `<Component>Skeleton` (or a `Loadable` card style) once a second
+  host needs it. `Button` and `MenuActionRow` loading is not a
+  placeholder: they keep their real content and shimmer it.
 - Existing Check/CheckSelectableCard/ToggleSelectableCard/Toggle variants serve
   selection roles. Inspect their actual size and state contracts; role-to-token
   choices stay in [CONSISTENCY.md](../../../../design-system/CONSISTENCY.md).

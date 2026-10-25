@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,12 +17,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.text.rememberTextMeasurer
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
-import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.formatters.MultiplierFormatState
+import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
@@ -32,22 +36,25 @@ import com.grippo.design.components.banner.BannerCard
 import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.volume.ExerciseVolumeHistoryChart
+import com.grippo.design.components.skeleton.SkeletonBone
+import com.grippo.design.components.skeleton.SkeletonText
 import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_history_chart_unavailable
+import com.grippo.design.resources.provider.exercise_history_comparison_loading
 import com.grippo.design.resources.provider.exercise_history_max_load
 import com.grippo.design.resources.provider.exercise_history_no_previous
 import com.grippo.design.resources.provider.exercise_history_previous_short
 import com.grippo.design.resources.provider.exercise_history_total_volume
 import com.grippo.design.resources.provider.exercise_history_trend_title
 import com.grippo.design.resources.provider.exercise_history_volume_delta
+import com.grippo.design.resources.provider.icons.LineUp
+import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.percent
 import com.grippo.design.resources.provider.repetitions
-import com.grippo.design.resources.provider.kg
-import com.grippo.design.resources.provider.icons.LineUp
 import com.grippo.exercise.ExerciseState
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
@@ -68,20 +75,8 @@ internal fun ExerciseProgressCard(
     val repetitions = exercise.total.repetitions.value ?: 0
     val maximum = exercise.maximumRecordedLoad()
     val maximumVolume = VolumeFormatState.of(maximum)
-    val panel = AppTokens.dp.metrics.panel.large
-    val shape = RoundedCornerShape(panel.radius)
 
-    Column(
-        modifier = modifier
-            .background(color = AppTokens.colors.background.card, shape = shape)
-            .border(
-                width = AppTokens.dp.metrics.panel.borderWidth,
-                color = AppTokens.colors.border.default,
-                shape = shape,
-            )
-            .padding(horizontal = panel.horizontalPadding, vertical = panel.verticalPadding),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-    ) {
+    ExerciseProgressPanel(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
@@ -111,6 +106,62 @@ internal fun ExerciseProgressCard(
 
         ExerciseVolumeHistory(value = value, isHistoryLoading = isHistoryLoading)
     }
+}
+
+@Composable
+internal fun ExerciseProgressCardSkeleton(modifier: Modifier = Modifier) {
+    val textMeasurer = rememberTextMeasurer()
+    val valueLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val labelLine = rememberTextHeight(style = AppTokens.typography.b11Med(), textMeasurer = textMeasurer)
+    val captionStyle = AppTokens.typography.b12Med()
+
+    ExerciseProgressPanel(modifier = modifier) {
+        SkeletonBone(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(valueLine + AppTokens.dp.contentPadding.text + labelLine),
+        )
+
+        ContentDivider()
+
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val chartHeight = maxWidth / AppTokens.dp.metrics.volume.chart.historyAspectRatio
+
+            Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
+                SkeletonText(
+                    modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.short),
+                    style = captionStyle,
+                    textMeasurer = textMeasurer,
+                )
+                ExerciseHistorySkeleton(
+                    captionStyle = captionStyle,
+                    chartHeight = chartHeight,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExerciseProgressPanel(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    val panel = AppTokens.dp.metrics.panel.large
+    val shape = RoundedCornerShape(panel.radius)
+
+    Column(
+        modifier = modifier
+            .background(color = AppTokens.colors.background.card, shape = shape)
+            .border(
+                width = AppTokens.dp.metrics.panel.borderWidth,
+                color = AppTokens.colors.border.default,
+                shape = shape,
+            )
+            .padding(horizontal = panel.horizontalPadding, vertical = panel.verticalPadding),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        content = content,
+    )
 }
 
 @Composable
@@ -177,7 +228,6 @@ private fun ExerciseVolumeHistory(
         )
     }
     val captionStyle = AppTokens.typography.b12Med()
-    val captionMinHeight = rememberTextHeight(style = captionStyle, lines = 2)
 
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val chartHeight = maxWidth / AppTokens.dp.metrics.volume.chart.historyAspectRatio
@@ -207,11 +257,19 @@ private fun ExerciseVolumeHistory(
             }
 
             if (isHistoryLoading) {
-                ExerciseHistoryShimmer(
+                val loadingDescription = AppTokens.strings.res(Res.string.exercise_history_comparison_loading)
+
+                ExerciseHistorySkeleton(
+                    modifier = Modifier.clearAndSetSemantics {
+                        contentDescription = loadingDescription
+                        progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
+                    },
                     captionStyle = captionStyle,
                     chartHeight = chartHeight,
                 )
             } else {
+                val captionMinHeight = rememberTextHeight(style = captionStyle, lines = 2)
+
                 Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
                     Box(
                         modifier = Modifier
@@ -346,6 +404,20 @@ private fun ExerciseProgressCardLoadingPreview() {
     val value = progressPreviewState(historyCount = 0)
     PreviewContainer {
         ExerciseProgressCard(value = value, isHistoryLoading = true)
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseProgressCardSkeletonPreview() {
+    PreviewContainer {
+        Column(
+            modifier = Modifier
+                .background(AppTokens.colors.background.dialog)
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        ) {
+            ExerciseProgressCardSkeleton(modifier = Modifier.fillMaxWidth())
+        }
     }
 }
 

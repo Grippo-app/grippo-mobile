@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -17,6 +18,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
 import com.grippo.core.state.metrics.profile.GoalFitFindingState
 import com.grippo.core.state.metrics.profile.GoalFitRuleState
 import com.grippo.core.state.metrics.profile.GoalFitSeverityState
@@ -24,6 +27,7 @@ import com.grippo.core.state.metrics.profile.stubGoalFitFindings
 import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.design.components.divider.ContentDivider
+import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -50,6 +54,8 @@ internal fun GoalFitFindingsBlock(
 
     val radius = AppTokens.dp.metrics.profile.goal.breakdown.radius
     val shape = RoundedCornerShape(radius)
+    val titleStyle = AppTokens.typography.b14Semi()
+    val titleLineHeight = rememberTextHeight(style = titleStyle)
 
     Column(
         modifier = modifier
@@ -66,6 +72,8 @@ internal fun GoalFitFindingsBlock(
                 FindingRow(
                     modifier = Modifier.fillMaxWidth(),
                     finding = finding,
+                    titleStyle = titleStyle,
+                    titleLineHeight = titleLineHeight,
                     showDivider = index < orderedFindings.lastIndex,
                 )
             }
@@ -77,6 +85,8 @@ internal fun GoalFitFindingsBlock(
 private fun FindingRow(
     modifier: Modifier = Modifier,
     finding: GoalFitFindingState,
+    titleStyle: TextStyle,
+    titleLineHeight: Dp,
     showDivider: Boolean,
 ) {
     val targetText = finding.targetText()
@@ -87,12 +97,15 @@ private fun FindingRow(
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
         Box(
-            modifier = Modifier
-                .padding(top = AppTokens.dp.contentPadding.text)
-                .size(AppTokens.dp.metrics.profile.goal.breakdown.severityDot)
-                .clip(CircleShape)
-                .background(finding.dotColor(), CircleShape),
-        )
+            modifier = Modifier.height(titleLineHeight),
+            contentAlignment = Alignment.Center,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(AppTokens.dp.metrics.profile.goal.breakdown.severityDot)
+                    .background(finding.dotColor(), CircleShape),
+            )
+        }
 
         Column(
             modifier = Modifier.weight(1f),
@@ -101,7 +114,7 @@ private fun FindingRow(
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = finding.rule.title(),
-                    style = AppTokens.typography.b14Semi(),
+                    style = titleStyle,
                     color = AppTokens.colors.text.primary,
                 )
                 if (finding.context.isNotEmpty()) {

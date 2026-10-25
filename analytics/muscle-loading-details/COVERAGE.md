@@ -25,7 +25,9 @@ Available workout/set counts scope the data, and full group/muscle rows retain
 all tied leaders without a balance-quality score, gap recommendation or
 fatigue/recovery estimate. The group/muscle segment is available only when a
 known group distribution exists; loading and empty/unknown data have no mode
-control. A null summary shows the existing Loader. No workouts, no available
+control. A null summary shows a noninteractive skeleton of the summary panel,
+mode-control slot, front/back figure row, group rows and method control under
+one localized indeterminate loading node. No workouts, no available
 accepted sets, and accepted sets without known anatomy have distinct localized
 messages. A visible count sums excluded and unassigned sets; the local animated
 method disclosure explains those counts separately and describes proportional
@@ -80,7 +82,7 @@ resume. The requested scope instruments observable local callbacks, not host exi
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | MuscleLoadingDetailsViewModel | mode | Runtime only | Existing retained VM, no StateKeeper supplier | Live recreation retains the VM selection; process death discards the dialog. A new session defaults to PerGroup. No accepted result is sent to a parent. |
-| MuscleLoadingDetailsViewModel | summary | Rebuild | TrainingFeature.observeTrainings(range.from, range.to) → flatMapLatest(MuscleLoadingSummaryUseCase.observeFromTrainings) → toState | Fresh session starts null with Loader; emissions rebuild shares and counts. Available-set context, visible excluded/unknown total, proportional-set method and separate no-workout/no-set/unknown-anatomy messages derive from that summary. Unmeasured volume remains rebuilt data but is not displayed in this set-only dialog. |
+| MuscleLoadingDetailsViewModel | summary | Rebuild | TrainingFeature.observeTrainings(range.from, range.to) → flatMapLatest(MuscleLoadingSummaryUseCase.observeFromTrainings) → toState | Fresh session starts null with the loading skeleton; emissions rebuild shares and counts. Available-set context, visible excluded/unknown total, proportional-set method and separate no-workout/no-set/unknown-anatomy messages derive from that summary. Unmeasured volume remains rebuilt data but is not displayed in this set-only dialog. |
 | MuscleLoadingDetailsScreen | isMethodExpanded | Runtime only | Composition-owned rememberSaveable(range), default false | Presentation disclosure only; normal recomposition retains it, a newly opened dialog starts collapsed. No StateKeeper archive or parent result. |
 | DialogConfig / VM | range and localized DateRangeFormatState | Runtime only / Rebuild | Runtime config seed and DateRangeFormatState.of(range), rendered through short() | Caller supplies the range for a newly opened session; short() rebuilds localized text from the current composition locale even while the dialog is retained. This dialog does not edit the parent range. |
 | Host / Component / foundation | dialog session, callbacks, jobs, loaders, directions, scroll and telemetry provenance | Runtime only | Host slot and content stack both serializer=null; retainedInstance and existing presentation widgets | No sessions, callbacks, jobs or telemetry metadata archived. |

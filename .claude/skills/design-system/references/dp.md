@@ -31,8 +31,9 @@ are the elevation steps.
   dimension may have a literal inside its semantic group. A new base-scale entry
   requires an authorized design-grid change with concrete consumers.
 - Adaptive thresholds, fractions and minimum heights MUST remain at their AppDp
-  owner; authorized changes update that owner and affected callers. ViewModels
-  MUST NOT own visual dimensions. Dimensions do not vary by theme; adaptation
+  owner; authorized changes update that owner and affected callers. Text heights
+  and text-slot minimums are not dimensions: [typography.md](typography.md) owns
+  them. ViewModels MUST NOT own visual dimensions. Dimensions do not vary by theme; adaptation
   follows measured constraints/font scale in the existing layout.
 
 `contentPadding.block/content/subContent/text` describe nesting depth. Their role

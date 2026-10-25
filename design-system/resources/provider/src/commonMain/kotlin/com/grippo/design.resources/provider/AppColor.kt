@@ -14,6 +14,7 @@ public interface AppColor {
     public val semantic: SemanticColors
     public val overlay: OverlayColors
     public val shimmer: ShimmerColors
+    public val skeleton: SkeletonColors
     public val border: BorderColors
     public val illustration: IllustrationColors
     public val bannerCard: BannerCardColors
@@ -169,6 +170,10 @@ public interface AppColor {
         public val buttonTertiary: Color
         public val buttonTransparent: Color
         public val buttonError: Color
+    }
+
+    public interface SkeletonColors {
+        public val bone: Color
     }
 
     public interface BorderColors {

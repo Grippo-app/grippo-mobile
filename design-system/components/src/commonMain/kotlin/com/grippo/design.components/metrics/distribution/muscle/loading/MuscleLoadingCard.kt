@@ -27,13 +27,13 @@ import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummarySingleGro
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.design.components.indicators.LineIndicator
-import com.grippo.design.components.loading.SkeletonPanel
-import com.grippo.design.components.loading.SkeletonPanelStyle
 import com.grippo.design.components.metrics.distribution.muscle.loading.internal.MuscleLoadingCardSummary
 import com.grippo.design.components.metrics.distribution.muscle.loading.internal.rememberMuscleLoadIndicatorColors
 import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
+import com.grippo.design.components.skeleton.SkeletonPanel
+import com.grippo.design.components.skeleton.SkeletonPanelStyle
 import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -61,7 +61,7 @@ public sealed interface MuscleLoadingCardStyle {
     public data object Detailed : MuscleLoadingCardStyle
 
     @Immutable
-    public data object Summary : MuscleLoadingCardStyle
+    public data object Summary : Loadable
 
     @Immutable
     public data object Session : Loadable
@@ -279,6 +279,11 @@ public fun MuscleLoadingCardSkeleton(
     val contentHeight = when (style) {
         MuscleLoadingCardStyle.Overview -> maxOf(titleLine, AppTokens.dp.metrics.overview.detailsIcon) +
             AppTokens.dp.contentPadding.text + captionLine + mapRowHeight + captionLine + spacer * 2
+
+        MuscleLoadingCardStyle.Summary -> {
+            val countLine = rememberTextHeight(style = AppTokens.typography.h3(), textMeasurer = textMeasurer)
+            countLine + AppTokens.dp.contentPadding.text + captionLine
+        }
 
         MuscleLoadingCardStyle.Session -> titleLine + spacer + mapRowHeight
     }

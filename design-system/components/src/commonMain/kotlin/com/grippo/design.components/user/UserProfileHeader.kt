@@ -2,11 +2,9 @@ package com.grippo.design.components.user
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -16,21 +14,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.rememberTextMeasurer
 import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.profile.stubUser
 import com.grippo.design.components.modifiers.illustrationBackground
-import com.grippo.design.components.modifiers.shimmer
+import com.grippo.design.components.skeleton.SkeletonBone
+import com.grippo.design.components.skeleton.SkeletonText
 import com.grippo.design.components.user.internal.UserAvatar
-import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.loading
 import com.grippo.design.resources.provider.profile_name_not_set
 import com.grippo.design.resources.provider.profile_settings_identity_unavailable
 import com.grippo.design.resources.provider.profile_settings_signed_in_as
@@ -72,10 +71,21 @@ private fun ProfileHeader(
 ) {
     val nameStyle = AppTokens.typography.h3()
     val emailStyle = AppTokens.typography.b13Med()
+    val loadingDescription = AppTokens.strings.res(Res.string.loading)
 
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .then(
+                if (loading) {
+                    Modifier.semantics(mergeDescendants = true) {
+                        contentDescription = loadingDescription
+                        progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
+                    }
+                } else {
+                    Modifier
+                },
+            )
             .illustrationBackground(shape = RoundedCornerShape(AppTokens.dp.userCard.card.radius))
             .padding(
                 horizontal = AppTokens.dp.userCard.card.horizontalPadding,
@@ -85,12 +95,9 @@ private fun ProfileHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (loading) {
-            Box(
-                modifier = Modifier
-                    .size(AppTokens.dp.userCard.avatar.small)
-                    .clip(CircleShape)
-                    .background(AppTokens.colors.divider.default)
-                    .shimmer(),
+            SkeletonBone(
+                modifier = Modifier.size(AppTokens.dp.userCard.avatar.small),
+                shape = CircleShape,
             )
         } else {
             UserAvatar(
@@ -106,25 +113,16 @@ private fun ProfileHeader(
         ) {
             if (loading) {
                 val textMeasurer = rememberTextMeasurer()
-                val nameHeight = rememberTextHeight(style = nameStyle, textMeasurer = textMeasurer)
-                val emailHeight = rememberTextHeight(style = emailStyle, textMeasurer = textMeasurer)
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(AppTokens.dp.userCard.headerLoading.nameWidthFraction)
-                        .height(nameHeight)
-                        .clip(RoundedCornerShape(AppTokens.dp.userCard.headerLoading.radius))
-                        .background(AppTokens.colors.divider.default)
-                        .semantics {
-                            progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
-                        },
+                SkeletonText(
+                    modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.short),
+                    style = nameStyle,
+                    textMeasurer = textMeasurer,
                 )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(AppTokens.dp.userCard.headerLoading.emailWidthFraction)
-                        .height(emailHeight)
-                        .clip(RoundedCornerShape(AppTokens.dp.userCard.headerLoading.radius))
-                        .background(AppTokens.colors.divider.default),
+                SkeletonText(
+                    modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.medium),
+                    style = emailStyle,
+                    textMeasurer = textMeasurer,
                 )
             } else {
                 val name = value?.name?.takeIf { it.isNotBlank() }

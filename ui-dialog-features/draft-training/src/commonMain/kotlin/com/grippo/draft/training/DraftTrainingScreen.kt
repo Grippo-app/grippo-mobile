@@ -26,7 +26,6 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
@@ -41,12 +40,13 @@ import com.grippo.design.resources.provider.draft_training_alert_title_edit
 import com.grippo.design.resources.provider.draft_training_contents
 import com.grippo.design.resources.provider.draft_training_empty
 import com.grippo.design.resources.provider.start_new
+import com.grippo.draft.training.components.DraftTrainingLoadingContent
 import com.grippo.draft.training.components.DraftTrainingSummary
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 @Composable
 internal fun DraftTrainingScreen(
@@ -79,7 +79,9 @@ internal fun DraftTrainingScreen(
             ) {
                 Text(
                     text = when (state.stage) {
-                        StageState.Add, StageState.Draft -> AppTokens.strings.res(Res.string.draft_training_alert_title_add)
+                        StageState.Add, StageState.Draft -> AppTokens.strings.res(
+                            Res.string.draft_training_alert_title_add,
+                        )
                         is StageState.Edit -> AppTokens.strings.res(Res.string.draft_training_alert_title_edit)
                     },
                     style = AppTokens.typography.h3(),
@@ -87,7 +89,9 @@ internal fun DraftTrainingScreen(
                 )
                 Text(
                     text = when (state.stage) {
-                        StageState.Add, StageState.Draft -> AppTokens.strings.res(Res.string.draft_training_alert_description_add)
+                        StageState.Add, StageState.Draft -> AppTokens.strings.res(
+                            Res.string.draft_training_alert_description_add,
+                        )
                         is StageState.Edit -> AppTokens.strings.res(Res.string.draft_training_alert_description_edit)
                     },
                     style = AppTokens.typography.b14Med(),
@@ -129,11 +133,7 @@ internal fun DraftTrainingScreen(
             ) {
                 if (isLoading) {
                     item(key = "loading", contentType = "loading") {
-                        Loader(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = AppTokens.dp.contentPadding.block),
-                        )
+                        DraftTrainingLoadingContent(modifier = Modifier.fillMaxWidth())
                     }
                 } else {
                     if (state.exercises.isEmpty()) {

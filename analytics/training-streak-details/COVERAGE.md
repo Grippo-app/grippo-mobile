@@ -52,7 +52,7 @@ VM injection are reconciled against actual source.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | Component / VM | Immutable range input and its display | Runtime only for live dialog | Caller range (Home's selected range or Completed's resolved period), DateRangeFormatState.of, retainedInstance | Ordinary recreation retains VM; reopening uses the caller's current range |
-| VM | streak, recent evidence and calculation explanation | Rebuild | TrainingFeature.observeTrainings combined with currentDateFlow, TrainingStreakUseCase.fromTrainings(trainings, range) with now captured once by the calculator, existing toState mapper | Fresh VM starts with null streak and displays the shared loading component. Every emission, including an empty list, is calculated. Zero performed active days display empty guidance; positive active days display the summary and available evidence. Multiple sessions count once per local date; historical ranges are evaluated at their own end |
+| VM | streak, recent evidence and calculation explanation | Rebuild | TrainingFeature.observeTrainings combined with currentDateFlow, TrainingStreakUseCase.fromTrainings(trainings, range) with now captured once by the calculator, existing toState mapper | Fresh VM starts with null streak and displays the loading skeleton. Every emission, including an empty list, is calculated. Zero performed active days display empty guidance; positive active days display the summary and available evidence. Multiple sessions count once per local date; historical ranges are evaluated at their own end |
 | TrainingStreakDetailsScreen | Methodology disclosure state | Runtime only | Local rememberSaveable keyed by the range in the live dialog | Fresh opening starts collapsed; ordinary recomposition/recreation retains the current disclosure. No business draft or process-death dialog restoration |
 | Dialog host | Session, callbacks and Back direction | Runtime only | Slot and step serializer = null | Process death discards live dialog; reopening constructs a fresh session |
 | Foundation / widgets | Jobs, loaders, scrolling and telemetry provenance | Runtime only | Existing scope and widget ownership | No business draft supplier or synthetic callbacks |
@@ -72,8 +72,9 @@ so the current locale rebuilds text without changing the runtime date bounds.
 ## Availability and content
 
 The fixed range caption is visible above one anchored scroll owner. A null streak
-means the first source observation has not completed; the shared Loader supplies
-localized loading text and indeterminate progress semantics. A successful source
+means the first source observation has not completed; a noninteractive skeleton
+of the summary panel, recent-period evidence and method control carries one
+localized loading description with indeterminate progress semantics. A successful source
 observation always produces a nonnull calculation. An empty list and training rows
 whose repetitions are all zero both produce zero active days and the same compact
 empty guidance. No zero achievement summary, timeline, method block or unsupported

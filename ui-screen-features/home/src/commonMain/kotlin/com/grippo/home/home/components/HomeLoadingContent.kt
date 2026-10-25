@@ -1,6 +1,7 @@
 package com.grippo.home.home.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,15 +19,15 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.rememberTextMeasurer
-import com.grippo.design.components.loading.SkeletonBone
-import com.grippo.design.components.loading.SkeletonPanel
-import com.grippo.design.components.loading.SkeletonPanelStyle
-import com.grippo.design.components.loading.SkeletonText
 import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardSkeleton
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardStyle
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardSkeleton
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardStyle
+import com.grippo.design.components.skeleton.SkeletonBone
+import com.grippo.design.components.skeleton.SkeletonPanel
+import com.grippo.design.components.skeleton.SkeletonPanelStyle
+import com.grippo.design.components.skeleton.SkeletonText
 import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -64,6 +65,8 @@ internal fun HomeLoadingContent(
         }
 
         item(key = "highlights_header_loading") {
+            val textMeasurer = rememberTextMeasurer()
+
             Column(
                 modifier = Modifier
                     .padding(horizontal = horizontalPadding)
@@ -77,26 +80,34 @@ internal fun HomeLoadingContent(
                         onPeriodChange = onPeriodChange,
                     )
                 } else {
+                    val pickerLine = rememberTextHeight(style = AppTokens.typography.h6(), textMeasurer = textMeasurer)
+                    val pickerHeight = maxOf(pickerLine, AppTokens.dp.periodPicker.icon)
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        SkeletonText(
-                            modifier = Modifier.weight(2.5f),
-                            style = AppTokens.typography.h4(),
-                        )
+                        Box(modifier = Modifier.weight(1f)) {
+                            SkeletonText(
+                                modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.medium),
+                                style = AppTokens.typography.h4(),
+                                textMeasurer = textMeasurer,
+                            )
+                        }
                         SkeletonBone(
                             modifier = Modifier
-                                .weight(1f)
-                                .height(AppTokens.dp.button.small.height),
+                                .fillMaxWidth(AppTokens.dp.skeleton.line.short)
+                                .height(pickerHeight),
+                            animated = false,
                         )
                     }
                 }
                 SkeletonText(
-                    modifier = Modifier.fillMaxWidth(0.8f),
+                    modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.long),
                     style = AppTokens.typography.b13Med(),
-                    animated = state.range.value != null && (lifetimeTrainingCount ?: 0) > 0,
+                    textMeasurer = textMeasurer,
+                    animated = true,
                 )
             }
         }
@@ -134,7 +145,7 @@ internal fun HomeLoadingContent(
                     SkeletonText(
                         modifier = Modifier
                             .padding(horizontal = horizontalPadding)
-                            .fillMaxWidth(0.6f),
+                            .fillMaxWidth(AppTokens.dp.skeleton.line.medium),
                         style = AppTokens.typography.h4(),
                     )
                     HomeLoadingSpotlight(
@@ -148,6 +159,8 @@ internal fun HomeLoadingContent(
 
         if (lifetimeTrainingCount != null && HomeUnlock.DurationTrend.isUnlocked(lifetimeTrainingCount)) {
             item(key = "performance_header_loading") {
+                val textMeasurer = rememberTextMeasurer()
+
                 Column(
                     modifier = Modifier
                         .padding(horizontal = horizontalPadding)
@@ -155,12 +168,14 @@ internal fun HomeLoadingContent(
                     verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
                 ) {
                     SkeletonText(
-                        modifier = Modifier.fillMaxWidth(0.5f),
+                        modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.medium),
                         style = AppTokens.typography.h4(),
+                        textMeasurer = textMeasurer,
                     )
                     SkeletonText(
-                        modifier = Modifier.fillMaxWidth(0.9f),
+                        modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.long),
                         style = AppTokens.typography.b13Med(),
+                        textMeasurer = textMeasurer,
                     )
                 }
             }

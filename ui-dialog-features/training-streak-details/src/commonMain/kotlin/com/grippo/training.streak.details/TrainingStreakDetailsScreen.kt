@@ -39,7 +39,6 @@ import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.datetime.DialogRangeHeader
 import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardStyle
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakTimelineCard
@@ -55,6 +54,7 @@ import com.grippo.design.resources.provider.training_streak_details_empty
 import com.grippo.design.resources.provider.training_streak_details_method_collapsed
 import com.grippo.design.resources.provider.training_streak_details_method_expanded
 import com.grippo.design.resources.provider.training_streak_insights_title
+import com.grippo.training.streak.details.components.TrainingStreakDetailsLoadingContent
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -109,7 +109,7 @@ private fun TrainingStreakDetailsContent(
                 when {
                     streak == null -> {
                         item(key = "loading") {
-                            Loader(modifier = Modifier.fillMaxWidth())
+                            TrainingStreakDetailsLoadingContent(modifier = Modifier.fillMaxWidth())
                         }
                     }
 

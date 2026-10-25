@@ -7,11 +7,9 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -19,21 +17,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.modifiers.scalableClick
-import com.grippo.design.components.modifiers.shimmer
-import com.grippo.design.components.utils.rememberTextHeight
+import com.grippo.design.components.skeleton.SkeletonText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.icons.Body
 import com.grippo.design.resources.provider.icons.Edit
@@ -41,6 +39,7 @@ import com.grippo.design.resources.provider.icons.Info
 import com.grippo.design.resources.provider.icons.Instagram
 import com.grippo.design.resources.provider.icons.Threads
 import com.grippo.design.resources.provider.icons.Trash
+import com.grippo.design.resources.provider.loading
 
 @Composable
 public fun MenuValueRow(
@@ -128,16 +127,17 @@ private fun MenuRowValue(
 
     when {
         loading -> {
-            Box(
+            val loadingDescription = AppTokens.strings.res(Res.string.loading)
+
+            SkeletonText(
                 modifier = modifier
-                    .width(AppTokens.dp.menu.item.loadingWidth)
-                    .height(rememberTextHeight(style = style))
-                    .clip(RoundedCornerShape(AppTokens.dp.menu.item.loadingRadius))
-                    .background(AppTokens.colors.divider.default)
-                    .shimmer()
+                    .fillMaxWidth(AppTokens.dp.skeleton.line.short)
                     .semantics {
+                        contentDescription = loadingDescription
                         progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
                     },
+                style = style,
+                animated = true,
             )
         }
 

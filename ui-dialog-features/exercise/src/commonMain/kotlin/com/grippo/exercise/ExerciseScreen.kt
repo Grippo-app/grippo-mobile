@@ -25,7 +25,6 @@ import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.metrics.volume.TrainingTotalState
-import com.grippo.core.state.trainings.ExerciseState as TrainingExerciseState
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.core.state.trainings.stubPendingIteration
@@ -35,7 +34,6 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.loading.Loader
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -43,6 +41,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_details_btn
 import com.grippo.design.resources.provider.exercise_history_no_sets
 import com.grippo.design.resources.provider.exercise_history_unavailable
+import com.grippo.exercise.components.ExerciseLoadingContent
 import com.grippo.exercise.components.ExerciseProgressCard
 import com.grippo.exercise.components.ExerciseSetsContent
 import com.grippo.toolkit.date.utils.DateFormat
@@ -52,6 +51,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
+import com.grippo.core.state.trainings.ExerciseState as TrainingExerciseState
 
 @Composable
 internal fun ExerciseScreen(
@@ -77,7 +77,7 @@ internal fun ExerciseScreen(
                     .padding(resolvedPadding),
             ) {
                 when (state) {
-                    ExerciseState.Loading -> Loader(modifier = Modifier.fillMaxWidth())
+                    ExerciseState.Loading -> ExerciseLoadingContent(modifier = Modifier.fillMaxWidth())
                     ExerciseState.Unavailable -> Text(
                         text = AppTokens.strings.res(Res.string.exercise_history_unavailable),
                         style = AppTokens.typography.b14Med(),

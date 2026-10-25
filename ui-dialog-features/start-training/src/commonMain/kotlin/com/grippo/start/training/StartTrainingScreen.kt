@@ -23,7 +23,6 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
@@ -37,6 +36,7 @@ import com.grippo.design.resources.provider.start_training_choice_recent
 import com.grippo.design.resources.provider.start_training_choose_exercises_btn
 import com.grippo.design.resources.provider.start_training_repeat_btn
 import com.grippo.design.resources.provider.start_training_use_preset_btn
+import com.grippo.start.training.components.StartTrainingLoadingContent
 import com.grippo.start.training.components.StartTrainingPage
 import com.grippo.start.training.components.StartTrainingRecentPicker
 import com.grippo.toolkit.date.utils.DateFormat
@@ -181,10 +181,9 @@ private fun StartTrainingContent(
         },
         content = { contentModifier, contentPadding ->
             if (isLoading) {
-                Loader(
-                    modifier = contentModifier
-                        .fillMaxSize()
-                        .padding(contentPadding),
+                StartTrainingLoadingContent(
+                    modifier = contentModifier.fillMaxSize(),
+                    contentPadding = contentPadding,
                 )
             } else {
                 StartTrainingPage(

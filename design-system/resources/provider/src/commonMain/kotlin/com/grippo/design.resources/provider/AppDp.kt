@@ -72,6 +72,7 @@ public data object AppDp {
     val input: Input = Input
     val button: Button = Button
     val loader: Loader = Loader
+    val skeleton: Skeleton = Skeleton
     val konfetti: Konfetti = Konfetti
     val segment: Segment = Segment
     val menu: Menu = Menu
@@ -152,6 +153,11 @@ public data object AppDp {
         public val summaryMarkSize: Dp = size.small
         public val markRadius: Dp = radius.small
         public val markPadding: Dp = padding.tiny
+        public val figure: Figure = Figure
+
+        public data object Figure {
+            public val aspectRatio: Float = 411f / 774f
+        }
     }
 
     public data object Screen {
@@ -398,13 +404,6 @@ public data object AppDp {
 
         val detailed: Detailed = Detailed
         val avatar: Avatar = Avatar
-        val headerLoading: HeaderLoading = HeaderLoading
-
-        public data object HeaderLoading {
-            val nameWidthFraction: Float = 0.4f
-            val emailWidthFraction: Float = 0.6f
-            val radius: Dp = 4.dp
-        }
 
         public data object Detailed {
             val avatarRing: Dp = 3.dp
@@ -494,7 +493,6 @@ public data object AppDp {
 
         public data object Recap {
             public val verdict: Verdict = Verdict
-            public val loading: Loading = Loading
 
             public data object Verdict {
                 public val space: Dp = BannerCard.space
@@ -504,33 +502,6 @@ public data object AppDp {
                     public val size: Dp = BannerCard.iconBackground
                     public val radius: Dp = BannerCard.iconRadius
                     public val icon: Dp = BannerCard.icon
-                }
-            }
-
-            public data object Loading {
-                public val title: Title = Title
-                public val description: Description = Description
-                public val fact: Fact = Fact
-
-                public data object Title {
-                    public val widthFraction: Float = 0.6f
-                }
-
-                public data object Description {
-                    public val widthFraction: Float = 0.9f
-                }
-
-                public data object Fact {
-                    public val value: Value = Value
-                    public val label: Label = Label
-
-                    public data object Value {
-                        public val widthFraction: Float = 0.5f
-                    }
-
-                    public data object Label {
-                        public val widthFraction: Float = 0.7f
-                    }
                 }
             }
         }
@@ -597,8 +568,6 @@ public data object AppDp {
             val iconContainer: Dp = size.small
             val iconRadius: Dp = AppDp.radius.small
             val valueMaxWidthFraction: Float = 0.45f
-            val loadingWidth: Dp = 50.dp
-            val loadingRadius: Dp = 4.dp
             val icon: Dp = AppDp.icon.small
         }
     }
@@ -802,6 +771,17 @@ public data object AppDp {
     public data object Loader {
         val container: Dp = size.large
         val icon: Dp = AppDp.icon.xLarge
+    }
+
+    public data object Skeleton {
+        val radius: Dp = AppDp.radius.small
+        val line: Line = Line
+
+        public data object Line {
+            val short: Float = 0.4f
+            val medium: Float = 0.6f
+            val long: Float = 0.8f
+        }
     }
 
     public data object Segment {
