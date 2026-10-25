@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.modifiers.shimmer
+import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -123,12 +124,14 @@ private fun MenuRowValue(
     value: String?,
     loading: Boolean,
 ) {
+    val style = AppTokens.typography.b14Med()
+
     when {
         loading -> {
             Box(
                 modifier = modifier
                     .width(AppTokens.dp.menu.item.loadingWidth)
-                    .height(AppTokens.dp.menu.item.loadingHeight)
+                    .height(rememberTextHeight(style = style))
                     .clip(RoundedCornerShape(AppTokens.dp.menu.item.loadingRadius))
                     .background(AppTokens.colors.divider.default)
                     .shimmer()
@@ -142,7 +145,7 @@ private fun MenuRowValue(
             Text(
                 modifier = modifier,
                 text = value,
-                style = AppTokens.typography.b14Med(),
+                style = style,
                 color = AppTokens.colors.text.secondary,
                 textAlign = TextAlign.End,
             )

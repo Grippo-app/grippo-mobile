@@ -37,6 +37,15 @@ resource packaging/use needs its relevant inspection or manual scenario.
   numbered placeholder names such as `title1`.
 - Strings stay in each locale's `strings.xml`. Rich-text presentation belongs in
   the owning AnnotatedString consumer; resources carry no HTML markup.
+- A value inside a localized sentence that needs its own style (size, color or
+  animation) goes through [`ValueSlot`](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/utils/ValueSlot.kt):
+  format the resource with `ValueSlot.marker(index)` in place of each such value
+  (its placeholder is `%n$s`), then call `buildValueSlotString(sentence, slots,
+  appendRest)` with one `ValueSlot(value) { … }` per value and the style of the
+  surrounding text in `appendRest`. Any number of values is supported, and each
+  value finds its own marker, so a locale may reorder them. Never split such a
+  sentence into fragments, concatenate pieces or set a value and its words in
+  separate `Text`s to style them.
 - When a plural is first needed, add a complete `plurals.xml` `<resources>` document
   in the default and every existing locale, with the quantity categories of each
   specific locale rather than one copied four-category list.

@@ -17,15 +17,16 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.rememberTextMeasurer
 import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.profile.stubUser
 import com.grippo.design.components.modifiers.illustrationBackground
 import com.grippo.design.components.modifiers.shimmer
 import com.grippo.design.components.user.internal.UserAvatar
+import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -104,8 +105,9 @@ private fun ProfileHeader(
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
         ) {
             if (loading) {
-                val nameHeight = with(LocalDensity.current) { nameStyle.lineHeight.toDp() }
-                val emailHeight = with(LocalDensity.current) { emailStyle.lineHeight.toDp() }
+                val textMeasurer = rememberTextMeasurer()
+                val nameHeight = rememberTextHeight(style = nameStyle, textMeasurer = textMeasurer)
+                val emailHeight = rememberTextHeight(style = emailStyle, textMeasurer = textMeasurer)
 
                 Box(
                     modifier = Modifier

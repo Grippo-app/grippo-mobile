@@ -365,8 +365,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   h3 name and neutral supporting email. Experience avatar colors retain their
   meaning; the menu's working sections stay neutral. Separate identity from menu
   content with contentPadding.block, keeping compact section gaps at content.
-  Loading name/email slots derive their heights from the same h3/b13Med line
-  heights; HeaderLoading tokens retain their width fractions and corner radius.
+  Loading name/email slots are as tall as one laid-out h3/b13Med line
+  (`rememberTextHeight`); HeaderLoading tokens retain their width fractions and
+  corner radius.
   Only the avatar slot shimmers; supporting name/email placeholders stay static.
 - UserProfileHeader uses role variants: Profile retains the warm avatar/name/email
   region; Account shows read-only signed-in identity on `background.card`, using
@@ -440,11 +441,11 @@ and Latin text in both themes; each role keeps its existing size and line height
   `h2`-line title bone at `training.recap.loading.title.widthFraction` (60%) and a
   `b14Med`-line bone at `loading.description.widthFraction` (90%)); the bones carry no
   semantics - the comparison and weekly skeletons below, and the records skeleton
-  while the `LoadRecords` loader runs, each carry one `loadingSemantics` node; the
+  while the `LoadRecords` loader runs, each carry one loading semantics node; the
   streak placeholder shown while the period computes stays silent, since it resolves
-  with the comparison skeleton that already announces it. An
-  unavailable workout time or
-  weight shows "—" in `text.tertiary` like other missing values. Every weight on
+  with the comparison skeleton that already announces it. A missing value is
+  not drawn as a placeholder dash: the part that would hold it is omitted.
+  Every weight on
   this screen carries a space before its unit through the `shortTotal`/`shortAverage`
   family ("400 kg"): hero facts, growth card, records (`AchievementState.totalValue()`)
   and the weekly card alike; the compact `short()` form ("400kg") stays with
@@ -530,9 +531,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   and values use the growth card's formatters (`DurationFormatState.shortMinutes`
   "65 min", `VolumeFormatState.shortTotal` "500 kg"). Fact values are `h3`
   `text.primary` with `b11Med` `text.secondary` labels; a missing workout time or
-  weight shows "—" and zero sets dims to `text.tertiary`. Each fact is one
-  accessibility node read label first ("Workout time, 65 min"); a missing value is
-  read as `performance_trend_details_value_unavailable` instead of the dash.
+  weight omits that fact (the remaining facts share the row) and zero sets dims to
+  `text.tertiary`. Each fact is one accessibility node read label first
+  ("Workout time, 65 min").
   `TrainingRecapHeroSkeleton` lives beside the hero on the same warm surface:
   the verdict-row and description bones shared with `Pending` and one row of
   three fact bones (`h3` value at `loading.fact.value.widthFraction` (50%),
@@ -622,7 +623,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   standing in for a control or a tile takes that owner's shape (the round Share
   button, `button.small.radius` for the Statistics button, the verdict tile
   radius). A text bone is as tall as one laid-out line of the real typography
-  role it stands in for (`rememberSingleLineHeight(style)`, measured the way a
+  role it stands in for (`rememberTextHeight(style)`, measured the way a
   one-line `Text` lays it out): Android lays a single line out at the font's own
   height, not at the role's nominal sp line height (an Onest `b14Med` line is about
   2 dp shorter than its 20 sp, an `h5` line about 3.6 dp shorter than its 24 sp),
@@ -632,17 +633,17 @@ and Latin text in both themes; each role keeps its existing size and line height
   its host asks for shimmer (`SkeletonText(animated = false)` by default).
   `SkeletonPanel` content heights sum the same measured lines: every card skeleton
   hoists one `rememberTextMeasurer()` and passes it to each
-  `rememberSingleLineHeight` call for its single-line text; a text the populated
-  card wraps adds the role's baseline-to-baseline line height once per further
-  line. Fixed parts keep their tokens: icons, image slots, the Segment
+  `rememberTextHeight` call; a text the populated card wraps passes its line
+  count as `lines`. Fixed parts keep their tokens: icons, image slots, the Segment
   minimum height, indicators, chip padding and dividers; a `MetricOverviewHeader`
   row is the larger of its `h5` line and the `metrics.overview.detailsIcon`
   chevron. A panel is the real
   `MetricSectionPanel` of its `SkeletonPanelStyle` (Small or Large) holding one
   full-width shimmering bone of the populated content height. Bones carry no
   semantics; the hosting loading content puts the single localized indeterminate
-  node on its root, or on each section skeleton that loads on its own, through the
-  shared `Modifier.loadingSemantics(description)`. A shared card's loading
+  node on its root, or on each section skeleton that loads on its own, as a merged
+  `semantics` block with the `loading` description and indeterminate progress
+  written at that host. A shared card's loading
   geometry lives beside the card as its `*CardSkeleton`
   (`PerformanceComparisonCardSkeleton` sized to the baseline segment and the five
   growth blocks with stacked bars; `TrainingStreakCardSkeleton(style)` and
@@ -754,7 +755,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   Insight kind is conveyed by its existing localized semantic chip; the card has
   no colored edge stripe. Its image/title/chevron header shares the card hierarchy.
 - MenuValueRow keeps neutral labels/values and a quiet chevron, with a 56 dp
-  minimum height and 12 dp vertical padding/gaps. Optional leading icons use a
+  minimum height and 12 dp vertical padding/gaps. A loading value is a shimmering
+  bone one laid-out `b14Med` line tall. Optional leading icons use a
   32 dp card-surface tile with 8 dp corners; caller-supplied channel/destructive
   colors retain their meaning. Dividers align with the text after the tile.
 - MenuActionRow uses the same menu-row icon and spacing family for operations:
@@ -800,7 +802,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   Detailed summaries omit status chips and best-value repetitions; missing current
   data, missing earlier data and a zero earlier average have distinct quiet copy.
   Home Overview retains its title/chevron, statuses, comparisons and paired
-  intrinsic-height rows. Complete localized names, units and explanations wrap.
+  intrinsic-height rows; for an empty metric it shows the Detailed card's
+  `performance_trend_details_value_unavailable` copy as one secondary `b12Med`
+  line instead of a value. Complete localized names, units and explanations wrap.
 - Performance history uses open date/value rows for up to nine previous sessions;
   the latest session appears only in the summary. Secondary `b13Med` dates, neutral
   `b14Semi` values and `subContent` vertical padding keep the rows quiet. Same-day
@@ -921,8 +925,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   parts, so nothing is clipped at the old height and nothing jumps. Only the
   value text reads the animated number every frame; the bars read their animated
   values while drawing. Motion never gates the block's press target.
-  An empty metric shows "—" in `text.tertiary` and draws no bars (a full "before"
-  over an empty track would read as a drop to zero); without any
+  An empty metric shows no value and no bars (a full "before" over an empty
+  track would read as a drop to zero); without any
   baseline the after bars fill from zero in the muted palette; without any values
   the title is followed by one secondary `b13Med` empty note and no blocks.
 - `TrainingStreakCardStyle.Growth(previous)` is the completed-workout streak: the
@@ -969,7 +973,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   score numbers take `semantic.decline`, while the label and the bar keep the band of
   the current score, so a drop into the off-track band keeps its red error instead
   of reading as the calm decline. The `b12Med` analyzed-workouts line closes the
-  card. A missing score shows "—" in `text.tertiary` with the not-evaluated label
+  card. A missing score shows only the not-evaluated label, with no score line
   and no bar.
 - `MuscleLoadingCardStyle.Session` is the completed-workout muscle load: a Large
   panel with the `h5` shared `muscle_loading` title, the Overview's compact
@@ -1192,8 +1196,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   neutral `h5` load × repetitions and quiet dividers only between rows. Actual ordinal
   prior values belong to the feature-provided trailing slot, using secondary `b12Med` in a fixed `iterationCard.historyContextWidth`
   column, introduced once by a short previous-date header. Each context slot
-  reserves two secondary line heights in loading, populated and absent-match
-  states; no repeated Last time label competes with the current result.
+  reserves two laid-out secondary lines (`rememberTextHeight(lines = 2)`) in
+  loading, populated and absent-match states, its loading bone one line; no repeated Last time label competes with the current result.
   Bodyweight calculations stay beside their effective load. Missing per-set
   measurements remain unavailable; optional absent body mass does not hide known
   extra or assist weight.

@@ -17,6 +17,14 @@ the tokens.
   existing token's role requires reviewing its callers. Preview fixtures may use
   explicit sample text ([previews.md](previews.md)); fixture styling is not a
   production token substitute.
+- A layout that must match or reserve the height of laid-out text of a role - a
+  skeleton text bone, a `heightIn(min)` slot that keeps one or two lines stable
+  across loading/empty/populated states, an icon aligned to a text line - takes it
+  from [`rememberTextHeight(style, lines)`](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/utils/TextHeight.kt)
+  (`lines` defaults to 1). A composable measuring several roles hoists one
+  `rememberTextMeasurer()` and passes it to each call. MUST NOT derive a text
+  height from `style.lineHeight`/`fontSize` (Android trims the outer lines, so the
+  nominal value is taller than the rendered text) or hand-tune a dp token for it.
 - Typography tokens are color-agnostic; text color comes from AppTokens.colors.
   Do not create a parallel Material3 Typography or use LocalTextStyle as an
   implicit substitute for an explicit product token.

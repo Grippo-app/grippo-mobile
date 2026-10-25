@@ -867,7 +867,7 @@
     <string name="exercise_history_previous_short">%1$s · %2$s</string>
     <string name="exercise_history_vs_date">vs %1$s</string>
     <string name="training_streak_current_progress">Latest period: %1$d / %2$d active days</string>
-    <string name="training_streak_growth_headline">%1$d → %2$d</string>
+    <string name="training_streak_growth_headline">%1$s → %2$s</string>
     <string name="training_streak_growth_extended">Streak extended</string>
     <string name="training_streak_growth_kept">Rhythm kept</string>
     <string name="training_streak_growth_reset">Streak restarted</string>

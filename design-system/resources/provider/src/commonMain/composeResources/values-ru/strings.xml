@@ -855,7 +855,7 @@
     <string name="exercise_history_previous_short">%1$s · %2$s</string>
     <string name="exercise_history_vs_date">Ранее · %1$s</string>
     <string name="training_streak_current_progress">Последний период: %1$d / %2$d активных дн.</string>
-    <string name="training_streak_growth_headline">%1$d → %2$d</string>
+    <string name="training_streak_growth_headline">%1$s → %2$s</string>
     <string name="training_streak_growth_extended">Серия продолжается</string>
     <string name="training_streak_growth_kept">Ритм сохранён</string>
     <string name="training_streak_growth_reset">Серия началась заново</string>

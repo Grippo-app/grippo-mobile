@@ -12,13 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import com.grippo.design.components.modifiers.shimmer
+import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -28,11 +30,14 @@ import com.grippo.design.resources.provider.exercise_history_comparison_loading
 @Composable
 internal fun ExerciseHistoryShimmer(
     modifier: Modifier = Modifier,
-    captionMinHeight: Dp,
+    captionStyle: TextStyle,
     chartHeight: Dp,
 ) {
     val loadingDescription = AppTokens.strings.res(Res.string.exercise_history_comparison_loading)
     val shape = RoundedCornerShape(AppTokens.dp.metrics.panel.small.radius)
+    val textMeasurer = rememberTextMeasurer()
+    val captionLine = rememberTextHeight(style = captionStyle, textMeasurer = textMeasurer)
+    val captionMinHeight = rememberTextHeight(style = captionStyle, lines = 2, textMeasurer = textMeasurer)
 
     Column(
         modifier = modifier.clearAndSetSemantics {
@@ -50,7 +55,7 @@ internal fun ExerciseHistoryShimmer(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(captionMinHeight / 2)
+                    .height(captionLine)
                     .clip(shape)
                     .background(AppTokens.colors.divider.default),
             )
@@ -71,12 +76,9 @@ internal fun ExerciseHistoryShimmer(
 @Composable
 private fun ExerciseHistoryShimmerPreview() {
     PreviewContainer {
-        val captionStyle = AppTokens.typography.b12Med()
-        val captionMinHeight = with(LocalDensity.current) { captionStyle.lineHeight.toDp() * 2 }
-
         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
             ExerciseHistoryShimmer(
-                captionMinHeight = captionMinHeight,
+                captionStyle = AppTokens.typography.b12Med(),
                 chartHeight = maxWidth / AppTokens.dp.metrics.volume.chart.historyAspectRatio,
             )
         }

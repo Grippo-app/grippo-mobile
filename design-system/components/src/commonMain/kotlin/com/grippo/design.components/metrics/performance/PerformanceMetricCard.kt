@@ -24,7 +24,6 @@ import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.components.metrics.performance.internal.PerformanceTrendChip
-import com.grippo.design.components.utils.EMPTY_VALUE_PLACEHOLDER
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -53,24 +52,26 @@ public fun PerformanceMetricCard(
     val empty = metric.isEmpty()
     val comparisonPercentage = metric.currentVsAveragePercentage
 
-    val valueColor = if (empty) {
-        AppTokens.colors.text.tertiary
-    } else {
-        AppTokens.colors.text.primary
-    }
-
     MetricSectionPanel(
         modifier = modifier,
         style = MetricSectionPanelStyle.Small,
     ) {
         MetricOverviewHeader(title = metric.type.label())
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = if (empty) EMPTY_VALUE_PLACEHOLDER else metric.currentDisplay(),
-            style = AppTokens.typography.h2(),
-            color = valueColor,
-        )
+        if (empty) {
+            Text(
+                text = AppTokens.strings.res(Res.string.performance_trend_details_value_unavailable),
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.secondary,
+            )
+        } else {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = metric.currentDisplay(),
+                style = AppTokens.typography.h2(),
+                color = AppTokens.colors.text.primary,
+            )
+        }
 
         if (metric.showsComparison()) {
             PerformanceTrendChip(status = metric.status, baseline = PerformanceBaselineState.Average)

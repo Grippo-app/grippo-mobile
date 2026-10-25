@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import com.grippo.core.state.formatters.DateTimeFormatState
@@ -33,6 +32,7 @@ import com.grippo.design.components.banner.BannerCard
 import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.volume.ExerciseVolumeHistoryChart
+import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -177,7 +177,7 @@ private fun ExerciseVolumeHistory(
         )
     }
     val captionStyle = AppTokens.typography.b12Med()
-    val captionMinHeight = with(LocalDensity.current) { captionStyle.lineHeight.toDp() * 2 }
+    val captionMinHeight = rememberTextHeight(style = captionStyle, lines = 2)
 
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val chartHeight = maxWidth / AppTokens.dp.metrics.volume.chart.historyAspectRatio
@@ -208,7 +208,7 @@ private fun ExerciseVolumeHistory(
 
             if (isHistoryLoading) {
                 ExerciseHistoryShimmer(
-                    captionMinHeight = captionMinHeight,
+                    captionStyle = captionStyle,
                     chartHeight = chartHeight,
                 )
             } else {

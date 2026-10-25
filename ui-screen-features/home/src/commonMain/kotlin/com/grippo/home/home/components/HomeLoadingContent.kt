@@ -12,19 +12,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.rememberTextMeasurer
 import com.grippo.design.components.loading.SkeletonBone
 import com.grippo.design.components.loading.SkeletonPanel
 import com.grippo.design.components.loading.SkeletonPanelStyle
 import com.grippo.design.components.loading.SkeletonText
-import com.grippo.design.components.loading.loadingSemantics
 import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardSkeleton
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardStyle
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardSkeleton
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardStyle
-import com.grippo.design.components.utils.rememberSingleLineHeight
+import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -44,7 +47,10 @@ internal fun HomeLoadingContent(
     val horizontalPadding = AppTokens.dp.screen.horizontalPadding
 
     LazyColumn(
-        modifier = modifier.loadingSemantics(loadingDescription),
+        modifier = modifier.semantics(mergeDescendants = true) {
+            contentDescription = loadingDescription
+            progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
+        },
         contentPadding = PaddingValues(
             top = AppTokens.dp.contentPadding.content,
             bottom = AppTokens.dp.screen.verticalPadding,
@@ -185,10 +191,10 @@ internal fun HomeLoadingContent(
 @Composable
 private fun HomeLoadingRecap(modifier: Modifier) {
     val textMeasurer = rememberTextMeasurer()
-    val titleLine = rememberSingleLineHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
-    val dateLine = rememberSingleLineHeight(style = AppTokens.typography.b13Med(), textMeasurer = textMeasurer)
-    val valueLine = rememberSingleLineHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
-    val labelLine = rememberSingleLineHeight(style = AppTokens.typography.b11Med(), textMeasurer = textMeasurer)
+    val titleLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val dateLine = rememberTextHeight(style = AppTokens.typography.b13Med(), textMeasurer = textMeasurer)
+    val valueLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val labelLine = rememberTextHeight(style = AppTokens.typography.b11Med(), textMeasurer = textMeasurer)
     val textGap = AppTokens.dp.contentPadding.text
     val factHeight = valueLine + textGap + labelLine
     val summaryHeight = titleLine + textGap + dateLine + AppTokens.dp.contentPadding.content + factHeight
@@ -204,12 +210,12 @@ private fun HomeLoadingRecap(modifier: Modifier) {
 @Composable
 private fun HomeLoadingGoal(modifier: Modifier) {
     val textMeasurer = rememberTextMeasurer()
-    val captionLine = rememberSingleLineHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
-    val goalLine = rememberSingleLineHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
-    val scoreLine = rememberSingleLineHeight(style = AppTokens.typography.h2(), textMeasurer = textMeasurer)
-    val criterionLine = rememberSingleLineHeight(style = AppTokens.typography.b13Semi(), textMeasurer = textMeasurer)
-    val periodLine = rememberSingleLineHeight(style = AppTokens.typography.b12Semi(), textMeasurer = textMeasurer)
-    val remainingLine = rememberSingleLineHeight(style = AppTokens.typography.b13Med(), textMeasurer = textMeasurer)
+    val captionLine = rememberTextHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
+    val goalLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val scoreLine = rememberTextHeight(style = AppTokens.typography.h2(), textMeasurer = textMeasurer)
+    val criterionLine = rememberTextHeight(style = AppTokens.typography.b13Semi(), textMeasurer = textMeasurer)
+    val periodLine = rememberTextHeight(style = AppTokens.typography.b12Semi(), textMeasurer = textMeasurer)
+    val remainingLine = rememberTextHeight(style = AppTokens.typography.b13Med(), textMeasurer = textMeasurer)
     val textGap = AppTokens.dp.contentPadding.text
     val rowGap = AppTokens.dp.contentPadding.subContent
 
@@ -232,10 +238,10 @@ private fun HomeLoadingGoal(modifier: Modifier) {
 @Composable
 private fun HomeLoadingSpotlight(modifier: Modifier) {
     val textMeasurer = rememberTextMeasurer()
-    val nameLine = rememberSingleLineHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
-    val chipLine = rememberSingleLineHeight(style = AppTokens.typography.b11Semi(), textMeasurer = textMeasurer)
-    val insightLine = rememberSingleLineHeight(style = AppTokens.typography.h4(), textMeasurer = textMeasurer)
-    val captionLine = rememberSingleLineHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
+    val nameLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val chipLine = rememberTextHeight(style = AppTokens.typography.b11Semi(), textMeasurer = textMeasurer)
+    val insightLine = rememberTextHeight(style = AppTokens.typography.h4(), textMeasurer = textMeasurer)
+    val captionLine = rememberTextHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
     val identityHeight = maxOf(nameLine, AppTokens.dp.metrics.overview.detailsIcon) +
         AppTokens.dp.contentPadding.subContent + chipLine + AppTokens.dp.metrics.status.verticalPadding * 2
 
@@ -252,11 +258,11 @@ private fun HomeLoadingPerformance(
     compact: Boolean = false,
 ) {
     val textMeasurer = rememberTextMeasurer()
-    val titleLine = rememberSingleLineHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
-    val valueLine = rememberSingleLineHeight(style = AppTokens.typography.h2(), textMeasurer = textMeasurer)
-    val captionLine = rememberSingleLineHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
-    val chipLine = rememberSingleLineHeight(style = AppTokens.typography.b11Semi(), textMeasurer = textMeasurer)
-    val deltaLine = rememberSingleLineHeight(style = AppTokens.typography.b13Semi(), textMeasurer = textMeasurer)
+    val titleLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val valueLine = rememberTextHeight(style = AppTokens.typography.h2(), textMeasurer = textMeasurer)
+    val captionLine = rememberTextHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
+    val chipLine = rememberTextHeight(style = AppTokens.typography.b11Semi(), textMeasurer = textMeasurer)
+    val deltaLine = rememberTextHeight(style = AppTokens.typography.b13Semi(), textMeasurer = textMeasurer)
     val spacer = AppTokens.dp.metrics.panel.small.spacer
     val summaryHeight = maxOf(titleLine, AppTokens.dp.metrics.overview.detailsIcon) + valueLine + captionLine +
         spacer * 2

@@ -598,7 +598,6 @@ public data object AppDp {
             val iconRadius: Dp = AppDp.radius.small
             val valueMaxWidthFraction: Float = 0.45f
             val loadingWidth: Dp = 50.dp
-            val loadingHeight: Dp = 18.dp
             val loadingRadius: Dp = 4.dp
             val icon: Dp = AppDp.icon.small
         }

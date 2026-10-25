@@ -17,9 +17,9 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.DateTimeFormatState
@@ -34,6 +34,7 @@ import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.training.IterationCard
 import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.components.modifiers.shimmer
+import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -59,7 +60,9 @@ internal fun ExerciseSetsContent(
     isHistoryLoading: Boolean,
 ) {
     val contextStyle = AppTokens.typography.b12Med()
-    val contextHeight = with(LocalDensity.current) { contextStyle.lineHeight.toDp() }
+    val textMeasurer = rememberTextMeasurer()
+    val contextLine = rememberTextHeight(style = contextStyle, textMeasurer = textMeasurer)
+    val contextMinHeight = rememberTextHeight(style = contextStyle, lines = 2, textMeasurer = textMeasurer)
 
     Column(modifier = modifier) {
         Row(
@@ -78,12 +81,12 @@ internal fun ExerciseSetsContent(
             Box(
                 modifier = Modifier
                     .width(AppTokens.dp.iterationCard.historyContextWidth)
-                    .heightIn(min = contextHeight * 2),
+                    .heightIn(min = contextMinHeight),
                 contentAlignment = Alignment.CenterEnd,
             ) {
                 when {
                     isHistoryLoading -> ExerciseComparisonBone(
-                        modifier = Modifier.fillMaxWidth().height(contextHeight),
+                        modifier = Modifier.fillMaxWidth().height(contextLine),
                         animated = true,
                     )
 
@@ -136,16 +139,18 @@ private fun ExerciseSetComparison(
     isLoading: Boolean,
 ) {
     val style = AppTokens.typography.b12Med()
-    val lineHeight = with(LocalDensity.current) { style.lineHeight.toDp() }
+    val textMeasurer = rememberTextMeasurer()
+    val line = rememberTextHeight(style = style, textMeasurer = textMeasurer)
+    val minHeight = rememberTextHeight(style = style, lines = 2, textMeasurer = textMeasurer)
 
     Box(
         modifier = modifier
             .width(AppTokens.dp.iterationCard.historyContextWidth)
-            .heightIn(min = lineHeight * 2),
+            .heightIn(min = minHeight),
         contentAlignment = Alignment.CenterEnd,
     ) {
         if (isLoading) {
-            ExerciseComparisonBone(modifier = Modifier.fillMaxWidth().height(lineHeight))
+            ExerciseComparisonBone(modifier = Modifier.fillMaxWidth().height(line))
         } else if (value != null) {
             val rawVolume = value.recordedVolume()
             val volume = VolumeFormatState.of(rawVolume)

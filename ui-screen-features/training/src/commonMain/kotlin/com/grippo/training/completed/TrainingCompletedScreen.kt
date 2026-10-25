@@ -18,6 +18,10 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
@@ -46,7 +50,6 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.konfetti.KonfettiParade
-import com.grippo.design.components.loading.loadingSemantics
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCard
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardStyle
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
@@ -219,7 +222,10 @@ private fun TrainingCompletedContent(
                     TrainingRecordsCardSkeleton(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .loadingSemantics(loadingDescription),
+                            .semantics(mergeDescendants = true) {
+                                contentDescription = loadingDescription
+                                progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
+                            },
                     )
                 } else {
                     TrainingRecordsCard(
@@ -238,7 +244,10 @@ private fun TrainingCompletedContent(
                 PerformanceComparisonCardSkeleton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .loadingSemantics(loadingDescription),
+                        .semantics(mergeDescendants = true) {
+                            contentDescription = loadingDescription
+                            progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
+                        },
                 )
             } else {
                 PerformanceComparisonCard(
@@ -258,7 +267,10 @@ private fun TrainingCompletedContent(
                 WeeklyVolumeCardSkeleton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .loadingSemantics(loadingDescription),
+                        .semantics(mergeDescendants = true) {
+                            contentDescription = loadingDescription
+                            progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
+                        },
                 )
             } else {
                 WeeklyVolumeCard(

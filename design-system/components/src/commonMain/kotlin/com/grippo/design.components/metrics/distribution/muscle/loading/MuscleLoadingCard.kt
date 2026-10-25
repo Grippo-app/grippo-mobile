@@ -34,7 +34,7 @@ import com.grippo.design.components.metrics.distribution.muscle.loading.internal
 import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
-import com.grippo.design.components.utils.rememberSingleLineHeight
+import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -266,9 +266,9 @@ public fun MuscleLoadingCardSkeleton(
     style: MuscleLoadingCardStyle.Loadable,
 ) {
     val textMeasurer = rememberTextMeasurer()
-    val titleLine = rememberSingleLineHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
-    val groupLine = rememberSingleLineHeight(style = AppTokens.typography.b13Semi(), textMeasurer = textMeasurer)
-    val captionLine = rememberSingleLineHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
+    val titleLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val groupLine = rememberTextHeight(style = AppTokens.typography.b13Semi(), textMeasurer = textMeasurer)
+    val captionLine = rememberTextHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
 
     val rowHeight = maxOf(groupLine, captionLine) + AppTokens.dp.contentPadding.text +
         AppTokens.dp.metrics.charts.indicator.height
