@@ -337,8 +337,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   focus frames, wheel selections and swipe actions. 20 dp: standalone content,
   menu, profile, recap, achievement and gallery cards. Equipment detail images
   are unframed; its selection variant uses the repeated-row shape.
-- 28 dp is reserved for BrandHeader, the onboarding hero, the completed-workout
-  recap hero's bottom corners and all four corners of its shared card, and
+- 28 dp is reserved for BrandHeader, the onboarding hero, all four corners of the
+  completed-workout recap hero (on screen and in its shared card), and
   bottom-sheet top corners. Warm card fills alone do not change a
   card's radius.
 - Filled segments use a 16 dp outer shape and a 12 dp selection shape with 4 dp
