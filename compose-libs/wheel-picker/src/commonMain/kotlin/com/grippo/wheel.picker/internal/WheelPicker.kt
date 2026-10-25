@@ -38,7 +38,6 @@ internal fun WheelPicker(
 ) {
     val flingBehavior = rememberSnapFlingBehavior(listState)
 
-    // Precompute snapshot-derived values once per recomposition
     val layoutInfo = remember(listState, rowCount) { derivedStateOf { listState.layoutInfo } }
     val viewportHeight = layoutInfo.value.viewportSize.height.toFloat()
     val singleViewportHeight = viewportHeight / rowCount

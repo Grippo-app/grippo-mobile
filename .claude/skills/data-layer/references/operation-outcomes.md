@@ -65,7 +65,7 @@ A successful return establishes the complete operation outcome, not just an acce
   multi-row transaction boundary. Local drafts and preferences retain their Repository contract.
 - Identify the required save, hydration and cleanup steps from the UseCase and its callers.
   Every step in the declared operation propagates failure; a failed readback is a failed
-  operation. KDoc does not authorize suppressing an exception or omitting a required result.
+  operation. A code comment does not authorize suppressing an exception or omitting a required result.
   An intentionally separate follow-up has its own explicit operation contract and error owner;
   it is not an ignored call appended to an otherwise successful command.
 - MUST reconcile only the requested owner/range (the cached rows the operation is allowed to

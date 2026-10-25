@@ -70,7 +70,6 @@ internal class DialogComponent(
     }
 
     override suspend fun eventListener(direction: DialogDirection) {
-        // No directions emitted — reconciliation is state-driven via state.flow.
     }
 
     private fun reconcile(target: ReconcileTarget) {

@@ -8,10 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layoutId
 import com.grippo.segment.control.internal.SelectedButtonId
 
-/**
- * A button used as a child of [SegmentedFrame].
- */
-
 @Composable
 public fun SegmentBox(
     modifier: Modifier = Modifier,

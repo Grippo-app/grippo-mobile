@@ -18,7 +18,6 @@ internal data class DialogState(
 @Immutable
 internal data class DialogSession(val id: String)
 
-/** Stable runtime identity preserves child instances across stack updates. */
 @Immutable
 internal class DialogStep(val id: String, val config: DialogConfig) {
     override fun equals(other: Any?): Boolean = other is DialogStep && id == other.id

@@ -53,19 +53,13 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
 
     protected abstract suspend fun eventListener(direction: DIRECTION)
 
-    /** Consume a local draft only when constructing a fresh retained ViewModel. */
     protected fun <T : Any> restoreState(key: PersistenceKey<T>): T? =
         stateKeeper.consume(key.key, key.serializer)
 
-    /** Register once during construction; the supplier is read when StateKeeper saves. */
     protected fun <T : Any> saveState(key: PersistenceKey<T>, supplier: () -> T) {
         stateKeeper.register(key.key, key.serializer, supplier)
     }
 
-    /**
-     * Register once per key on the main thread when constructing the component.
-     * Observes until destruction, including while hidden. Keep the handler short.
-     */
     protected fun <T : BaseResult> observeResult(
         key: ResultKey<T>,
         onResult: suspend (T) -> Unit
@@ -73,10 +67,6 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
         resultManager.observeResult(key, onResult)
     }
 
-    /**
-     * Sends to current observers without replay; returns before handlers finish.
-     * Destruction cancels pending sends without retracting results already in the buffer.
-     */
     protected fun <T : Any> sendResult(key: ResultKey<Result<T>>, data: T) {
         resultManager.sendResult(key, data)
     }

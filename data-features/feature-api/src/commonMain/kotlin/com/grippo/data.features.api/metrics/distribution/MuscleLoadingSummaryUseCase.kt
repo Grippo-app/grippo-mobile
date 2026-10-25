@@ -19,18 +19,12 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlin.math.abs
 
-/**
- * Estimates the distribution of performed sets using the exercise's recorded muscle shares.
- * These weighted sets describe exercise selection, not physiological stimulus or recovery.
- * Recorded resistance × repetitions is distributed separately using the same linear shares.
- */
 public class MuscleLoadingSummaryUseCase(
     private val exerciseExampleFeature: ExerciseExampleFeature,
 ) {
     private companion object {
         private const val TOP_EXAMPLES_LIMIT = 3
 
-        // Summing equal shares in different orders must not manufacture a single leader.
         private const val LEADER_RELATIVE_TOLERANCE = 1e-12
 
         private fun checkedCount(value: Long): Long {
@@ -60,12 +54,10 @@ public class MuscleLoadingSummaryUseCase(
         return observeFromExercises(exercises).first()
     }
 
-    /** Recalculates when the referenced exercise anatomy changes in the local cache. */
     public fun observeFromTrainings(trainings: List<Training>): Flow<MuscleLoadSummary> {
         return observeFromSessions(sessions = trainings.map { it.exercises })
     }
 
-    /** Treats the supplied exercises as one logical session. */
     public fun observeFromExercises(exercises: List<Exercise>): Flow<MuscleLoadSummary> {
         return observeFromSessions(listOf(exercises))
     }
@@ -79,7 +71,6 @@ public class MuscleLoadingSummaryUseCase(
         }
     }
 
-    /** Anatomy preview; no sessions, performed work or session statistics are inferred. */
     public fun fromExerciseExample(example: ExerciseExample): MuscleLoadSummary {
         val muscles = normalizedShares(example).mapValues { (_, ratio) ->
             EntryStats().apply {
@@ -271,7 +262,6 @@ public class MuscleLoadingSummaryUseCase(
             return null
         }
 
-        // Unexpected supplied fields make the measurement ambiguous, even when their value is zero.
         val complete = when (components) {
             is ExerciseExampleComponents.External ->
                 (!components.required || iteration.externalWeight != null) &&
@@ -296,7 +286,6 @@ public class MuscleLoadingSummaryUseCase(
             return null
         }
 
-        // Schema checks establish absent terms as known absent; historical values are never filled.
         val bodyResistance = (iteration.bodyWeight ?: 0f) * (iteration.bodyMultiplier ?: 0f)
         if (!bodyResistance.isFinite()) {
             return null
@@ -305,7 +294,6 @@ public class MuscleLoadingSummaryUseCase(
                 (iteration.extraWeight?.toDouble() ?: 0.0) +
                 bodyResistance.toDouble() -
                 (iteration.assistWeight?.toDouble() ?: 0.0)
-        // Negative machine conventions require metadata before they can represent physical volume.
         return resistance.takeIf { it.isFinite() && it >= 0.0 }
     }
 

@@ -2,7 +2,6 @@ package com.grippo.toolkit.date.utils
 
 import com.grippo.toolkit.date.utils.internal.DayTime
 import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -10,6 +9,7 @@ import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
+import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
@@ -27,17 +27,9 @@ public object DateTimeUtils {
         return Clock.System.now().toLocalDateTime(timeZone)
     }
 
-    /* * * * * * * * * * *
-     * Instant
-     * * * * * * * * * * */
-
     public fun asInstant(value: LocalDateTime): Instant {
         return value.toInstant(timeZone)
     }
-
-    /* * * * * * * * * * *
-     * Date Range
-     * * * * * * * * * * */
 
     public fun thisDay(): DateRange {
         val date = Clock.System.now().toLocalDateTime(timeZone).date
@@ -59,10 +51,8 @@ public object DateTimeUtils {
 
     public fun thisWeek(): DateRange {
         val today = Clock.System.now().toLocalDateTime(timeZone).date
-        val daysToStartOfWeek = today.dayOfWeek.ordinal
-        val startOfWeek = today.minus(DatePeriod(days = daysToStartOfWeek))
-        val daysToEndOfWeek = DayOfWeek.SUNDAY.ordinal - today.dayOfWeek.ordinal
-        val endOfWeek = today.plus(DatePeriod(days = daysToEndOfWeek))
+        val startOfWeek = startOfIsoWeek(today)
+        val endOfWeek = startOfWeek.plus(DatePeriod(days = 6))
 
         return DateRange(
             from = startOfWeek.atTime(DayTime.StartOfDay.localTime),
@@ -83,7 +73,6 @@ public object DateTimeUtils {
 
     public fun thisYear(): DateRange {
         val today = Clock.System.now().toLocalDateTime(timeZone).date
-        // Start at Jan 1, end at Dec 31 (via +1 year -1 day to handle leap years safely)
         val startOfYear = LocalDate(today.year, Month.JANUARY, 1)
         val endOfYear = startOfYear.plus(DatePeriod(years = 1)).minus(DatePeriod(days = 1))
 
@@ -119,7 +108,6 @@ public object DateTimeUtils {
         return trailingDays(7)
     }
 
-    /** Includes today as one of the requested calendar dates. */
     internal fun trailingDays(days: Int): DateRange {
         require(days > 0)
 
@@ -139,10 +127,6 @@ public object DateTimeUtils {
         )
     }
 
-    /* * * * * * * * * * *
-     * Time for date
-     * * * * * * * * * * */
-
     public fun startOfDay(value: LocalDateTime): LocalDateTime {
         return value.date.atTime(DayTime.StartOfDay.localTime)
     }
@@ -159,9 +143,9 @@ public object DateTimeUtils {
         return value.atTime(DayTime.EndOfDay.localTime)
     }
 
-    /* * * * * * * * * * *
-     * Parsing via TimeZone
-     * * * * * * * * * * */
+    public fun startOfIsoWeek(value: LocalDate): LocalDate {
+        return value.minus(DatePeriod(days = value.dayOfWeek.isoDayNumber - 1))
+    }
 
     public fun toUtcIso(value: LocalDateTime): String {
         return value.toInstant(timeZone).toString()
@@ -172,10 +156,6 @@ public object DateTimeUtils {
             .parse(timestamp)
             .toLocalDateTime(timeZone)
     }
-
-    /* * * * * * * * * * *
-     * Date/Time Formatting
-     * * * * * * * * * * */
 
     @OptIn(FormatStringsInDatetimeFormats::class)
     public fun format(value: LocalDateTime, format: DateFormat): String {
@@ -195,9 +175,6 @@ public object DateTimeUtils {
     public fun format(duration: Duration): String {
         return DateFormatting.current.format(duration) ?: "-"
     }
-    /* * * * * * * * * * *
-     * Calculation
-     * * * * * * * * * * */
 
     public fun ago(value: LocalDateTime): Duration {
         val now = Clock.System.now()
@@ -224,10 +201,6 @@ public object DateTimeUtils {
         )
     }
 
-    /* * * * * * * * * * *
-     * Timeline
-     * * * * * * * * * * */
-
     public fun isToday(date: LocalDate): Boolean {
         val today = Clock.System.todayIn(timeZone)
         return date == today
@@ -241,10 +214,6 @@ public object DateTimeUtils {
     public fun isPast(value: LocalDateTime): Boolean {
         return value.toInstant(timeZone) < Clock.System.now()
     }
-
-    /* * * * * * * * * * *
-    * Static
-    * * * * * * * * * * */
 
     public fun getDaysInMonth(year: Int, month: Month): Int {
         val nextMonth =

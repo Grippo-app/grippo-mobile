@@ -26,10 +26,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.Check
 
-/**
- * Shared check control. With no [onCheckedChange], draws only the indicator;
- * the enclosing selectable surface owns interaction and accessibility.
- */
 @Composable
 public fun Check(
     modifier: Modifier = Modifier,

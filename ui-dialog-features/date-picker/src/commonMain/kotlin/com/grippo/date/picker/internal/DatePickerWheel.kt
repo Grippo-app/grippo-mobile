@@ -41,8 +41,6 @@ internal fun DateWheelPicker(
     select: (LocalDateTime) -> Unit,
 ) {
 
-    // Resolve initial date-time safely: if null -> use earliest allowed (limitations.from).
-    // Also clamp any out-of-range initial to bounds.
     val value: LocalDateTime = remember(initial, limitations) {
         when {
             initial == null -> limitations.from
@@ -67,14 +65,12 @@ internal fun DateWheelPicker(
         (1..DateTimeUtils.getDaysInMonth(selectedYear, selectedMonth)).toList()
     }
 
-    // Keep selectedDay within actual month length first (e.g., 31 -> Feb)
     LaunchedEffect(daysInMonth) {
         if (selectedDay !in daysInMonth) {
             selectedDay = daysInMonth.last()
         }
     }
 
-    // Year changed: clamp month to allowed bounds for that year, then clamp day to allowed range.
     LaunchedEffect(selectedYear) {
         val clampedMonth = clampMonthToBounds(selectedYear, selectedMonth, limitations)
         if (clampedMonth != selectedMonth) {
@@ -86,13 +82,11 @@ internal fun DateWheelPicker(
         }
     }
 
-    // Month changed: if month is out of bounds for current year, snap to nearest allowed month.
-    // Then clamp the day to valid range for that (year, month).
     LaunchedEffect(selectedMonth, selectedYear) {
         val clampedMonth = clampMonthToBounds(selectedYear, selectedMonth, limitations)
         if (clampedMonth != selectedMonth) {
             selectedMonth = clampedMonth
-            return@LaunchedEffect // next effect run will handle days
+            return@LaunchedEffect
         }
         val dayRange = validDayRange(selectedYear, selectedMonth, limitations)
         if (selectedDay !in dayRange) {
@@ -100,7 +94,6 @@ internal fun DateWheelPicker(
         }
     }
 
-    // Date selection keeps the complete time, including precision at range bounds.
     LaunchedEffect(selectedYear, selectedMonth, selectedDay, daysInMonth, time, limitations) {
         val safeDay = selectedDay.coerceIn(daysInMonth.first(), daysInMonth.last())
         val dt = runCatching {
@@ -198,14 +191,12 @@ internal fun DateWheelPicker(
     }
 }
 
-// Inclusive allowed month bounds for the given year
 private fun monthBounds(year: Int, limits: DateRange): Pair<Month, Month> {
     val min = if (year == limits.from.year) limits.from.month else Month.JANUARY
     val max = if (year == limits.to.year) limits.to.month else Month.DECEMBER
     return min to max
 }
 
-// Clamp month into allowed bounds for the given year
 private fun clampMonthToBounds(year: Int, month: Month, limits: DateRange): Month {
     val (minM, maxM) = monthBounds(year, limits)
     return when {
@@ -215,8 +206,6 @@ private fun clampMonthToBounds(year: Int, month: Month, limits: DateRange): Mont
     }
 }
 
-// Valid day window for (year, month) considering edge months of the limits.
-// If both edges are the same month, it becomes from.day..to.day.
 private fun validDayRange(year: Int, month: Month, limits: DateRange): IntRange {
     val maxDays = DateTimeUtils.getDaysInMonth(year, month)
     val minDay = if (year == limits.from.year && month == limits.from.month)

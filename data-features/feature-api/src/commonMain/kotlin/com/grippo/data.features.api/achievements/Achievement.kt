@@ -4,7 +4,7 @@ public sealed class Achievement(public open val exerciseExampleId: String) {
     public data class BestTonnage(
         override val exerciseExampleId: String,
         val exerciseId: String,
-        val tonnage: Int
+        val tonnage: Float
     ) : Achievement(
         exerciseExampleId = exerciseExampleId,
     )
@@ -13,14 +13,14 @@ public sealed class Achievement(public open val exerciseExampleId: String) {
         override val exerciseExampleId: String,
         val exerciseId: String,
         val iterationId: String,
-        val weight: Int
+        val weight: Float
     ) : Achievement(
         exerciseExampleId = exerciseExampleId,
     )
 
     public data class LifetimeVolume(
         override val exerciseExampleId: String,
-        val totalVolume: Int,
+        val totalVolume: Float,
         val sessionsCount: Int
     ) : Achievement(
         exerciseExampleId = exerciseExampleId,

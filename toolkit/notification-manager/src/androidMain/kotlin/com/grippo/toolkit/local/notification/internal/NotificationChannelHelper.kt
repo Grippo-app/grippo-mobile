@@ -15,10 +15,6 @@ internal const val EXTRA_NOTIFICATION_ID = "grippo_local_notification_id"
 internal const val EXTRA_NOTIFICATION_TITLE = "grippo_local_notification_title"
 internal const val EXTRA_NOTIFICATION_BODY = "grippo_local_notification_body"
 
-/**
- * Creates the notification channel if it does not already exist.
- * Safe to call multiple times — channel creation is idempotent.
- */
 internal fun Context.ensureNotificationChannel() {
     val manager = getSystemService(NotificationManager::class.java) ?: return
     if (manager.getNotificationChannel(NOTIFICATION_CHANNEL_ID) != null) return

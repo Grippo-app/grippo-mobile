@@ -8,12 +8,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/**
- * Visual configuration for a Radar (spider) chart.
- *
- * Axes radiate from the center and series are drawn as polygons. Use this style to control
- * rings, spokes, labels, polygon appearance, vertex markers, value labels and color mapping.
- */
 public data class RadarStyle(
     val layout: Layout,
     val grid: Grid,
@@ -125,20 +119,16 @@ public data class RadarStyle(
         @Immutable
         public data class Visible(
             val hitSlop: Dp = 10.dp,
-
             val guideColor: Color,
             val guideWidth: Dp = 1.dp,
             val guideDash: Dp = 4.dp,
             val guideGap: Dp = 4.dp,
-
             val focusColor: Color? = null,
             val focusRadius: Dp = 4.dp,
             val focusRingWidth: Dp = 2.dp,
             val focusHaloRadius: Dp = 18.dp,
-
             val selectedPolygonStrokeWidth: Dp = 2.dp,
             val selectedPolygonFillOverlayAlpha: Float = 0.10f,
-
             val tooltipBackground: Color,
             val tooltipBorder: Color,
             val tooltipText: Color,
@@ -146,7 +136,6 @@ public data class RadarStyle(
             val tooltipPaddingH: Dp,
             val tooltipPaddingV: Dp,
             val tooltipMargin: Dp,
-
             val decimals: Int = 0,
             val showAxisLabel: Boolean = true,
             val showSeriesName: Boolean = true,

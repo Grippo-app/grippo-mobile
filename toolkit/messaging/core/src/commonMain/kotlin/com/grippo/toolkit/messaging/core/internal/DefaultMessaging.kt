@@ -28,7 +28,6 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 
-/** Latest-token-wins queue, one serial synchronizer, bounded memory and no implicit retries. */
 internal class DefaultMessaging(
     private val synchronizer: PushTokenSynchronizer,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
@@ -48,7 +47,6 @@ internal class DefaultMessaging(
     private var closed = false
     private var revision = 0L
 
-    // Reuse the published value as callback identity; SDK fetches never create sync requests.
     private var syncRequest: PushTokenState.Available? = null
 
     init {
@@ -105,7 +103,6 @@ internal class DefaultMessaging(
         if (changed) {
             publishToken()
             publishSyncStatus()
-            // Signals carry no token; reordered wakeups always read the latest request.
             wake.trySend(Unit)
         }
     }

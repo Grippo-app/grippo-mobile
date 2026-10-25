@@ -9,10 +9,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import com.grippo.toolkit.notification.manager.R
 
-/**
- * Builds and posts a notification. Shared between [AndroidNotificationManager.show]
- * (immediate) and [ScheduledNotificationReceiver] (scheduled, fired by AlarmManager).
- */
 internal fun Context.buildAndPostNotification(
     id: Int,
     title: String,

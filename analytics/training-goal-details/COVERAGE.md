@@ -1,11 +1,15 @@
 # Training goal details coverage
 
-Scope: `:ui-dialog-features:training-goal-details` and its Home entry point.
+Scope: `:ui-dialog-features:training-goal-details` and its Home and Completed
+entry points.
 
 ## Surface and observation inventory
 
 `HomeViewModel.onOpenGoalDetails` opens `DialogConfig.TrainingGoalDetails` after
-its valid-range guard. `DialogContentComponent` constructs
+its valid-range guard. `TrainingCompletedViewModel.onGoalClick` (the Completed
+screen's Growth GoalCard) opens the same config with the Completed period after its
+resolved-period guard; its `onAddGoal` closure emits `AddGoalClicked` and then
+the `TrainingCompletedDirection.Goal` direction. `DialogContentComponent` constructs
 `TrainingGoalDetailsComponent`, whose retained `TrainingGoalDetailsViewModel`
 renders `TrainingGoalDetailsScreen`. The sole surface is a read-only bottom
 sheet. It has no nested flow or independent screen, so its default null
@@ -17,6 +21,7 @@ No screen enum or separate dialog presentation contract is introduced.
 |---|---|---|
 | `DialogConfig.TrainingGoalDetails` → `TrainingGoalDetailsScreen` | TrainingGoalDetailsComponent → TrainingGoalDetailsViewModel | Default null: in-memory dialog outside independent-screen presentation policy |
 | `HomeRouter.Home` → DashboardHomeContent GoalCard entry | HomeComponent → HomeViewModel | Existing typed `HomeScreen.Home` hook; full Home variants and containers are inventoried in `analytics/home/COVERAGE.md` |
+| `TrainingRouter.Completed` → Growth GoalCard entry | TrainingCompletedComponent → TrainingCompletedViewModel | Existing typed `TrainingScreen.Completed` hook; the Completed screen and its container are inventoried in `analytics/training/COVERAGE.md` |
 
 | Owner / callback | Observation | Eligibility / payload |
 |---|---|---|
@@ -24,6 +29,8 @@ No screen enum or separate dialog presentation contract is introduced.
 | TrainingGoalDetailsViewModel.onAddGoal | AddGoalClicked / training_goal_details_add_goal v1 | Existing callback without guards; Overdue calendar Update click before AddGoal direction; empty payload |
 | HomeViewModel.onOpenGoalDetails | HomeEvent.GoalDetailsClicked | Existing valid-range guard; parent-owned open intent |
 | HomeViewModel config onAddGoal closure | HomeEvent.AddGoalClicked | Parent observes its accepted navigation callback, separate from dialog click intent |
+| TrainingCompletedViewModel.onGoalClick | TrainingEvent.Completed.GoalOpened / completed_goal_opened v1 | Resolved-period guard (`state.range.value`); parent-owned open intent with title `goal_details_title` and the Completed period; empty payload |
+| TrainingCompletedViewModel config onAddGoal closure | TrainingEvent.Completed.AddGoalClicked / completed_add_goal_clicked v1 | Parent observes its accepted navigation callback before `TrainingCompletedDirection.Goal`; the Growth GoalCard itself has no add/update action |
 | Training/goal/catalog observation and adherence calculation | Deliberate omission | Reactive presentation rebuilding, no finite command or submission |
 | Local assessment disclosure | Deliberate omission | Presentation-only expand/collapse; no domain command, navigation or submission |
 
@@ -39,13 +46,15 @@ context is transported through routes.
 The stateless typed service is injected inside the normal retained VM factory.
 Its exhaustive matrix encodes two parameterless v1 schemas; the annotated module
 registers its qualified catalog in shared. Reporting isolation and both existing
-navigation directions retain their current owners.
+navigation directions retain their current owners. The two caller events belong to
+`HomeAnalytics` and `TrainingAnalytics` respectively; this module encodes only the
+sheet's own two facts.
 
 ## State preservation inventory
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
-| TrainingGoalDetailsComponent / VM | Immutable range seed | Runtime only | Caller range, retainedInstance | Reopening receives the current caller range; retained recreation reuses the VM |
+| TrainingGoalDetailsComponent / VM | Immutable range seed | Runtime only | Caller range (Home's selected range or Completed's resolved period), retainedInstance | Reopening receives the caller's current range; retained recreation reuses the VM |
 | TrainingGoalDetailsViewModel | progress; priority, positive and additional findings plus unavailable-assessment copy derive from it | Rebuild | Combined TrainingFeature.observeTrainings, GoalFeature.observeGoal and currentDateFlow; relevant ExerciseExampleFeature.observeExerciseExamples IDs trigger recalculation; GoalFollowingUseCase with explicit range/current goal/current time | Fresh VM starts with null progress and a neutral NoData explanation; goal removal clears progress; an existing goal with empty period retains its summary and a null score; latest source updates cancel obsolete computation |
 | GoalProgressState in dialog | grouped GoalAnalysisEvidenceState (range and valid/excluded/metadata-missing set counts), derived days/timeline, findings and prepared optional domain score | Rebuild | Domain adherence mapped through domain-to-state | Only observations since goal creation and inside the selected range are represented; insufficient observations have no numeric score |
 | Rendered content | Localized dates, evidence, unavailable-assessment copy and goal presentation | Rebuild | Typed date endpoints rendered with DateCompose; current resources and rebuilt progress | Locale changes resolve period endpoints and copy again; no resolved-label cache or saved business snapshot |
@@ -57,7 +66,8 @@ The sheet owns no editable fields, selections, accepted picker results or drafts
 Range is a caller seed. Data-backed fields rebuild reactively; they are not saved.
 There are no secrets or private initialization/restoration flags, previous-source
 caches or shadow snapshots. Existing Back and parent navigation ownership is
-unchanged. Parent Home drafts and shell restoration retain their own inventories.
+unchanged. Parent Home and Completed drafts and shell restoration retain their own
+inventories.
 
 ## Calculation presentation
 

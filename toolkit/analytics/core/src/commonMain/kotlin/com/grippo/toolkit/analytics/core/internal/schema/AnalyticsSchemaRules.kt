@@ -1,6 +1,5 @@
 package com.grippo.toolkit.analytics.core.internal.schema
 
-/** Transport constraints, distinct from feature declarations and shared context fields. */
 internal object AnalyticsSchemaRules {
     const val MAX_EVENTS = 500
     const val MAX_PROPERTIES = 25
@@ -9,7 +8,6 @@ internal object AnalyticsSchemaRules {
     const val MAX_PROPERTY_NAME_LENGTH = 24
     const val MAX_PROPERTY_VALUE_LENGTH = 36
     const val MAX_TEXT_LENGTH = 100
-
     val codePattern = Regex("[a-z][a-z0-9_]*")
     val reservedPrefixes = listOf("firebase_", "google_", "ga_")
     val reservedProperties = setOf("first_open_time", "last_deep_link_referrer", "user_id")

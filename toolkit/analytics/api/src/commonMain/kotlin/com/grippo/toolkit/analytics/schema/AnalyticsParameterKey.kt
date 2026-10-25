@@ -5,7 +5,6 @@ import com.grippo.toolkit.analytics.values.AnalyticsCount
 import com.grippo.toolkit.analytics.values.AnalyticsNumber
 import com.grippo.toolkit.analytics.values.DurationMillis
 
-/** Only declaration/encoding code creates keys. Event constructors carry business types. */
 public class AnalyticsParameterKey<T> private constructor(
     public val name: String,
     public val required: Boolean,
@@ -16,7 +15,6 @@ public class AnalyticsParameterKey<T> private constructor(
     public companion object {
         public fun <T : AnalyticsCode> code(name: String, required: Boolean = true): AnalyticsParameterKey<T> =
             AnalyticsParameterKey(name, required) { AnalyticsValue.Text(it.analyticsCode) }
-        /** Encode closed observations without exposing their wire values in consumer models. */
         public fun <T : Enum<T>> code(
             name: String,
             required: Boolean = true,

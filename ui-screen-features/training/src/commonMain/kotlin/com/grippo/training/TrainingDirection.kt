@@ -18,6 +18,8 @@ public sealed interface TrainingDirection : BaseDirection {
 
     public data object Back : TrainingDirection
 
+    public data object ToGoal : TrainingDirection
+
     public data class ToRecording(
         val stage: StageState,
     ) : TrainingDirection

@@ -66,7 +66,6 @@ internal class DialogContentComponent(
     }
 
     override suspend fun eventListener(direction: DialogContentDirection) {
-        // Navigation is handled synchronously by the active step session.
     }
 
     internal val navigation = StackNavigation<DialogStep>()

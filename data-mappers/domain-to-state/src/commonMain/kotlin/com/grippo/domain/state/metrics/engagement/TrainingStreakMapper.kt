@@ -1,7 +1,10 @@
 package com.grippo.domain.state.metrics.engagement
 
+import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.DateRangeFormatState
+import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.toPersistentList
 import com.grippo.core.state.metrics.engagement.TrainingStreakFeaturedState as StateTrainingStreakFeatured
 import com.grippo.core.state.metrics.engagement.TrainingStreakMood as StateTrainingStreakMood
@@ -21,6 +24,13 @@ public fun DomainTrainingStreak.toState(): StateTrainingStreak {
             .toPersistentList(),
         historyDays = historyDays,
         lastTrainingGapDays = lastTrainingGapDays,
+        nextTrainingDate = nextTrainingDate?.let { date ->
+            DateFormatState.of(
+                value = date,
+                range = DateRangePresets.infinity(),
+                format = DateFormat.DateOnly.DateDdMmm,
+            )
+        },
     )
 }
 

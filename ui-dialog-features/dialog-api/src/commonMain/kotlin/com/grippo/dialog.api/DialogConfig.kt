@@ -21,10 +21,8 @@ public sealed class DialogConfig(
     public open val onDismiss: (() -> Unit)? = null,
     public open val dismissBySwipe: Boolean = true,
 ) {
-    /** Toolbar text supplied by the caller when opening this dialog. */
     public abstract val title: UiText
 
-    /** Compares dialog content for duplicate navigation requests, excluding callbacks. */
     public fun hasSameContentAs(other: DialogConfig): Boolean {
         if (title != other.title) return false
         return when (this) {

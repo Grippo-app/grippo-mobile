@@ -14,6 +14,9 @@ internal object TrainingOperationSchema {
             TrainingOperation.CreateTraining -> "create_training"
             TrainingOperation.UpdateTraining -> "update_training"
             TrainingOperation.RefreshExamples -> "refresh_examples"
+            TrainingOperation.RefreshTrainings -> "refresh_trainings"
+            TrainingOperation.LoadRecords -> "load_records"
+            TrainingOperation.ShareRecap -> "share_recap"
         }
     })
     val Duration = AnalyticsParameterKey.duration("duration_ms")

@@ -10,7 +10,6 @@ import com.grippo.analytics.common.models.InputStatus
 import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
 import com.grippo.toolkit.analytics.schema.AnalyticsParameterKey
 
-/** Interaction targets are explicit and independent of app-global screen state. */
 internal object AuthInteractionSchema {
     val Screen = AnalyticsParameterKey.code<AuthScreen>("interaction_screen", encode = AuthEncoding::code)
     val Action = AnalyticsParameterKey.code<InteractionAction>("interaction_action", encode = AuthEncoding::code)

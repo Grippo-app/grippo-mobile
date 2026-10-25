@@ -18,8 +18,6 @@ public interface DraftTrainingDao {
     @Query("""SELECT * FROM draft_training """)
     public fun get(): Flow<DraftTrainingPack?>
 
-    // ────────────── INSERT ──────────────
-
     @Transaction
     public suspend fun insertOrReplace(
         training: DraftTrainingEntity,
@@ -53,8 +51,6 @@ public interface DraftTrainingDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertIterations(iterations: List<DraftIterationEntity>)
-
-    // ────────────── DELETE ──────────────
 
     @Query("DELETE FROM draft_training")
     public suspend fun delete()

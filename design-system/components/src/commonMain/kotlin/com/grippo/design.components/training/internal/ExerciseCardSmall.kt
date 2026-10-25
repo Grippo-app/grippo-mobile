@@ -83,7 +83,6 @@ internal fun ExerciseCardSmall(
             ) {
                 value.iterations.forEachIndexed { index, iteration ->
                     key(iteration.id) {
-                        // The separator travels with its result, so a wrapped line never starts with a dot.
                         Text(
                             text = buildAnnotatedString {
                                 append(results[index])

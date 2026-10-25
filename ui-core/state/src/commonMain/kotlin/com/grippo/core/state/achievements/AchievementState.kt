@@ -118,6 +118,15 @@ public sealed interface AchievementState {
         is PeakIntensity -> this.intensity.short()
     }
 
+    @Composable
+    public fun totalValue(): String = when (this) {
+        is BestTonnage -> VolumeFormatState.shortTotal(tonnage.value)
+        is BestWeight -> VolumeFormatState.shortTotal(weight.value)
+        is LifetimeVolume -> VolumeFormatState.shortTotal(totalVolume.value)
+        is MaxRepetitions -> repetitions.short()
+        is PeakIntensity -> IntensityFormatState.shortAverage(intensity.value)
+    }
+
     public companion object {
         private val TEXT_BEST_TONNAGE: UiText = UiText.Res(Res.string.best_tonnage)
         private val TEXT_BEST_WEIGHT: UiText = UiText.Res(Res.string.best_weight)
@@ -139,7 +148,7 @@ private fun stubBestTonnageAchievement(): AchievementState.BestTonnage {
     return AchievementState.BestTonnage(
         exerciseExampleId = Uuid.random().toString(),
         exerciseId = Uuid.random().toString(),
-        tonnage = VolumeFormatState.of(Random.nextInt(1_000, 12_000).toFloat())
+        tonnage = VolumeFormatState.ofTotal(1_050f)
     )
 }
 
@@ -148,14 +157,14 @@ private fun stubBestWeightAchievement(): AchievementState.BestWeight {
         exerciseExampleId = Uuid.random().toString(),
         exerciseId = Uuid.random().toString(),
         iterationId = Uuid.random().toString(),
-        weight = VolumeFormatState.of(Random.nextInt(20, 280).toFloat())
+        weight = VolumeFormatState.of(17.5f)
     )
 }
 
 private fun stubLifetimeVolumeAchievement(): AchievementState.LifetimeVolume {
     return AchievementState.LifetimeVolume(
         exerciseExampleId = Uuid.random().toString(),
-        totalVolume = VolumeFormatState.of(Random.nextInt(5_000, 50_000).toFloat()),
+        totalVolume = VolumeFormatState.ofTotal(24_500f),
         sessionsCount = Random.nextInt(10, 120)
     )
 }
@@ -173,6 +182,6 @@ private fun stubPeakIntensityAchievement(): AchievementState.PeakIntensity {
     return AchievementState.PeakIntensity(
         exerciseExampleId = Uuid.random().toString(),
         exerciseId = Uuid.random().toString(),
-        intensity = IntensityFormatState.of(Random.nextDouble(0.75, 2.5).toFloat())
+        intensity = IntensityFormatState.of(Random.nextDouble(15.0, 45.0).toFloat())
     )
 }

@@ -7,13 +7,6 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.grippo.design.resources.provider.AppIcon
 
-/**
- * Advanced experience tier — loaded barbell.
- * Symbolises "you've moved past bodyweight, lifting real weight, technique is solid"
- * — concrete fitness escalation toward Pro.
- *
- * Composed of: central bar + 2 inner collars + 2 outer weight plates per side.
- */
 public val AppIcon.ExperienceAdvanced: ImageVector
     get() {
         if (_ExperienceAdvanced != null) {
@@ -26,7 +19,6 @@ public val AppIcon.ExperienceAdvanced: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Central bar — pill shape across the middle.
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(8f, 11f)
                 horizontalLineTo(16f)
@@ -37,7 +29,6 @@ public val AppIcon.ExperienceAdvanced: ImageVector
                 curveTo(7f, 11.448f, 7.448f, 11f, 8f, 11f)
                 close()
             }
-            // Left inner collar (small weight near bar end).
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(5f, 9.5f)
                 horizontalLineTo(7f)
@@ -50,7 +41,6 @@ public val AppIcon.ExperienceAdvanced: ImageVector
                 curveTo(4.5f, 9.724f, 4.724f, 9.5f, 5f, 9.5f)
                 close()
             }
-            // Left outer weight plate (taller, rounded rectangle).
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(2f, 7.5f)
                 horizontalLineTo(4f)
@@ -63,7 +53,6 @@ public val AppIcon.ExperienceAdvanced: ImageVector
                 curveTo(1f, 7.948f, 1.448f, 7.5f, 2f, 7.5f)
                 close()
             }
-            // Right inner collar.
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(17f, 9.5f)
                 horizontalLineTo(19f)
@@ -76,7 +65,6 @@ public val AppIcon.ExperienceAdvanced: ImageVector
                 curveTo(16.5f, 9.724f, 16.724f, 9.5f, 17f, 9.5f)
                 close()
             }
-            // Right outer weight plate.
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(20f, 7.5f)
                 horizontalLineTo(22f)

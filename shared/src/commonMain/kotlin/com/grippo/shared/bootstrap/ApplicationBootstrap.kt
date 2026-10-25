@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.retryWhen
 
-/** Instance-bound startup dependencies. Contains no global container lookup or SDK logic. */
 public class ApplicationBootstrap internal constructor(
     public val analytics: AnalyticsBootstrap,
     public val crashReporting: CrashReportingBootstrap,
@@ -27,7 +26,6 @@ public class ApplicationBootstrap internal constructor(
     localSettingsFeature: LocalSettingsFeature,
     collectionController: Analytics,
 ) {
-    // Application lifetime: consent applies before and after the platform sink is attached.
     private val collectionScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     init {

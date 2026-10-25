@@ -19,7 +19,6 @@ public val AppIcon.Body: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Head — small soft circle, centered.
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(12f, 2.5f)
                 curveTo(13.381f, 2.5f, 14.5f, 3.619f, 14.5f, 5f)
@@ -28,7 +27,6 @@ public val AppIcon.Body: ImageVector
                 curveTo(9.5f, 3.619f, 10.619f, 2.5f, 12f, 2.5f)
                 close()
             }
-            // Slim torso (rounded rectangle, narrow shoulders).
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(9.5f, 9f)
                 horizontalLineTo(14.5f)
@@ -41,7 +39,6 @@ public val AppIcon.Body: ImageVector
                 curveTo(8f, 9.672f, 8.672f, 9f, 9.5f, 9f)
                 close()
             }
-            // Left leg.
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(10f, 15.5f)
                 horizontalLineTo(11.25f)
@@ -54,7 +51,6 @@ public val AppIcon.Body: ImageVector
                 curveTo(9f, 15.948f, 9.448f, 15.5f, 10f, 15.5f)
                 close()
             }
-            // Right leg.
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(12.75f, 15.5f)
                 horizontalLineTo(14f)

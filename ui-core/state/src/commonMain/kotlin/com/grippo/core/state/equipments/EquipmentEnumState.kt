@@ -241,6 +241,72 @@ public enum class EquipmentEnumState {
     public fun hint(): UiText = HINTS.getValue(this)
     public fun hintRes(): StringResource = HINT_RES.getValue(this)
 
+    public fun sortPriority(): Int {
+        return when (this) {
+            CABLE_CROSSOVER -> 10
+            CABLE -> 11
+            LAT_PULLDOWN -> 12
+            ROW_CABLE -> 13
+
+            DUMBBELLS -> 20
+            KETTLEBELLS -> 21
+            BARBELL -> 22
+            EZ_BAR -> 23
+            TRAP_BAR -> 24
+            LANDMINE -> 25
+
+            SMITH_MACHINES -> 30
+            HACK_SQUAT_MACHINES -> 31
+            LEG_PRESS_MACHINE -> 32
+            VERTICAL_LEG_PRESS -> 32
+            DEADLIFT_MACHINES -> 33
+            CHEST_PRESS_MACHINES -> 34
+            PLATE_LOADED_INCLINE_CHEST_PRESS -> 34
+            PLATE_LOADED_DECLINE_CHEST_PRESS -> 34
+            SHOULDER_PRESS_MACHINES -> 35
+            LATERAL_RAISE_MACHINES -> 36
+            TRICEPS_MACHINES -> 37
+            BICEPS_MACHINES -> 38
+            LEG_EXTENSION_MACHINES -> 39
+            LEG_CURL_MACHINES -> 40
+            CALF_RAISE_MACHINES -> 41
+            GLUTE_MACHINES -> 42
+            ADDUCTOR_MACHINE -> 43
+            ABDUCTOR_MACHINE -> 44
+            AB_MACHINES -> 45
+            BUTTERFLY -> 46
+            BUTTERFLY_FOREARM -> 47
+            BUTTERFLY_REVERSE -> 48
+            ASSISTED_PULL_UP_DIP -> 49
+            PLATE_LOADED_ROW -> 50
+            BELT_SQUAT -> 51
+            PLATE_LOADED_SEATED_DIP -> 52
+
+            FLAT_BENCH_WITH_RACK -> 60
+            INCLINE_BENCH_WITH_RACK -> 61
+            DECLINE_BENCH_WITH_RACK -> 62
+            SQUAT_RACK -> 63
+            FLAT_BENCH -> 64
+            ADJUSTABLE_BENCH -> 65
+            DECLINE_BENCH -> 66
+            PREACHER_CURL_BENCH -> 67
+            ROW_BENCH -> 68
+
+            PULL_UP_BAR -> 80
+            DIP_BARS -> 81
+            ROMAIN_CHAIR -> 82
+            GLUTE_HAM_RAISE_BENCH -> 83
+
+            ROPE -> 100
+            STRAIGHT_BAR -> 101
+            V_BAR -> 102
+            WIDE_GRIP_HANDLE -> 103
+            CLOSE_GRIP_HANDLE -> 104
+            CORD_HANDLES -> 105
+            ANKLE_CUFF -> 106
+        }
+    }
+
     public fun icon(): ImageVector {
         return when (this) {
             DUMBBELLS -> Dumbbell

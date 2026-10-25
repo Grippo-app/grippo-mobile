@@ -87,7 +87,7 @@ internal fun LineIndicatorBar(
                         drawRoundRect(
                             brush = fillBrush,
                             topLeft = barTopLeft,
-                            size = Size(progressWidth, barPx),
+                            size = Size(maxOf(progressWidth, barPx).coerceAtMost(canvasWidth), barPx),
                             cornerRadius = corner,
                         )
                     }

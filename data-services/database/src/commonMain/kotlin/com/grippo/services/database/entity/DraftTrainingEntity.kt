@@ -17,7 +17,7 @@ import androidx.room.PrimaryKey
 )
 public data class DraftTrainingEntity(
     @PrimaryKey val id: String,
-    val trainingId: String?, // [null for "Add"] [nonNull for "Edit"]
+    val trainingId: String?,
     val profileId: String,
     val duration: Long,
 )

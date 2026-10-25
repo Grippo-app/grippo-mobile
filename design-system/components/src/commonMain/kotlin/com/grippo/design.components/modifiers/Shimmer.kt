@@ -24,11 +24,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
-/**
- * Draws a moving highlight behind existing content without changing its layout or semantics.
- * Apply after a shape clip. For skeletons, apply after their background as well.
- * Disabled instances create no animation; system animation scaling is respected.
- */
 @Composable
 public fun Modifier.shimmer(
     enabled: Boolean = true,

@@ -30,7 +30,6 @@ public enum class MuscleMarkStyle {
     Summary,
 }
 
-/** Anatomical zone beside its localized label; measured views may supply their load tint. */
 @Composable
 public fun MuscleMark(
     modifier: Modifier = Modifier,

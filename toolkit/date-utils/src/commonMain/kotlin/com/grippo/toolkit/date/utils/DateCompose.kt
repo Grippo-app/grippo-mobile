@@ -26,7 +26,6 @@ public object DateCompose {
         val localeTag = AppLocale.current.split(',').firstOrNull { it.isNotBlank() }?.trim()
 
         return remember(localeTag) {
-            // This date anchors the labels in ISO Monday-first order.
             val monday = LocalDate(2023, 1, 2)
             val formatter = SystemDateFormatter()
             DayOfWeek.entries.map { day ->

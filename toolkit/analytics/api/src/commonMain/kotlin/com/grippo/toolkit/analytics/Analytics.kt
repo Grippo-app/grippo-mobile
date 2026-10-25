@@ -8,10 +8,8 @@ import com.grippo.toolkit.analytics.lifecycle.AnalyticsCollection
 import com.grippo.toolkit.analytics.lifecycle.ScreenPresentation
 import com.grippo.toolkit.analytics.schema.AnalyticsEvent
 
-/** Features depend on this interface, never on the transport. */
 public interface Analytics {
     public fun track(event: AnalyticsEvent, operation: OperationId? = null)
-    /** Atomically set the visible screen and capture its screen_view; preserve launch attribution. */
     public fun presentScreen(navigation: NavigationContext): ScreenPresentation
     public fun updateContext(context: AnalyticsContext)
     public fun updateIdentity(identity: AnalyticsIdentity)

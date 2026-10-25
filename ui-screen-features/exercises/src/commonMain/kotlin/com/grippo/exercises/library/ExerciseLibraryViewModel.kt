@@ -151,7 +151,6 @@ internal class ExerciseLibraryViewModel(
             val isSuggestionsActive = current.queries.filter is QueryFilter.Suggestions &&
                     current.mode is ExerciseLibraryMode.SimilarTo
 
-            // Auto-switch: empty Suggestions on first page → fall back to All, hide chip
             if (isSuggestionsActive && isFirstPage && results.isEmpty()) {
                 return@update current.copy(
                     queries = current.queries.copy(filter = QueryFilter.All),

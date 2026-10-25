@@ -35,6 +35,7 @@ kotlin {
         implementation(projects.toolkit.linkOpener)
         implementation(projects.toolkit.notificationManager)
         implementation(projects.toolkit.permissionManager)
+        implementation(projects.toolkit.share)
 
         api(projects.toolkit.crashReporting.api)
         implementation(projects.toolkit.crashReporting.core)

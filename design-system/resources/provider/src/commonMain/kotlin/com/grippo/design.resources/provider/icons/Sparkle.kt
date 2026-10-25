@@ -19,7 +19,6 @@ public val AppIcon.Sparkle: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Big 4-point star
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(12f, 2f)
                 curveTo(12.5f, 7.5f, 14.5f, 9.5f, 20f, 10f)
@@ -28,7 +27,6 @@ public val AppIcon.Sparkle: ImageVector
                 curveTo(9.5f, 9.5f, 11.5f, 7.5f, 12f, 2f)
                 close()
             }
-            // Small accent star (lower-right)
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(18f, 16f)
                 curveTo(18.2f, 18.2f, 18.8f, 18.8f, 21f, 19f)

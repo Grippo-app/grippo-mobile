@@ -41,4 +41,8 @@ public class TrainingViewModel :
     ) {
         navigateTo(TrainingDirection.ToCompleted(stage, exercises, startAt))
     }
+
+    override fun toGoal() {
+        navigateTo(TrainingDirection.ToGoal)
+    }
 }

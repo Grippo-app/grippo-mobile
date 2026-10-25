@@ -13,7 +13,6 @@ import com.grippo.analytics.common.models.ControlAction
 import com.grippo.analytics.common.models.InputKeyboardAction
 import com.grippo.analytics.common.models.InputStatus
 
-/** Stable wire values belong to encoding; public enums contain only observed facts. */
 internal object AuthEncoding {
     fun code(value: AuthScreen): String {
         return when (value) {

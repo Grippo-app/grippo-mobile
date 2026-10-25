@@ -4,10 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 
-/**
- * BroadcastReceiver fired by AlarmManager at the scheduled delivery time.
- * Delegates notification building and posting to [buildAndPostNotification].
- */
 internal class ScheduledNotificationReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {

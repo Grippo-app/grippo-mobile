@@ -42,7 +42,13 @@ public sealed interface TrainingEvent {
     }
     public sealed interface Completed : TrainingEvent {
         public data object SummaryOpened : Completed
-        public data object ExerciseOpened : Completed
+        public data object MetricOpened : Completed
+        public data object StreakOpened : Completed
+        public data object GoalOpened : Completed
+        public data object AddGoalClicked : Completed
+        public data object BaselineSelected : Completed
+        public data object RecordOpened : Completed
+        public data object ShareClicked : Completed
         public data object DismissRequested : Completed
     }
 }

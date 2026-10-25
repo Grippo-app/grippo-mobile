@@ -4,7 +4,6 @@ import com.grippo.analytics.common.models.ControlAction
 import com.grippo.analytics.common.models.InputKeyboardAction
 import com.grippo.analytics.common.models.InputStatus
 
-/** Bounded observations only: no credentials, raw input, measurements or selected IDs. */
 public sealed interface AuthEvent {
     public sealed interface Splash : AuthEvent {
         public data object DismissRequested : Splash

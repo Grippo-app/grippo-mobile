@@ -26,6 +26,8 @@ An existing deviation in the code never authorizes copying it.
   operation must also run after error-dialog dismissal. Use one private
   class-level method called from `init` and `onError`; no local function, new
   scope or retry loop.
+- **Blank lines between related declarations** (parameters, model, State, interface,
+  token or style members). The positive rule is in [code style](code-style.md#kotlin-blocks).
 
 ## Coroutines
 
@@ -69,6 +71,7 @@ A ViewModel never calls composables; follow [base-class boundaries](../../ui-fea
 - **`Flow<Result<T>>`** introduced for ordinary observation. Preserve existing Flow contracts; upstream exceptions follow the shared error pipeline. Command contracts follow [operation outcomes](../../data-layer/references/operation-outcomes.md#throwing-suspend-contracts-canonical).
 - **Returning DTOs from a Repository.** Map to domain.
 - **Inline mappers in Repository / ViewModel.** Use `:data-mappers:*`.
+- **Private helper functions, factories or constants in a mapper file that are not type conversions.** See [mapper file content](../../mappers/SKILL.md#strict-rules).
 - **`!!` on a DTO field.** Forbidden; use `?: return null` (via `AppLogger.Mapping.log`).
 - **Non-null DTO fields or non-null collection defaults**, in responses AND request bodies. Every DTO field is nullable with `= null`; request construction still supplies API-required values, and a body field that must be sent as explicit `null` carries `@EncodeDefault(EncodeDefault.Mode.ALWAYS)`. See [DTO/API contracts](../../data-layer/references/dtos-and-api.md).
 - **Required entity fields nullable.** Guard required values during mapping;
@@ -206,7 +209,7 @@ Screen-result rules are defined in the ui-feature skill,
 
 ## Resources
 
-- **Hardcoded user-facing product strings in Composables.** Extract to resources; explicitly marked preview-fixture text is permitted.
+- **Hardcoded user-facing product strings in Composables.** Extract to resources; text inside preview fixtures (`stub*()` builders and preview-only functions such as `@AppPreview` composables) is permitted.
 - **Missing keys in a locale's `strings.xml`.** Translator might miss; runtime falls back to English.
 - **Raster substitutes for UI icons.** Use the existing AppIcon ImageVector pattern. *(Reviewer-only.)*
 - **Resource files in feature modules.** Centralize in `:design-system:resources:provider`.
@@ -231,9 +234,10 @@ Screen-result rules are defined in the ui-feature skill,
 
 ## Comments
 
-Comments that narrate obvious code, embed task identifiers, or present an
-unfinished `TODO`/`NotImplementedError` path as done. The positive rule is in
-[code style](code-style.md#comments).
+- **Any comment or KDoc other than the one-line canon-deviation reason** in code
+  a change adds or rewrites. Scope, the exception's shape and exemptions follow
+  [code style](code-style.md#comments).
+- **An unfinished `TODO`/`NotImplementedError` path presented as done.**
 
 ## Architecture-shape
 

@@ -9,14 +9,8 @@ import com.grippo.core.state.metrics.volume.VolumeSeriesState
 @Immutable
 public data class StatisticsState(
     val mode: StatisticsMode,
-
-    // === Basic metrics chips ===
     val total: TrainingTotalState? = null,
-
-    // === Exercise volume (bar) ===
     val exerciseVolume: VolumeSeriesState? = null,
-
-    // === Muscle analysis (progress/heatmap) ===
     val muscleLoad: MuscleLoadSummaryState? = null,
 )
 

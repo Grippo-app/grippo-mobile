@@ -12,7 +12,6 @@ import com.grippo.data.features.api.training.models.Training
 
 public class EstimatedOneRepMaxUseCase {
 
-    /** One point per recorded exercise, using its strongest eligible set without averaging warmups. */
     public fun fromExercises(
         exercises: List<Exercise>,
         exerciseExample: ExerciseExample,
@@ -124,7 +123,6 @@ public class EstimatedOneRepMaxUseCase {
             return null
         }
 
-        // A completed single is already an observed load; Epley would otherwise inflate it.
         val value = if (iteration.repetitions == 1) {
             weight
         } else {

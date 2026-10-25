@@ -7,7 +7,6 @@ import com.grippo.services.database.entity.UserStatsEntity
 
 public data class UserPack(
     @Embedded val user: UserEntity,
-
     @Relation(
         parentColumn = "id",
         entityColumn = "userId"

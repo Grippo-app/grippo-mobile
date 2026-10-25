@@ -2,7 +2,6 @@ package com.grippo.analytics.profile.models
 
 import com.grippo.analytics.common.models.InputStatus
 
-/** Observed callbacks only; no raw input, measurements, dates, URLs or entity IDs. */
 public sealed interface ProfileEvent {
     public data class MenuSelected(public val target: ProfileMenuTarget) : ProfileEvent
 

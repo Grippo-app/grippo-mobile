@@ -6,7 +6,6 @@ import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.analytics.lifecycle.ScreenPresentation
 
-/** Stateless telemetry; business results and presentation lifetime remain caller-owned. */
 public interface ProfileAnalytics {
     public fun trackEvent(event: ProfileEvent)
 

@@ -36,10 +36,6 @@ public sealed interface ExerciseCardStyle {
         public val onClick: (() -> Unit)? = null,
     ) : ExerciseCardStyle
 
-    /**
-     * Exercise-details history entry: the date and the recorded sets of one session.
-     * [trailing] is a neutral caller-owned slot in the header's trailing position.
-     */
     @Stable
     public data class Small(
         public val trailing: (@Composable () -> Unit)? = null,

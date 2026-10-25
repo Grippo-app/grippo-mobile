@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 
-/** One worker owns SDK calls; the lock only protects in-memory state, never transport work. */
 internal class DefaultAnalytics(
     private val catalog: AnalyticsCatalog = AnalyticsCatalog(),
     dispatcher: CoroutineDispatcher = Dispatchers.Main,
@@ -69,7 +68,6 @@ internal class DefaultAnalytics(
         }
     }
 
-    /** Attach exactly once after platform SDK initialization. Pre-ready permitted events are bounded. */
     override fun attachSink(analyticsSink: AnalyticsSink) {
         lock.withLock {
             check(!closed && sink == null) { "Analytics sink already attached or closed" }
@@ -94,7 +92,7 @@ internal class DefaultAnalytics(
         return presentation
     }
 
-    /** Caller holds the state lock; signal the worker only after releasing it. */
+    // Runs under the state lock; signal the worker after releasing it, a dispatcher may resume it inline.
     private fun enqueue(event: AnalyticsEvent, operation: OperationId?): Boolean {
         if (closed) {
             record(AnalyticsDisposition.Closed); return false
@@ -172,7 +170,6 @@ internal class DefaultAnalytics(
         if (changed) wake.trySend(Unit)
     }
 
-    /** Retry failed SDK configuration explicitly; no automatic loop or event replay. */
     fun retrySinkConfiguration() {
         val changed = lock.withLock {
             if (closed || sink == null) return@withLock false
@@ -184,7 +181,6 @@ internal class DefaultAnalytics(
 
     fun diagnostics(): List<AnalyticsDiagnostic> = lock.withLock { diagnostics.toList() }
 
-    /** Stops the worker, discards pending events and disables the attached sink. */
     suspend fun close() {
         val target = lock.withLock {
             if (closed) return@withLock null
@@ -226,14 +222,13 @@ internal class DefaultAnalytics(
                 work.sink.setCollection(work.collection)
                 work.sink.setIdentity(anonymousIdentity)
             } else if (isCurrentRevision(work.revision)) {
-                // Disabled SDKs may ignore identity writes. No product event is sent before both calls finish.
-                // Never temporarily deny consent here: that can reset valid SDK data on identity updates.
+                // Enable collection first: disabled SDKs drop identity writes and a temporary deny resets data.
                 work.sink.setCollection(work.collection)
                 if (isCurrentRevision(work.revision)) work.sink.setIdentity(work.identity)
             }
             true
         } catch (_: Exception) {
-            // A synchronous sink exception is a transport failure unless this worker was cancelled.
+            // yield() rethrows a cancellation that this broad catch would otherwise record as a transport failure.
             yield()
             try {
                 work.sink.setCollection(AnalyticsCollection.Denied)
@@ -254,7 +249,6 @@ internal class DefaultAnalytics(
         lock.withLock { !closed && revision == expected }
 
     private suspend fun send(work: Work.Send) {
-        // Revocation invalidates queued work. An SDK call already in flight cannot be retracted.
         val permitted = lock.withLock {
             val current =
                 !closed && revision == work.revision && collection == AnalyticsCollection.Granted

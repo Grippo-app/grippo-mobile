@@ -4,4 +4,12 @@
         <item quantity="one">%1$d training day</item>
         <item quantity="other">%1$d training days</item>
     </plurals>
+    <plurals name="training_recap_compared">
+        <item quantity="one">%1$d of %2$d metric above your average</item>
+        <item quantity="other">%1$d of %2$d metrics above your average</item>
+    </plurals>
+    <plurals name="training_recap_compared_previous">
+        <item quantity="one">%1$d of %2$d metric above last time</item>
+        <item quantity="other">%1$d of %2$d metrics above last time</item>
+    </plurals>
 </resources>

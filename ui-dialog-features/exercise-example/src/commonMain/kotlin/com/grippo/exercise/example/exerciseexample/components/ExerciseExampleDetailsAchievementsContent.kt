@@ -129,7 +129,6 @@ internal fun ExerciseExampleDetailsAchievementsContent(
     }
 }
 
-/** Tonnage change against the next older record, labelled so the number has a visible referent. */
 @Composable
 private fun ExerciseHistoryVolumeDelta(
     modifier: Modifier = Modifier,
@@ -145,7 +144,6 @@ private fun ExerciseHistoryVolumeDelta(
     )
 }
 
-/** Day-and-month label shared by the chart axis and the comparison caption, as on the completed-exercise sheet. */
 @Composable
 private fun rememberHistoryDateLabel(value: DateTimeFormatState): String {
     val date = value.value ?: return value.display

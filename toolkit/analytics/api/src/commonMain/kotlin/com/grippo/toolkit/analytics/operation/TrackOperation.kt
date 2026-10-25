@@ -4,15 +4,6 @@ import com.grippo.toolkit.analytics.Analytics
 import com.grippo.toolkit.analytics.internal.executeTrackedOperation
 import kotlin.time.TimeSource
 
-/**
- * A started operation has one classified terminal outcome; both share a fresh ID.
- * Operation events omit visible-screen context: the feature operation identifies their owner.
- * Reporting exceptions never prevent the block or replace its result.
- * Cancellation is owned by the caller and business block; thrown CancellationException is reported and rethrown.
- * Fatal errors are not business outcomes.
- * Call inside the existing safeLaunch/use-case coroutine. No new job, retry or dispatcher.
- * Exceptions retain their identity and are rethrown to the existing error handler.
- */
 @Throws(Exception::class)
 public suspend fun <T> Analytics.trackOperation(
     events: AnalyticsOperationEvents<T>,

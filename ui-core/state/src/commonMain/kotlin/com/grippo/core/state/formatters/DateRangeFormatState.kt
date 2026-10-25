@@ -78,11 +78,6 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
 
     public companion object {
 
-        /**
-         * Wraps an existing [DateRange], classifying it into a [DateRangeKind].
-         * Produces [Valid] for preset-kind matches, [Invalid] for Custom/Infinity
-         * (no user validation was attempted — `error` stays null).
-         */
         public fun of(range: DateRange): DateRangeFormatState {
             val kind = DateRangePresets.classify(range)
             val display = DateRangeFormatter.format(range, kind)
@@ -93,11 +88,6 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
             }
         }
 
-        /**
-         * Resolves a preset [DateRangeKind] into a [DateRangeFormatState].
-         * Passing [DateRangeKind.Custom] yields [Empty] — Custom has no
-         * canonical resolution without explicit endpoints.
-         */
         public fun of(kind: DateRangeKind): DateRangeFormatState {
             val range = DateRangePresets.resolve(kind)
                 ?: return Empty(kind = kind)

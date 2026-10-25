@@ -35,7 +35,6 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
-/** Period summary that opens the statistics for the same range; the header chevron is decorative. */
 @Composable
 public fun DigestCard(
     modifier: Modifier = Modifier,
@@ -113,7 +112,6 @@ private fun ColumnScope.ContentDigestBody(
     )
 }
 
-/** Emits the panel's hero, divider and breakdown rows; the enclosing panel column owns their rhythm. */
 @Composable
 private fun ColumnScope.DigestBody(
     trainingsCount: Int,

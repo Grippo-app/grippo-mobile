@@ -4,10 +4,6 @@ public sealed interface TrainingStreakFeatured {
     public val length: Int
     public val mood: TrainingStreakMood
     public val progressPercent: Int
-
-    /**
-     * 0..1 strength of the observed history; this is not a forecast probability.
-     */
     public val confidence: Float
 
     public data class Daily(

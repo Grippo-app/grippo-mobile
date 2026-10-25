@@ -41,6 +41,7 @@ import com.grippo.design.components.datetime.DialogRangeHeader
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
+import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardStyle
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakTimelineCard
 import com.grippo.design.components.utils.AnchorScrollBehavior
 import com.grippo.design.components.utils.rememberAnchoredLazyListState
@@ -128,6 +129,7 @@ private fun TrainingStreakDetailsContent(
                             TrainingStreakCard(
                                 modifier = Modifier.fillMaxWidth(),
                                 value = streak,
+                                style = TrainingStreakCardStyle.Detailed,
                             )
                         }
 

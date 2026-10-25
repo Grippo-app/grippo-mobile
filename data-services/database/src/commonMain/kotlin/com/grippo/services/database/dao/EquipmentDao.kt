@@ -18,8 +18,6 @@ public interface EquipmentDao {
     @Query("SELECT * FROM equipment_group")
     public fun get(): Flow<List<EquipmentGroupWithEquipments>>
 
-    // ────────────── INSERT ──────────────
-
     @Transaction
     public suspend fun insertOrUpdate(
         groups: List<EquipmentGroupEntity>,
@@ -46,8 +44,6 @@ public interface EquipmentDao {
 
     @Update
     public suspend fun updateExistingEquipments(equipments: List<EquipmentEntity>)
-
-    // ────────────── DELETE ──────────────
 
     @Query("DELETE FROM equipment_group WHERE id NOT IN (:ids)")
     public suspend fun deleteMissingEquipmentGroups(ids: List<String>)

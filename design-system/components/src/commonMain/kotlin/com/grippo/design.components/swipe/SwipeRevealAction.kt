@@ -25,7 +25,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.icons.Trash
 
-/** An icon action panel matching the height supplied by SwipeToReveal. */
 @Composable
 public fun SwipeRevealAction(
     modifier: Modifier = Modifier,

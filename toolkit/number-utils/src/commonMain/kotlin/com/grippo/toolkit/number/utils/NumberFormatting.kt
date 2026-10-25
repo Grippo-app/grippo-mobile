@@ -3,10 +3,6 @@ package com.grippo.toolkit.number.utils
 import kotlin.math.abs
 import kotlin.math.round
 
-/**
- * Formats a finite number with grouped whole digits and at most one decimal place.
- * Nonzero values below that precision use `<0.1` with the supplied decimal separator.
- */
 public fun formatDecimal(value: Double, decimalSeparator: String): String {
     require(value.isFinite()) { "Decimal formatting requires a finite value" }
 

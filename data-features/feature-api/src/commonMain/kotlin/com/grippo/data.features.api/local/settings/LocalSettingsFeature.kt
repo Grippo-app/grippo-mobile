@@ -24,6 +24,5 @@ public interface LocalSettingsFeature {
     public fun observeHomeWelcomeStatus(): Flow<HomeWelcomeStatus>
     public suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Unit
 
-    /** Clears account preferences, preserving this installation's onboarding and analytics preferences. */
     public suspend fun clearUserSettings(): Unit
 }

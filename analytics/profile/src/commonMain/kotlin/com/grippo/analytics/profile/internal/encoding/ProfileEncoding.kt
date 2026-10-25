@@ -11,7 +11,6 @@ import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.analytics.profile.models.SocialChannel
 
-/** Stable wire identifiers stay internal; public screens describe rendered surfaces. */
 internal object ProfileEncoding {
     fun code(value: ProfileScreen): String = when (value) {
         ProfileScreen.Menu -> "profile_menu"

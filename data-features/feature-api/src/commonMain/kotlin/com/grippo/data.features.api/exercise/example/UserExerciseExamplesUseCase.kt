@@ -136,8 +136,6 @@ public class UserExerciseExamplesUseCase(
             .map { it.example }
     }
 
-    // Shared equipment earns nothing on purpose: a mid-workout swap is usually
-    // caused by that very equipment being busy.
     private fun score(
         candidate: ExerciseExample,
         target: ExerciseExample,

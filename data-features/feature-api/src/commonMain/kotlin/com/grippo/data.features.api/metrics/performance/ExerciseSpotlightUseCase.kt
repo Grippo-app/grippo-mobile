@@ -45,7 +45,6 @@ public class ExerciseSpotlightUseCase {
         private const val NEAR_BEST_TRIGGER_RATIO = 0.95
     }
 
-    /** [historyStart] is the earliest queried date; insights describe the available recorded sessions. */
     public fun buildCandidates(
         trainings: List<Training>,
         examples: List<ExerciseExample>,
@@ -460,7 +459,6 @@ public class ExerciseSpotlightUseCase {
     }
 
     private fun recordedBodyLoad(iteration: Iteration): Double? {
-        // Optional entry fields do not establish a measured zero body contribution.
         val body = iteration.bodyWeight ?: return null
         val multiplier = iteration.bodyMultiplier ?: return null
         if (body <= 0f || multiplier <= 0f) {

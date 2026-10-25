@@ -38,7 +38,7 @@ What each plugin does (verified):
 - `koin.annotation.convention`: applies KSP, adds `koin.core` (implementation) and
   `koin.annotations` (api) to `commonMain`, `koin-ksp-compiler` on `kspCommonMainMetadata`, the
   generated `build/generated/ksp/metadata/commonMain/kotlin` source dir and
-  `KOIN_CONFIG_CHECK = false` (todo until the next Koin Annotations release).
+  `KOIN_CONFIG_CHECK = false` (temporary, until the next Koin Annotations release).
 - `room.convention`: applies KSP, adds `androidx.room.runtime`, `sqlite-bundled` and `sqlite` to
   `commonMain`, the Room compiler on `kspAndroid`, `kspIosArm64` and `kspIosSimulatorArm64`, and
   `room.schemaLocation = $projectDir/schemas`.

@@ -204,6 +204,7 @@ public class RootComponent(
                     componentContext = context,
                     initial = TrainingRouter.Recording(router.stage),
                     toExercises = viewModel::toExercises,
+                    toGoal = viewModel::toGoal,
                     close = viewModel::onBack
                 )
             )

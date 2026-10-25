@@ -22,6 +22,15 @@ Read source and target declarations, existing area mapper and its callers. Conve
 
 - MUST use top-level extensions in the existing area file/package. MUST NOT add mapper classes,
   DI, shared bases or dependency/import across directional modules. Compose directions at the consumer call site.
+- A mapper file holds only its area's conversion extensions: the public `toState`/`toDomain`/…
+  functions and private conversions of nested source model types into their targets
+  (`DomainTrainingStreakFeatured.toState()` in `TrainingStreakMapper.kt`). MUST NOT add private
+  helper functions, factories or constants that are not such conversions; a private function
+  that wraps one field's factory call (`LocalDate.toNextTrainingDateState()`) is a helper. Build
+  that value inline at its property, as `TrainingStreakMapper.kt` does (excerpt):
+  `nextTrainingDate = nextTrainingDate?.let { date -> DateFormatState.of(value = date, range = …, format = …) }`.
+  A calculation that is not a conversion belongs at its source type or utility owner
+  ([helper ownership](../validation-gates/references/code-style.md#visibility-and-files)).
 - MUST guard required nullable fields and failed dictionary/relation promotion with
   `AppLogger.Mapping.log(value) { specificMessage } ?: return null`. MUST NOT use `!!` or invented
   placeholders. Nullable targets pass through; default an absent collection only where the target
@@ -41,7 +50,8 @@ Read source and target declarations, existing area mapper and its callers. Conve
 ## Completion gate
 
 MUST review required/optional null semantics, closed-set unknowns, parent IDs, timezone/unit
-conversion, round-trip identity and all affected callers. MUST keep dependencies directional;
+conversion, round-trip identity, all affected callers and that each changed mapper file holds
+only conversion extensions. MUST keep dependencies directional;
 Domain↔State modules may depend on `:ui-core:state`, not feature UI or Compose components.
 Run the permitted checks under the [verification policy](../../../CLAUDE.md#verification-policy)
 and report unverified behavior.

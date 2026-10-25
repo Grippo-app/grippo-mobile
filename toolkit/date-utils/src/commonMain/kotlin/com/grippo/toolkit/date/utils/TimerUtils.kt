@@ -13,7 +13,6 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource
 
-/** Refreshes date-dependent state on collection and at the next local midnight. */
 public fun currentDateFlow(): Flow<LocalDate> = flow {
     while (true) {
         val now = DateTimeUtils.now()
@@ -46,13 +45,6 @@ public fun timerTextFlow(
     }
 }
 
-/**
- * Renders elapsed seconds as `HH:mm:ss` with hours unbounded — workouts that
- * exceed 24 hours render as `25:00:00` rather than wrapping to `01:00:00`.
- *
- * Hours are zero-padded to at least two digits; longer hour strings (3+ digits)
- * grow naturally rather than overflow.
- */
 private fun formatFromSeconds(totalSeconds: Long): String {
     val negative = totalSeconds < 0
     val s = abs(totalSeconds)

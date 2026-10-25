@@ -1,12 +1,8 @@
 import UserNotifications
 import shared
 
-/// Handles UNUserNotificationCenter events:
-/// - deeplink navigation when the user taps a notification
-/// - foreground banner presentation when a notification arrives while the app is open
 extension AppDelegate: UNUserNotificationCenterDelegate {
 
-    /// User tapped a notification — navigate to the deeplink.
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
@@ -19,7 +15,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         completionHandler()
     }
 
-    /// Notification arrived while app is in foreground — show it as a banner.
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,

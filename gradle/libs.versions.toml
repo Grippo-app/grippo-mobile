@@ -20,6 +20,7 @@ sqlite = "2.7.1"
 datastore = "1.2.1"
 appcompat = "1.8.0"
 coil = "3.6.3"
+core = "1.18.0"
 core-splashscreen = "1.2.0"
 google-identity = "1.2.1"
 credentials = "1.6.0"
@@ -51,6 +52,7 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 #AndroidX
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
 androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials" }
 androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }

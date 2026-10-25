@@ -4,26 +4,10 @@ import androidx.room.migration.Migration
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 
-/**
- * Drops vestigial fields from the `draft_training` and `draft_exercise`
- * tables — aggregate columns (`volume`, `repetitions`, `intensity`) and the
- * `draft_exercise.name` snapshot. Drafts no longer carry aggregates in the
- * domain model (totals are recomputed on restore from the iterations alone),
- * and the exercise name is read directly from the joined `exercise_example`
- * row instead of being duplicated.
- *
- * SQLite < 3.35 doesn't support `ALTER TABLE ... DROP COLUMN`, so we use the
- * recreate-table pattern: create a new table with the desired shape, copy
- * data over, drop the old, rename the new. `defer_foreign_keys` is enabled
- * for the duration of the transaction so the cascading FK on
- * `draft_exercise(trainingId) -> draft_training(id)` doesn't cascade-delete
- * the children while the parent is being recreated.
- */
 internal object Migration4To5 : Migration(4, 5) {
     override fun migrate(connection: SQLiteConnection) {
         connection.execSQL("PRAGMA defer_foreign_keys = ON")
 
-        // ─── draft_training ──────────────────────────────────────────────────
         connection.execSQL(
             """
             CREATE TABLE IF NOT EXISTS `draft_training_new` (
@@ -45,7 +29,6 @@ internal object Migration4To5 : Migration(4, 5) {
         connection.execSQL("DROP TABLE `draft_training`")
         connection.execSQL("ALTER TABLE `draft_training_new` RENAME TO `draft_training`")
 
-        // ─── draft_exercise ──────────────────────────────────────────────────
         connection.execSQL(
             """
             CREATE TABLE IF NOT EXISTS `draft_exercise_new` (
@@ -67,8 +50,6 @@ internal object Migration4To5 : Migration(4, 5) {
         connection.execSQL("DROP TABLE `draft_exercise`")
         connection.execSQL("ALTER TABLE `draft_exercise_new` RENAME TO `draft_exercise`")
 
-        // Indices were dropped along with the old table — recreate them with
-        // the exact names Room expects so the schema validator passes.
         connection.execSQL(
             "CREATE INDEX IF NOT EXISTS `index_draft_exercise_trainingId` ON `draft_exercise` (`trainingId`)"
         )

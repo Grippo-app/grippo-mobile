@@ -18,6 +18,7 @@ kotlin {
         implementation(projects.uiCore.error.errorProvider)
         implementation(projects.toolkit.dateUtils)
         implementation(projects.toolkit.notificationManager)
+        implementation(projects.toolkit.share)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.preview)

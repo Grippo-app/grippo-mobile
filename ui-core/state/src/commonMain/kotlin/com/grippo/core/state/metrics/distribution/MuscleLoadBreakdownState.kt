@@ -11,7 +11,6 @@ import kotlin.math.roundToInt
 public data class MuscleLoadBreakdownState(
     val entries: ImmutableList<MuscleLoadEntryState>,
 ) {
-    /** Relative share within the complete breakdown, independent of display order or truncation. */
     @Composable
     public fun color(entry: MuscleLoadEntryState): Color {
         val muscleColors = AppTokens.colors.muscle

@@ -25,7 +25,6 @@ internal class MainTabNavigation<CHILD : Any>(
         navigation.bringToFront(tab)
     }
 
-    /** Returns false when Home is already selected and the host should handle Back. */
     fun back(): Boolean {
         if (childStack.value.active.configuration == MainRouter.Home) return false
         select(MainRouter.Home)

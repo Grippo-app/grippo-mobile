@@ -1,13 +1,18 @@
 # Training streak details coverage
 
-Scope: `:ui-dialog-features:training-streak-details` and its Home entry.
+Scope: `:ui-dialog-features:training-streak-details` and its Home and Completed
+entries.
 
 ## Surface and analytics gate
 
-Actual entry: the Home Dashboard overview TrainingStreakCard uses scalableClick
+Actual entries: the Home Dashboard overview TrainingStreakCard uses scalableClick
 to invoke HomeViewModel.onOpenTrainingStreak, which checks the current range, emits
-its existing HomeEvent.TrainingStreakClicked and opens DialogConfig.TrainingStreakDetails.
-DialogContentComponent constructs TrainingStreakDetailsComponent with that range;
+its existing HomeEvent.TrainingStreakClicked and opens DialogConfig.TrainingStreakDetails;
+the Completed workout screen's Growth TrainingStreakCard uses scalableClick to invoke
+TrainingCompletedViewModel.onStreakClick, which checks its resolved period
+(`state.range.value`), emits TrainingEvent.Completed.StreakOpened and opens the same
+config with the Completed period (title `metric_overview_streak_title`).
+DialogContentComponent constructs TrainingStreakDetailsComponent with the caller's range;
 its retained TrainingStreakDetailsViewModel renders TrainingStreakDetailsScreen.
 This is one read-only bottom sheet, with no nested flow or independent screen.
 The VM keeps default null screenPresentation. No screen enum or dedicated dialog
@@ -17,12 +22,14 @@ review of config, factory, Component, VM and rendered content.
 | Route / surface | Component | ViewModel | Presentation | Callbacks / operations | Omissions |
 |---|---|---|---|---|---|
 | HomeRouter.Home / Dashboard entry | HomeComponent | HomeViewModel | Existing HomeScreen.Home hook | onOpenTrainingStreak observes TrainingStreakClicked after the range guard | Other Home behavior belongs to analytics/home/COVERAGE.md |
+| TrainingRouter.Completed / Growth streak card entry | TrainingCompletedComponent | TrainingCompletedViewModel | Existing TrainingScreen.Completed hook | onStreakClick observes TrainingEvent.Completed.StreakOpened after the resolved-period guard | Other Completed behavior belongs to analytics/training/COVERAGE.md |
 | DialogConfig.TrainingStreakDetails / read-only sheet | TrainingStreakDetailsComponent | TrainingStreakDetailsViewModel | Default null: dialog, outside independent-screen coverage | onBack observes DismissRequested; reactive calculations have no request operation | Host dismissal, passive reading, scrolling and the composition-owned method disclosure toggle (presentation only) are not tracked |
 
 | Owner / callback | Observation | Eligibility / payload |
 |---|---|---|
 | TrainingStreakDetailsViewModel.onBack | DismissRequested / training_streak_dismiss_requested v1 | Existing callback has no guard; empty parameters, emitted before existing Back direction |
 | HomeViewModel.onOpenTrainingStreak | Existing HomeEvent.TrainingStreakClicked | Nonnull range guard; unchanged parent-owned opening intent |
+| TrainingCompletedViewModel.onStreakClick | TrainingEvent.Completed.StreakOpened / completed_streak_opened v1 | Resolved-period guard; parent-owned opening intent with the Completed period; empty payload, encoded by `:analytics:training` |
 | observeTrainings / provideTrainingStreak | Deliberate omission | Reactive data rebuilding and range-bound metric calculation from performed active days, no explicit request or submission to decorate |
 
 The Component registers a Decompose BackCallback targeting the VM onBack.
@@ -44,7 +51,7 @@ VM injection are reconciled against actual source.
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
-| Component / VM | Immutable range input and its display | Runtime only for live dialog | Caller range, DateRangeFormatState.of, retainedInstance | Ordinary recreation retains VM; reopening uses current caller range |
+| Component / VM | Immutable range input and its display | Runtime only for live dialog | Caller range (Home's selected range or Completed's resolved period), DateRangeFormatState.of, retainedInstance | Ordinary recreation retains VM; reopening uses the caller's current range |
 | VM | streak, recent evidence and calculation explanation | Rebuild | TrainingFeature.observeTrainings combined with currentDateFlow, TrainingStreakUseCase.fromTrainings(trainings, range) with now captured once by the calculator, existing toState mapper | Fresh VM starts with null streak and displays the shared loading component. Every emission, including an empty list, is calculated. Zero performed active days display empty guidance; positive active days display the summary and available evidence. Multiple sessions count once per local date; historical ranges are evaluated at their own end |
 | TrainingStreakDetailsScreen | Methodology disclosure state | Runtime only | Local rememberSaveable keyed by the range in the live dialog | Fresh opening starts collapsed; ordinary recomposition/recreation retains the current disclosure. No business draft or process-death dialog restoration |
 | Dialog host | Session, callbacks and Back direction | Runtime only | Slot and step serializer = null | Process death discards live dialog; reopening constructs a fresh session |

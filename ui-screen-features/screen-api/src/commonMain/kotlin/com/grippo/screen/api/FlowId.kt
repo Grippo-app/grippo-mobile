@@ -4,7 +4,6 @@ import kotlin.uuid.Uuid
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/** Stable navigation scenario identity, independent of telemetry. */
 @Serializable
 // Preserve the former serializer name for saved navigation state.
 @SerialName("com.grippo.toolkit.analytics.context.FlowId")

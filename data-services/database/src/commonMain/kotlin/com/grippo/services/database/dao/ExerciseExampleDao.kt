@@ -408,8 +408,6 @@ public interface ExerciseExampleDao {
     @Query("SELECT * FROM exercise_example WHERE id IN (:ids) ORDER BY updatedAt DESC")
     public fun get(ids: List<String>): Flow<List<ExerciseExamplePack>>
 
-    // ────────────── INSERT ──────────────
-
     @Transaction
     public suspend fun insertOrReplace(
         example: ExerciseExampleEntity,
@@ -510,8 +508,6 @@ public interface ExerciseExampleDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertSearchPrefixes(prefixes: List<ExerciseExampleSearchPrefixEntity>)
-
-    // ────────────── DELETE ──────────────
 
     @Query("DELETE FROM exercise_example WHERE id NOT IN (:ids)")
     public suspend fun deleteMissingExerciseExamples(ids: List<String>)

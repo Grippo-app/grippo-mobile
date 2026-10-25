@@ -23,6 +23,7 @@ public class TrainingComponent(
     componentContext: ComponentContext,
     initial: TrainingRouter,
     private val toExercises: (ExercisesRouter.Library) -> Unit,
+    private val toGoal: () -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<TrainingDirection>(componentContext) {
 
@@ -52,6 +53,7 @@ public class TrainingComponent(
                 TrainingRouter.Completed(direction.stage, direction.exercises, direction.startAt)
             )
 
+            TrainingDirection.ToGoal -> toGoal.invoke()
             TrainingDirection.Close -> close.invoke()
             TrainingDirection.Back -> navigation.pop()
         }
@@ -97,6 +99,7 @@ public class TrainingComponent(
                     stage = router.stage,
                     exercises = router.exercises,
                     startAt = router.startAt,
+                    toGoal = viewModel::toGoal,
                     back = viewModel::onClose
                 ),
             )

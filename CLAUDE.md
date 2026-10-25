@@ -54,9 +54,11 @@ live in the owning skills under `.claude/skills/`; the code owns signatures.
   screenshot tooling may be added only on explicit user request.
 - **Record** - a durable file the rulebook names in [Records](#records). The
   reply to the user is the task report; nothing else is a record.
-- **Small editorial change** - a comment, a wording fix of one string key in all
-  locales, a rename inside one file, or documentation that changes no rule, gate,
-  agent right or hook; no behavior, contract or layout impact. Self-review only.
+- **Small editorial change** - removing a comment or editing one that
+  [code style](.claude/skills/validation-gates/references/code-style.md#comments)
+  allows, a wording fix of one string key in all locales, a rename inside one
+  file, or documentation that changes no rule, gate, agent right or hook; no
+  behavior, contract or layout impact. Self-review only.
 - **Significant state** (previews) - every distinct layout branch of a surface
   (for example empty, loading, error, selected) plus one representative populated
   state. Not every combination of inputs.
@@ -83,7 +85,7 @@ inputs are owned by [platform-build-toolkit](.claude/skills/platform-build-toolk
 | Services | `:data-services:{backend, database, datastore, google-auth, apple-auth, firebase}` | `GrippoApi`/`BackendClient`/`TokenProvider` and DTOs; Room `Database` with migrations; DataStore wrapper; platform credential providers; Android Firebase adapters | [data-layer](.claude/skills/data-layer/SKILL.md), [backend-contract-client](.claude/skills/backend-contract-client/SKILL.md) |
 | Mappers | `:data-mappers:{dto-to-entity, entity-to-domain, dto-to-domain, domain-to-state, state-to-domain, domain-to-dto, domain-to-entity}` | One isolated module per conversion direction | [mappers](.claude/skills/mappers/SKILL.md) |
 | Analytics | `:analytics:analytics-api` + feature implementations | Typed `<Feature>Analytics` contracts (`trackEvent`, `trackOperation`, `presentScreen` as implemented); internal encoders, schemas and one annotated module each | [feature-analytics](.claude/skills/feature-analytics/SKILL.md) |
-| Toolkit | `:toolkit:{analytics, crash-reporting, messaging}:{api, core}`, `context, http-client, serialization, logger, date-utils, number-utils, theme, localization, image-loader, link-opener, notification-manager, permission-manager, connectivity` | Shared utilities and typed service cores | [platform-build-toolkit](.claude/skills/platform-build-toolkit/SKILL.md) |
+| Toolkit | `:toolkit:{analytics, crash-reporting, messaging}:{api, core}`, `context, http-client, serialization, logger, date-utils, number-utils, theme, localization, image-loader, link-opener, notification-manager, permission-manager, share, connectivity` | Shared utilities and typed service cores | [platform-build-toolkit](.claude/skills/platform-build-toolkit/SKILL.md) |
 | Compose libs | `:compose-libs:{chart, konfetti, segment-control, wheel-picker}` | Product-independent widgets styled through parameters | [platform-build-toolkit](.claude/skills/platform-build-toolkit/SKILL.md) |
 | Build logic | `build-logic/convention/` | `android.library/application`, `kotlin.multiplatform`, `compose.multiplatform`, `koin.annotation`, `room`, `ios.swiftpackage` conventions | [platform-build-toolkit](.claude/skills/platform-build-toolkit/SKILL.md) |
 
@@ -290,7 +292,7 @@ for Claude Code and Codex launch, capabilities and protection.
 | [feature-analytics](.claude/skills/feature-analytics/SKILL.md) | Typed analytics, screen coverage gate, privacy, admin sync | Any behavior change or analytics task |
 | [data-layer](.claude/skills/data-layer/SKILL.md) | Feature/Repository/UseCase, operation outcomes, Room, DataStore, backend client, auth session | Any data/domain/storage change |
 | [backend-contract-client](.claude/skills/backend-contract-client/SKILL.md) | Backend evidence gate, drift audits | Any wire change |
-| [mappers](.claude/skills/mappers/SKILL.md) | Seven directional conversions, null guards | Any conversion change |
+| [mappers](.claude/skills/mappers/SKILL.md) | Seven directional conversions, mapper file content, null guards | Any conversion change |
 | [di-modules](.claude/skills/di-modules/SKILL.md) | Koin annotations, lifetimes, shared composition | Any binding/registration change |
 | [design-system](.claude/skills/design-system/SKILL.md) | Tokens, components, resources, previews, semantic role implementation, visual checks | Any visual change |
 | [brand-design](.claude/skills/brand-design/SKILL.md) | Visual intent, domain entity visual semantics, composition, usage/state analysis, acceptance | New or changed product UI |

@@ -58,7 +58,6 @@ public fun BottomOverlayContainer(
     SubcomposeLayout(modifier = modifier) { constraints ->
         val looseConstraints = constraints.copy(minWidth = 0, minHeight = 0)
 
-        // Bottom content is measured first so its real height becomes the scroll inset.
         val bottomPlaceables: List<Placeable> = subcompose(BottomOverlaySlots.BOTTOM) {
             Column(
                 modifier = Modifier.fillMaxWidth(),

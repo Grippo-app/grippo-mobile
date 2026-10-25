@@ -43,7 +43,6 @@ internal object AppPalette {
         val N800 = Color(0xFF17212F)
     }
 
-    // Brighter accents remain readable on dark elevated surfaces.
     object DarkAccent {
         val Orange = Color(0xFFFF9A5C)
         val Red = Color(0xFFFF7B85)
@@ -63,7 +62,6 @@ internal object AppPalette {
         val Copper = Color(0xFFD4A373)
     }
 
-    // Deeper accents stay legible as text and behind white chip/button content.
     object LightAccent {
         val Orange = Color(0xFFB84208)
         val Red = Color(0xFFC73541)
@@ -95,35 +93,25 @@ internal object AppPalette {
     }
 
     object Unique {
-        // Warm (Red / Orange / Amber)
         val Red = Color(0xFFFF4C4C)
         val Orange = Color(0xFFFF7A29)
         val Coral = Color(0xFFFF7F50)
-
         val Yellow = Color(0xFFFDD835)
         val Gold = Color(0xFFFFC107)
         val Mustard = Color(0xFFFFB300)
         val Amber = Color(0xFFF57F17)
-
-        // Green / Teal / Olive
         val Green = Color(0xFF43A047)
         val Emerald = Color(0xFF2E7D32)
         val Teal = Color(0xFF00897B)
         val Olive = Color(0xFF6B8E23)
-
-        // Blue / Indigo / Cyan
         val Sky = Color(0xFF1E88E5)
         val Blue = Color(0xFF1565C0)
         val Indigo = Color(0xFF3F51B5)
         val Cyan = Color(0xFF0097A7)
-
-        // Purple / Magenta
         val Purple = Color(0xFF7E57C2)
         val Violet = Color(0xFF8E24AA)
         val Magenta = Color(0xFFD81B60)
         val Burgundy = Color(0xFF880E4F)
-
-        // Brown / Earth
         val Brown = Color(0xFF6D4C41)
         val Cocoa = Color(0xFF5D4037)
         val Copper = Color(0xFF8D6E63)

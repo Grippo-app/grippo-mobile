@@ -2,7 +2,6 @@ package com.grippo.toolkit.messaging.token
 
 import com.grippo.toolkit.messaging.internal.PushTokenRules
 
-/** Opaque secret; toString must never reveal its contents. */
 public class PushToken(public val value: String) {
     init {
         require(PushTokenRules.isValid(value))

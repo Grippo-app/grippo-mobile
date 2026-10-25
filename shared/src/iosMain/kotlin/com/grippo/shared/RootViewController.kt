@@ -13,13 +13,7 @@ import com.arkivanov.essenty.backhandler.BackDispatcher
 import com.grippo.shared.root.RootComponent
 import platform.UIKit.UIViewController
 
-/*
-* issue: Uncaught Kotlin exception: kotlin.IllegalStateException: Error: Info.plist doesn't have a valid CADisableMinimumFrameDurationOnPhone entry, or has it set to false.
-* solving: https://youtrack.jetbrains.com/issue/CMP-6849/Crash-upon-launch-of-iOS-app-with-version-1.7.0-rc01
-*
-* issue: Odd space for keyboard
-* solving: https://youtrack.jetbrains.com/issue/CMP-3621
-* */
+// OnFocusBehavior.DoNothing avoids the extra keyboard space of CMP-3621.
 @OptIn(ExperimentalComposeApi::class)
 public fun rootViewController(
     root: RootComponent,
@@ -28,9 +22,7 @@ public fun rootViewController(
     return ComposeUIViewController(
         configure = {
             onFocusBehavior = OnFocusBehavior.DoNothing
-            // Compose >= 1.11 uses SurfaceMetalRedrawer with managed drawable lifetimes.
             // Keep this enabled: false selects the legacy renderer involved in CMP-7598.
-            // https://github.com/JetBrains/compose-multiplatform-core/pull/2732
             parallelRendering = true
         }
     ) {

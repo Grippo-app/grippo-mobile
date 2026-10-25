@@ -61,7 +61,7 @@ internal fun GoalCardContent(
 }
 
 @Composable
-private fun GoalIdentity(
+internal fun GoalIdentity(
     value: GoalProgressState,
 ) {
     Row(

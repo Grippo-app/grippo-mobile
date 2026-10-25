@@ -12,9 +12,11 @@ import com.grippo.data.features.api.metrics.engagement.TrainingStreakUseCase
 import com.grippo.data.features.api.metrics.performance.EstimatedOneRepMaxUseCase
 import com.grippo.data.features.api.metrics.performance.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.performance.PerformanceTrendUseCase
+import com.grippo.data.features.api.metrics.performance.TrainingRecordsUseCase
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase
 import com.grippo.data.features.api.metrics.volume.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.volume.VolumeSeriesUseCase
+import com.grippo.data.features.api.metrics.volume.WeeklyVolumeUseCase
 import com.grippo.data.features.api.training.DeleteTrainingUseCase
 import com.grippo.data.features.api.training.SelectExerciseHistoryUseCase
 import com.grippo.data.features.api.training.ExerciseValidatorUseCase
@@ -186,7 +188,17 @@ public class FeatureApiModule {
         }
 
         single {
+            TrainingRecordsUseCase(
+                exerciseMetricsFeature = get(),
+            )
+        }
+
+        single {
             VolumeSeriesUseCase()
+        }
+
+        single {
+            WeeklyVolumeUseCase()
         }
 
         single {

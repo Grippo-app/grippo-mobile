@@ -27,7 +27,8 @@ class KoinAnnotationConventionPlugin : Plugin<Project> {
         }
 
         extensions.getByType<KspExtension>().apply {
-            arg("KOIN_CONFIG_CHECK", "false") // todo wait until next version of Koin Annotations
+            // Koin Annotations 2.3.1's compile-time config check fails on the current Kotlin/Koin toolchain.
+            arg("KOIN_CONFIG_CHECK", "false")
         }
 
         project.afterEvaluate {

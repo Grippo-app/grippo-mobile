@@ -42,12 +42,10 @@ public class RootViewModel(
         update { it.copy(deeplink = null) }
     }
 
-    /** Cold start — queue for consumption when [toHome] is called. */
     internal fun enqueueDeeplink(deeplink: String) {
         update { it.copy(deeplink = deeplink) }
     }
 
-    /** Warm start — already on Home, apply immediately. */
     internal fun applyDeeplink(deeplink: String) {
         parseDeeplink(deeplink)?.let { navigateTo(it) }
     }

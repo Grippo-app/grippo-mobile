@@ -12,7 +12,6 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.daysUntil
-import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
 import kotlinx.datetime.number
 import kotlinx.datetime.plus
@@ -116,7 +115,7 @@ public class VolumeSeriesUseCase {
             when (scale) {
                 BucketScale.Exercise -> training.createdAt
                 BucketScale.Day -> DateTimeUtils.startOfDay(training.createdAt)
-                BucketScale.Week -> startOfWeek(training.createdAt)
+                BucketScale.Week -> DateTimeUtils.startOfDay(DateTimeUtils.startOfIsoWeek(training.createdAt.date))
                 BucketScale.Month -> startOfMonth(training.createdAt)
             }
         }
@@ -157,7 +156,7 @@ public class VolumeSeriesUseCase {
         to: LocalDateTime,
     ): List<Bucket> {
         val buckets = mutableListOf<Bucket>()
-        var weekStart = startOfWeek(from)
+        var weekStart = DateTimeUtils.startOfDay(DateTimeUtils.startOfIsoWeek(from.date))
 
         while (weekStart <= to) {
             val weekEndDate = weekStart.date.plus(DatePeriod(days = 6))
@@ -210,12 +209,6 @@ public class VolumeSeriesUseCase {
 
             BucketScale.Exercise -> ""
         }
-    }
-
-    private fun startOfWeek(dateTime: LocalDateTime): LocalDateTime {
-        val shift = dateTime.date.dayOfWeek.isoDayNumber - 1
-        val monday = dateTime.date.minus(DatePeriod(days = shift))
-        return DateTimeUtils.startOfDay(monday)
     }
 
     private fun startOfMonth(dateTime: LocalDateTime): LocalDateTime {

@@ -57,8 +57,6 @@ internal fun TooltipBubble(
         )
     }
 
-    // The arrow region "eats into" one side — push content padding on
-    // that side by arrowSize so the composable grows to encompass the arrow.
     val padStart =
         dp.horizontalPadding + if (placement == TooltipPlacement.End) dp.arrowSize else 0.dp
     val padEnd =

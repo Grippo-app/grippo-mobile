@@ -105,9 +105,6 @@ internal class TrainingExerciseViewModel(
             .map { it.exercise }
             .distinctUntilChanged()
 
-        // Findings are cleared only when the observed context belongs to another example or date.
-        // The lifecycle-bound subscription restarts on every resume; re-emitting the same context
-        // then reproduces the same findings instead of blanking them until the refetch completes.
         return combine(flow = exercises, flow2 = validationContexts) { source, snapshot ->
             val target = TrainingExerciseValidationTarget(
                 exampleId = source.exerciseExample.id,
@@ -342,8 +339,7 @@ internal class TrainingExerciseViewModel(
         source: ExerciseState,
         context: ExerciseValidationContext,
     ): TrainingExerciseValidation {
-        // The domain mapper drops rows without repetitions. Filter them before capturing IDs,
-        // so findings always address the exact rows sent to the validator.
+        // Mirror the mapper's drop of rep-less rows so artifact indices address the same rows.
         val completed = source.iterations.filter { !it.isPending && it.repetitions.value != null }
 
         val iterations = completed.toDomain()

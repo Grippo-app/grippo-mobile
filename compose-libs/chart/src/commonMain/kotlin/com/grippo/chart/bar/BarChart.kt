@@ -170,7 +170,6 @@ public fun BarChart(
         Canvas(Modifier.matchParentSize()) {
             val l = layout ?: return@Canvas
 
-            // ----- Grid -----
             if (style.grid.show) {
                 val gw = style.grid.strokeWidth.toPx()
                 l.gridLinesY.forEach { y ->
@@ -183,7 +182,6 @@ public fun BarChart(
                 }
             }
 
-            // ----- Y axis labels + tick marks -----
             when (val yCfg = style.yAxis) {
                 is BarStyle.YAxis.Labels -> {
                     l.yAxisLabels.forEach { item ->
@@ -202,7 +200,6 @@ public fun BarChart(
                 is BarStyle.YAxis.None -> Unit
             }
 
-            // ----- Axis lines -----
             style.yAxisLine?.let { axis ->
                 drawLine(
                     color = axis.color,
@@ -221,7 +218,6 @@ public fun BarChart(
                 )
             }
 
-            // ----- Bars -----
             val cornerPx = style.bars.corner.toPx()
             val strokeW = style.bars.strokeWidth.toPx()
 
@@ -250,7 +246,6 @@ public fun BarChart(
                 }
             }
 
-            // ----- Peek overlay (selected bar) -----
             val sel = selectedIndex
             if (peek is BarStyle.Peek.Visible && sel != null && sel in l.bars.indices) {
                 val b = l.bars[sel]
@@ -287,18 +282,15 @@ public fun BarChart(
                 )
             }
 
-            // ----- X axis labels -----
             l.xLabels.forEach { item ->
                 drawText(item.layout, topLeft = item.topLeft)
             }
 
-            // ----- Value labels (always on top) -----
             l.valueLabels.forEach { item ->
                 drawText(item.layout, topLeft = item.topLeft)
             }
         }
 
-        // ----- Tooltip (Composable overlay) -----
         if (peek is BarStyle.Peek.Visible) {
             val l = layout
             val idx = selectedIndex
@@ -382,7 +374,6 @@ private fun computeLayout(
     val widthPx = canvasSize.width.toFloat()
     val heightPx = canvasSize.height.toFloat()
 
-    // ----- Domain -----
     val rawMin = data.items.minOf { it.value }.toDouble()
     val rawMax = data.items.maxOf { it.value }.toDouble()
     val baseSpan = (rawMax - rawMin).coerceAtLeast(1e-6)
@@ -390,7 +381,6 @@ private fun computeLayout(
     val yMinTarget = if (rawMin < 0.0) rawMin - headroom else 0.0
     var yMaxTarget = if (rawMax >= 0.0) rawMax + headroom else 0.0
 
-    // Predict vertical space needed for Above labels and enlarge max if necessary
     val valuePadPx = with(density) { style.layout.valueLabelSpacing.toPx() }
     val valueAboveMaxH = when (val vCfg = style.values) {
         is BarStyle.Values.Above -> data.items.maxOf {
@@ -429,7 +419,6 @@ private fun computeLayout(
     val spanY = (maxY - minY).coerceAtLeast(1e-6)
     val yTickCount = ((maxY - minY) / yStep).toInt().coerceAtLeast(1)
 
-    // ----- Gutters -----
     val yAxisLabelPadPx = with(density) { style.layout.yAxisLabelSpacing.toPx() }
 
     val yAxisLabelsText = when (val yCfg = style.yAxis) {
@@ -507,12 +496,10 @@ private fun computeLayout(
 
     val baseY = mapY(value = 0.0, chart = chart, minY = minY, spanY = spanY)
 
-    // ----- Grid lines -----
     val gridLinesY = (0..yTickCount).map { i ->
         mapY(value = minY + i * yStep, chart = chart, minY = minY, spanY = spanY)
     }
 
-    // ----- Y axis label layouts + positions -----
     val yAxisLabelLayouts = when (style.yAxis) {
         is BarStyle.YAxis.Labels -> yAxisLabelsText.map { (text, ts) ->
             measurer.measure(AnnotatedString(text), ts)
@@ -537,7 +524,6 @@ private fun computeLayout(
         emptyList()
     }
 
-    // ----- Bars sizing -----
     val nBars = data.items.size
     val sizing = style.bars.sizing
 
@@ -621,7 +607,6 @@ private fun computeLayout(
     val minBarHeightPx = with(density) { style.layout.minBarHeight.toPx() }
     val baselineSpacingPx = with(density) { style.layout.baselineSpacing.toPx() }
 
-    // ----- Bars rects -----
     val bars = data.items.mapIndexed { i, e ->
         val left = startX + i * (bw + sp)
         val yVal = e.value
@@ -668,7 +653,6 @@ private fun computeLayout(
         )
     }
 
-    // ----- Value labels -----
     val valueLabels = when (val vCfg = style.values) {
         is BarStyle.Values.None -> emptyList()
         is BarStyle.Values.Above -> {
@@ -683,7 +667,6 @@ private fun computeLayout(
         }
     }
 
-    // ----- X labels -----
     val xLabels = when (val xCfg = style.xAxis) {
         is BarStyle.XAxis.None -> emptyList()
 

@@ -6,7 +6,6 @@ import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
 import com.grippo.toolkit.analytics.schema.AnalyticsParameter
 import com.grippo.toolkit.analytics.schema.AnalyticsParameterKey
 
-/** Definitions are reusable; creating an event never sends it automatically. */
 public class ScreenViewed(public val screen: ScreenId) : AnalyticsEvent {
     override val schema: AnalyticsEventSchema = Schema
     override fun parameters(): List<AnalyticsParameter> = listOf(Screen.value(screen))

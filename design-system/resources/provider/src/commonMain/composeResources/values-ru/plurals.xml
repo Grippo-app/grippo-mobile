@@ -6,4 +6,16 @@
         <item quantity="many">%1$d дней с тренировками</item>
         <item quantity="other">%1$d дней с тренировками</item>
     </plurals>
+    <plurals name="training_recap_compared">
+        <item quantity="one">%1$d из %2$d показателя выше среднего</item>
+        <item quantity="few">%1$d из %2$d показателей выше среднего</item>
+        <item quantity="many">%1$d из %2$d показателей выше среднего</item>
+        <item quantity="other">%1$d из %2$d показателя выше среднего</item>
+    </plurals>
+    <plurals name="training_recap_compared_previous">
+        <item quantity="one">%1$d из %2$d показателя выше прошлой</item>
+        <item quantity="few">%1$d из %2$d показателей выше прошлой</item>
+        <item quantity="many">%1$d из %2$d показателей выше прошлой</item>
+        <item quantity="other">%1$d из %2$d показателя выше прошлой</item>
+    </plurals>
 </resources>

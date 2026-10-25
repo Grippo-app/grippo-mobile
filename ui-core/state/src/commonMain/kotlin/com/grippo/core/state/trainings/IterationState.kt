@@ -64,7 +64,6 @@ public data class IterationState(
         }
     }
 
-    /** "load × reps" of a recorded set: a missing value is a dash and a recorded zero stays visible. */
     @Composable
     public fun recordedResult(): String {
         val volume = recordedVolume()?.let { VolumeFormatState.of(it) }

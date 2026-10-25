@@ -290,7 +290,6 @@ public data object AppDp {
         val panel: Panel = Panel
         val status: Status = Status
         val overview: Overview = Overview
-
         val performance: Performance = Performance
         val profile: Profile = Profile
         val volume: Volume = Volume
@@ -332,6 +331,7 @@ public data object AppDp {
         public data object Performance {
             val strength: Strength = Strength
             val trend: Trend = Trend
+            public val records: Records = Records
 
             public data object Strength {
                 val height: Dp = icon.xxxLarge
@@ -340,6 +340,10 @@ public data object AppDp {
             public data object Trend {
                 val icon: Dp = AppDp.icon.extraSmall
                 val historyAspectRatio: Float = 3.2f
+            }
+
+            public data object Records {
+                public val trophyIcon: Dp = Trend.icon
             }
         }
 
@@ -481,11 +485,54 @@ public data object AppDp {
         val verticalPadding: Dp = padding.small
         val textSpacing: Dp = padding.tiny
         public val exerciseLoadTypeIcon: Dp = 20.dp
-
         val startTraining: StartTraining = StartTraining
+        public val recap: Recap = Recap
 
         public data object StartTraining {
             val icon: Dp = AppDp.icon.medium
+        }
+
+        public data object Recap {
+            public val verdict: Verdict = Verdict
+            public val loading: Loading = Loading
+
+            public data object Verdict {
+                public val space: Dp = BannerCard.space
+                public val tile: Tile = Tile
+
+                public data object Tile {
+                    public val size: Dp = BannerCard.iconBackground
+                    public val radius: Dp = BannerCard.iconRadius
+                    public val icon: Dp = BannerCard.icon
+                }
+            }
+
+            public data object Loading {
+                public val title: Title = Title
+                public val description: Description = Description
+                public val fact: Fact = Fact
+
+                public data object Title {
+                    public val widthFraction: Float = 0.6f
+                }
+
+                public data object Description {
+                    public val widthFraction: Float = 0.9f
+                }
+
+                public data object Fact {
+                    public val value: Value = Value
+                    public val label: Label = Label
+
+                    public data object Value {
+                        public val widthFraction: Float = 0.5f
+                    }
+
+                    public data object Label {
+                        public val widthFraction: Float = 0.7f
+                    }
+                }
+            }
         }
     }
 

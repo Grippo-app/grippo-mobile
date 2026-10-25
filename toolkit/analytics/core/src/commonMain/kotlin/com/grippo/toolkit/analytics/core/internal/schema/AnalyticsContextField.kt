@@ -1,6 +1,5 @@
 package com.grippo.toolkit.analytics.core.internal.schema
 
-/** Shared wire schema. Feature parameters cannot shadow these fields. */
 internal enum class AnalyticsContextField(val wireName: String) {
     SchemaVersion("schema_version"),
     LaunchSource("launch_source"),

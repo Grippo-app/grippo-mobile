@@ -122,6 +122,7 @@ include(":toolkit:number-utils")
 include(":toolkit:link-opener")
 include(":toolkit:notification-manager")
 include(":toolkit:permission-manager")
+include(":toolkit:share")
 
 include(":compose-libs:wheel-picker")
 include(":compose-libs:segment-control")

@@ -64,7 +64,6 @@ internal fun ExerciseProgressCard(
     isHistoryLoading: Boolean = false,
 ) {
     val exercise = value.exercise
-    // Stored totals originate in non-null domain fields; formatter Empty means recorded zero.
     val zeroVolume = "0${AppTokens.strings.res(Res.string.kg)}"
     val repetitions = exercise.total.repetitions.value ?: 0
     val maximum = exercise.maximumRecordedLoad()

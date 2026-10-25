@@ -19,7 +19,6 @@ public val AppIcon.MoreVertical: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Top dot
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(12f, 4f)
                 curveTo(13.105f, 4f, 14f, 4.895f, 14f, 6f)
@@ -28,7 +27,6 @@ public val AppIcon.MoreVertical: ImageVector
                 curveTo(10f, 4.895f, 10.895f, 4f, 12f, 4f)
                 close()
             }
-            // Middle dot
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(12f, 10f)
                 curveTo(13.105f, 10f, 14f, 10.895f, 14f, 12f)
@@ -37,7 +35,6 @@ public val AppIcon.MoreVertical: ImageVector
                 curveTo(10f, 10.895f, 10.895f, 10f, 12f, 10f)
                 close()
             }
-            // Bottom dot
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(12f, 16f)
                 curveTo(13.105f, 16f, 14f, 16.895f, 14f, 18f)

@@ -12,7 +12,6 @@ import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.core.state.menu.SocialMenu
 import com.grippo.core.state.profile.ExperienceEnumState
 
-/** Maps existing UI facts; no telemetry validation or raw value encoding. */
 internal object ProfileInputMapping {
     fun status(value: HeightFormatState): InputStatus = when (value) {
         is HeightFormatState.Empty -> InputStatus.Empty

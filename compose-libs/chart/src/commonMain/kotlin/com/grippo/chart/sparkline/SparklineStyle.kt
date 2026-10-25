@@ -73,17 +73,14 @@ public data class SparklineStyle(
         @Stable
         public data class Visible(
             val hitSlop: Dp,
-
             val guideColor: Color,
             val guideWidth: Dp,
             val guideDash: Dp,
             val guideGap: Dp,
-
             val focusColor: Color? = null,
             val focusRadius: Dp,
             val focusRingWidth: Dp,
             val focusHaloRadius: Dp,
-
             val tooltipBackground: Color,
             val tooltipBorder: Color,
             val tooltipText: Color,
@@ -91,7 +88,6 @@ public data class SparklineStyle(
             val tooltipPaddingH: Dp,
             val tooltipPaddingV: Dp,
             val tooltipMargin: Dp,
-
             val decimals: Int = 0,
             val showLabel: Boolean = true,
             val valueFormatter: ((Float) -> String)? = null,

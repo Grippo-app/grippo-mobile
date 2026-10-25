@@ -16,8 +16,6 @@ public interface TokenDao {
     @Query("SELECT * FROM token WHERE id = :id LIMIT 1")
     public fun getById(id: String): Flow<TokenEntity?>
 
-    // ────────────── INSERT ──────────────
-
     @Transaction
     public suspend fun insertOrUpdate(token: TokenEntity) {
         val existing = getById(token.id).firstOrNull()
@@ -34,10 +32,6 @@ public interface TokenDao {
     @Update
     public suspend fun update(value: TokenEntity)
 
-    /**
-     * Atomically updates credentials when [id] is the active user and both expected credentials match.
-     * Returns the affected row count, or 0 if the row is missing or any comparison fails.
-     */
     @Query(
         """
         UPDATE token SET access = :newAccess, refresh = :newRefresh
@@ -53,15 +47,9 @@ public interface TokenDao {
         newRefresh: String,
     ): Int
 
-    // ────────────── DELETE ──────────────
-
     @Query("DELETE FROM token WHERE id = :id")
     public suspend fun delete(id: String)
 
-    /**
-     * Atomically deletes credentials when [id] is the active user and both expected credentials match.
-     * Returns the affected row count, or 0 if the row is missing or any comparison fails.
-     */
     @Query(
         """
         DELETE FROM token

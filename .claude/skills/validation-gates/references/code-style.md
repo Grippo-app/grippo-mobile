@@ -16,10 +16,9 @@ actual signatures; an existing deviation does not weaken a rule.
 - Put a calculation or helper at its owning type as an ordinary method or
   computed property; use the companion for factories. Do not append private
   receiver extensions or unrelated utility functions to a State, ViewModel,
-  UseCase or Screen file. Mapper files keep their actual conversion extensions;
-  non-mapping calculation/recovery helpers belong at the source type or utility
-  owner. Other top-level extensions belong in dedicated, purpose-named utility
-  files. Shared model preview data follows
+  UseCase or Screen file. Mapper file content follows
+  [mappers](../../mappers/SKILL.md#strict-rules). Other top-level extensions
+  belong in dedicated, purpose-named utility files. Shared model preview data follows
   [the stub convention](../../ui-feature/references/state.md#top-level-stub-functions);
   Compose decomposition follows its owning skill.
 - UI-emitting composables are `PascalCase`; value-returning composable helpers
@@ -59,6 +58,13 @@ actual signatures; an existing deviation does not weaken a rule.
   compact: `update { it.copy(value = value) }`, `.map { it.range.value }`,
   `.filter { it.isSelected }`, `.flatMapLatest { it }`. Expand multi-operation
   lambdas. Empty defaults such as `onError = {}` may stay inline.
+- Declarations stay contiguous: constructor and function parameters, model and
+  State properties, interface members, token, palette and style fields follow
+  each other without blank lines, annotated and multi-line members included. A
+  blank line separates only parts that are not related at all - for example
+  individual definitions and the aggregate list built from them, or threshold
+  families of different rules. Blank lines between stages inside function, `init`
+  and handler bodies follow [ViewModel layout](#viewmodel-layout).
 - No named local function declarations inside `init`, constructors, functions
   or lambdas (`fun helper()` nested in a body). Ordinary callbacks, lambdas and
   DSL blocks are fine. Declare methods at class scope or functions at file scope.
@@ -240,7 +246,26 @@ do not add source-level opt-ins for APIs it already covers.
 
 ## Comments
 
-Keep only comments that explain a real invariant or a non-obvious decision.
-Do not narrate obvious code, leave `TODO`/`NotImplementedError` paths as
-finished work, or embed task identifiers. Verification notes and trade-offs go
-in the task report, not in code.
+Source carries no comments and no KDoc; names, types and structure carry the
+meaning. This covers Kotlin sources, Gradle Kotlin scripts and Swift in
+`iosApp/`. What a comment would say lives at its owner: role-to-token choices
+in [`design-system/CONSISTENCY.md`](../../../../design-system/CONSISTENCY.md),
+analytics and preservation facts in the [COVERAGE records](../../../../CLAUDE.md#records),
+rules in the [owning skills](../../../../CLAUDE.md#skills-index), verification
+notes and trade-offs in the [task report](../SKILL.md#final-response-format).
+
+- MUST NOT write a comment or KDoc in code a change adds or rewrites, with one
+  exception: a single `//` line at the exact place where the code deliberately
+  departs from a project canon or works around a platform or library behavior
+  that a reader would otherwise "fix" and break. The line states that reason in
+  one short sentence: what breaks if the code is changed.
+- The exception never covers multi-line explanations, KDoc blocks, narration of
+  what the code does, `TODO`/`FIXME`, task identifiers or commented-out code.
+- Generated code and third-party license notices are exempt.
+- `BaseViewModel` keeps its section separators (`// ------------ STATE API ------------`
+  and its siblings); they are the only structural comments allowed, and only there.
+- Existing comments in code a change does not rewrite are pre-existing
+  deviations; remove them in a separate cleanup only when the user asks.
+- A `TODO`/`NotImplementedError` path is never reported as finished work.
+- Comments inside rulebook code blocks annotate the example; they are not part
+  of the pattern to copy.

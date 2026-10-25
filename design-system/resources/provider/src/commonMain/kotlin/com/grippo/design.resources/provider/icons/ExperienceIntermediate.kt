@@ -7,11 +7,6 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.grippo.design.resources.provider.AppIcon
 
-/**
- * Intermediate experience tier — lightning bolt.
- * Symbolises "energy, momentum, you've got the spark" — positive impulse,
- * not "middle of the pack".
- */
 public val AppIcon.ExperienceIntermediate: ImageVector
     get() {
         if (_ExperienceIntermediate != null) {
@@ -24,7 +19,6 @@ public val AppIcon.ExperienceIntermediate: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Z-shape lightning bolt — clean classic silhouette.
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(14f, 2f)
                 lineTo(13f, 9f)

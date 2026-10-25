@@ -41,8 +41,7 @@ internal class IosPermissionManager : PermissionManager {
                 UNAuthorizationOptionBadge
 
         notificationCenter.requestAuthorizationWithOptions(options) { granted, _ ->
-            // After the dialog, fetch the authoritative status so we can tell
-            // NotDetermined → Denied vs explicit Denied (DeniedPermanently).
+            // The authorization callback's Boolean cannot tell NotDetermined from Denied, so the settings are re-read.
             notificationCenter.getNotificationSettingsWithCompletionHandler { settings ->
                 val status = settings?.authorizationStatus
                     ?: if (granted) UNAuthorizationStatusAuthorized else UNAuthorizationStatusDenied

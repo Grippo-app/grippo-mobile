@@ -130,7 +130,6 @@ public class GoalFollowingUseCase(
         )
     }
 
-    /** Rep buckets describe logged sets; they do not estimate effort or physiological stimulus. */
     private fun repShares(sets: List<LoggedSet>): List<Int> {
         if (sets.isEmpty()) {
             return listOf(0, 0, 0)
@@ -343,7 +342,6 @@ public class GoalFollowingUseCase(
         return findings
     }
 
-    /** Product heuristic: normalized group shares earn partial set credit, never measured effort. */
     private fun groupCredits(example: ExerciseExample): Map<MuscleGroupEnum, Float>? {
         if (example.bundles.isEmpty() || example.bundles.any { it.percentage < 0 }) {
             return null
@@ -417,7 +415,6 @@ public class GoalFollowingUseCase(
         return atLeast(rule = rule, actual = coverage.toFloat(), passMin = 3f, warnMin = 2f)
     }
 
-    /** Only completed seven-day blocks are comparable; partial days at either edge are excluded. */
     private fun completeWeeklySets(sets: List<LoggedSet>, range: DateRange): List<Float> {
         val firstDate = if (range.from == DateTimeUtils.startOfDay(range.from)) {
             range.from.date

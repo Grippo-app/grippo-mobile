@@ -17,8 +17,6 @@ public interface WeightHistoryDao {
     @Query("SELECT * FROM weight_history ORDER BY createdAt DESC LIMIT 1")
     public fun getLast(): Flow<WeightHistoryEntity?>
 
-    // ────────────── INSERT ──────────────
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertOrUpdate(history: WeightHistoryEntity)
 
@@ -27,8 +25,6 @@ public interface WeightHistoryDao {
         deleteByUserId(userId)
         values.forEach { insertOrUpdate(it) }
     }
-
-    // ────────────── DELETE ──────────────
 
     @Query("DELETE FROM weight_history")
     public suspend fun delete()

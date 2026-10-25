@@ -52,7 +52,6 @@ public sealed class VolumeFormatState : FormatState<Float> {
             return "$number ${AppTokens.strings.res(Res.string.kg)}"
         }
 
-        /** Read-only tonnage accepts recorded zero and totals beyond a single set's load. */
         public fun ofTotal(value: Float?): VolumeFormatState = when {
             value == null -> Empty()
             !value.isFinite() || value < 0f -> Invalid(display = value.toString(), value = null)

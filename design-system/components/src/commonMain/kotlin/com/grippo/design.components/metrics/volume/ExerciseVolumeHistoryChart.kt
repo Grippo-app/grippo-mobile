@@ -28,7 +28,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
 
-/** Receives chronological entries with finite, nonnegative volumes and the selected entry last. */
 @Composable
 public fun ExerciseVolumeHistoryChart(
     modifier: Modifier = Modifier,

@@ -41,7 +41,7 @@ public data object AppTypography {
     public fun h4(): TextStyle = TextStyle(
         fontSize = 18.sp,
         fontFamily = onest(),
-        lineHeight = 24.sp, // ×1.33
+        lineHeight = 24.sp,
         fontWeight = FontWeight.Bold,
     )
 
@@ -49,7 +49,7 @@ public data object AppTypography {
     public fun h5(): TextStyle = TextStyle(
         fontSize = 16.sp,
         fontFamily = onest(),
-        lineHeight = 24.sp, // ×1.5
+        lineHeight = 24.sp,
         fontWeight = FontWeight.Bold,
     )
 
@@ -57,7 +57,7 @@ public data object AppTypography {
     public fun h6(): TextStyle = TextStyle(
         fontSize = 15.sp,
         fontFamily = onest(),
-        lineHeight = 22.sp, // ×1.47
+        lineHeight = 22.sp,
         fontWeight = FontWeight.Bold,
     )
 
@@ -65,7 +65,7 @@ public data object AppTypography {
     public fun b15Med(): TextStyle = TextStyle(
         fontSize = 15.sp,
         fontFamily = onest(),
-        lineHeight = 22.sp, // ×1.47
+        lineHeight = 22.sp,
         fontWeight = FontWeight.Medium,
     )
 
@@ -73,7 +73,7 @@ public data object AppTypography {
     public fun b14Bold(): TextStyle = TextStyle(
         fontSize = 14.sp,
         fontFamily = onest(),
-        lineHeight = 20.sp, // ×1.43
+        lineHeight = 20.sp,
         fontWeight = FontWeight.Bold,
     )
 

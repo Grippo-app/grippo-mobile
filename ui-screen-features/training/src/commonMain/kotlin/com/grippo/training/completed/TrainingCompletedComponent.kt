@@ -16,6 +16,7 @@ internal class TrainingCompletedComponent(
     componentContext: ComponentContext,
     exercises: List<ExerciseState>,
     startAt: LocalDateTime,
+    private val toGoal: () -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<TrainingCompletedDirection>(componentContext) {
 
@@ -26,13 +27,20 @@ internal class TrainingCompletedComponent(
             startAt = startAt,
             analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
+            exerciseExampleFeature = getKoin().get(),
+            localSettingsFeature = getKoin().get(),
+            goalFeature = getKoin().get(),
             setTrainingUseCase = getKoin().get(),
             updateTrainingUseCase = getKoin().get(),
             trainingTotalUseCase = getKoin().get(),
-            dialogController = getKoin().get(),
-            exerciseExampleFeature = getKoin().get(),
-            trainingTimelineUseCase = getKoin().get(),
             muscleLoadingSummaryUseCase = getKoin().get(),
+            performanceTrendUseCase = getKoin().get(),
+            trainingRecordsUseCase = getKoin().get(),
+            weeklyVolumeUseCase = getKoin().get(),
+            trainingStreakUseCase = getKoin().get(),
+            goalFollowingUseCase = getKoin().get(),
+            dialogController = getKoin().get(),
+            imageSharer = getKoin().get(),
             initialState = restoreState(DRAFT) ?: TrainingCompletedState(),
         )
     }
@@ -51,6 +59,10 @@ internal class TrainingCompletedComponent(
         when (direction) {
             TrainingCompletedDirection.Back -> {
                 back.invoke()
+            }
+
+            TrainingCompletedDirection.Goal -> {
+                toGoal.invoke()
             }
         }
     }

@@ -10,6 +10,7 @@ import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import com.grippo.core.state.profile.GoalState
 import com.grippo.core.state.profile.stubGoal
 import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.AppColor
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_card_progress_days_left
 import com.grippo.design.resources.provider.goal_card_progress_due_today
@@ -33,16 +34,10 @@ import kotlinx.collections.immutable.persistentListOf
 public data class GoalProgressState(
     val goal: GoalState,
     val now: DateTimeFormatState,
-
-    // Training-pattern heuristic; null when there is insufficient evidence.
     val score: Int?,
-
-    // Descriptive shares of recorded sets by repetition range (0..100).
     val strengthShare: Int,
     val hypertrophyShare: Int,
     val enduranceShare: Int,
-
-    // Calculation artifacts.
     val sessionCount: Int,
     val findings: ImmutableList<GoalFitFindingState>,
     val evidence: GoalAnalysisEvidenceState,
@@ -96,23 +91,43 @@ public data class GoalProgressState(
     }
 
     @Composable
-    public fun statusLabel(): String {
-        val score = score ?: return AppTokens.strings.res(Res.string.goal_card_status_not_evaluated)
-        return when {
-            score >= ON_TRACK_MIN -> AppTokens.strings.res(Res.string.goal_card_status_on_track)
-            score >= DRIFTING_MIN -> AppTokens.strings.res(Res.string.goal_card_status_drifting)
-            else -> AppTokens.strings.res(Res.string.goal_card_status_off_track)
-        }
+    public fun statusLabel(): String = when (scoreBand()) {
+        ScoreBand.NotEvaluated -> AppTokens.strings.res(Res.string.goal_card_status_not_evaluated)
+        ScoreBand.OnTrack -> AppTokens.strings.res(Res.string.goal_card_status_on_track)
+        ScoreBand.Drifting -> AppTokens.strings.res(Res.string.goal_card_status_drifting)
+        ScoreBand.OffTrack -> AppTokens.strings.res(Res.string.goal_card_status_off_track)
     }
 
     @Composable
-    public fun statusColor(): Color {
-        val score = score ?: return AppTokens.colors.text.secondary
+    public fun statusColor(): Color = when (scoreBand()) {
+        ScoreBand.NotEvaluated -> AppTokens.colors.text.secondary
+        ScoreBand.OnTrack -> AppTokens.colors.semantic.success
+        ScoreBand.Drifting -> AppTokens.colors.semantic.warning
+        ScoreBand.OffTrack -> AppTokens.colors.semantic.error
+    }
+
+    @Composable
+    public fun statusIndicatorColors(): AppColor.Charts.IndicatorColors.IndicatorColors = when (scoreBand()) {
+        ScoreBand.NotEvaluated -> AppTokens.colors.charts.indicator.muted
+        ScoreBand.OnTrack -> AppTokens.colors.charts.indicator.success
+        ScoreBand.Drifting -> AppTokens.colors.charts.indicator.warning
+        ScoreBand.OffTrack -> AppTokens.colors.charts.indicator.error
+    }
+
+    private fun scoreBand(): ScoreBand {
+        val score = score ?: return ScoreBand.NotEvaluated
         return when {
-            score >= ON_TRACK_MIN -> AppTokens.colors.semantic.success
-            score >= DRIFTING_MIN -> AppTokens.colors.semantic.warning
-            else -> AppTokens.colors.semantic.error
+            score >= ON_TRACK_MIN -> ScoreBand.OnTrack
+            score >= DRIFTING_MIN -> ScoreBand.Drifting
+            else -> ScoreBand.OffTrack
         }
+    }
+
+    private enum class ScoreBand {
+        NotEvaluated,
+        OnTrack,
+        Drifting,
+        OffTrack,
     }
 
     public companion object {

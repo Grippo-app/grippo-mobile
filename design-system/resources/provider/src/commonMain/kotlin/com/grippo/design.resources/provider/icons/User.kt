@@ -19,7 +19,6 @@ public val AppIcon.User: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Head — solid filled circle (radius 4 at center 12, 7).
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(12f, 3f)
                 curveTo(14.209f, 3f, 16f, 4.791f, 16f, 7f)
@@ -28,7 +27,6 @@ public val AppIcon.User: ImageVector
                 curveTo(8f, 4.791f, 9.791f, 3f, 12f, 3f)
                 close()
             }
-            // Shoulders / torso — rounded "wing" silhouette underneath the head.
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(11.643f, 13f)
                 horizontalLineTo(12.357f)

@@ -11,21 +11,18 @@ import com.grippo.services.database.entity.MuscleEntity
 
 public data class ExerciseExamplePack(
     @Embedded val example: ExerciseExampleEntity,
-
     @Relation(
         parentColumn = "id",
         entityColumn = "exerciseExampleId",
         entity = ExerciseExampleComponentsEntity::class
     )
     val components: ExerciseExampleComponentsEntity? = null,
-
     @Relation(
         parentColumn = "id",
         entityColumn = "exerciseExampleId",
         entity = ExerciseExampleBundleEntity::class
     )
     val bundles: List<ExerciseExampleBundleWithMuscle> = emptyList(),
-
     @Relation(
         parentColumn = "id",
         entityColumn = "exerciseExampleId",
@@ -36,7 +33,6 @@ public data class ExerciseExamplePack(
 
 public data class ExerciseExampleBundleWithMuscle(
     @Embedded val bundle: ExerciseExampleBundleEntity,
-
     @Relation(
         parentColumn = "muscleId",
         entityColumn = "id"
@@ -46,7 +42,6 @@ public data class ExerciseExampleBundleWithMuscle(
 
 public data class ExerciseEquipmentWithEquipment(
     @Embedded val equipmentRef: ExerciseExampleEquipmentEntity,
-
     @Relation(
         parentColumn = "equipmentId",
         entityColumn = "id"

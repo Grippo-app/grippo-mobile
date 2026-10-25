@@ -12,7 +12,7 @@ public data class RadarAxis(
 public data class RadarSeries(
     val name: String,
     val color: Color,
-    val values: RadarValues, // supports ByAxisId or ByIndex
+    val values: RadarValues,
 )
 
 public data class RadarData(
@@ -22,8 +22,8 @@ public data class RadarData(
 
 public sealed interface RadarValues {
     public data class ByAxisId(val map: Map<String, Float>) :
-        RadarValues // key: axisId, value: 0..1
+        RadarValues
 
     public data class ByIndex(val list: List<Float>) :
-        RadarValues         // index aligned with axes
+        RadarValues
 }

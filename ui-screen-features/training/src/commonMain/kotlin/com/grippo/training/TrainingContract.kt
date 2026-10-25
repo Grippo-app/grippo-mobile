@@ -17,6 +17,7 @@ internal interface TrainingContract {
     fun toRecording(stage: StageState)
     fun toExercise(exercise: ExerciseState, resultKey: ResultKey<Result<TrainingRouter.Exercise.Action>>)
     fun toCompleted(stage: StageState, exercises: List<ExerciseState>, startAt: LocalDateTime)
+    fun toGoal()
 
     @Immutable
     companion object Empty : TrainingContract {
@@ -26,5 +27,6 @@ internal interface TrainingContract {
         override fun toRecording(stage: StageState) {}
         override fun toExercise(exercise: ExerciseState, resultKey: ResultKey<Result<TrainingRouter.Exercise.Action>>) {}
         override fun toCompleted(stage: StageState, exercises: List<ExerciseState>, startAt: LocalDateTime) {}
+        override fun toGoal() {}
     }
 }

@@ -59,23 +59,18 @@ public interface AppColor {
         public val borderPrimary: Color
         public val textPrimary: Color
         public val iconPrimary: Color
-
         public val backgroundSecondary1: Color
         public val backgroundSecondary2: Color
         public val borderSecondary: Color
         public val textSecondary: Color
         public val iconSecondary: Color
-
         public val textTertiary: Color
         public val iconTertiary: Color
         public val borderTertiary: Color
-
         public val textTransparent: Color
         public val iconTransparent: Color
-
         public val backgroundError: Color
         public val contentError: Color
-
         public val backgroundDisabled: Color
         public val contentDisabled: Color
     }
@@ -86,7 +81,6 @@ public interface AppColor {
         public val checkedThumb: Color
         public val checkedTrack1: Color
         public val checkedTrack2: Color
-
         public val uncheckedThumb: Color
         public val uncheckedTrack1: Color
         public val uncheckedTrack2: Color
@@ -96,10 +90,8 @@ public interface AppColor {
         public val placeholder: Color
         public val label: Color
         public val text: Color
-
         public val leading: Color
         public val trailing: Color
-
         public val backgroundDisabled: Color
         public val textDisabled: Color
         public val placeholderDisabled: Color
@@ -154,11 +146,13 @@ public interface AppColor {
         public val warning: Color
         public val info: Color
         public val notice: Color
+        public val decline: Color
         public val successBackground: Color
         public val errorBackground: Color
         public val warningBackground: Color
         public val infoBackground: Color
         public val noticeBackground: Color
+        public val declineBackground: Color
     }
 
     public interface OverlayColors {
@@ -191,13 +185,10 @@ public interface AppColor {
     }
 
     public interface ContextColors {
-        // Profile
         public val muscle: Color
         public val equipment: Color
         public val experience: Color
         public val body: Color
-
-        // Training
         public val volume: Color
         public val intensity: Color
         public val duration: Color
@@ -322,7 +313,9 @@ public interface AppColor {
             public val info: IndicatorColors
             public val warning: IndicatorColors
             public val error: IndicatorColors
+            public val decline: IndicatorColors
             public val muted: IndicatorColors
+            public val before: IndicatorColors
 
             public interface IndicatorColors {
                 public val colors: List<Color>

@@ -26,7 +26,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
-/** Without [onCheckedChange], renders a passive indicator for an interactive parent. */
 @Composable
 public fun Toggle(
     modifier: Modifier = Modifier,

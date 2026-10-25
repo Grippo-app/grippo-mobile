@@ -7,7 +7,6 @@ public sealed interface ExerciseSpotlight {
     public val kind: Kind
     public val severity: Severity
     public val example: ExerciseExampleValue
-    /** Evidence support used for selection, not a statistical probability. */
     public val confidence: Float
     public val score: Float
     public val sampleSize: Int

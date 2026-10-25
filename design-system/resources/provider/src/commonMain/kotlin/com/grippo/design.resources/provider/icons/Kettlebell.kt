@@ -20,9 +20,6 @@ public val AppIcon.Kettlebell: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Bell — perfect circle (centred at (12, 15), radius 8).
-            // Top of bell at (12, 7), so at y = 9 the bell width is ~10.6 — matches
-            // handle's bottom (10 wide), giving a smooth merged silhouette.
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(12f, 7f)
                 curveTo(16.418f, 7f, 20f, 10.582f, 20f, 15f)
@@ -31,14 +28,10 @@ public val AppIcon.Kettlebell: ImageVector
                 curveTo(4f, 10.582f, 7.582f, 7f, 12f, 7f)
                 close()
             }
-            // Handle — D-shaped ring with grip-hole (cut via EvenOdd).
-            // Handle bottom (y=9) sits inside the bell's circular silhouette,
-            // so they merge without any "shoulder" artefact.
             path(
                 fill = SolidColor(Color(0xFF33363F)),
                 pathFillType = PathFillType.EvenOdd
             ) {
-                // Outer D
                 moveTo(7f, 9f)
                 verticalLineTo(6f)
                 curveTo(7f, 3.239f, 9.239f, 1f, 12f, 1f)
@@ -46,7 +39,6 @@ public val AppIcon.Kettlebell: ImageVector
                 verticalLineTo(9f)
                 horizontalLineTo(7f)
                 close()
-                // Inner D (grip-hole cut-out)
                 moveTo(9f, 9f)
                 verticalLineTo(6f)
                 curveTo(9f, 4.343f, 10.343f, 3f, 12f, 3f)

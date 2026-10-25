@@ -12,11 +12,6 @@ public data class DateRange(
 ) {
     public fun isWellFormed(): Boolean = from <= to
 
-    /**
-     * Clamps this range inside [limitations]. If the resulting range would be
-     * inverted (end before start), collapses it to a zero-length range at the
-     * coerced start.
-     */
     public fun coerceWithin(limitations: DateRange): DateRange {
         val start = if (from < limitations.from) limitations.from else from
         val end = if (to > limitations.to) limitations.to else to
@@ -52,11 +47,6 @@ public object DateRangePresets {
     public fun yearly(): DateRange = DateTimeUtils.thisYear()
     public fun infinity(): DateRange = DateTimeUtils.infinity()
 
-    /**
-     * Materializes a preset kind into a concrete [DateRange].
-     * Returns null for [DateRangeKind.Custom] — custom ranges carry their
-     * own endpoints and cannot be resolved from the kind alone.
-     */
     public fun resolve(kind: DateRangeKind): DateRange? = when (kind) {
         DateRangeKind.Daily -> daily()
         DateRangeKind.Weekly -> weekly()
@@ -71,11 +61,6 @@ public object DateRangePresets {
         DateRangeKind.Custom -> null
     }
 
-    /**
-     * Classifies an arbitrary [DateRange] into a [DateRangeKind].
-     * Prefers exact preset matches, then falls back to day-count heuristics,
-     * then to [DateRangeKind.Custom].
-     */
     public fun classify(range: DateRange): DateRangeKind {
         val days = max(0, range.from.date.daysUntil(range.to.date) + 1)
 

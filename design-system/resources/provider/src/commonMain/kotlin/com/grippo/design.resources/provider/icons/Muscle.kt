@@ -7,12 +7,6 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.grippo.design.resources.provider.AppIcon
 
-/**
- * Flexed bicep / arm muscle silhouette.
- * Designer-supplied "BodyPartMuscle" outline (118x118 viewport), closed and
- * filled — the inner crease line was dropped, since the outer silhouette alone
- * reads cleanly as a flexed arm at icon sizes.
- */
 public val AppIcon.Muscle: ImageVector
     get() {
         if (_Muscle != null) {

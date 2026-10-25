@@ -42,7 +42,6 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.koin.android)
 
-    // Firebase
     implementation(projects.dataServices.firebase)
     implementation(project.dependencies.platform(libs.android.firebase.bom))
     implementation(libs.android.firebase.analytics)

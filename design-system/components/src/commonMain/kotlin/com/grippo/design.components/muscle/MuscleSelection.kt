@@ -39,7 +39,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
-/** Fixed group illustration and tabs above an independently scrolling muscle list. */
 @Composable
 public fun MuscleSelection(
     modifier: Modifier = Modifier,

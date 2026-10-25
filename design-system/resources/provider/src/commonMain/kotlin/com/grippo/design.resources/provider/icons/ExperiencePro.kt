@@ -8,10 +8,6 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.grippo.design.resources.provider.AppIcon
 
-/**
- * Pro experience tier — trophy cup with handles.
- * Symbolises "mastery, top tier" — positive culmination of the experience scale.
- */
 public val AppIcon.ExperiencePro: ImageVector
     get() {
         if (_ExperiencePro != null) {
@@ -24,12 +20,10 @@ public val AppIcon.ExperiencePro: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Cup body with rounded rim, soft cup, and handle holes via EvenOdd.
             path(
                 fill = SolidColor(Color(0xFF33363F)),
                 pathFillType = PathFillType.EvenOdd
             ) {
-                // Top rim
                 moveTo(6f, 3f)
                 horizontalLineTo(18f)
                 curveTo(18.552f, 3f, 19f, 3.448f, 19f, 4f)
@@ -60,14 +54,12 @@ public val AppIcon.ExperiencePro: ImageVector
                 verticalLineTo(4f)
                 curveTo(5f, 3.448f, 5.448f, 3f, 6f, 3f)
                 close()
-                // Left handle hole
                 moveTo(4.5f, 7f)
                 verticalLineTo(9f)
                 curveTo(4.5f, 10.105f, 5.395f, 11f, 6.5f, 11f)
                 verticalLineTo(7f)
                 horizontalLineTo(4.5f)
                 close()
-                // Right handle hole
                 moveTo(19.5f, 7f)
                 verticalLineTo(9f)
                 curveTo(19.5f, 10.105f, 18.605f, 11f, 17.5f, 11f)

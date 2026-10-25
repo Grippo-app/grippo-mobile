@@ -18,7 +18,6 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
 
-// File-level constants — never recreated.
 private val BASE_CABLE_TYPES: Set<EquipmentEnumState> = setOf(
     EquipmentEnumState.CABLE_CROSSOVER,
     EquipmentEnumState.CABLE,
@@ -66,11 +65,6 @@ public data class ExerciseExampleState(
     val equipments: ImmutableList<EquipmentState>,
 ) {
 
-    /**
-     * Holder for hint computation result that does NOT touch Composition.
-     * [includeCommonLine] tells the @Composable layer whether to prepend
-     * the equipment_hint_common string.
-     */
     @Immutable
     private data class HintPlan(
         val includeCommonLine: Boolean,
@@ -79,8 +73,6 @@ public data class ExerciseExampleState(
 
     @Composable
     public fun hint(): String? {
-        // Preserve original semantics: only the explicit "no equipment" hint
-        // when the input list itself is empty.
         if (equipments.isEmpty()) {
             return UiText.Res(Res.string.equipment_hint_none).text()
         }
@@ -88,7 +80,6 @@ public data class ExerciseExampleState(
         val plan = remember(equipments) { computeHintPlan(equipments) }
         val strings = AppTokens.strings
 
-        // Build the final string outside remember (strings.res is @Composable).
         val sb = StringBuilder()
         val seen = HashSet<String>()
         if (plan.includeCommonLine) {
@@ -107,10 +98,6 @@ public data class ExerciseExampleState(
     }
 
     private companion object {
-        /**
-         * Pure (non-composable) computation: figures out which equipment hints
-         * should be shown, in what order, and whether to prepend the common line.
-         */
         fun computeHintPlan(equipments: ImmutableList<EquipmentState>): HintPlan {
             if (equipments.isEmpty()) {
                 return HintPlan(

@@ -38,7 +38,6 @@ internal fun HomeScreen(
     val hasPeriodContent = state.lastTraining != null || state.muscleLoad != null ||
         state.streak != null || state.goalProgress != null || state.spotlights.isNotEmpty() ||
         state.performance.any { !it.isEmpty() }
-    // A completed empty period still publishes five Empty-status performance metrics.
     val awaitsInitialMetrics = state.performance.isEmpty()
     val isLoading = state.range.value == null || state.user == null ||
         awaitsInitialMetrics ||

@@ -98,8 +98,7 @@ internal fun IterationPickerScreen(
         var repetitionsFocused by remember { mutableStateOf(false) }
 
         LaunchedEffect(state.focus, state.example.components) {
-            // run after composition
-            withFrameNanos { /* no-op, just await a frame */ }
+            withFrameNanos { }
 
             delay(250.milliseconds)
 

@@ -132,7 +132,6 @@ import com.grippo.design.resources.provider.personalizations_training_phase_sect
 
 @Immutable
 public enum class PersonalizationKeyEnumState {
-    // 1. Schedule
     LOW_FREQUENCY,
     MODERATE_FREQUENCY,
     HIGH_FREQUENCY,
@@ -141,20 +140,17 @@ public enum class PersonalizationKeyEnumState {
     FLEXIBLE_SCHEDULE,
     UNPREDICTABLE_SCHEDULE,
 
-    // 2. Session duration
     MINUTES_UP_TO_45,
     MINUTES_45_TO_90,
     MINUTES_90_PLUS,
     FLEXIBLE_DURATION,
 
-    // 3. Lifestyle
     HIGH_STRESS_LIFESTYLE,
     POOR_SLEEP_PATTERN,
     LOW_ENERGY_TENDENCY,
     SEDENTARY_JOB,
     PHYSICALLY_ACTIVE_JOB,
 
-    // 4. Recovery context
     RETURNING_AFTER_BREAK,
     RECOVERING_FROM_INJURY,
     LIMITED_RANGE_OF_MOTION,
@@ -162,7 +158,6 @@ public enum class PersonalizationKeyEnumState {
     RECOVERY_FOCUS,
     MOBILITY_FOCUS,
 
-    // 5. Care zones
     NECK_CARE,
     LOWER_BACK_CARE,
     UPPER_BACK_CARE,
@@ -173,7 +168,6 @@ public enum class PersonalizationKeyEnumState {
     KNEE_CARE,
     ANKLE_CARE,
 
-    // 6. Health conditions
     HYPERTENSION,
     DIABETES,
     ASTHMA,
@@ -184,7 +178,6 @@ public enum class PersonalizationKeyEnumState {
     PREGNANCY,
     POSTPARTUM,
 
-    // 7. Movement restrictions
     AVOID_HIGH_INTENSITY,
     AVOID_HEAVY_LOADING,
     AVOID_HIGH_IMPACT,
@@ -199,7 +192,6 @@ public enum class PersonalizationKeyEnumState {
     AVOID_VALSALVA,
     NEEDS_SUPPORTED_MOVEMENTS,
 
-    // 8. Sports
     SPORT_POWERLIFTING,
     SPORT_BODYBUILDING,
     SPORT_OLYMPIC_WEIGHTLIFTING,
@@ -216,7 +208,6 @@ public enum class PersonalizationKeyEnumState {
     SPORT_WINTER_BOARD_SPORTS,
     SPORT_YOGA_OR_PILATES,
 
-    // 9. Focus areas
     FOCUS_CHEST,
     FOCUS_BACK,
     FOCUS_SHOULDERS,
@@ -230,7 +221,6 @@ public enum class PersonalizationKeyEnumState {
     FOCUS_HAMSTRINGS,
     FOCUS_CALVES,
 
-    // 10. Physical qualities
     IMPROVE_CARDIO,
     IMPROVE_MUSCULAR_ENDURANCE,
     IMPROVE_EXPLOSIVE_POWER,
@@ -240,44 +230,33 @@ public enum class PersonalizationKeyEnumState {
     IMPROVE_GRIP_STRENGTH,
     IMPROVE_CORE_STABILITY,
 
-    // 11. Program preferences
     SIMPLE_PLAN,
     LOWER_VOLUME,
     HIGHER_VOLUME,
     GRADUAL_PROGRESSION,
     AGGRESSIVE_PROGRESSION,
 
-    // 12. Routine structure
     PREFER_FULL_BODY,
     PREFER_UPPER_LOWER,
     PREFER_PUSH_PULL_LEGS,
     PREFER_SPLIT_ROUTINE,
 
-    // 13. Set / method preferences
     PREFER_STRAIGHT_SETS,
     PREFER_SUPERSETS,
     PREFER_CIRCUITS,
     PREFER_HEAVY_COMPOUNDS,
 
-    // 14. Equipment preferences
     PREFER_FREE_WEIGHTS,
     PREFER_MACHINES,
     PREFER_CABLES,
     PREFER_BODYWEIGHT,
 
-    // 15. Training phase
     PHASE_BULKING,
     PHASE_CUTTING,
     PHASE_MAINTENANCE,
     PHASE_DELOAD,
     PHASE_COMPETITION_PREP;
 
-    /**
-     * Logical bucket the entry belongs to.
-     *
-     * Drives section grouping in screens that surface the full personalization
-     * list, so the user sees coherent clusters instead of one flat wall of chips.
-     */
     public fun category(): Category = when (this) {
         LOW_FREQUENCY,
         MODERATE_FREQUENCY,

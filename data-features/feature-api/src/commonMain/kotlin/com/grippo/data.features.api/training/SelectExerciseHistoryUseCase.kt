@@ -16,7 +16,6 @@ public class SelectExerciseHistoryUseCase {
                 training.createdAt < cutoff && training.exercises.none { it.id == current.id }
             }
             .mapNotNull { training ->
-                // Repeated exercises in one session remain separate records; compare its last recorded entry.
                 training.exercises
                     .withIndex()
                     .filter { (_, exercise) ->

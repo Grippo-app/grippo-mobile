@@ -24,19 +24,10 @@ public fun Konfetti(
     parties: List<Party>,
     updateListener: OnParticleSystemUpdateListener? = null,
 ) {
-    /**
-     * Particles to draw
-     */
     val particles = remember { mutableStateOf(emptyList<Particle>()) }
 
-    /**
-     * Latest stored frameTimeMilliseconds
-     */
     val frameTime = remember { mutableStateOf(0L) }
 
-    /**
-     * Area in which the particles are being drawn
-     */
     val drawArea = remember { mutableStateOf(CoreRectImpl()) }
 
     val density = LocalDensity.current.density
@@ -49,14 +40,12 @@ public fun Konfetti(
 
         while (true) {
             withInfiniteAnimationFrameMillis { frameMs ->
-                // Calculate time between frames, fallback to 0 when previous frame doesn't exist
                 val deltaMs = if (frameTime.value > 0) (frameMs - frameTime.value) else 0
                 frameTime.value = frameMs
 
                 particles.value = partySystems.map { particleSystem ->
 
                     val totalTimeRunning = getTotalTimeRunning(particleSystem.createdAt)
-                    // Do not start particleSystem yet if totalTimeRunning is below delay
                     if (totalTimeRunning < particleSystem.party.delay) return@map listOf()
 
                     if (particleSystem.isDoneEmitting()) {

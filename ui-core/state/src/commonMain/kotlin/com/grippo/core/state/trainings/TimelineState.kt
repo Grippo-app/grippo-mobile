@@ -25,26 +25,14 @@ public sealed interface TimelineState {
     public val key: String
     public val position: TrainingPosition
 
-    /**
-     * Items that belong to the daily timeline representation.
-     */
     @Immutable
     public sealed interface Daily : TimelineState {
-        /**
-         * A header-level daily item (e.g. digest, date block).
-         */
         @Immutable
         public sealed interface Header : Daily
 
-        /**
-         * Building blocks that stay on the timeline.
-         */
         @Immutable
         public sealed interface Item : Daily
 
-        /**
-         * Entries that carry exercises.
-         */
         @Immutable
         public sealed interface Exercise :
             Item {
@@ -53,15 +41,9 @@ public sealed interface TimelineState {
         }
     }
 
-    /**
-     * Weekly nodes, capable of representing a summary and a full training entry.
-     */
     @Immutable
     public sealed interface Weekly : TimelineState
 
-    /**
-     * Monthly nodes, capable of representing monthly summary and per-day training buckets.
-     */
     @Immutable
     public sealed interface Monthly : TimelineState {
         public val month: DateFormatState
@@ -115,9 +97,6 @@ public sealed interface TimelineState {
         override val key: String,
     ) : Daily.Item
 
-    /**
-     * Weekly representation that exposes an entire training.
-     */
     @Immutable
     public data class WeeklyTrainingsDay(
         val date: DateFormatState,
@@ -133,9 +112,6 @@ public sealed interface TimelineState {
         override val position: TrainingPosition = TrainingPosition.EMPTY,
     ) : Weekly
 
-    /**
-     * Monthly representation that keeps all trainings for a day.
-     */
     @Immutable
     public data class MonthlyDigest(
         val summary: DigestState,

@@ -65,8 +65,6 @@ internal object Migration2To3 : Migration(2, 3) {
             """.trimIndent()
         )
 
-        // Backfill prefix index for existing records using SQL-only tokenization.
-        // Mirrors the runtime search index strategy with minimum prefix length = 3.
         connection.execSQL(
             """
             WITH RECURSIVE

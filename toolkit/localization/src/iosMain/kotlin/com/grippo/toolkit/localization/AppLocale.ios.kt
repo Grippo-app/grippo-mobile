@@ -16,15 +16,12 @@ public actual object AppLocale {
 
     public actual val current: String
         @Composable get() {
-            // Otherwise follow the system (and re-read on foreground/active)
             val systemTag = rememberSystemTag()
             return normalizeTag(systemTag)
         }
 
     public actual fun current(): String = normalizeTag(systemTagNow())
 }
-
-// ---------- helpers ----------
 
 @Composable
 private fun rememberSystemTag(): String {
@@ -46,12 +43,10 @@ private fun rememberSystemTag(): String {
 }
 
 private fun systemTagNow(): String {
-    // NSLocale.preferredLanguages returns BCP-47 tags like "uk-UA"
     val first = NSLocale.preferredLanguages.firstOrNull() as? String
     return first ?: "en"
 }
 
 private fun normalizeTag(tag: String): String {
-    // Best-effort normalization for iOS (tags are already BCP-47).
     return tag.replace('_', '-')
 }

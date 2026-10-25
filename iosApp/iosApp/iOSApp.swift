@@ -13,7 +13,8 @@ struct iOSApp: App {
     var body: some Scene {
         WindowGroup {
             RootView(root: appDelegate.root, backDispatcher: appDelegate.backDispatcher)
-                .ignoresSafeArea(edges: .all)  // Solving issue: https://youtrack.jetbrains.com/issue/CMP-3621
+                // Compose owns all insets; SwiftUI safe areas leave an odd keyboard gap (CMP-3621).
+                .ignoresSafeArea(edges: .all)
         }
         .onChange(of: scenePhase) { phase in
             switch phase {

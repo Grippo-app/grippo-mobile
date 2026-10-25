@@ -28,14 +28,15 @@ private fun BestTonnage.toDomainOrNull(): Achievement.BestTonnage? {
         "BestTonnage.exerciseId is null for example $exerciseExampleId"
     } ?: return null
 
-    val tonnage = AppLogger.Mapping.log(this.tonnage) {
-        "BestTonnage.tonnage is null for example $exerciseExampleId"
+    val measuredTonnage = this.tonnage?.toFloat()?.takeIf { it.isFinite() && it >= 0f }
+    val tonnage = AppLogger.Mapping.log(measuredTonnage) {
+        "BestTonnage.tonnage is null, non-finite or negative for example $exerciseExampleId"
     } ?: return null
 
     return Achievement.BestTonnage(
         exerciseExampleId = exampleId,
         exerciseId = exerciseId,
-        tonnage = tonnage.toInt()
+        tonnage = tonnage
     )
 }
 
@@ -52,15 +53,16 @@ private fun BestWeight.toDomainOrNull(): Achievement.BestWeight? {
         "BestWeight.iterationId is null for example $exerciseExampleId"
     } ?: return null
 
-    val weight = AppLogger.Mapping.log(this.weight) {
-        "BestWeight.weight is null for example $exerciseExampleId"
+    val measuredWeight = this.weight?.toFloat()?.takeIf { it.isFinite() && it >= 0f }
+    val weight = AppLogger.Mapping.log(measuredWeight) {
+        "BestWeight.weight is null, non-finite or negative for example $exerciseExampleId"
     } ?: return null
 
     return Achievement.BestWeight(
         exerciseExampleId = exampleId,
         exerciseId = exerciseId,
         iterationId = iterationId,
-        weight = weight.toInt()
+        weight = weight
     )
 }
 
@@ -69,8 +71,9 @@ private fun LifetimeVolume.toDomainOrNull(): Achievement.LifetimeVolume? {
         "LifetimeVolume.exerciseExampleId is null"
     } ?: return null
 
-    val totalVolume = AppLogger.Mapping.log(this.totalVolume) {
-        "LifetimeVolume.totalVolume is null for example $exerciseExampleId"
+    val measuredVolume = this.totalVolume?.toFloat()?.takeIf { it.isFinite() && it >= 0f }
+    val totalVolume = AppLogger.Mapping.log(measuredVolume) {
+        "LifetimeVolume.totalVolume is null, non-finite or negative for example $exerciseExampleId"
     } ?: return null
 
     val sessionsCount = AppLogger.Mapping.log(this.sessionsCount) {
@@ -79,7 +82,7 @@ private fun LifetimeVolume.toDomainOrNull(): Achievement.LifetimeVolume? {
 
     return Achievement.LifetimeVolume(
         exerciseExampleId = exampleId,
-        totalVolume = totalVolume.toInt(),
+        totalVolume = totalVolume,
         sessionsCount = sessionsCount
     )
 }
@@ -97,8 +100,9 @@ private fun MaxRepetitions.toDomainOrNull(): Achievement.MaxRepetitions? {
         "MaxRepetitions.iterationId is null for example $exerciseExampleId"
     } ?: return null
 
-    val repetitions = AppLogger.Mapping.log(this.repetitions) {
-        "MaxRepetitions.repetitions is null for example $exerciseExampleId"
+    val countedRepetitions = this.repetitions?.takeIf { it >= 0 }
+    val repetitions = AppLogger.Mapping.log(countedRepetitions) {
+        "MaxRepetitions.repetitions is null or negative for example $exerciseExampleId"
     } ?: return null
 
     return Achievement.MaxRepetitions(
@@ -118,8 +122,9 @@ private fun PeakIntensity.toDomainOrNull(): Achievement.PeakIntensity? {
         "PeakIntensity.exerciseId is null for example $exerciseExampleId"
     } ?: return null
 
-    val intensity = AppLogger.Mapping.log(this.intensity) {
-        "PeakIntensity.intensity is null for example $exerciseExampleId"
+    val measuredIntensity = this.intensity?.takeIf { it.isFinite() && it >= 0.0 }
+    val intensity = AppLogger.Mapping.log(measuredIntensity) {
+        "PeakIntensity.intensity is null, non-finite or negative for example $exerciseExampleId"
     } ?: return null
 
     return Achievement.PeakIntensity(

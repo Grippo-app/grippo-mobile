@@ -7,7 +7,6 @@ import com.grippo.shared.dialog.DialogState
 import com.grippo.shared.dialog.SheetPhase
 import kotlinx.collections.immutable.toPersistentList
 
-/** A step can navigate only while it is active in its originating session. */
 internal class SessionDialogNavigation(
     private val sessionId: String,
     private val ownerId: String,

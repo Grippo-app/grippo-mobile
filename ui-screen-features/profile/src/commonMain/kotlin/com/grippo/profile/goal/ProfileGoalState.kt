@@ -23,7 +23,6 @@ import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 internal data class ProfileGoalState(
     val selectedPrimary: GoalPrimaryGoalEnumState? = null,
     val selectedSecondary: GoalSecondaryGoalEnumState? = null,
-
     @Transient
     val limitations: DateRange = DateTimeUtils.shift(
         range = DateTimeUtils.leadingYear(),
@@ -32,10 +31,8 @@ internal data class ProfileGoalState(
     val selectedTarget: DateTimeFormatState = DateTimeFormatState.Empty(
         format = DateFormat.DateOnly.DateMmmDdYyyy,
     ),
-
     @Serializable(with = ImmutableListSerializer::class)
     val selectedPersonalization: ImmutableList<PersonalizationKeyEnumState> = persistentListOf(),
-
     @Transient
     val personalization: ImmutableList<PersonalizationKeyEnumState> =
         PersonalizationKeyEnumState.entries.toPersistentList(),

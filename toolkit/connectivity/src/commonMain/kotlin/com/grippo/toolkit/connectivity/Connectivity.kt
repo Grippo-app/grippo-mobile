@@ -7,9 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 public interface Connectivity {
 
     public val statusUpdates: SharedFlow<Status>
-
     public val monitoring: StateFlow<Boolean>
-
     public val isMonitoring: Boolean
         get() = monitoring.value
 

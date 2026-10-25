@@ -11,7 +11,6 @@ import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.daysUntil
-import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlin.math.roundToInt
@@ -31,7 +30,6 @@ public class TrainingStreakUseCase {
         private const val DAILY_DENSITY_THRESHOLD = 0.85f
     }
 
-    /** The supplied range is the loaded history window; absent dates inside it are inactive dates. */
     public fun fromTrainings(
         trainings: List<Training>,
         range: DateRange,
@@ -63,6 +61,7 @@ public class TrainingStreakUseCase {
                 timeline = emptyList(),
                 historyDays = 0,
                 lastTrainingGapDays = -1,
+                nextTrainingDate = null,
             )
         }
 
@@ -77,13 +76,11 @@ public class TrainingStreakUseCase {
         val cyclic = cyclicCandidate(observation)
 
         val dailyDensity = recentDailyDensity(observation)
-        // A supported cycle describes train/rest timing beyond a weekly count.
-        // Their evidence measures differ, so comparing them as probabilities would mislead.
         val featured = when {
             daily.featured.length >= 3 && dailyDensity >= DAILY_DENSITY_THRESHOLD -> daily
             cyclic != null -> cyclic
             weekly != null -> weekly
-            else -> daily
+            else -> daily.copy(nextTrainingDate = null)
         }
 
         return TrainingStreak(
@@ -92,6 +89,7 @@ public class TrainingStreakUseCase {
             timeline = featured.timeline,
             historyDays = observation.historyDays,
             lastTrainingGapDays = observation.lastTrainingGapDays,
+            nextTrainingDate = featured.nextTrainingDate,
         )
     }
 
@@ -113,6 +111,7 @@ public class TrainingStreakUseCase {
     private data class Candidate(
         val featured: TrainingStreakFeatured,
         val timeline: List<TrainingStreakProgressEntry>,
+        val nextTrainingDate: LocalDate?,
     )
 
     private fun dailyCandidate(observation: Observation): Candidate {
@@ -166,6 +165,7 @@ public class TrainingStreakUseCase {
                 confidence = confidence,
             ),
             timeline = timeline,
+            nextTrainingDate = nextTrainingDate(observation = observation, schedule = null),
         )
     }
 
@@ -181,13 +181,13 @@ public class TrainingStreakUseCase {
     }
 
     private fun weeklyCandidate(observation: Observation): Candidate? {
-        val firstWeekStart = weekStart(observation.from)
+        val firstWeekStart = DateTimeUtils.startOfIsoWeek(observation.from)
         val firstCompleteWeek = if (firstWeekStart == observation.from) {
             firstWeekStart
         } else {
             firstWeekStart.plus(DatePeriod(days = 7))
         }
-        val completedWeekStart = weekStart(observation.completedThrough)
+        val completedWeekStart = DateTimeUtils.startOfIsoWeek(observation.completedThrough)
         val lastCompleteWeek = if (
             completedWeekStart.plus(DatePeriod(days = 6)) <= observation.completedThrough
         ) {
@@ -234,6 +234,7 @@ public class TrainingStreakUseCase {
                 confidence = confidence,
             ),
             timeline = progress.timeline,
+            nextTrainingDate = null,
         )
     }
 
@@ -254,7 +255,6 @@ public class TrainingStreakUseCase {
                 compareBy<Schedule> { it.confidence }.thenBy { -it.periodDays }
             ) ?: return null
 
-        // A seven-day recurrence belongs to the calendar-week metric.
         if (schedule.periodDays == 7) {
             return null
         }
@@ -281,12 +281,27 @@ public class TrainingStreakUseCase {
             )
         }
 
-        return Candidate(featured = featured, timeline = progress.timeline)
+        return Candidate(
+            featured = featured,
+            timeline = progress.timeline,
+            nextTrainingDate = nextTrainingDate(observation = observation, schedule = schedule),
+        )
+    }
+
+    private fun nextTrainingDate(observation: Observation, schedule: Schedule?): LocalDate? {
+        if (!observation.isCurrentDayOpen) {
+            return null
+        }
+
+        val isTodayAvailable = observation.date !in observation.activeDates
+        val firstOffset = if (isTodayAvailable) 0 else 1
+        val lastOffset = schedule?.let { it.periodDays * 2 } ?: 1
+        return (firstOffset..lastOffset)
+            .map { offset -> observation.date.plus(DatePeriod(days = offset)) }
+            .firstOrNull { date -> schedule == null || isTrainingDate(date = date, schedule = schedule) }
     }
 
     private fun detectSchedule(observation: Observation, period: Int): Schedule? {
-        // The first recorded training fixes the phase; shifting a fitted mask must not
-        // move today's cycle boundary to manufacture completed cycles or progress.
         val completedDays = observation.from.daysUntil(observation.completedThrough) + 1
         val completeCycles = completedDays / period
         if (completeCycles < MIN_COMPLETED_CYCLES) {
@@ -327,8 +342,6 @@ public class TrainingStreakUseCase {
         val trainingMatches = trainingCounts.indices.filter { mask[it] }.sumOf { trainingCounts[it] }
         val restMatches = trainingCounts.indices.filter { !mask[it] }
             .sumOf { evidenceCycles - trainingCounts[it] }
-        // Separate agreement prevents the many rest days in a sparse series from
-        // concealing missed training days behind a high overall accuracy.
         val confidence = minOf(
             trainingMatches.toFloat() / expectedTrainingObservations,
             restMatches.toFloat() / expectedRestObservations,
@@ -361,8 +374,6 @@ public class TrainingStreakUseCase {
         val achieved = counts[currentIndex] ?: 0
         val currentIsComplete = currentEnd <= observation.completedThrough
 
-        // An open period preserves the preceding streak until its deadline, and is
-        // counted immediately once the required number of distinct days is recorded.
         var pointer = currentIndex
         if (achieved < schedule.target && !currentIsComplete) {
             pointer--
@@ -436,9 +447,5 @@ public class TrainingStreakUseCase {
         }
         val offset = schedule.anchor.daysUntil(date) % schedule.periodDays
         return schedule.mask[offset]
-    }
-
-    private fun weekStart(date: LocalDate): LocalDate {
-        return date.minus(DatePeriod(days = date.dayOfWeek.isoDayNumber - 1))
     }
 }

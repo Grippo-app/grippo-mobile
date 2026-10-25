@@ -6,7 +6,6 @@ import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.analytics.lifecycle.ScreenPresentation
 import org.koin.core.annotation.Single
 
-/** Stateless singleton; each binding owns its callback and presentation independently. */
 @Single(binds = [ScreenAnalytics::class])
 internal class ScreenAnalyticsImpl : ScreenAnalytics {
 

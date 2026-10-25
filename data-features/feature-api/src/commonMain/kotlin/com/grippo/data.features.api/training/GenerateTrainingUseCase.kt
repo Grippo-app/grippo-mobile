@@ -23,7 +23,6 @@ public class GenerateTrainingUseCase(
 
     public suspend fun execute(date: LocalDateTime): SetTraining? {
         val random: Random = Random.Default
-        // Ensure we have a fresh cache of examples before sampling
         exerciseExampleFeature.getExerciseExamples()
 
         val examples = loadExamples(random) ?: return null

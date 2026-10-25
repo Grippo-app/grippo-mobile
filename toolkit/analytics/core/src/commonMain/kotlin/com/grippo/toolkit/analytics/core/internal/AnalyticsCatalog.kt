@@ -14,7 +14,6 @@ import com.grippo.toolkit.analytics.transport.AnalyticsIdentityPayload
 import com.grippo.toolkit.analytics.transport.AnalyticsPayload
 import com.grippo.toolkit.analytics.transport.AnalyticsValue
 
-/** App composition registers every definition once. Unknown/mismatched definitions are rejected. */
 internal class AnalyticsCatalog(
     definitions: List<AnalyticsEventSchema> = BUILT_IN_EVENTS,
     properties: List<AnalyticsUserPropertyKey<*>> = emptyList(),
@@ -23,7 +22,6 @@ internal class AnalyticsCatalog(
     private val properties: Map<String, AnalyticsUserPropertyKey<*>>
 
     init {
-        // Reject oversized declarations before reading elements or allocating lookup tables.
         require(definitions.size <= AnalyticsSchemaRules.MAX_EVENTS)
         require(properties.size <= AnalyticsSchemaRules.MAX_PROPERTIES)
         definitions.forEach { definition ->
@@ -78,7 +76,6 @@ internal class AnalyticsCatalog(
         }
         values[AnalyticsContextField.SchemaVersion.wireName] = registered.version
         values[AnalyticsContextField.LaunchSource.wireName] = AnalyticsValue.Text(context.launchSource.analyticsCode)
-        // Operations are feature-owned; visible-screen context is not operation attribution.
         context.navigation?.takeIf { operation == null }?.let {
             values[AnalyticsContextField.Screen.wireName] = AnalyticsValue.Text(it.screen.analyticsCode)
             it.referrer?.let { referrer ->
@@ -143,7 +140,6 @@ internal class AnalyticsCatalog(
         private val BUILT_IN_EVENTS = listOf(ScreenViewed.Schema)
 
         fun fromSchemas(groups: List<AnalyticsSchema>): AnalyticsCatalog {
-            // Include built-in definitions before allocating flattened feature collections.
             val eventCount = BUILT_IN_EVENTS.size.toLong() + groups.sumOf { it.events.size.toLong() }
             val propertyCount = groups.sumOf { it.properties.size.toLong() }
             require(eventCount <= AnalyticsSchemaRules.MAX_EVENTS) { "Too many analytics event definitions" }

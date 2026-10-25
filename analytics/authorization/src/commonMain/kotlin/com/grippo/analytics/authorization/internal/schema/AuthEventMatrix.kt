@@ -14,7 +14,6 @@ import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
 import com.grippo.toolkit.analytics.schema.AnalyticsParameter
 import com.grippo.toolkit.analytics.values.AnalyticsCount
 
-/** One exhaustive mapping from public facts to the declared wire catalog. */
 internal object AuthEventMatrix {
     fun event(event: AuthEvent): AnalyticsEvent {
         return when (event) {

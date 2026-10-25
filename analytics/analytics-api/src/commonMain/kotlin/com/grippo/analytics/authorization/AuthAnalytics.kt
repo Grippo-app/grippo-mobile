@@ -6,7 +6,6 @@ import com.grippo.analytics.authorization.models.AuthScreen
 import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.analytics.lifecycle.ScreenPresentation
 
-/** Stateless telemetry. Business results, navigation and error handling remain caller-owned. */
 public interface AuthAnalytics {
     public fun trackEvent(event: AuthEvent)
 

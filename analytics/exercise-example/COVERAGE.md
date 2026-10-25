@@ -17,10 +17,16 @@ Scope: `ui-dialog-features:exercise-example`, reviewed 2026-10-13.
 | Route / surface | Component → VM | Presentation classification |
 |---|---|---|
 | `DialogConfig.ExerciseExampleDetails`, Default or Action mode; Information and Achievements tabs | ExerciseExampleDetailsComponent → ExerciseExampleDetailsViewModel | Live overlay; default null screenPresentation, no dedicated dialog presentation contract |
+| Entry from `HomeRouter.Home`: a tap on an example of the dashboard `ExerciseSpotlightsCard`, Default mode | HomeComponent → HomeViewModel (`onOpenExample(id)`) | Existing `HomeScreen.Home` presentation; open intent `HomeEvent.ExerciseClicked` (`home_exercise_clicked`); see [home](../home/COVERAGE.md) |
+| Entry from `ExercisesRouter.Library` in Browse mode: a tap on a library example, Default mode (in the picking modes `Mode.Default` and `Mode.SimilarTo` the tap returns the example instead) | ExerciseLibraryComponent → ExerciseLibraryViewModel (`onExerciseExampleSelectClick(id)`) | Existing `ExercisesScreen.Library` presentation; open intent `ExercisesEvent.ExerciseDetailsClicked` (`exercises_exercise_details_clicked`); see [exercises](../exercises/COVERAGE.md) |
+| Entry from `TrainingRouter.Exercise`: the exercise editor's example details, Action mode (`change_btn`), whose action closes the session and opens the SimilarTo library | TrainingExerciseComponent → TrainingExerciseViewModel (`onExampleClick()`) | Existing `TrainingScreen.Exercise` presentation; open intent `TrainingEvent.Exercise.ExampleOpened` (`training_action` `exercise_example_opened`) and, for the action, `TrainingEvent.Exercise.ReplaceExample`; see [training](../training/COVERAGE.md) |
+| Entry from `TrainingRouter.Completed`: a tap on a row of `TrainingRecordsCard` (personal records of the saved workout), Default mode | TrainingCompletedComponent → TrainingCompletedViewModel (`onRecordClick(exampleId)`) | Existing `TrainingScreen.Completed` presentation; open intent `TrainingEvent.Completed.RecordOpened` (`training_action` `completed_record_opened`), emitted unconditionally because the card renders only with loaded records; the example ID is a dialog input, never encoded (see [training](../training/COVERAGE.md)) |
+| Nested entry from `DialogConfig.Exercise` (a workout-history record opened from the trainings calendar): its example details action, Default mode | The shared host pushes the step from `ExerciseComponent.onShowExampleDetails` | The Exercise dialog owns the open intent `ExerciseEvent.ExampleDetailsClicked` (`exercise_example_details_clicked`); see [exercise](../exercise/COVERAGE.md) |
 
+`DialogConfig.ExerciseExampleDetails` has exactly these openers: four screen
+ViewModels through `DialogController.open` and the shared host's nested push.
 Both modes and tabs render one dialog, including loading, empty, available and
-unavailable 1RM states. The
-shared DialogContentComponent also creates it for nested Exercise detail actions.
+unavailable 1RM states.
 There are no independent screens or child screen VMs in this module. The existing
 shared foundation presentation boundary is unchanged. Analytics is injected in the
 normal retainedInstance factory; shared registers ExerciseExampleAnalyticsModule.

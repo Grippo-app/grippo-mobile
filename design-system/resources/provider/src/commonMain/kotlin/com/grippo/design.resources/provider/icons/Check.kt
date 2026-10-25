@@ -19,7 +19,6 @@ public val AppIcon.Check: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Chunky filled checkmark (read as "check-fat")
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(20.7f, 6.3f)
                 curveTo(21.1f, 6.7f, 21.1f, 7.3f, 20.7f, 7.7f)

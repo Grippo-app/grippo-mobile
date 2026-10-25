@@ -42,7 +42,6 @@ internal data class ExerciseLibraryState(
 @Immutable
 internal sealed interface ExerciseLibraryMode {
 
-    /** A caller is waiting for one picked example; the toolbar shows Back. */
     @Immutable
     sealed interface Pick : ExerciseLibraryMode
 
@@ -57,11 +56,9 @@ internal sealed interface ExerciseLibraryMode {
         val target: ExerciseExampleValueState? = null,
     ) : Pick
 
-    /** Embedded catalog (the Library tab): no caller, no Back, a card opens its details. */
     @Immutable
     data object Browse : ExerciseLibraryMode
 
-    /** The filter a fresh (non-restored) library starts with in this mode. */
     fun initialFilter(): QueryFilter = when (this) {
         is SimilarTo -> QueryFilter.Suggestions
         is Default -> preselectedMuscleGroupId?.let(QueryFilter::Group) ?: QueryFilter.All

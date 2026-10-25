@@ -11,18 +11,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/**
- * Visual configuration for a vertical Bar chart.
- *
- * Layout overview:
- * - Grid: horizontal lines across the chart
- * - Y axis: labels/ticks; optional axis line
- * - X axis: labels show-all or adaptive thinning
- * - Bars: per-entry fill (solid/gradient), stroke and corner radius
- * - Values: labels above bars
- * - Baseline: optional reference line
- * - Peek: tap or horizontal scrub selection + tooltip
- */
 @Immutable
 public data class BarStyle(
     val layout: Layout,
@@ -35,7 +23,6 @@ public data class BarStyle(
     val values: Values,
     val peek: Peek = Peek.None,
 ) {
-    /** Global paddings for labels. */
     @Immutable
     public data class Layout(
         val labelPadding: Dp,
@@ -57,7 +44,6 @@ public data class BarStyle(
         val bottom: Dp = 0.dp,
     )
 
-    /** Grid config (horizontal lines). */
     @Immutable
     public data class Grid(
         val show: Boolean,
@@ -67,11 +53,9 @@ public data class BarStyle(
 
     @Immutable
     public sealed interface YAxis {
-        /** Hide Y axis. */
         @Immutable
         public data object None : YAxis
 
-        /** Y axis labels with tick marks. */
         @Immutable
         public data class Labels(
             val ticks: Int,
@@ -85,17 +69,14 @@ public data class BarStyle(
 
     @Immutable
     public sealed interface XAxis {
-        /** Hide X axis. */
         @Immutable
         public data object None : XAxis
 
-        /** Show all X labels (may overlap). */
         @Immutable
         public data class LabelsShowAll(
             val textStyle: TextStyle,
         ) : XAxis
 
-        /** Adaptively thin labels to ensure a minimum gap. */
         @Immutable
         public data class LabelsAdaptive(
             val textStyle: TextStyle,
@@ -103,7 +84,6 @@ public data class BarStyle(
         ) : XAxis
     }
 
-    /** Visual config for bars (corner, fill brush, stroke, sizing). */
     @Immutable
     public data class Bars(
         val corner: Dp,
@@ -115,11 +95,9 @@ public data class BarStyle(
 
     @Immutable
     public sealed interface Values {
-        /** No value labels. */
         @Immutable
         public data object None : Values
 
-        /** Draw value labels above bars. */
         @Immutable
         public data class Above(
             val textStyle: TextStyle,
@@ -129,14 +107,12 @@ public data class BarStyle(
 
     @Immutable
     public sealed interface BarsSizing {
-        /** Centers each bar in an equal plot slot, independently of the width cap. */
         @Immutable
         public data class EvenSlots(
             val maxBarWidth: Dp,
             val widthFraction: Float,
         ) : BarsSizing
 
-        /** Compute equal bar/gap width to fill the chart (now adaptive under high density). */
         @Immutable
         public data class AutoEqualBarsAndGaps(
             val midThresholdDp: Dp = 16.dp,
@@ -146,27 +122,22 @@ public data class BarStyle(
             val maxBarWidth: Dp = 40.dp
         ) : BarsSizing
 
-        /** Fixed bar width; gaps auto-fit to available width. */
         @Immutable
         public data class FixedBarWidth(val width: Dp) : BarsSizing
 
-        /** Explicit bar width and spacing. */
         @Immutable
         public data class Explicit(val width: Dp, val spacing: Dp) : BarsSizing
 
-        /** Gap = ratio * barWidth; barWidth is solved from chart width. */
         @Immutable
         public data class GapAsBarRatio(val ratio: Float) : BarsSizing
     }
 
-    /** Left vertical axis line. */
     @Immutable
     public data class AxisLine(
         val color: Color,
         val width: Dp,
     )
 
-    /** Y=0 baseline line. */
     @Immutable
     public data class Baseline(
         val color: Color,
@@ -181,21 +152,17 @@ public data class BarStyle(
         @Immutable
         public data class Visible(
             val hitSlop: Dp = 8.dp,
-
             val guideColor: Color,
             val guideWidth: Dp = 1.dp,
             val guideDash: Dp = 4.dp,
             val guideGap: Dp = 4.dp,
-
             val focusColor: Color? = null,
             val focusRadius: Dp = 4.dp,
             val focusRingWidth: Dp = 2.dp,
             val focusHaloRadius: Dp = 18.dp,
-
             val selectedBarOverlay: Color? = null,
             val selectedBarStrokeColor: Color? = null,
             val selectedBarStrokeWidth: Dp = 2.dp,
-
             val tooltipBackground: Color,
             val tooltipBorder: Color,
             val tooltipText: Color,

@@ -12,7 +12,6 @@ import org.koin.core.annotation.Single
 internal class ResultEmitter {
 
     private val resultFlow = MutableSharedFlow<Pair<String, BaseResult>>(extraBufferCapacity = 64)
-
     val results: Flow<Pair<String, BaseResult>> = resultFlow.asSharedFlow()
 
     suspend fun <T : Any> sendResult(key: ResultKey<Result<T>>, data: T) {

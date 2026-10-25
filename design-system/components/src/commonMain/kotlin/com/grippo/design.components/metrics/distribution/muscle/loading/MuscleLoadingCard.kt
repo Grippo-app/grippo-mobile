@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.metrics.distribution.MuscleLoadEntryState
@@ -23,13 +24,17 @@ import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummaryEmpty
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummarySingleGroup
+import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.design.components.indicators.LineIndicator
+import com.grippo.design.components.loading.SkeletonPanel
+import com.grippo.design.components.loading.SkeletonPanelStyle
 import com.grippo.design.components.metrics.distribution.muscle.loading.internal.MuscleLoadingCardSummary
 import com.grippo.design.components.metrics.distribution.muscle.loading.internal.rememberMuscleLoadIndicatorColors
 import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
+import com.grippo.design.components.utils.rememberSingleLineHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -40,19 +45,26 @@ import com.grippo.design.resources.provider.metric_overview_muscle_details
 import com.grippo.design.resources.provider.metric_overview_muscle_distribution
 import com.grippo.design.resources.provider.metric_overview_muscle_primary
 import com.grippo.design.resources.provider.muscle_load_no_data
+import com.grippo.design.resources.provider.muscle_loading
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
 public sealed interface MuscleLoadingCardStyle {
     @Immutable
-    public data object Overview : MuscleLoadingCardStyle
+    public sealed interface Loadable : MuscleLoadingCardStyle
+
+    @Immutable
+    public data object Overview : Loadable
 
     @Immutable
     public data object Detailed : MuscleLoadingCardStyle
 
     @Immutable
     public data object Summary : MuscleLoadingCardStyle
+
+    @Immutable
+    public data object Session : Loadable
 }
 
 @Composable
@@ -66,6 +78,13 @@ public fun MuscleLoadingCard(
             modifier = modifier,
             summary = summary,
         )
+
+        MuscleLoadingCardStyle.Session -> MetricSectionPanel(
+            modifier = modifier,
+            style = MetricSectionPanelStyle.Large,
+        ) {
+            MuscleLoadingSession(summary = summary)
+        }
 
         MuscleLoadingCardStyle.Overview,
         MuscleLoadingCardStyle.Detailed -> MetricSectionPanel(
@@ -98,13 +117,6 @@ public fun MuscleLoadingCard(
 
 @Composable
 private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
-    val entries = remember(summary.perGroup.entries) {
-        summary.perGroup.entries.sortedByDescending { it.value }.take(3)
-    }
-    val emptyLabel = AppTokens.strings.res(Res.string.muscle_load_no_data)
-    val imageDescription = summary.perGroup.entries.map { entry ->
-        "${entry.group.title().text()} ${PercentageFormatState.shortShare(entry.value)}"
-    }.joinToString(separator = ", ").ifEmpty { emptyLabel }
     val singleGroup = summary.perGroup.entries.singleOrNull()?.group
     val primaryMuscle = if (singleGroup != null) {
         val muscleEntries = summary.perMuscle.entries.filter {
@@ -130,6 +142,43 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
             color = AppTokens.colors.text.secondary,
         )
     }
+
+    MuscleLoadingTopGroups(summary = summary, primaryMuscle = primaryMuscle)
+
+    MuscleLoadingDataNotice(summary = summary)
+
+    Text(
+        text = AppTokens.strings.res(Res.string.metric_overview_muscle_details),
+        style = AppTokens.typography.b12Med(),
+        color = AppTokens.colors.text.secondary,
+    )
+}
+
+@Composable
+private fun MuscleLoadingSession(summary: MuscleLoadSummaryState) {
+    Text(
+        text = AppTokens.strings.res(Res.string.muscle_loading),
+        style = AppTokens.typography.h5(),
+        color = AppTokens.colors.text.primary,
+    )
+
+    MuscleLoadingTopGroups(summary = summary, primaryMuscle = null)
+
+    MuscleLoadingDataNotice(summary = summary)
+}
+
+@Composable
+private fun MuscleLoadingTopGroups(
+    summary: MuscleLoadSummaryState,
+    primaryMuscle: MuscleEnumState?,
+) {
+    val entries = remember(summary.perGroup.entries) {
+        summary.perGroup.entries.sortedByDescending { it.value }.take(3)
+    }
+    val emptyLabel = AppTokens.strings.res(Res.string.muscle_load_no_data)
+    val imageDescription = summary.perGroup.entries.map { entry ->
+        "${entry.group.title().text()} ${PercentageFormatState.shortShare(entry.value)}"
+    }.joinToString(separator = ", ").ifEmpty { emptyLabel }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -176,14 +225,6 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
             }
         }
     }
-
-    MuscleLoadingDataNotice(summary = summary)
-
-    Text(
-        text = AppTokens.strings.res(Res.string.metric_overview_muscle_details),
-        style = AppTokens.typography.b12Med(),
-        color = AppTokens.colors.text.secondary,
-    )
 }
 
 @Composable
@@ -215,6 +256,109 @@ private fun MuscleLoadingOverviewRow(entry: MuscleLoadEntryState, color: Color) 
             modifier = Modifier.fillMaxWidth(),
             progress = (entry.value / 100f).coerceIn(0f, 1f),
             colors = indicatorColors,
+        )
+    }
+}
+
+@Composable
+public fun MuscleLoadingCardSkeleton(
+    modifier: Modifier = Modifier,
+    style: MuscleLoadingCardStyle.Loadable,
+) {
+    val textMeasurer = rememberTextMeasurer()
+    val titleLine = rememberSingleLineHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val groupLine = rememberSingleLineHeight(style = AppTokens.typography.b13Semi(), textMeasurer = textMeasurer)
+    val captionLine = rememberSingleLineHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
+
+    val rowHeight = maxOf(groupLine, captionLine) + AppTokens.dp.contentPadding.text +
+        AppTokens.dp.metrics.charts.indicator.height
+    val groupsHeight = rowHeight * 3 + AppTokens.dp.contentPadding.subContent * 2
+    val mapRowHeight = maxOf(AppTokens.dp.metrics.overview.muscleImageHeight, groupsHeight)
+    val spacer = AppTokens.dp.metrics.panel.large.spacer
+
+    val contentHeight = when (style) {
+        MuscleLoadingCardStyle.Overview -> maxOf(titleLine, AppTokens.dp.metrics.overview.detailsIcon) +
+            AppTokens.dp.contentPadding.text + captionLine + mapRowHeight + captionLine + spacer * 2
+
+        MuscleLoadingCardStyle.Session -> titleLine + spacer + mapRowHeight
+    }
+
+    SkeletonPanel(
+        modifier = modifier,
+        contentHeight = contentHeight,
+        style = SkeletonPanelStyle.Large,
+    )
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingCardSkeletonSessionPreview() {
+    PreviewContainer {
+        MuscleLoadingCardSkeleton(
+            modifier = Modifier.fillMaxWidth(),
+            style = MuscleLoadingCardStyle.Session,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingCardSkeletonOverviewPreview() {
+    PreviewContainer {
+        MuscleLoadingCardSkeleton(
+            modifier = Modifier.fillMaxWidth(),
+            style = MuscleLoadingCardStyle.Overview,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingCardSessionPreview() {
+    PreviewContainer {
+        MuscleLoadingCard(
+            modifier = Modifier.fillMaxWidth(),
+            summary = stubMuscleLoadSummary(),
+            style = MuscleLoadingCardStyle.Session,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingCardSessionSingleGroupPreview() {
+    PreviewContainer {
+        MuscleLoadingCard(
+            modifier = Modifier.fillMaxWidth(),
+            summary = stubMuscleLoadSummarySingleGroup(),
+            style = MuscleLoadingCardStyle.Session,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingCardSessionEmptyPreview() {
+    PreviewContainer {
+        MuscleLoadingCard(
+            modifier = Modifier.fillMaxWidth(),
+            summary = stubMuscleLoadSummaryEmpty(),
+            style = MuscleLoadingCardStyle.Session,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingCardSessionIncompletePreview() {
+    PreviewContainer {
+        val summary = stubMuscleLoadSummary()
+        MuscleLoadingCard(
+            modifier = Modifier.fillMaxWidth(),
+            summary = summary.copy(
+                meta = summary.meta.copy(excludedSets = 2, unassignedSets = 1),
+            ),
+            style = MuscleLoadingCardStyle.Session,
         )
     }
 }

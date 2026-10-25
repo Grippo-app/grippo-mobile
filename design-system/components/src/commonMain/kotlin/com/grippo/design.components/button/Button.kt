@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.design.components.button.internal.defaultButtonTextStyle
 import com.grippo.design.components.button.internal.resolveButtonColors
 import com.grippo.design.components.button.internal.resolveButtonSize
 import com.grippo.design.components.modifiers.scalableClick
@@ -95,13 +96,11 @@ public sealed interface ButtonSize {
 
 @Immutable
 public sealed interface ButtonStyle {
-    // Basic
     public data object Primary : ButtonStyle
     public data object Secondary : ButtonStyle
     public data object Tertiary : ButtonStyle
     public data object Transparent : ButtonStyle
 
-    // Specific
     public data object Error : ButtonStyle
 }
 
@@ -112,7 +111,6 @@ public enum class ButtonState {
     Disabled
 }
 
-/** Loading preserves the label, icons and measured width while a shimmer crosses the surface. */
 @Composable
 public fun Button(
     modifier: Modifier = Modifier,
@@ -121,10 +119,7 @@ public fun Button(
     state: ButtonState = ButtonState.Enabled,
     size: ButtonSize = ButtonSize.Medium,
     onClick: () -> Unit,
-    textStyle: TextStyle = when (size) {
-        ButtonSize.Small -> AppTokens.typography.b12Semi()
-        ButtonSize.Medium -> AppTokens.typography.b14Bold()
-    },
+    textStyle: TextStyle = defaultButtonTextStyle(size),
 ) {
     val colors = resolveButtonColors(style, state)
     val metrics = resolveButtonSize(size)

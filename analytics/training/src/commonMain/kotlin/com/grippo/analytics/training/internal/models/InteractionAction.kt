@@ -35,6 +35,12 @@ internal enum class InteractionAction {
     CompletionConfirmationConfirm,
     CompletionConfirmationDismissRequested,
     CompletedSummaryOpened,
-    CompletedExerciseOpened,
+    CompletedMetricOpened,
+    CompletedStreakOpened,
+    CompletedGoalOpened,
+    CompletedAddGoalClicked,
+    CompletedBaselineSelected,
+    CompletedRecordOpened,
+    CompletedShareClicked,
     CompletedDismissRequested,
 }

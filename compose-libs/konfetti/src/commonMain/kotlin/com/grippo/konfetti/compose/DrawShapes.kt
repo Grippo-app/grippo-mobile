@@ -10,11 +10,6 @@ import com.grippo.konfetti.core.models.Shape.Circle
 import com.grippo.konfetti.core.models.Shape.Rectangle
 import com.grippo.konfetti.core.models.Shape.Square
 
-/**
- * Draw a shape to `compose canvas`. Implementations are expected to draw within a square of size
- * `size` and must vertically/horizontally center their asset if it does not have an equal width
- * and height.
- */
 internal fun Shape.draw(
     drawScope: DrawScope,
     particle: Particle,

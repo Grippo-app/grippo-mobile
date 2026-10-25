@@ -7,7 +7,6 @@ import com.grippo.design.core.AppTokens
 
 @Immutable
 public enum class GoalFitSeverityState(
-    /** Sort order — FAIL first (most actionable), PASS last. */
     public val sortKey: Int,
 ) {
     PASS(sortKey = 2),

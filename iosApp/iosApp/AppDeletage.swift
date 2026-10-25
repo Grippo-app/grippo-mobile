@@ -67,11 +67,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        // Firebase must be configured here — BEFORE any other Firebase calls.
-        // Calling FirebaseApp.configure() in iOSApp.init() is too early:
-        // at that point AppDelegate is not yet set as UIApplication.delegate,
-        // so AppDelegateSwizzler cannot find it and logs:
-        // "App Delegate does not conform to UIApplicationDelegate protocol."
+        // Configure here, not in iOSApp.init(): Firebase's swizzler needs AppDelegate installed first.
         FirebaseApp.configure()
         let analytics = IosFirebaseAnalytics()
         analytics.setCollection(collection: .unknown)
@@ -82,16 +78,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         UNUserNotificationCenter.current().delegate = self
         FirebaseMessaging.Messaging.messaging().delegate = self
 
-        // Register with APNs so Firebase can obtain an FCM token.
-        // Note: this does NOT show a permission prompt — it only fetches the APNs device token.
-        // The user-facing notification permission dialog is requested later via PermissionManager
-        // (inside HomeViewModel), so it appears only after the user has logged in.
         application.registerForRemoteNotifications()
 
         return true
     }
 
-    // Forward the APNs device token to Firebase Messaging so it can map it to an FCM token.
     func application(
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
@@ -106,7 +97,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
         FirebaseMessaging.Messaging.messaging().appDidReceiveMessage(userInfo)
-        // This bridge does not fetch application data.
         completionHandler(.noData)
     }
 }

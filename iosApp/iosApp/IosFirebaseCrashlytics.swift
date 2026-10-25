@@ -29,8 +29,7 @@ final class IosFirebaseCrashlytics: CrashReportingSink {
             origin = cause
         }
 
-        // ExceptionModel has no per-event custom-key API. Keep metadata with this event,
-        // rather than overwriting global keys that can leak into another concurrent report.
+        // ExceptionModel has no per-event keys; global custom keys would leak into concurrent reports.
         var metadata: [String: Any] = [:]
         for attribute in context.metadata {
             switch attribute {
@@ -55,8 +54,7 @@ final class IosFirebaseCrashlytics: CrashReportingSink {
         model.stackTrace = (0..<min(stack.size, maximumStackFrames)).compactMap { index -> StackFrame? in
             guard let nativeLine = stack.get(index: index) else { return nil }
             let line = nativeLine as String
-            // Kotlin/Native frames contain native instruction addresses. Let the matching
-            // app dSYM symbolicate them; NSError would capture this Swift reporting bridge.
+            // Pass raw Kotlin/Native addresses for dSYM symbolication; an NSError would capture this bridge's stack.
             if let token = line.split(whereSeparator: { $0.isWhitespace }).first(where: { $0.hasPrefix("0x") }),
                 let address = UInt(token.dropFirst(2), radix: 16)
             {

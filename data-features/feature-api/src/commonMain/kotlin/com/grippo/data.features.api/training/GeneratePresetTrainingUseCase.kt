@@ -67,10 +67,6 @@ public class GeneratePresetTrainingUseCase(
         return PresetTraining(exercises = exercises)
     }
 
-    // -------------------------------------------------------------------------
-    // Profile: primaryGoal × experience, then soft-tune by secondaryGoal
-    // -------------------------------------------------------------------------
-
     private fun buildProfile(
         primary: GoalPrimaryGoalEnum,
         experience: ExperienceEnum,
@@ -186,10 +182,6 @@ public class GeneratePresetTrainingUseCase(
         else -> profile
     }
 
-    // -------------------------------------------------------------------------
-    // Pool loading (popular first; fallback down the experience ladder)
-    // -------------------------------------------------------------------------
-
     private suspend fun loadExamplePool(
         experience: ExperienceEnum,
         excludedMuscleIds: Set<String>,
@@ -238,11 +230,6 @@ public class GeneratePresetTrainingUseCase(
 
             ExperienceEnum.BEGINNER -> listOf(ExperienceEnum.BEGINNER)
         }
-
-    // -------------------------------------------------------------------------
-    // Balanced selection by MuscleGroup, ForceType, Compound/Isolation share.
-    // Pool is already sorted by popularity — we walk it in order, no shuffle.
-    // -------------------------------------------------------------------------
 
     private fun selectBalanced(
         pool: List<ExerciseExample>,
@@ -352,11 +339,6 @@ public class GeneratePresetTrainingUseCase(
     private fun dominantMuscleGroup(example: ExerciseExample): MuscleGroupEnum? =
         example.bundles.maxByOrNull { it.percentage }?.muscle?.type?.group()
 
-    // -------------------------------------------------------------------------
-    // Iterations: identical sets per exercise; nullability of weight fields
-    // mirrors the exercise's component shape (same convention as SetIteration).
-    // -------------------------------------------------------------------------
-
     private fun buildIterations(
         example: ExerciseExample,
         profile: TrainingProfile,
@@ -444,10 +426,6 @@ public class GeneratePresetTrainingUseCase(
             .coerceAtLeast(0f)
             .round25()
     }
-
-    // -------------------------------------------------------------------------
-    // Internals
-    // -------------------------------------------------------------------------
 
     private data class TrainingProfile(
         val exerciseCount: Int,

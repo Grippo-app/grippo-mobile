@@ -57,7 +57,6 @@ public sealed class DurationFormatState : FormatState<Duration> {
             return "$number ${AppTokens.strings.res(Res.string.minutes_short)}"
         }
 
-        /** Read-only accumulated time is allowed to be zero or span multiple days. */
         public fun ofTotal(value: Duration?): DurationFormatState {
             if (value == null) {
                 return Empty()

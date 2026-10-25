@@ -95,7 +95,6 @@ internal class HomeViewModel(
     excludedEquipmentsFeature: ExcludedEquipmentsFeature,
     goalFeature: GoalFeature,
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
-    // Resolve the persisted selection before rendering or requesting trainings.
     HomeState(range = DateRangeFormatState.Empty(kind = DateRangeKind.Last30Days))
 ), HomeContract {
 
@@ -275,9 +274,6 @@ internal class HomeViewModel(
 
     private fun provideTrainings(value: Triple<DateRange, List<Training>, List<ExerciseExample>>) {
         val (period, list, examples) = value
-        // Always run the performance use case — it returns 5 metrics regardless
-        // of input size (Empty status when sparse), so the dashboard preserves a
-        // stable card layout when the user is past the unlock thresholds.
         val performance = performanceTrendUseCase
             .fromTrainings(list)
             .toState()

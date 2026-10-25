@@ -64,6 +64,7 @@ import com.grippo.toolkit.local.notification.NotificationManagerModule
 import com.grippo.toolkit.messaging.core.MessagingModule
 import com.grippo.toolkit.permission.PermissionManagerModule
 import com.grippo.toolkit.serialization.SerializationModule
+import com.grippo.toolkit.share.ShareModule
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.ksp.generated.module
 import org.koin.mp.KoinPlatformTools
@@ -130,6 +131,7 @@ public object Koin {
                 FeatureApiModule().module,
                 ConnectivityModule().module,
                 LinkOpenerModule().module,
+                ShareModule().module,
                 NotificationManagerModule().module,
                 PermissionManagerModule().module,
                 ResourcesProviderModule().module,

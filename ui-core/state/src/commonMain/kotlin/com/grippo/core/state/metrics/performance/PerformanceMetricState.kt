@@ -9,6 +9,8 @@ import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.AppColor
+import kotlin.math.roundToInt
 import kotlin.time.Duration as KotlinDuration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
@@ -32,9 +34,18 @@ public sealed interface PerformanceMetricState {
         is Intensity -> average != null
     }
 
-    /** Values retain their calculation precision; only display text is rounded. */
+    public fun hasComparison(): Boolean =
+        currentVsAveragePercentage != null || status == PerformanceTrendStatusState.Record
+
+    public fun votes(): Boolean = !isEmpty() && this !is Duration
+
+    public fun showsComparison(): Boolean = votes() && hasComparison()
+
     public fun chartValue(): Float? {
-        if (isEmpty()) return null
+        if (isEmpty()) {
+            return null
+        }
+
         val value = when (this) {
             is Duration -> current?.toDouble(DurationUnit.MINUTES)?.toFloat()
             is Volume -> current
@@ -43,6 +54,26 @@ public sealed interface PerformanceMetricState {
             is Intensity -> current
         }
         return value?.takeIf { it.isFinite() && it >= 0f }
+    }
+
+    public fun averageChartValue(): Float? {
+        val value = when (this) {
+            is Duration -> average?.toDouble(DurationUnit.MINUTES)?.toFloat()
+            is Volume -> average
+            is Density -> average
+            is Repetitions -> average?.toFloat()
+            is Intensity -> average
+        }
+        return value?.takeIf { it.isFinite() && it >= 0f }
+    }
+
+    @Composable
+    public fun displayValue(value: Float): String = when (this) {
+        is Duration -> DurationFormatState.shortMinutes(value.toDouble().minutes)
+        is Volume -> VolumeFormatState.shortTotal(value)
+        is Density -> DensityFormatState.shortTotal(value)
+        is Repetitions -> RepetitionsFormatState.shortAverage(value.toDouble())
+        is Intensity -> IntensityFormatState.shortAverage(value)
     }
 
     @Composable
@@ -64,20 +95,39 @@ public sealed interface PerformanceMetricState {
     }
 
     @Composable
-    public fun averageDeltaColor(): Color {
-        if (this is Duration) {
-            return AppTokens.colors.text.secondary
+    public fun averageDeltaColor(): Color = when (band()) {
+        Band.Gain -> AppTokens.colors.semantic.success
+        Band.Loss -> AppTokens.colors.semantic.decline
+        Band.Neutral -> AppTokens.colors.text.secondary
+    }
+
+    @Composable
+    public fun indicatorColors(): AppColor.Charts.IndicatorColors.IndicatorColors = when (band()) {
+        Band.Gain -> AppTokens.colors.charts.indicator.success
+        Band.Loss -> AppTokens.colors.charts.indicator.decline
+        Band.Neutral -> AppTokens.colors.charts.indicator.muted
+    }
+
+    private fun band(): Band {
+        if (!votes()) {
+            return Band.Neutral
         }
 
         return when (status) {
             PerformanceTrendStatusState.Record,
-            PerformanceTrendStatusState.Improved -> AppTokens.colors.semantic.success
+            PerformanceTrendStatusState.Improved -> Band.Gain
 
-            PerformanceTrendStatusState.Declined -> AppTokens.colors.semantic.warning
+            PerformanceTrendStatusState.Declined -> Band.Loss
 
             PerformanceTrendStatusState.Stable,
-            PerformanceTrendStatusState.Empty -> AppTokens.colors.text.secondary
+            PerformanceTrendStatusState.Empty -> Band.Neutral
         }
+    }
+
+    private enum class Band {
+        Gain,
+        Loss,
+        Neutral,
     }
 
     @Immutable
@@ -206,8 +256,107 @@ public fun stubEmptyPerformanceMetric(): PerformanceMetricState =
         status = PerformanceTrendStatusState.Empty,
     )
 
+public fun stubPerformanceMetricsByType(): ImmutableList<PerformanceMetricState> =
+    stubPerformanceMetrics().distinctBy { it.type }.toPersistentList()
+
+public fun stubPerformanceMetricsWithoutBaseline(): ImmutableList<PerformanceMetricState> =
+    stubPerformanceMetricsByType().map { metric ->
+        when (metric) {
+            is PerformanceMetricState.Duration -> metric.copy(
+                currentVsAveragePercentage = null,
+                average = null,
+                best = metric.current,
+                status = PerformanceTrendStatusState.Stable,
+            )
+
+            is PerformanceMetricState.Volume -> metric.copy(
+                currentVsAveragePercentage = null,
+                average = null,
+                best = metric.current,
+                status = PerformanceTrendStatusState.Stable,
+            )
+
+            is PerformanceMetricState.Density -> metric.copy(
+                currentVsAveragePercentage = null,
+                average = null,
+                best = metric.current,
+                status = PerformanceTrendStatusState.Stable,
+            )
+
+            is PerformanceMetricState.Repetitions -> metric.copy(
+                currentVsAveragePercentage = null,
+                average = null,
+                best = metric.current,
+                status = PerformanceTrendStatusState.Stable,
+            )
+
+            is PerformanceMetricState.Intensity -> metric.copy(
+                currentVsAveragePercentage = null,
+                average = null,
+                best = metric.current,
+                status = PerformanceTrendStatusState.Stable,
+            )
+        }
+    }.toPersistentList()
+
+public fun stubPerformanceMetricsImproved(): ImmutableList<PerformanceMetricState> =
+    stubPerformanceMetricsByType().map { metric ->
+        when (metric) {
+            is PerformanceMetricState.Duration -> metric
+
+            is PerformanceMetricState.Volume -> metric.copy(
+                best = 1_250f,
+                status = PerformanceTrendStatusState.Improved,
+            )
+
+            is PerformanceMetricState.Density -> metric.copy(status = PerformanceTrendStatusState.Improved)
+
+            is PerformanceMetricState.Repetitions -> metric.copy(status = PerformanceTrendStatusState.Improved)
+
+            is PerformanceMetricState.Intensity -> metric.copy(
+                currentVsAveragePercentage = 8.6,
+                current = 38f,
+                status = PerformanceTrendStatusState.Improved,
+            )
+        }
+    }.toPersistentList()
+
+private const val PREVIEW_DECLINE_PERCENTAGE = -12.0
+private const val PREVIEW_DECLINE_RATIO = 1 + PREVIEW_DECLINE_PERCENTAGE / 100
+
+public fun stubPerformanceMetricsDeclined(): ImmutableList<PerformanceMetricState> =
+    stubPerformanceMetricsByType().map { metric ->
+        when (metric) {
+            is PerformanceMetricState.Duration -> metric
+
+            is PerformanceMetricState.Volume -> metric.copy(
+                currentVsAveragePercentage = PREVIEW_DECLINE_PERCENTAGE,
+                current = metric.average?.times(PREVIEW_DECLINE_RATIO.toFloat()),
+                status = PerformanceTrendStatusState.Declined,
+            )
+
+            is PerformanceMetricState.Density -> metric.copy(
+                currentVsAveragePercentage = PREVIEW_DECLINE_PERCENTAGE,
+                current = metric.average?.times(PREVIEW_DECLINE_RATIO.toFloat()),
+                status = PerformanceTrendStatusState.Declined,
+            )
+
+            is PerformanceMetricState.Repetitions -> metric.copy(
+                currentVsAveragePercentage = PREVIEW_DECLINE_PERCENTAGE,
+                current = metric.average?.times(PREVIEW_DECLINE_RATIO)?.roundToInt(),
+                status = PerformanceTrendStatusState.Declined,
+            )
+
+            is PerformanceMetricState.Intensity -> metric.copy(
+                currentVsAveragePercentage = PREVIEW_DECLINE_PERCENTAGE,
+                current = metric.average?.times(PREVIEW_DECLINE_RATIO.toFloat()),
+                status = PerformanceTrendStatusState.Declined,
+            )
+        }
+    }.toPersistentList()
+
 public fun stubEmptyPerformanceMetrics(): ImmutableList<PerformanceMetricState> =
-    stubPerformanceMetrics().distinctBy { it.type }.map { metric ->
+    stubPerformanceMetricsByType().map { metric ->
         when (metric) {
             is PerformanceMetricState.Duration -> metric.copy(
                 currentVsAveragePercentage = null,

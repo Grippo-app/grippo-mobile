@@ -26,7 +26,6 @@ public object AppLogger {
             false
         }
 
-        // Switch logger to a fresh empty file after cleanup
         fileDestination.updateWriter(LogFileWriter.create())
 
         return deleted

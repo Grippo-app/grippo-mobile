@@ -49,10 +49,6 @@ private enum class Slot {
     Content
 }
 
-/**
- * Keep the swipe viewport at screen width. Use [horizontalPadding] for card gutters
- * so actions enter from the screen edge and settle within those gutters.
- */
 @Composable
 public fun SwipeToReveal(
     modifier: Modifier = Modifier,
@@ -76,7 +72,6 @@ public fun SwipeToReveal(
         }
     }
 
-    // Actions keep their natural size; swiping never changes the row's height.
     SubcomposeLayout(
         modifier
             .clipToBounds()
@@ -100,7 +95,6 @@ public fun SwipeToReveal(
                 },
             )
     ) { constraints ->
-        // The card defines the height, including for actions using fillMaxHeight().
         val contentPlaceable = subcompose(Slot.Content) {
             Box(Modifier.fillMaxWidth().padding(horizontal = horizontalPadding)) { content() }
         }.single().measure(constraints)
@@ -125,14 +119,12 @@ public fun SwipeToReveal(
             )
         )
         val actionsWidth = actionsPlaceable.width
-        // The trailing gutter belongs to the screen, not to the card's travel distance.
         val revealWidth = (actionsWidth - horizontalPadding.roundToPx()).coerceAtLeast(0).toFloat()
         if (maxRevealPx != revealWidth) {
             maxRevealPx = revealWidth
         }
 
         layout(layoutWidth, layoutHeight) {
-            // Read the animated offset in placement, without remeasuring every frame.
             val clampedOffset = offsetX.coerceIn(-maxRevealPx, 0f)
             val revealFraction = if (maxRevealPx > 0f) -clampedOffset / maxRevealPx else 0f
             val actionsX = layoutWidth - (actionsWidth * revealFraction).roundToInt()

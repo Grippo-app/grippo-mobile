@@ -24,9 +24,6 @@ internal object Migration3To4 : Migration(3, 4) {
             """.trimIndent()
         )
 
-        // weight_history: add userId column + FK to user with CASCADE on delete.
-        // Existing rows are cached from the backend and will be re-fetched,
-        // so we drop and recreate the table instead of trying to back-fill userId.
         connection.execSQL("DROP TABLE IF EXISTS `weight_history`")
         connection.execSQL(
             """

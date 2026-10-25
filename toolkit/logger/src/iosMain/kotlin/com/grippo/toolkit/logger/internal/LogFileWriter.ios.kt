@@ -55,7 +55,6 @@ internal actual class LogFileWriter private constructor(
 
         actual fun deleteFile(path: String): Boolean {
             val manager = NSFileManager.defaultManager
-            // removeItemAtPath returns true if file was removed
             return manager.removeItemAtPath(path, null)
         }
 

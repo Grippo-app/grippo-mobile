@@ -30,6 +30,7 @@ import com.grippo.design.components.metrics.MetricCardPresentation
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCard
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardStyle
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
+import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardStyle
 import com.grippo.design.components.metrics.performance.ExerciseSpotlightsCard
 import com.grippo.design.components.metrics.performance.PerformanceMetricCard
 import com.grippo.design.components.metrics.profile.goal.GoalCard
@@ -162,7 +163,7 @@ internal fun DashboardHomeContent(
                         .fillMaxWidth()
                         .scalableClick(onClick = contract::onOpenTrainingStreak),
                     value = state.streak,
-                    presentation = MetricCardPresentation.Overview,
+                    style = TrainingStreakCardStyle.Overview,
                 )
             }
         }

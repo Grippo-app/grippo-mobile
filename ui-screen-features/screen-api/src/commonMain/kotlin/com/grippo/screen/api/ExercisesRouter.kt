@@ -15,7 +15,6 @@ public sealed class ExercisesRouter : BaseRouter {
 
     @Serializable
     public sealed interface Mode {
-        /** The caller waits for one picked example on [resultKey]. */
         @Serializable
         public sealed interface Pick : Mode {
             public val resultKey: ResultKey<Result<ExerciseExampleState>>
@@ -33,7 +32,6 @@ public sealed class ExercisesRouter : BaseRouter {
             override val resultKey: ResultKey<Result<ExerciseExampleState>>,
         ) : Pick
 
-        /** Embedded catalog (the Library tab): nothing is returned. */
         @Serializable
         public data object Browse : Mode
     }

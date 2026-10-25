@@ -12,7 +12,6 @@ import com.grippo.toolkit.analytics.schema.AnalyticsEventSchema
 import com.grippo.toolkit.analytics.schema.AnalyticsParameter
 import com.grippo.toolkit.analytics.values.AnalyticsCount
 
-/** Exhaustive mapping of closed observations to explicit wire schemas. */
 internal object ProfileEventMatrix {
     fun event(event: ProfileEvent): AnalyticsEvent = when (event) {
         is ProfileEvent.MenuSelected -> payload(

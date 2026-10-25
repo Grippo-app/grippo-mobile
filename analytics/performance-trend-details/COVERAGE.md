@@ -1,7 +1,9 @@
 # Performance trend details coverage
 
 Scope: `:ui-dialog-features:performance-trend-details`; Home opens the selected
-metric and selected training period through `DialogConfig.PerformanceTrendDetails`.
+metric and selected training period, and the Completed workout screen opens the
+tapped growth-bar metric and its resolved period, through the same
+`DialogConfig.PerformanceTrendDetails`.
 
 ## Surface and observation inventory
 
@@ -13,11 +15,14 @@ the default null screenPresentation. Dialog sessions have no presentation contra
 | Route/surface | Component | ViewModel | Screen hook / classification |
 |---|---|---|---|
 | DialogConfig.PerformanceTrendDetails / sheet | PerformanceTrendDetailsComponent | Retained PerformanceTrendDetailsViewModel | Default null under the live-dialog policy; no independent screen |
+| `HomeRouter.Home` / Dashboard PerformanceMetricCard entry | HomeComponent | Retained HomeViewModel | Existing typed `HomeScreen.Home` hook; full inventory in `analytics/home/COVERAGE.md` |
+| `TrainingRouter.Completed` / PerformanceComparisonCard growth-bar entry | TrainingCompletedComponent | Retained TrainingCompletedViewModel | Existing typed `TrainingScreen.Completed` hook; full inventory in `analytics/training/COVERAGE.md` |
 
 | Owner / callback | Observation | Eligibility / payload |
 |---|---|---|
 | PerformanceTrendDetailsViewModel.onBack | DismissRequested / performance_trend_dismiss_requested v1 | Existing Back callback, empty parameters before the existing direction |
 | HomeViewModel.onPerformanceMetricClick | HomeEvent.PerformanceMetricClicked | Existing valid-range guard; parameterless event. Metric type is a business dialog input omitted from telemetry; owned by Home |
+| TrainingCompletedViewModel.onMetricClick | TrainingEvent.Completed.MetricOpened / completed_metric_opened v1 | Resolved-period guard (`state.range.value`); parameterless event. The tapped metric type and the Completed period are business dialog inputs (title `value_performance_trend(rangeLabel, metric)` or `performance_trend(metric)`), not encoded; owned by Completed |
 | Training observation and history calculation | Deliberate omission | Data-backed rebuilding and pure local calculation, no finite request or submission |
 
 The leaf Back callback observes a dismissal request, not delivered dismissal.
@@ -34,7 +39,9 @@ transport. The live admin synchronization trigger therefore does not apply.
 
 ## Calculation and presentation contract
 
-The same pure PerformanceTrendUseCase produces Home and every history entry.
+The same pure PerformanceTrendUseCase produces Home, the Completed comparison and
+every history entry (Completed feeds it the saved workout plus the period trainings
+created before it, or at the same instant with a lower id; see `analytics/training/COVERAGE.md`).
 Sessions are ordered by creation date and identity. Each entry compares that
 session with available nonnegative finite values of earlier sessions in the selected
 period. No earlier session means an unavailable comparison, not a fabricated zero.
@@ -48,6 +55,10 @@ same current-versus-previous-average comparison, with a minimum 5% threshold wid
 by twice the historical sample standard deviation relative to the mean. Only a
 strict increase beyond the previous maximum earns a period-best status. Ties do
 not. Duration stays neutral; cards show neither a status nor a best-duration claim.
+This is the use case's Average baseline: Home and this sheet always use it, and so
+does the Completed comparison under its default selection. Under its Previous
+selection the Completed comparison compares only with the previous workout in the
+period, with a fixed ±5 % band, and never reports a period best.
 Dates and period labels resolve through canonical composable formatters, so a locale
 change updates retained history and chart labels without a ViewModel reload.
 Descriptions explain exercise/session composition limits without inferring fatigue,
@@ -95,7 +106,7 @@ no earlier measurement.
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
-| PerformanceTrendDetailsComponent / VM | range and metricType | Runtime only for live dialog | Caller inputs and retainedInstance; no draft key | Retained VM survives ordinary recreation; fresh opening uses current Home inputs |
+| PerformanceTrendDetailsComponent / VM | range and metricType | Runtime only for live dialog | Caller inputs and retainedInstance; no draft key | Retained VM survives ordinary recreation; a fresh opening uses the caller's current inputs (Home's selected period and metric, or Completed's resolved period and tapped metric) |
 | PerformanceTrendDetailsViewModel | history, training identity, dates and metric presentation | Rebuild | TrainingFeature.observeTrainings for the selected range, PerformanceTrendUseCase and domain-to-state mapper | History starts null; the first emission resolves populated/empty data in one update. At most ten newest entries are retained for the summary and chart, with up to nine previous-session rows derived locally; their comparisons still use all predecessors |
 | PerformanceTrendDetailsScreen | Methodology disclosure state | Runtime only | Local rememberSaveable presentation state in the live dialog | Fresh opening starts collapsed; ordinary recomposition/recreation retains the current disclosure. No business draft or process-death dialog restoration |
 | Dialog host | Session, callbacks and pending Back | Runtime only | Slot/step serializer = null | Process death discards the session |
@@ -103,4 +114,6 @@ no earlier measurement.
 
 No editable business fields, selections, filters, picker results, secrets or parent
 drafts are introduced. Calculated values are rebuilt; no StateKeeper supplier, extra
-lifecycle job or reporting state is added. Home owns its selected period.
+lifecycle job or reporting state is added. Each caller owns its period: Home its
+selected range, Completed the committed Home period it rebuilds from
+`LocalSettingsFeature.observeRange()`.

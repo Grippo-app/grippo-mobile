@@ -1,7 +1,7 @@
 # Exercise dialog coverage
 
 Scope: `:ui-dialog-features:exercise`, the read-only record opened from a
-completed exercise in workout history or the completed-workout screen.
+completed exercise in workout history.
 
 ## Surface and presentation gate
 
@@ -9,10 +9,10 @@ completed exercise in workout history or the completed-workout screen.
 |---|---|---|
 | `DialogConfig.Exercise` → dialog content child → `ExerciseScreen` | ExerciseComponent → ExerciseViewModel | Read-only runtime overlay; default null `screenPresentation`. Loading, unavailable and available content are states of the same overlay, without a separate presentation contract. |
 | `TrainingsRouter.Trainings` → daily timeline → Exercise overlay | TrainingsComponent → TrainingsViewModel | Existing `TrainingsScreen.Calendar` presentation and `TrainingsEvent.ExerciseClicked` open intent remain unchanged. |
-| `TrainingRouter.Completed` → completed timeline → Exercise overlay | TrainingCompletedComponent → TrainingCompletedViewModel | Existing `TrainingScreen.Completed` presentation and `TrainingEvent.Completed.ExerciseOpened` open intent remain unchanged. |
 | `ShowExampleDetails` → host pushes `DialogConfig.ExerciseExampleDetails` | Existing ExerciseExampleDetailsComponent → VM | Existing nested runtime overlay; no new navigation or analytics contract. |
 
-Both entries use the same host factory. ExerciseComponent resolves
+The trainings calendar's daily timeline is the only caller (`TrainingsViewModel` is the
+only `DialogConfig.Exercise` opener); it uses the shared host factory. ExerciseComponent resolves
 ExerciseAnalytics inside `retainedInstance`. Shared registers ExerciseAnalyticsModule
 and its qualified `exercise_analytics` schema. The host retains its toolbar,
 Back/close behavior and in-memory session ownership.
@@ -56,7 +56,7 @@ recent history and achievements through their existing owners.
 | ExerciseVolumeHistoryChart | Tooltip / touched bar | Runtime only | Existing shared BarChart owner | No business selection; recreated from chronological history with the selected entry last. |
 | DialogConfig.Exercise / host | id, title, callbacks and session identity | Runtime only | Existing slot and content stack, serializer = null | Retained VM supports ordinary recreation; process death closes the dialog session. No StateKeeper supplier is added. |
 | Exercise VM / foundation | loaders, directions and subscription | Runtime only | Existing foundation and retainedInstance | Jobs, callbacks and reporting metadata are not serialized. |
-| Calling screens | Existing date/range and completed-workout draft | Preserve | Existing `TrainingsDraft` / `TrainingCompletedDraft` Component StateKeeper keys | Unchanged. This dialog returns no editable selection/result; detail navigation uses the existing example ID. |
+| Calling screen (trainings calendar) | Selected date range and Daily/Monthly mode | Preserve | Existing `TrainingsDraft` Component StateKeeper key | Owned by the calendar. This dialog returns no editable selection/result; detail navigation uses the existing example ID. |
 
 No new serialization, routes, archive schema or app-shell changes. The module
 declares the existing date-utils and datetime dependencies directly for the

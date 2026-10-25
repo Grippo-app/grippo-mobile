@@ -46,8 +46,6 @@ public interface TrainingDao {
     )
     public fun getExerciseById(id: String): Flow<ExercisePack?>
 
-    // ────────────── INSERT ──────────────
-
     @Transaction
     public suspend fun insertOrReplace(
         training: TrainingEntity,
@@ -79,8 +77,6 @@ public interface TrainingDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertIterations(iterations: List<IterationEntity>)
-
-    // ────────────── DELETE ──────────────
 
     @Query("DELETE FROM training")
     public suspend fun delete()

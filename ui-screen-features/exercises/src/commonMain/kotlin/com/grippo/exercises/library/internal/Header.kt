@@ -117,7 +117,6 @@ private fun LibraryFilterChip(
     )
 }
 
-/** Suggestion glyph in the Inline [MuscleMark] slot size, so every filter chip shares one height and baseline. */
 @Composable
 private fun SuggestionsMark(modifier: Modifier = Modifier) {
     Box(

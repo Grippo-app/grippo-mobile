@@ -97,6 +97,12 @@ private fun LineIndicatorPreview() {
         )
 
         LineIndicator(
+            modifier = Modifier.fillMaxWidth(),
+            progress = 0.01f,
+            colors = AppTokens.colors.charts.indicator.muted,
+        )
+
+        LineIndicator(
             progress = 0.5f,
             colors = AppTokens.colors.charts.indicator.info,
             barHeight = 10.dp,

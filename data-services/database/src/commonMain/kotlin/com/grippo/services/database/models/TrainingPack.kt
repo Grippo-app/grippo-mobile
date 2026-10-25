@@ -9,7 +9,6 @@ import com.grippo.services.database.entity.TrainingEntity
 
 public data class TrainingPack(
     @Embedded val training: TrainingEntity,
-
     @Relation(
         parentColumn = "id",
         entityColumn = "trainingId",
@@ -20,13 +19,11 @@ public data class TrainingPack(
 
 public data class ExercisePack(
     @Embedded val exercise: ExerciseEntity,
-
     @Relation(
         parentColumn = "exerciseExampleId",
         entityColumn = "id"
     )
     val example: ExerciseExampleEntity? = null,
-
     @Relation(
         parentColumn = "id",
         entityColumn = "exerciseId",

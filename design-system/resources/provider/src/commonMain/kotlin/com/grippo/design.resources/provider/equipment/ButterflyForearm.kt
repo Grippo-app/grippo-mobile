@@ -11,7 +11,6 @@ import com.grippo.design.resources.provider.colors.AppPalette
 
 private var _ButterflyForearm: ImageVector? = null
 
-/** Pec deck with upright pads supporting bent elbows and the full forearms. */
 public val ButterflyForearm: ImageVector
     get() {
         if (_ButterflyForearm != null) {

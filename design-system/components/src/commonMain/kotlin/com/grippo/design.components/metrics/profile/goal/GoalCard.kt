@@ -1,6 +1,7 @@
 package com.grippo.design.components.metrics.profile.goal
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.profile.GoalProgressState
@@ -11,6 +12,7 @@ import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.components.metrics.profile.goal.internal.GoalCardAssessment
 import com.grippo.design.components.metrics.profile.goal.internal.GoalCardCalendar
 import com.grippo.design.components.metrics.profile.goal.internal.GoalCardContent
+import com.grippo.design.components.metrics.profile.goal.internal.GoalCardGrowth
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
@@ -27,6 +29,11 @@ public sealed interface GoalCardStyle {
     @Stable
     public data class Calendar(
         public val onUpdateClick: () -> Unit,
+    ) : GoalCardStyle
+
+    @Immutable
+    public data class Growth(
+        public val previous: GoalProgressState?,
     ) : GoalCardStyle
 }
 
@@ -57,6 +64,12 @@ public fun GoalCard(
             modifier = modifier,
             value = value,
             onUpdateClick = style.onUpdateClick,
+        )
+
+        is GoalCardStyle.Growth -> GoalCardGrowth(
+            modifier = modifier,
+            value = value,
+            previous = style.previous,
         )
     }
 }
@@ -101,7 +114,9 @@ private fun GoalCardOverviewDriftingPreview() {
 @Composable
 private fun GoalCardOverviewOffTrackPreview() {
     PreviewContainer {
-        val value = stubGoalProgressList().first { it.score?.let { score -> score < GoalProgressState.DRIFTING_MIN } == true }
+        val value = stubGoalProgressList().first {
+            it.score?.let { score -> score < GoalProgressState.DRIFTING_MIN } == true
+        }
         GoalCard(
             value = value.copy(
                 goal = value.goal.copy(primaryGoal = GoalPrimaryGoalEnumState.RETURN_TO_TRAINING),

@@ -3,7 +3,6 @@ package com.grippo.toolkit.date.utils
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
-// https://kotlinlang.org/api/kotlinx-datetime/kotlinx-datetime/kotlinx.datetime.format/by-unicode-pattern.html
 @Immutable
 @Serializable
 public sealed interface DateFormat {

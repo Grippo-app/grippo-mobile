@@ -47,7 +47,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // Warm start: app already running, user tapped a notification
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         intent.getStringExtra(LocalNotificationExtras.DEEPLINK)
@@ -64,7 +63,6 @@ private fun SystemBarsIcons() {
     val window = activity.window
     val controller = WindowCompat.getInsetsController(window, view)
     DisposableEffect(view, darkTheme) {
-        // Save previous icon modes
         val prevStatus = controller.isAppearanceLightStatusBars
         val prevNav = controller.isAppearanceLightNavigationBars
 
@@ -72,7 +70,6 @@ private fun SystemBarsIcons() {
         controller.isAppearanceLightNavigationBars = !darkTheme
 
         onDispose {
-            // Restore on exit
             controller.isAppearanceLightStatusBars = prevStatus
             controller.isAppearanceLightNavigationBars = prevNav
         }

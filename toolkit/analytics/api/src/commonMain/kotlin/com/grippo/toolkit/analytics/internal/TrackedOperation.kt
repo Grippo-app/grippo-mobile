@@ -22,7 +22,6 @@ internal suspend fun <T> Analytics.executeTrackedOperation(
     val result = try {
         block()
     } catch (error: Exception) {
-        // A schema/encoding defect must not replace the original operation failure.
         try {
             val duration = DurationMillis(started.elapsedNow().inWholeMilliseconds)
             val event = if (error is CancellationException) events.interrupted(duration)

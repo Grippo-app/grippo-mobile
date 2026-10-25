@@ -8,4 +8,7 @@ public enum class TrainingOperation {
     CreateTraining,
     UpdateTraining,
     RefreshExamples,
+    RefreshTrainings,
+    LoadRecords,
+    ShareRecap,
 }

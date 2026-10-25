@@ -37,12 +37,10 @@ public fun AreaChart(
             return@Canvas
         }
 
-        // ----- X domain -----
         val minX = points.minOf { it.x }
         val maxX = points.maxOf { it.x }
         val spanX = (maxX.toDouble() - minX).coerceAtLeast(1e-6)
 
-        // ----- Y domain (auto with headroom) -----
         val rawMin = points.minOf { it.y }.toDouble()
         val rawMax = points.maxOf { it.y }.toDouble()
         val rawSpan = (rawMax - rawMin).coerceAtLeast(1e-6)
@@ -59,10 +57,8 @@ public fun AreaChart(
         val maxY = ceil(yMaxTarget / yStep) * yStep
         val spanY = (maxY - minY).coerceAtLeast(1e-6)
 
-        // ----- Measure labels (all inside the canvas; no external paddings) -----
         val labelPadPx = style.labelPadding.toPx()
 
-        // Y labels prepared first to compute left gutter
         val yTickCount = ((maxY - minY) / yStep).roundToInt().coerceIn(1, 100)
         val yTicks = (0..yTickCount).map { index -> minY + index * yStep }
         val rawY = when (val yCfg = style.yAxis) {
@@ -113,7 +109,6 @@ public fun AreaChart(
         val inset = maxOf(style.line.strokeWidth.toPx() / 2f, dotsRadius, markerRadius)
 
 
-        // X labels come from points; we’ll thin them to avoid overlap
         val xLayouts = when (val xCfg = style.xAxis) {
             is AreaStyle.XAxis.LabelsAdaptive -> points.map { p ->
                 p.xLabel?.let { measurer.measure(
@@ -141,7 +136,6 @@ public fun AreaChart(
         val maxXLabelH = xLayouts.filterNotNull().maxOfOrNull { it.size.height }?.toFloat() ?: 0f
         val bottomGutter = if (maxXLabelH > 0f) maxXLabelH + labelPadPx else 0f
 
-        // ----- Chart rect (fully inside canvas; no external margins) -----
         val chart = Rect(
             left = leftGutter + inset,
             top = inset,
@@ -159,7 +153,6 @@ public fun AreaChart(
 
         val pts = points.map { Offset(mapX(it.x), mapY(it.y.toDouble())) }
 
-        // ----- Grid (horizontal only; inside) -----
         if (style.grid.show) {
             val gw = style.grid.strokeWidth.toPx()
             for (v in yTicks) {
@@ -168,7 +161,6 @@ public fun AreaChart(
             }
         }
 
-        // ----- Y axis (labels and tick marks) -----
         when (val yCfg = style.yAxis) {
             is AreaStyle.YAxis.Labels -> {
                 val tickW = yCfg.tickMarkWidth.toPx()
@@ -213,11 +205,9 @@ public fun AreaChart(
             )
         }
 
-        // ----- X axis (adaptive / show all / none) -----
         when (val xCfg = style.xAxis) {
             is AreaStyle.XAxis.None -> Unit
             is AreaStyle.XAxis.LabelsShowAll -> {
-                // Draw every label; clamp into chart; allow overlaps by design
                 for (i in points.indices) {
                     val lay = xLayouts[i] ?: continue
                     val w = lay.size.width.toFloat()
@@ -229,10 +219,8 @@ public fun AreaChart(
 
             is AreaStyle.XAxis.LabelsAdaptive -> {
                 val minGapPx = xCfg.minGapDp.toPx()
-                // Sort by actual X
                 val order = points.indices.sortedBy { pts[it].x }
 
-                // Precompute layout bounds for each index
                 data class L(val left: Float, val right: Float, val layout: TextLayoutResult)
 
                 val bounds = mutableMapOf<Int, L>()
@@ -261,7 +249,6 @@ public fun AreaChart(
                     }
                 }
 
-                // Draw only the selected labels
                 selected.sortedBy { pts[it].x }.forEach { i ->
                     val b = bounds[i] ?: return@forEach
                     drawText(b.layout, topLeft = Offset(b.left, chart.bottom + labelPadPx))
@@ -269,11 +256,8 @@ public fun AreaChart(
             }
         }
 
-        // ----- Line path (curved with overshoot clamp) -----
-
         val linePath = buildAreaLinePath(pts, style.line)
 
-        // ----- Area fill (inside) -----
         style.fill?.takeIf { pts.size > 1 }?.let { provider ->
             val area = Path().apply {
                 addPath(linePath)
@@ -284,19 +268,16 @@ public fun AreaChart(
             drawPath(area, brush = provider.brushProvider(size))
         }
 
-        // ----- Glow -----
         if (style.glow.width.value > 0f) {
             val gc = (style.glow.color ?: style.line.color).copy(alpha = 0.25f)
             drawPath(linePath, color = gc, style = Stroke(width = style.glow.width.toPx()))
         }
 
-        // ----- Stroke -----
         val stroke = Stroke(width = style.line.strokeWidth.toPx(), cap = StrokeCap.Round)
         style.line.brushProvider?.let { br ->
             drawPath(linePath, brush = br(size), style = stroke)
         } ?: drawPath(linePath, color = style.line.color, style = stroke)
 
-        // ----- Dots -----
         when (val dCfg = style.dots) {
             is AreaStyle.Dots.Visible -> {
                 val r = dCfg.radius.toPx()
@@ -309,7 +290,6 @@ public fun AreaChart(
             }
         }
 
-        // ----- Extrema -----
         if (pts.isNotEmpty()) {
             when (val eCfg = style.extrema) {
                 is AreaStyle.Extrema.None -> Unit

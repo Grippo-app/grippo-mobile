@@ -41,11 +41,6 @@ public data class ExerciseState(
         return loads.maxOrNull()
     }
 
-    /**
-     * Signed tonnage change against an earlier record, in percent.
-     * Stored totals are non-null domain values, so an Empty formatter means a recorded zero;
-     * a zero or negative baseline has no meaningful ratio and yields null.
-     */
     public fun volumeDeltaPercent(previous: ExerciseState): Double? {
         val current = total.volume.value ?: 0f
         val baseline = previous.total.volume.value ?: 0f
@@ -81,10 +76,6 @@ public fun stubExercise(): ExerciseState = ExerciseState(
     )
 )
 
-/**
- * Deterministic newest-first history of one exercise for previews: external sets with a pending
- * one, bodyweight sets, a recorded zero and the oldest record.
- */
 public fun stubExerciseHistory(): PersistentList<ExerciseState> {
     val externalSet = stubPendingIteration().copy(
         id = "history-external-set",

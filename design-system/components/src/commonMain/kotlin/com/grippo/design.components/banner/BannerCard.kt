@@ -64,7 +64,6 @@ public sealed interface BannerCardStyle {
     public data class Custom(val tint: Color, val surface: Color) : BannerCardStyle
 }
 
-/** Trailing content sits below the copy to keep localized text and actions readable. */
 @Composable
 public fun BannerCard(
     modifier: Modifier = Modifier,

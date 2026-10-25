@@ -83,8 +83,6 @@ public fun SegmentedFrame(
                 constraints.copy(minWidth = 0)
             }
 
-            // Single pass: measure children, accumulate width and max height
-            // instead of running map -> sumOf -> maxOfOrNull separately.
             val buttonPlaceables = ArrayList<Placeable>(buttonCount)
             var totalWidth = 0
             var maxHeight = 0
@@ -96,10 +94,6 @@ public fun SegmentedFrame(
             }
             if (maxHeight == 0) maxHeight = constraints.minHeight
 
-            // Sum widths of buttons preceding the selected one to get its X.
-            // A while-loop is used instead of `0 until selectedButtonIndex`
-            // because the IDE flags that range as potentially empty (it is,
-            // by design, when no selection or the first item is selected).
             var selectedButtonX = 0
             var i = 0
             while (i < selectedButtonIndex) {

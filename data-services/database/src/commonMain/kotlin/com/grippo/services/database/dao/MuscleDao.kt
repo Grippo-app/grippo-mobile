@@ -18,8 +18,6 @@ public interface MuscleDao {
     @Query("SELECT * FROM muscle_group")
     public fun get(): Flow<List<MuscleGroupWithMuscles>>
 
-    // ────────────── INSERT ──────────────
-
     @Transaction
     public suspend fun insertOrUpdate(
         groups: List<MuscleGroupEntity>,
@@ -46,8 +44,6 @@ public interface MuscleDao {
 
     @Update
     public suspend fun updateExistingMuscles(muscles: List<MuscleEntity>)
-
-    // ────────────── DELETE ──────────────
 
     @Query("DELETE FROM muscle_group WHERE id NOT IN (:ids)")
     public suspend fun deleteMissingMuscleGroups(ids: List<String>)

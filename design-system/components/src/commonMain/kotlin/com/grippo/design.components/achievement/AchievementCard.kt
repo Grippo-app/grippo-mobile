@@ -106,7 +106,7 @@ private fun achievementCardPreviewValues(): ImmutableList<AchievementState> {
             is AchievementState.BestTonnage -> value.copy(
                 exerciseExampleId = "example",
                 exerciseId = "exercise",
-                tonnage = VolumeFormatState.of(12_000f),
+                tonnage = VolumeFormatState.ofTotal(12_000f),
             )
             is AchievementState.BestWeight -> value.copy(
                 exerciseExampleId = "example",
@@ -116,7 +116,7 @@ private fun achievementCardPreviewValues(): ImmutableList<AchievementState> {
             )
             is AchievementState.LifetimeVolume -> value.copy(
                 exerciseExampleId = "example",
-                totalVolume = VolumeFormatState.of(123_456.7f),
+                totalVolume = VolumeFormatState.ofTotal(123_456.7f),
                 sessionsCount = 120,
             )
             is AchievementState.MaxRepetitions -> value.copy(

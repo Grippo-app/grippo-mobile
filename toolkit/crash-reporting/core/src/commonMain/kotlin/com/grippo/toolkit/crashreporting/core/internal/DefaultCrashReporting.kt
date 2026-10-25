@@ -22,7 +22,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 
-/** SDK owns fatal capture/persistence. One background worker owns all nonfatal/log submissions. */
 internal class DefaultCrashReporting(
     private val capacity: Int = CrashReportingQueuePolicy.DEFAULT_CAPACITY,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,

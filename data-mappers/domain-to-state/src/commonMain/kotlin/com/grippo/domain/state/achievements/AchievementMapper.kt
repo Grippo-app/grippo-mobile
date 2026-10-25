@@ -15,19 +15,19 @@ public fun Achievement.toState(): AchievementState {
         is Achievement.BestTonnage -> AchievementState.BestTonnage(
             exerciseExampleId = exerciseExampleId,
             exerciseId = exerciseId,
-            tonnage = VolumeFormatState.of(tonnage.toFloat()),
+            tonnage = VolumeFormatState.ofTotal(tonnage),
         )
 
         is Achievement.BestWeight -> AchievementState.BestWeight(
             exerciseExampleId = exerciseExampleId,
             exerciseId = exerciseId,
             iterationId = iterationId,
-            weight = VolumeFormatState.of(weight.toFloat()),
+            weight = VolumeFormatState.of(weight),
         )
 
         is Achievement.LifetimeVolume -> AchievementState.LifetimeVolume(
             exerciseExampleId = exerciseExampleId,
-            totalVolume = VolumeFormatState.of(totalVolume.toFloat()),
+            totalVolume = VolumeFormatState.ofTotal(totalVolume),
             sessionsCount = sessionsCount
         )
 

@@ -27,7 +27,6 @@ public sealed interface PerformanceMetric {
         override val type: PerformanceMetricType = PerformanceMetricType.Volume
     }
 
-    /** Training volume per minute; it describes workout density, not exercise quality. */
     public data class DensityMetric(
         override val currentVsAveragePercentage: Double?,
         val current: Float?,

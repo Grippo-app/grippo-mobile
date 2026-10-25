@@ -17,7 +17,6 @@ import com.grippo.design.resources.provider.goal_card_title
 import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.metric_overview_muscle_distribution
 
-/** The parent card owns the detail action; the chevron is decorative. */
 @Composable
 internal fun MetricOverviewHeader(
     modifier: Modifier = Modifier,

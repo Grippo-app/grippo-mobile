@@ -26,14 +26,12 @@ import kotlinx.datetime.atTime
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
 
-/** Validates exercise input using loaded catalog, training and body-weight evidence. */
 public class ExerciseValidatorUseCase(
     private val trainingFeature: TrainingFeature,
     private val exerciseMetricsFeature: ExerciseMetricsFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val weightHistoryFeature: WeightHistoryFeature,
 ) {
-    /** Observes evidence without refetching it on every set edit. */
     public fun observeContext(
         exampleId: String,
         performedAt: LocalDateTime,
@@ -52,13 +50,11 @@ public class ExerciseValidatorUseCase(
             weightHistoryFeature.observeWeightHistory(),
         ) { trainings, remote, example, weights ->
             val bodyWeight = weights
-                // Exercise creation marks its start; a measurement later that day is still relevant.
                 .filter { it.createdAt.date <= performedAt.date && it.weight.isFinite() && it.weight > 0f }
                 .filter { it.createdAt.date.daysUntil(performedAt.date) in 0..90 }
                 .maxByOrNull { it.createdAt }?.weight
             ExerciseValidationContext(
                 components = example.components,
-                // Recent server records supersede older cached versions of the same exercise.
                 history = (remote + trainings.flatMap { it.exercises })
                     .filter { it.exerciseExample.id == exampleId }
                     .distinctBy { it.id },
@@ -92,7 +88,6 @@ public class ExerciseValidatorUseCase(
             .filter { it.createdAt.date.daysUntil(performedAt.date) in 0..VALIDATION_HISTORY_DAYS }
             .distinctBy { it.id }
             .sortedByDescending { it.createdAt }
-            // The domain model has no trainingId. Same-day records cannot prove independent sessions.
             .distinctBy { it.createdAt.date }
             .take(MAX_HISTORY_REFERENCES)
             .map { it.iterations.map { iteration -> iteration.validationIteration() } }
@@ -110,7 +105,6 @@ public class ExerciseValidatorUseCase(
                 if (field == Field.Repetitions && repetitionsExplainedByLoad(iteration, validPeers)) {
                     return@forEachIndexed
                 }
-                // Use immutable invalid findings, so checking one row never changes another's evidence.
                 val peers = iterations.mapIndexedNotNull { peerIndex, peer ->
                     if (peerIndex == index || invalid[peerIndex].any { it.field == field }) null
                     else peer.value(field)
@@ -126,7 +120,6 @@ public class ExerciseValidatorUseCase(
                         value != null && value.isFinite() && value > 0f &&
                             sample.sameLoadModel(iteration) && comparableRepetitions(sample, iteration, field)
                     }.mapNotNull { it.value(field) }
-                    // Ambiguous session modes cannot establish a representative value.
                     validationReference(comparable, minimumCount = 1)?.value
                 }
                 val historical = validationReference(historicalValues, minimumCount = 3)
@@ -142,7 +135,6 @@ public class ExerciseValidatorUseCase(
                 val locallySupported = supportingPeers >= 2
                 if (historical != null && !historySupportsActual && !(actual < historical.value && ramp) &&
                     isOutlier(actual, historical.value, field, history = true) &&
-                    // Repeated current values cannot independently confirm a gross deviation.
                     (!locallySupported || isGrossHistoryDeviation(actual, historical.value, field))
                 ) findings[index] += outlier(field, actual, historical, Reason.HistoryOutlier)
             }
@@ -181,8 +173,6 @@ public class ExerciseValidatorUseCase(
 
     private fun jointMagnitudeIncrease(sample: SetIteration, actual: SetIteration): Boolean {
         if (actual.repetitions.toDouble() < sample.repetitions * 4.0) return false
-        // Simultaneous large increases in weight and repetitions need checking,
-        // even though neither field has a comparable rep/load range in history anymore.
         return ADDED_WEIGHT_FIELDS.any { field ->
             val before = sample.value(field)
             val after = actual.value(field)
@@ -204,7 +194,6 @@ public class ExerciseValidatorUseCase(
             else -> 2.5f
         }
         if (abs(actual - reference) < minimumDifference) return false
-        // Low reps may mean singles, fatigue or a failed attempt.
         if (field == Field.Repetitions) return ratio >= 4.0
         return ratio >= 3.0 || ratio <= if (history) 0.125 else 1.0 / 3.0
     }
@@ -289,7 +278,6 @@ public class ExerciseValidatorUseCase(
                 is ExerciseExampleComponents.BodyAndAssist -> components.bodyMultiplier
             }
             val actual = iteration.bodyMultiplier
-            // Allow UI rounding and small catalog changes to previously recorded coefficients.
             if (multiplier != null && multiplier.isFinite() && multiplier > 0f &&
                 actual != null && actual.isFinite() && actual > 0f &&
                 abs(actual - multiplier) > maxOf(0.011f, multiplier * 0.25f)
@@ -306,21 +294,17 @@ public class ExerciseValidatorUseCase(
             bodyWeightMismatch(actual, reference) && none { it.field == Field.BodyWeight }
         ) add(Artifact(Field.BodyWeight, Reason.BodyWeightMismatch, actual, reference, 1))
 
-        // Negative effective load may be a legitimate machine convention; assistance is
-        // not bounded by body weight without machine metadata. Only arithmetic overflow is flagged.
         if (COMPONENT_FIELDS.all { iteration.value(it)?.isFinite() != false } && !iteration.volume.isFinite()) {
             add(Artifact(Field.Load, Reason.NonFinite, iteration.volume))
         }
     }
 
-    /** Body mass is a component measurement, so it does not use the lifting-weight typo threshold. */
     private fun bodyWeightMismatch(actual: Float, reference: Float): Boolean =
         abs(actual - reference) >= 10f &&
             (actual.toDouble() / reference >= 1.5 || actual.toDouble() / reference <= 2.0 / 3.0)
 
     private data class ValidationReference(val value: Float, val count: Int)
 
-    /** Repeated, coherent values are stronger evidence than a median of unrelated set types. */
     private fun validationReference(values: List<Float>, minimumCount: Int): ValidationReference? {
         val finite = values.filter { it.isFinite() && it > 0f }
         if (finite.size < minimumCount) return null
@@ -330,7 +314,6 @@ public class ExerciseValidatorUseCase(
         val largest = groups.maxOf { it.size }
         if (largest < minimumCount || largest * 2 < finite.size) return null
         val candidates = groups.filter { it.size == largest }.map { median(it) }
-        // Equally supported, distant modes cannot establish an expected value.
         if (candidates.max() / candidates.min() > 1.5f) return null
         return ValidationReference(median(candidates), largest)
     }

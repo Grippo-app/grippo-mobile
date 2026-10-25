@@ -6,4 +6,16 @@
         <item quantity="many">%1$d днів із тренуваннями</item>
         <item quantity="other">%1$d дня із тренуваннями</item>
     </plurals>
+    <plurals name="training_recap_compared">
+        <item quantity="one">%1$d з %2$d показника вище середнього</item>
+        <item quantity="few">%1$d з %2$d показників вище середнього</item>
+        <item quantity="many">%1$d з %2$d показників вище середнього</item>
+        <item quantity="other">%1$d з %2$d показника вище середнього</item>
+    </plurals>
+    <plurals name="training_recap_compared_previous">
+        <item quantity="one">%1$d з %2$d показника вище минулого</item>
+        <item quantity="few">%1$d з %2$d показників вище минулого</item>
+        <item quantity="many">%1$d з %2$d показників вище минулого</item>
+        <item quantity="other">%1$d з %2$d показника вище минулого</item>
+    </plurals>
 </resources>

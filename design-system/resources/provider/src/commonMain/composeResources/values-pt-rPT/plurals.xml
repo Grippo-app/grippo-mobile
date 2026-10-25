@@ -5,4 +5,14 @@
         <item quantity="many">%1$d dias com treino</item>
         <item quantity="other">%1$d dias com treino</item>
     </plurals>
+    <plurals name="training_recap_compared">
+        <item quantity="one">%1$d de %2$d indicador acima da sua média</item>
+        <item quantity="many">%1$d de %2$d indicadores acima da sua média</item>
+        <item quantity="other">%1$d de %2$d indicadores acima da sua média</item>
+    </plurals>
+    <plurals name="training_recap_compared_previous">
+        <item quantity="one">%1$d de %2$d indicador acima do anterior</item>
+        <item quantity="many">%1$d de %2$d indicadores acima do anterior</item>
+        <item quantity="other">%1$d de %2$d indicadores acima do anterior</item>
+    </plurals>
 </resources>

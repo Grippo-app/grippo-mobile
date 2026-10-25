@@ -1,6 +1,5 @@
 package com.grippo.design.components.metrics.performance
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -8,18 +7,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import com.grippo.core.state.formatters.PercentageFormatState
+import com.grippo.core.state.metrics.performance.PerformanceBaselineState
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
-import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.performance.PerformanceTrendStatusState
 import com.grippo.core.state.metrics.performance.stubEmptyPerformanceMetric
 import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
@@ -27,6 +23,8 @@ import com.grippo.design.components.metrics.MetricCardPresentation
 import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
+import com.grippo.design.components.metrics.performance.internal.PerformanceTrendChip
+import com.grippo.design.components.utils.EMPTY_VALUE_PLACEHOLDER
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -41,8 +39,6 @@ import com.grippo.design.resources.provider.performance_trend_details_value_unav
 import com.grippo.design.resources.provider.performance_trend_details_value_unavailable_description
 import com.grippo.design.resources.provider.performance_trend_details_zero_average
 
-private const val EMPTY_VALUE_PLACEHOLDER: String = "—"
-
 @Composable
 public fun PerformanceMetricCard(
     modifier: Modifier = Modifier,
@@ -56,8 +52,6 @@ public fun PerformanceMetricCard(
 
     val empty = metric.isEmpty()
     val comparisonPercentage = metric.currentVsAveragePercentage
-    val showStatus = !empty && metric.type != PerformanceMetricTypeState.Duration &&
-            (comparisonPercentage != null || metric.status == PerformanceTrendStatusState.Record)
 
     val valueColor = if (empty) {
         AppTokens.colors.text.tertiary
@@ -78,8 +72,8 @@ public fun PerformanceMetricCard(
             color = valueColor,
         )
 
-        if (showStatus) {
-            PerformanceTrendChip(status = metric.status)
+        if (metric.showsComparison()) {
+            PerformanceTrendChip(status = metric.status, baseline = PerformanceBaselineState.Average)
         }
 
         if (!empty && comparisonPercentage == null) {
@@ -192,27 +186,6 @@ private fun DetailedPerformanceMetric(
             )
         }
     }
-}
-
-@Composable
-private fun PerformanceTrendChip(status: PerformanceTrendStatusState) {
-    val label = status.label() ?: return
-    val background = status.backgroundColor()
-
-    val shape = RoundedCornerShape(AppTokens.dp.metrics.status.radius)
-
-    Text(
-        modifier = Modifier
-            .clip(shape)
-            .background(background, shape = shape)
-            .padding(
-                horizontal = AppTokens.dp.metrics.status.horizontalPadding,
-                vertical = AppTokens.dp.metrics.status.verticalPadding
-            ),
-        text = label,
-        style = AppTokens.typography.b11Semi(),
-        color = AppTokens.colors.text.primary,
-    )
 }
 
 @AppPreview

@@ -66,7 +66,6 @@ public class TrainingTotalUseCase {
 
             val weight = measuredWeight(iteration) ?: return@forEach
             tonnage += weight.toDouble() * reps.toDouble()
-            // Fully assisted sets remain measured repetitions, so more assistance cannot raise the average.
             measuredRepetitions += reps.toLong()
         }
 

@@ -27,7 +27,7 @@ time pressure. Prefer concise rules with explicit triggers and owners.
 | MVI, base classes, feature composition, navigation, dialogs, results, UI error pipeline, UI state, process death | `ui-feature/references/*.md` |
 | Feature/Repository/UseCase, operation outcomes and cache, Room, DataStore, backend client, auth session | `data-layer/references/*.md` |
 | Backend evidence gate | `backend-contract-client/SKILL.md` |
-| Mapper directions and null guards | `mappers/SKILL.md` + references |
+| Mapper directions, mapper file content and null guards | `mappers/SKILL.md` + references |
 | Koin bindings and composition | `di-modules/SKILL.md` + references |
 | Tokens, components, resources, previews, visual checks and evidence | `design-system/references/*.md` (`visual-consistency.md` owns visual evidence) |
 | Visual intent, usage/state analysis, design acceptance | `brand-design/references/*.md` |

@@ -114,7 +114,6 @@ internal fun Input(
     var editorValue by remember {
         mutableStateOf(TextFieldValue(text = value, selection = TextRange(value.length)))
     }
-    // The caller's text stays authoritative when a formatter rejects an edit.
     val textFieldValue = editorValue.copy(text = value)
 
     SideEffect {
@@ -125,7 +124,6 @@ internal fun Input(
         }
     }
 
-    // Keep validation quiet during editing; reveal it when the field loses focus.
     val showError = error is InputError.Error && !hasFocus
     val errorMessage = if (error is InputError.Error) {
         error.msg.ifBlank { AppTokens.strings.res(Res.string.input_invalid_value) }
@@ -171,7 +169,6 @@ internal fun Input(
         Modifier
     }
     val editorSemantics = if (isClickable) {
-        // The disabled native editor allows iOS taps through; the parent is the action.
         Modifier.clearAndSetSemantics { }
     } else {
         Modifier.semantics { if (showError) this.error(errorMessage) }
@@ -238,7 +235,7 @@ internal fun Input(
                                         fraction = labelFraction,
                                     ),
                                 )
-                                // Keep the editor composed once, including the empty idle state.
+                                // innerTextField must be composed exactly once, so the idle editor collapses to zero height.
                                 Box(modifier = if (isLabelFloating) Modifier else Modifier.height(0.dp)) {
                                     innerTextField()
                                 }

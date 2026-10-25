@@ -7,14 +7,6 @@ import kotlin.time.Duration.Companion.ZERO
 
 public class TrainingDigestUseCase {
 
-    /**
-     * Assigns saved sessions by [Training.createdAt] inside the inclusive [range],
-     * without prorating their duration across days.
-     * Saved totals remain authoritative even when an exercise relation is unavailable.
-     * Every selected record counts as a training; sets count the supplied exercise details.
-     * An empty selection has zero totals; an inverted range is invalid.
-     * An invalid saved duration or volume makes that metric unavailable, never a partial total.
-     */
     public fun digest(
         trainings: List<Training>,
         range: DateRange,

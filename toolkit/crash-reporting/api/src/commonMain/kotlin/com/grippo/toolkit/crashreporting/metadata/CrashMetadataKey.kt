@@ -3,7 +3,6 @@ package com.grippo.toolkit.crashreporting.metadata
 import com.grippo.toolkit.crashreporting.internal.CrashMetadataRules
 import com.grippo.toolkit.crashreporting.values.CrashDiagnosticCode
 
-/** Declare once in the feature's metadata matrix; each field has one value type. */
 public class CrashMetadataKey<T> private constructor(
     public val name: String,
     private val encode: (CrashMetadataKey<T>, T) -> CrashMetadataEntry,

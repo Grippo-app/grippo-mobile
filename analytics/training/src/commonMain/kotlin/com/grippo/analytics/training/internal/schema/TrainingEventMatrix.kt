@@ -44,7 +44,13 @@ internal object TrainingEventMatrix {
             InteractionAction.CompletionConfirmationConfirm -> "completion_confirmation_confirm"
             InteractionAction.CompletionConfirmationDismissRequested -> "completion_confirmation_dismiss_requested"
             InteractionAction.CompletedSummaryOpened -> "completed_summary_opened"
-            InteractionAction.CompletedExerciseOpened -> "completed_exercise_opened"
+            InteractionAction.CompletedMetricOpened -> "completed_metric_opened"
+            InteractionAction.CompletedStreakOpened -> "completed_streak_opened"
+            InteractionAction.CompletedGoalOpened -> "completed_goal_opened"
+            InteractionAction.CompletedAddGoalClicked -> "completed_add_goal_clicked"
+            InteractionAction.CompletedBaselineSelected -> "completed_baseline_selected"
+            InteractionAction.CompletedRecordOpened -> "completed_record_opened"
+            InteractionAction.CompletedShareClicked -> "completed_share_clicked"
             InteractionAction.CompletedDismissRequested -> "completed_dismiss_requested"
         }
     })
@@ -86,7 +92,13 @@ internal object TrainingEventMatrix {
         TrainingEvent.CompletionConfirmation.ConfirmClicked -> InteractionAction.CompletionConfirmationConfirm
         TrainingEvent.CompletionConfirmation.DismissRequested -> InteractionAction.CompletionConfirmationDismissRequested
         TrainingEvent.Completed.SummaryOpened -> InteractionAction.CompletedSummaryOpened
-        TrainingEvent.Completed.ExerciseOpened -> InteractionAction.CompletedExerciseOpened
+        TrainingEvent.Completed.MetricOpened -> InteractionAction.CompletedMetricOpened
+        TrainingEvent.Completed.StreakOpened -> InteractionAction.CompletedStreakOpened
+        TrainingEvent.Completed.GoalOpened -> InteractionAction.CompletedGoalOpened
+        TrainingEvent.Completed.AddGoalClicked -> InteractionAction.CompletedAddGoalClicked
+        TrainingEvent.Completed.BaselineSelected -> InteractionAction.CompletedBaselineSelected
+        TrainingEvent.Completed.RecordOpened -> InteractionAction.CompletedRecordOpened
+        TrainingEvent.Completed.ShareClicked -> InteractionAction.CompletedShareClicked
         TrainingEvent.Completed.DismissRequested -> InteractionAction.CompletedDismissRequested
     }
 

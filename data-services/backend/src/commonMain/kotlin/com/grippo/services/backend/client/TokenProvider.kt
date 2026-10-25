@@ -126,7 +126,6 @@ internal class TokenProvider(
         }
     }
 
-    /** Returns the rejected snapshot after storing its replacement, or null for an AuthProvider failure. */
     private suspend fun refreshCurrentSession(response: HttpResponse, token: TokenEntity): TokenEntity? {
         val current = getCurrentToken() ?: return null
         check(current.id == token.id) { "Authentication session changed" }

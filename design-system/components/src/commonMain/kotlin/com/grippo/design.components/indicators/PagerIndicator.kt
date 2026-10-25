@@ -139,7 +139,6 @@ private fun PagerIndicatorPreview() {
             PagerIndicator(pageCount = 12, selectedIndex = 5)
             PagerIndicator(pageCount = 12, selectedIndex = 11)
 
-            // A shrinking pager may briefly keep its previous selected index.
             PagerIndicator(pageCount = 3, selectedIndex = 11)
         }
     }

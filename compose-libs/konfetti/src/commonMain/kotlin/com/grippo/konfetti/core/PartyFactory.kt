@@ -4,10 +4,6 @@ import com.grippo.konfetti.core.emitter.EmitterConfig
 import com.grippo.konfetti.core.models.Shape
 import com.grippo.konfetti.core.models.Size
 
-/**
- * Factory class to enable builder methods for Java implementations
- * See [Party] for documentation on the configuration settings
- */
 internal class PartyFactory(val emitter: EmitterConfig) {
     private var party: Party = Party(emitter = emitter)
 

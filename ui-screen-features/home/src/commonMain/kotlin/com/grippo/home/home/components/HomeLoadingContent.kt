@@ -1,9 +1,6 @@
 package com.grippo.home.home.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,21 +9,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.progressBarRangeInfo
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.text.rememberTextMeasurer
+import com.grippo.design.components.loading.SkeletonBone
+import com.grippo.design.components.loading.SkeletonPanel
+import com.grippo.design.components.loading.SkeletonPanelStyle
+import com.grippo.design.components.loading.SkeletonText
+import com.grippo.design.components.loading.loadingSemantics
 import com.grippo.design.components.metrics.HighlightsHeader
-import com.grippo.design.components.modifiers.shimmer
+import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardSkeleton
+import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardStyle
+import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardSkeleton
+import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardStyle
+import com.grippo.design.components.utils.rememberSingleLineHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -46,10 +44,7 @@ internal fun HomeLoadingContent(
     val horizontalPadding = AppTokens.dp.screen.horizontalPadding
 
     LazyColumn(
-        modifier = modifier.semantics(mergeDescendants = true) {
-            contentDescription = loadingDescription
-            progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
-        },
+        modifier = modifier.loadingSemantics(loadingDescription),
         contentPadding = PaddingValues(
             top = AppTokens.dp.contentPadding.content,
             bottom = AppTokens.dp.screen.verticalPadding,
@@ -81,18 +76,18 @@ internal fun HomeLoadingContent(
                         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        HomeLoadingText(
+                        SkeletonText(
                             modifier = Modifier.weight(2.5f),
                             style = AppTokens.typography.h4(),
                         )
-                        HomeLoadingBone(
+                        SkeletonBone(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(AppTokens.dp.button.small.height),
                         )
                     }
                 }
-                HomeLoadingText(
+                SkeletonText(
                     modifier = Modifier.fillMaxWidth(0.8f),
                     style = AppTokens.typography.b13Med(),
                     animated = state.range.value != null && (lifetimeTrainingCount ?: 0) > 0,
@@ -109,14 +104,16 @@ internal fun HomeLoadingContent(
         }
 
         item(key = "muscle_loading") {
-            HomeLoadingMuscle(
+            MuscleLoadingCardSkeleton(
                 modifier = Modifier.padding(horizontal = horizontalPadding),
+                style = MuscleLoadingCardStyle.Overview,
             )
         }
 
         item(key = "training_streak_loading") {
-            HomeLoadingStreak(
+            TrainingStreakCardSkeleton(
                 modifier = Modifier.padding(horizontal = horizontalPadding),
+                style = TrainingStreakCardStyle.Overview,
             )
         }
 
@@ -128,7 +125,7 @@ internal fun HomeLoadingContent(
                         .clearAndSetSemantics {},
                     verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                 ) {
-                    HomeLoadingText(
+                    SkeletonText(
                         modifier = Modifier
                             .padding(horizontal = horizontalPadding)
                             .fillMaxWidth(0.6f),
@@ -151,11 +148,11 @@ internal fun HomeLoadingContent(
                         .padding(top = AppTokens.dp.contentPadding.subContent),
                     verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
                 ) {
-                    HomeLoadingText(
+                    SkeletonText(
                         modifier = Modifier.fillMaxWidth(0.5f),
                         style = AppTokens.typography.h4(),
                     )
-                    HomeLoadingText(
+                    SkeletonText(
                         modifier = Modifier.fillMaxWidth(0.9f),
                         style = AppTokens.typography.b13Med(),
                     )
@@ -187,12 +184,16 @@ internal fun HomeLoadingContent(
 
 @Composable
 private fun HomeLoadingRecap(modifier: Modifier) {
-    val titleHeight = AppTokens.typography.h5().lineHeightDp()
-    val factHeight = titleHeight + AppTokens.typography.b11Med().lineHeightDp() +
-        AppTokens.dp.contentPadding.text
-    val summaryHeight = titleHeight + AppTokens.typography.b13Med().lineHeightDp() +
-        AppTokens.dp.contentPadding.text + AppTokens.dp.contentPadding.content + factHeight
-    HomeLoadingPanel(
+    val textMeasurer = rememberTextMeasurer()
+    val titleLine = rememberSingleLineHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val dateLine = rememberSingleLineHeight(style = AppTokens.typography.b13Med(), textMeasurer = textMeasurer)
+    val valueLine = rememberSingleLineHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val labelLine = rememberSingleLineHeight(style = AppTokens.typography.b11Med(), textMeasurer = textMeasurer)
+    val textGap = AppTokens.dp.contentPadding.text
+    val factHeight = valueLine + textGap + labelLine
+    val summaryHeight = titleLine + textGap + dateLine + AppTokens.dp.contentPadding.content + factHeight
+
+    SkeletonPanel(
         modifier = modifier,
         contentHeight = maxOf(AppTokens.dp.illustration.compact, summaryHeight) +
             AppTokens.dp.metrics.panel.large.spacer +
@@ -202,68 +203,46 @@ private fun HomeLoadingRecap(modifier: Modifier) {
 
 @Composable
 private fun HomeLoadingGoal(modifier: Modifier) {
+    val textMeasurer = rememberTextMeasurer()
+    val captionLine = rememberSingleLineHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
+    val goalLine = rememberSingleLineHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val scoreLine = rememberSingleLineHeight(style = AppTokens.typography.h2(), textMeasurer = textMeasurer)
+    val criterionLine = rememberSingleLineHeight(style = AppTokens.typography.b13Semi(), textMeasurer = textMeasurer)
+    val periodLine = rememberSingleLineHeight(style = AppTokens.typography.b12Semi(), textMeasurer = textMeasurer)
+    val remainingLine = rememberSingleLineHeight(style = AppTokens.typography.b13Med(), textMeasurer = textMeasurer)
+    val textGap = AppTokens.dp.contentPadding.text
+    val rowGap = AppTokens.dp.contentPadding.subContent
+
     val identityHeight = maxOf(
         AppTokens.dp.goal.markSize,
-        AppTokens.typography.b12Med().lineHeightDp() + AppTokens.dp.contentPadding.text +
-            AppTokens.typography.h5().lineHeightDp(),
-    )
-    val alignmentHeight = maxOf(
-        AppTokens.typography.h2().lineHeightDp(),
-        AppTokens.typography.b13Semi().lineHeightDp() + AppTokens.dp.contentPadding.text +
-            AppTokens.typography.b12Med().lineHeightDp(),
-    ) + AppTokens.dp.contentPadding.subContent + AppTokens.typography.b12Med().lineHeightDp()
-    val calendarHeight = maxOf(
+        captionLine + textGap + goalLine,
         AppTokens.dp.metrics.overview.detailsIcon,
-        AppTokens.typography.b12Semi().lineHeightDp(),
-    ) + AppTokens.dp.contentPadding.subContent + AppTokens.dp.button.small.height
-    HomeLoadingPanel(
+    )
+    val alignmentHeight = maxOf(scoreLine, criterionLine + textGap + captionLine) + rowGap + captionLine
+    val calendarHeight = maxOf(AppTokens.dp.metrics.overview.detailsIcon, periodLine, captionLine) + rowGap +
+        remainingLine
+
+    SkeletonPanel(
         modifier = modifier,
         contentHeight = identityHeight + alignmentHeight + calendarHeight +
-            AppTokens.typography.b12Med().lineHeightDp() * 2 +
-            AppTokens.dp.divider.thickness * 2 + AppTokens.dp.metrics.panel.large.spacer * 5,
-    )
-}
-
-@Composable
-private fun HomeLoadingMuscle(modifier: Modifier) {
-    val distributionHeight = (
-        AppTokens.typography.b13Semi().lineHeightDp() + AppTokens.dp.contentPadding.text +
-            AppTokens.dp.metrics.charts.indicator.height
-        ) * 3 + AppTokens.dp.contentPadding.subContent * 2
-    HomeLoadingPanel(
-        modifier = modifier,
-        contentHeight = AppTokens.typography.h5().lineHeightDp() +
-            AppTokens.typography.b12Med().lineHeightDp() * 3 + AppTokens.dp.contentPadding.text +
-            maxOf(AppTokens.dp.metrics.overview.muscleImageHeight, distributionHeight) +
-            AppTokens.dp.metrics.panel.large.spacer * 3,
-    )
-}
-
-@Composable
-private fun HomeLoadingStreak(modifier: Modifier) {
-    val headlineHeight = maxOf(
-        AppTokens.dp.metrics.overview.rhythmIcon,
-        AppTokens.typography.h4().lineHeightDp(),
-    ) + AppTokens.typography.b13Med().lineHeightDp()
-    val activeDaysHeight = AppTokens.typography.h3().lineHeightDp() +
-        AppTokens.typography.b12Med().lineHeightDp()
-    HomeLoadingPanel(
-        modifier = modifier,
-        contentHeight = AppTokens.typography.h5().lineHeightDp() +
-            maxOf(headlineHeight, activeDaysHeight) + AppTokens.dp.contentPadding.text +
-            AppTokens.dp.metrics.charts.indicator.height + AppTokens.dp.metrics.panel.large.spacer * 2,
+            AppTokens.dp.divider.thickness * 2 + AppTokens.dp.metrics.panel.large.spacer * 4,
     )
 }
 
 @Composable
 private fun HomeLoadingSpotlight(modifier: Modifier) {
-    val identityHeight = AppTokens.typography.h5().lineHeightDp() +
-        AppTokens.dp.contentPadding.subContent + AppTokens.typography.b11Semi().lineHeightDp()
-    HomeLoadingPanel(
+    val textMeasurer = rememberTextMeasurer()
+    val nameLine = rememberSingleLineHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val chipLine = rememberSingleLineHeight(style = AppTokens.typography.b11Semi(), textMeasurer = textMeasurer)
+    val insightLine = rememberSingleLineHeight(style = AppTokens.typography.h4(), textMeasurer = textMeasurer)
+    val captionLine = rememberSingleLineHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
+    val identityHeight = maxOf(nameLine, AppTokens.dp.metrics.overview.detailsIcon) +
+        AppTokens.dp.contentPadding.subContent + chipLine + AppTokens.dp.metrics.status.verticalPadding * 2
+
+    SkeletonPanel(
         modifier = modifier,
         contentHeight = maxOf(AppTokens.dp.exerciseExampleImage.medium.size, identityHeight) +
-            AppTokens.typography.h4().lineHeightDp() + AppTokens.typography.b12Med().lineHeightDp() * 2 +
-            AppTokens.dp.metrics.panel.large.spacer * 3,
+            insightLine + captionLine * 2 + AppTokens.dp.metrics.panel.large.spacer * 3,
     )
 }
 
@@ -272,75 +251,23 @@ private fun HomeLoadingPerformance(
     modifier: Modifier,
     compact: Boolean = false,
 ) {
-    val summaryHeight = AppTokens.typography.h5().lineHeightDp() +
-        AppTokens.typography.h2().lineHeightDp() + AppTokens.typography.b12Med().lineHeightDp() +
-        AppTokens.dp.metrics.panel.small.spacer * 2
+    val textMeasurer = rememberTextMeasurer()
+    val titleLine = rememberSingleLineHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val valueLine = rememberSingleLineHeight(style = AppTokens.typography.h2(), textMeasurer = textMeasurer)
+    val captionLine = rememberSingleLineHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
+    val chipLine = rememberSingleLineHeight(style = AppTokens.typography.b11Semi(), textMeasurer = textMeasurer)
+    val deltaLine = rememberSingleLineHeight(style = AppTokens.typography.b13Semi(), textMeasurer = textMeasurer)
+    val spacer = AppTokens.dp.metrics.panel.small.spacer
+    val summaryHeight = maxOf(titleLine, AppTokens.dp.metrics.overview.detailsIcon) + valueLine + captionLine +
+        spacer * 2
     val contentHeight = if (compact) {
         summaryHeight
     } else {
-        summaryHeight + AppTokens.typography.b11Semi().lineHeightDp() +
-            AppTokens.typography.b13Semi().lineHeightDp() + AppTokens.dp.metrics.panel.small.spacer * 2
+        val chipHeight = chipLine + AppTokens.dp.metrics.status.verticalPadding * 2
+        summaryHeight + chipHeight + spacer + AppTokens.dp.contentPadding.text + deltaLine
     }
-    HomeLoadingPanel(modifier = modifier, contentHeight = contentHeight, small = true)
-}
 
-@Composable
-private fun HomeLoadingPanel(
-    modifier: Modifier,
-    contentHeight: Dp,
-    small: Boolean = false,
-) {
-    val radius = if (small) AppTokens.dp.metrics.panel.small.radius else AppTokens.dp.metrics.panel.large.radius
-    val horizontalPadding = if (small) {
-        AppTokens.dp.metrics.panel.small.horizontalPadding
-    } else {
-        AppTokens.dp.metrics.panel.large.horizontalPadding
-    }
-    val verticalPadding = if (small) {
-        AppTokens.dp.metrics.panel.small.verticalPadding
-    } else {
-        AppTokens.dp.metrics.panel.large.verticalPadding
-    }
-    val shape = RoundedCornerShape(radius)
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(shape)
-            .background(AppTokens.colors.background.card)
-            .border(
-                width = AppTokens.dp.metrics.panel.borderWidth,
-                color = AppTokens.colors.border.default,
-                shape = shape,
-            )
-            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-    ) {
-        HomeLoadingBone(modifier = Modifier.fillMaxWidth().height(contentHeight))
-    }
-}
-
-@Composable
-private fun HomeLoadingText(
-    modifier: Modifier,
-    style: TextStyle,
-    animated: Boolean = false,
-) {
-    HomeLoadingBone(modifier = modifier.height(style.lineHeightDp()), animated = animated)
-}
-
-@Composable
-private fun TextStyle.lineHeightDp(): Dp = with(LocalDensity.current) { lineHeight.toDp() }
-
-@Composable
-private fun HomeLoadingBone(
-    modifier: Modifier,
-    animated: Boolean = true,
-) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(AppTokens.dp.metrics.status.radius))
-            .background(AppTokens.colors.divider.default)
-            .shimmer(enabled = animated),
-    )
+    SkeletonPanel(modifier = modifier, contentHeight = contentHeight, style = SkeletonPanelStyle.Small)
 }
 
 @AppPreview

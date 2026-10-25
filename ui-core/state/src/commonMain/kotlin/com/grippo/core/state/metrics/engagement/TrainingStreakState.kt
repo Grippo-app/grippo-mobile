@@ -2,11 +2,19 @@ package com.grippo.core.state.metrics.engagement
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.training_streak_details_active_days
 import com.grippo.design.resources.provider.training_streak_details_no_sequence
+import com.grippo.design.resources.provider.training_streak_next_date
+import com.grippo.design.resources.provider.training_streak_next_weekly
+import com.grippo.design.resources.provider.training_streak_week_done
+import com.grippo.toolkit.date.utils.DateCompose
+import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRangePresets
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -19,6 +27,7 @@ public data class TrainingStreakState(
     val timeline: ImmutableList<TrainingStreakProgressState>,
     val historyDays: Int,
     val lastTrainingGapDays: Int,
+    val nextTrainingDate: DateFormatState?,
 ) {
     public val kind: TrainingStreakKind
         get() = when (featured) {
@@ -50,6 +59,27 @@ public data class TrainingStreakState(
         AppTokens.strings.res(Res.string.training_streak_details_no_sequence)
     } else {
         featured.cadenceDescription()
+    }
+
+    @Composable
+    public fun nextTrainingLine(): String? {
+        val date = nextTrainingDate?.value
+        if (date != null) {
+            return AppTokens.strings.res(
+                Res.string.training_streak_next_date,
+                DateCompose.rememberFormat(value = date, format = nextTrainingDate.format),
+            )
+        }
+        if (featured !is TrainingStreakFeaturedState.Weekly) {
+            return null
+        }
+        val currentWeek = timeline.lastOrNull() ?: return null
+        val remaining = (currentWeek.targetTrainingDays - currentWeek.achievedTrainingDays).coerceAtLeast(0)
+        return if (remaining == 0) {
+            AppTokens.strings.res(Res.string.training_streak_week_done)
+        } else {
+            AppTokens.strings.res(Res.string.training_streak_next_weekly, remaining)
+        }
     }
 }
 
@@ -94,6 +124,11 @@ public fun stubTrainingStreaks(): ImmutableList<TrainingStreakState> {
             ),
             historyDays = 30,
             lastTrainingGapDays = 0,
+            nextTrainingDate = DateFormatState.of(
+                value = LocalDate(2026, 10, 19),
+                range = DateRangePresets.infinity(),
+                format = DateFormat.DateOnly.DateDdMmm,
+            ),
         ),
         TrainingStreakState(
             totalActiveDays = 14,
@@ -135,6 +170,7 @@ public fun stubTrainingStreaks(): ImmutableList<TrainingStreakState> {
             ),
             historyDays = 60,
             lastTrainingGapDays = 1,
+            nextTrainingDate = null,
         ),
         TrainingStreakState(
             totalActiveDays = 16,
@@ -186,6 +222,11 @@ public fun stubTrainingStreaks(): ImmutableList<TrainingStreakState> {
             ),
             historyDays = 45,
             lastTrainingGapDays = 0,
+            nextTrainingDate = DateFormatState.of(
+                value = LocalDate(2026, 10, 20),
+                range = DateRangePresets.infinity(),
+                format = DateFormat.DateOnly.DateDdMmm,
+            ),
         ),
     )
     val pattern = TrainingStreakFeaturedState.Pattern(
@@ -200,6 +241,11 @@ public fun stubTrainingStreaks(): ImmutableList<TrainingStreakState> {
         featured = pattern,
         historyDays = 365,
         timeline = persistentListOf(),
+        nextTrainingDate = DateFormatState.of(
+            value = LocalDate(2026, 10, 20),
+            range = DateRangePresets.infinity(),
+            format = DateFormat.DateOnly.DateDdMmm,
+        ),
     )
     return (values + patternValue + patternValue.copy(
         totalActiveDays = 0,

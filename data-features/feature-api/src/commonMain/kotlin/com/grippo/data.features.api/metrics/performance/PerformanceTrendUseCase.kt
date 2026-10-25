@@ -1,5 +1,6 @@
 package com.grippo.data.features.api.metrics.performance
 
+import com.grippo.data.features.api.metrics.performance.models.PerformanceBaseline
 import com.grippo.data.features.api.metrics.performance.models.PerformanceMetric
 import com.grippo.data.features.api.metrics.performance.models.PerformanceTrendStatus
 import com.grippo.data.features.api.training.models.Training
@@ -15,19 +16,18 @@ public class PerformanceTrendUseCase {
         private const val MIN_COMPARISON_PERCENT: Double = 5.0
     }
 
-    /**
-     * Compares recorded nonnegative session totals, including zero, with earlier valid totals.
-     * Density requires a positive duration; a zero baseline has no percentage comparison.
-     */
-    public fun fromTrainings(trainings: List<Training>): List<PerformanceMetric> {
+    public fun fromTrainings(
+        trainings: List<Training>,
+        baseline: PerformanceBaseline = PerformanceBaseline.Average,
+    ): List<PerformanceMetric> {
         val sorted = trainings.sortedWith(compareBy<Training> { it.createdAt }.thenBy { it.id })
 
         return listOf(
-            densityMetric(sorted),
-            volumeMetric(sorted),
-            repetitionsMetric(sorted),
-            intensityMetric(sorted),
-            durationMetricNeutral(sorted),
+            densityMetric(trainings = sorted, baseline = baseline),
+            volumeMetric(trainings = sorted, baseline = baseline),
+            repetitionsMetric(trainings = sorted, baseline = baseline),
+            intensityMetric(trainings = sorted, baseline = baseline),
+            durationMetricNeutral(trainings = sorted, baseline = baseline),
         )
     }
 
@@ -41,15 +41,23 @@ public class PerformanceTrendUseCase {
 
     private fun computeStats(
         trainings: List<Training>,
+        baseline: PerformanceBaseline,
         valueOf: (Training) -> Double?,
     ): MetricStats {
-        val current = trainings.lastOrNull()?.let(valueOf)?.takeIf(::isValidMeasurement)
-        val baselineValues = trainings.dropLast(1).mapNotNull { training ->
+        val validValueOf: (Training) -> Double? = { training ->
             valueOf(training)?.takeIf(::isValidMeasurement)
         }
+        val previous = trainings.dropLast(1)
+        val current = trainings.lastOrNull()?.let(validValueOf)
+        val previousValues = previous.mapNotNull(validValueOf)
+        val baselineValues = baselineValues(
+            previous = previous,
+            baseline = baseline,
+            valueOf = validValueOf,
+        )
         val average = baselineValues.takeIf { it.isNotEmpty() }?.average()
-        val previousBest = baselineValues.maxOrNull()
-        val best = (baselineValues + listOfNotNull(current)).maxOrNull()
+        val previousBest = previousValues.maxOrNull()
+        val best = (previousValues + listOfNotNull(current)).maxOrNull()
         val comparisonPercent = if (current != null && average != null) {
             currentVsAveragePercent(current = current, average = average)
         } else {
@@ -58,7 +66,7 @@ public class PerformanceTrendUseCase {
         val status = when {
             current == null -> PerformanceTrendStatus.Empty
             previousBest == null -> PerformanceTrendStatus.Stable
-            current > previousBest -> PerformanceTrendStatus.Record
+            baseline == PerformanceBaseline.Average && current > previousBest -> PerformanceTrendStatus.Record
             comparisonPercent == null -> PerformanceTrendStatus.Stable
             else -> statusFromComparison(
                 comparisonPercent = comparisonPercent,
@@ -73,6 +81,17 @@ public class PerformanceTrendUseCase {
             currentVsAveragePercent = comparisonPercent,
             status = status,
         )
+    }
+
+    private fun <T : Any> baselineValues(
+        previous: List<Training>,
+        baseline: PerformanceBaseline,
+        valueOf: (Training) -> T?,
+    ): List<T> {
+        return when (baseline) {
+            PerformanceBaseline.Average -> previous.mapNotNull(valueOf)
+            PerformanceBaseline.Previous -> listOfNotNull(previous.lastOrNull()?.let(valueOf))
+        }
     }
 
     private fun isValidMeasurement(value: Double): Boolean {
@@ -111,8 +130,11 @@ public class PerformanceTrendUseCase {
         }
     }
 
-    private fun volumeMetric(trainings: List<Training>): PerformanceMetric.VolumeMetric {
-        val stats = computeStats(trainings) { it.volume.toDouble() }
+    private fun volumeMetric(
+        trainings: List<Training>,
+        baseline: PerformanceBaseline,
+    ): PerformanceMetric.VolumeMetric {
+        val stats = computeStats(trainings = trainings, baseline = baseline) { it.volume.toDouble() }
         return PerformanceMetric.VolumeMetric(
             currentVsAveragePercentage = stats.currentVsAveragePercent,
             current = stats.current?.toFloat(),
@@ -134,8 +156,11 @@ public class PerformanceTrendUseCase {
         return density.takeIf { storedDensity.isFinite() && storedDensity >= 0f }
     }
 
-    private fun densityMetric(trainings: List<Training>): PerformanceMetric.DensityMetric {
-        val stats = computeStats(trainings = trainings, valueOf = ::densityOf)
+    private fun densityMetric(
+        trainings: List<Training>,
+        baseline: PerformanceBaseline,
+    ): PerformanceMetric.DensityMetric {
+        val stats = computeStats(trainings = trainings, baseline = baseline, valueOf = ::densityOf)
         return PerformanceMetric.DensityMetric(
             currentVsAveragePercentage = stats.currentVsAveragePercent,
             current = stats.current?.toFloat(),
@@ -145,8 +170,11 @@ public class PerformanceTrendUseCase {
         )
     }
 
-    private fun repetitionsMetric(trainings: List<Training>): PerformanceMetric.RepetitionsMetric {
-        val stats = computeStats(trainings) { it.repetitions.toDouble() }
+    private fun repetitionsMetric(
+        trainings: List<Training>,
+        baseline: PerformanceBaseline,
+    ): PerformanceMetric.RepetitionsMetric {
+        val stats = computeStats(trainings = trainings, baseline = baseline) { it.repetitions.toDouble() }
         return PerformanceMetric.RepetitionsMetric(
             currentVsAveragePercentage = stats.currentVsAveragePercent,
             current = stats.current?.roundToInt(),
@@ -156,8 +184,11 @@ public class PerformanceTrendUseCase {
         )
     }
 
-    private fun intensityMetric(trainings: List<Training>): PerformanceMetric.IntensityMetric {
-        val stats = computeStats(trainings) { it.intensity.toDouble() }
+    private fun intensityMetric(
+        trainings: List<Training>,
+        baseline: PerformanceBaseline,
+    ): PerformanceMetric.IntensityMetric {
+        val stats = computeStats(trainings = trainings, baseline = baseline) { it.intensity.toDouble() }
         return PerformanceMetric.IntensityMetric(
             currentVsAveragePercentage = stats.currentVsAveragePercent,
             current = stats.current?.toFloat(),
@@ -171,15 +202,24 @@ public class PerformanceTrendUseCase {
         return training.duration.takeIf { it.isFinite() && !it.isNegative() }
     }
 
-    private fun durationMetricNeutral(trainings: List<Training>): PerformanceMetric.DurationMetric {
+    private fun durationMetricNeutral(
+        trainings: List<Training>,
+        baseline: PerformanceBaseline,
+    ): PerformanceMetric.DurationMetric {
+        val previous = trainings.dropLast(1)
         val current = trainings.lastOrNull()?.let(::validDuration)
-        val baselineValues = trainings.dropLast(1).mapNotNull(::validDuration)
+        val previousValues = previous.mapNotNull(::validDuration)
+        val baselineValues = baselineValues(
+            previous = previous,
+            baseline = baseline,
+            valueOf = ::validDuration,
+        )
         val averageMinutes = baselineValues
             .takeIf { it.isNotEmpty() }
             ?.map { it.toDouble(DurationUnit.MINUTES) }
             ?.average()
         val average = averageMinutes?.minutes?.takeIf { it.isFinite() }
-        val best = (baselineValues + listOfNotNull(current)).maxOrNull()
+        val best = (previousValues + listOfNotNull(current)).maxOrNull()
         val comparisonPercent = if (current != null && average != null) {
             currentVsAveragePercent(
                 current = current.toDouble(DurationUnit.MINUTES),

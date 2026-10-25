@@ -15,10 +15,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
-/**
- * Warm illustration-region surface shared by brand headers, hero blocks and the loader.
- * Ordinary working content keeps its neutral card/screen backgrounds.
- */
 @Composable
 public fun Modifier.illustrationBackground(shape: Shape): Modifier {
     val colors = AppTokens.colors.illustration

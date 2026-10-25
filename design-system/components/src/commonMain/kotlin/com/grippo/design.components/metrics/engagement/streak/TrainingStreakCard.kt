@@ -1,5 +1,8 @@
 package com.grippo.design.components.metrics.engagement.streak
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,37 +11,90 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import com.grippo.core.state.metrics.engagement.TrainingStreakFeaturedState
+import com.grippo.core.state.metrics.engagement.TrainingStreakMood
 import com.grippo.core.state.metrics.engagement.TrainingStreakState
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
 import com.grippo.design.components.indicators.LineIndicator
-import com.grippo.design.components.metrics.MetricCardPresentation
+import com.grippo.design.components.loading.SkeletonPanel
+import com.grippo.design.components.loading.SkeletonPanelStyle
 import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
+import com.grippo.design.components.utils.VALUE_SLOT
+import com.grippo.design.components.utils.buildValueSlotString
+import com.grippo.design.components.utils.rememberSingleLineHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Flame
+import com.grippo.design.resources.provider.joined_pair
 import com.grippo.design.resources.provider.metric_overview_streak_active_days
 import com.grippo.design.resources.provider.metric_overview_streak_title
 import com.grippo.design.resources.provider.training_streak_current_progress
+import com.grippo.design.resources.provider.training_streak_growth_extended
+import com.grippo.design.resources.provider.training_streak_growth_headline
+import com.grippo.design.resources.provider.training_streak_growth_kept
+import com.grippo.design.resources.provider.training_streak_growth_reset
+import kotlinx.collections.immutable.toPersistentList
+
+@Immutable
+public sealed interface TrainingStreakCardStyle {
+    @Immutable
+    public sealed interface Loadable : TrainingStreakCardStyle
+
+    @Immutable
+    public data object Overview : Loadable
+
+    @Immutable
+    public data object Detailed : TrainingStreakCardStyle
+
+    @Immutable
+    public data class Growth(
+        public val previous: TrainingStreakState?,
+    ) : Loadable
+}
+
+private const val STREAK_GROWTH_DURATION_MS = 900
+private const val STREAK_GROWTH_LABEL = "TrainingStreakGrowthLength"
 
 @Composable
 public fun TrainingStreakCard(
     modifier: Modifier = Modifier,
     value: TrainingStreakState,
-    presentation: MetricCardPresentation = MetricCardPresentation.Detailed,
+    style: TrainingStreakCardStyle = TrainingStreakCardStyle.Detailed,
 ) {
-    if (presentation == MetricCardPresentation.Detailed) {
-        TrainingStreakDetailSummary(modifier = modifier, value = value)
-        return
+    when (style) {
+        TrainingStreakCardStyle.Overview -> TrainingStreakOverview(modifier = modifier, value = value)
+        TrainingStreakCardStyle.Detailed -> TrainingStreakDetailSummary(modifier = modifier, value = value)
+        is TrainingStreakCardStyle.Growth -> TrainingStreakGrowth(
+            modifier = modifier,
+            value = value,
+            previous = style.previous,
+        )
     }
+}
 
+@Composable
+private fun TrainingStreakOverview(
+    modifier: Modifier = Modifier,
+    value: TrainingStreakState,
+) {
     val title = AppTokens.strings.res(Res.string.metric_overview_streak_title)
 
     val headlinePrimary = value.featured.overviewHeadline()
@@ -154,6 +210,198 @@ private fun TrainingStreakDetailSummary(
     }
 }
 
+@Composable
+private fun TrainingStreakGrowth(
+    modifier: Modifier = Modifier,
+    value: TrainingStreakState,
+    previous: TrainingStreakState?,
+) {
+    val length = value.featured.length
+    val previousLength = previous?.featured?.length
+    val dropped = previousLength != null && length < previousLength
+
+    var revealed by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) { revealed = true }
+    val currentLengthAlpha = animateFloatAsState(
+        targetValue = if (revealed) 1f else 0f,
+        animationSpec = tween(durationMillis = STREAK_GROWTH_DURATION_MS, easing = FastOutSlowInEasing),
+        label = STREAK_GROWTH_LABEL,
+    )
+
+    val headlineColor = when {
+        previousLength == null || length == previousLength -> AppTokens.colors.text.primary
+        length > previousLength -> AppTokens.colors.semantic.success
+        else -> AppTokens.colors.semantic.decline
+    }
+    val nextTrainingLine = value.nextTrainingLine()
+    val progressColors = if (dropped) {
+        AppTokens.colors.charts.indicator.decline
+    } else {
+        value.featured.mood.indicatorColors()
+    }
+    val progressValue = value.featured.progressPercent.coerceIn(0, 100) / 100f
+
+    MetricSectionPanel(
+        modifier = modifier,
+        style = MetricSectionPanelStyle.Large,
+    ) {
+        MetricOverviewHeader(title = AppTokens.strings.res(Res.string.metric_overview_streak_title))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                modifier = Modifier.size(AppTokens.dp.metrics.overview.rhythmIcon),
+                imageVector = AppTokens.icons.Flame,
+                tint = progressColors.dominant,
+                contentDescription = null,
+            )
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+            ) {
+                Text(
+                    text = value.featured.overviewHeadline(),
+                    style = AppTokens.typography.h4(),
+                    color = headlineColor,
+                )
+                Text(
+                    text = value.featured.overviewCadence(),
+                    style = AppTokens.typography.b13Med(),
+                    color = AppTokens.colors.text.secondary,
+                )
+            }
+        }
+
+        LineIndicator(
+            modifier = Modifier.fillMaxWidth(),
+            progress = progressValue,
+            colors = progressColors,
+        )
+
+        if (previousLength != null || nextTrainingLine != null) {
+            Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
+                if (previousLength != null) {
+                    StreakOutcomeLine(
+                        previousLength = previousLength,
+                        length = length,
+                        currentLengthAlpha = currentLengthAlpha,
+                    )
+                }
+
+                if (nextTrainingLine != null) {
+                    Text(
+                        text = nextTrainingLine,
+                        style = AppTokens.typography.b12Med(),
+                        color = AppTokens.colors.text.secondary,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StreakOutcomeLine(
+    modifier: Modifier = Modifier,
+    previousLength: Int,
+    length: Int,
+    currentLengthAlpha: State<Float>,
+) {
+    val lineColor = AppTokens.colors.text.secondary
+    val text = if (length == previousLength) {
+        AnnotatedString(AppTokens.strings.res(Res.string.training_streak_growth_kept))
+    } else {
+        val outcomeResource = if (length < previousLength) {
+            Res.string.training_streak_growth_reset
+        } else {
+            Res.string.training_streak_growth_extended
+        }
+        val outcome = AppTokens.strings.res(outcomeResource)
+        val change = AppTokens.strings.res(
+            Res.string.training_streak_growth_headline,
+            previousLength,
+            VALUE_SLOT,
+        )
+        val line = AppTokens.strings.res(Res.string.joined_pair, outcome, change)
+        val lengthColor = lineColor.copy(alpha = lineColor.alpha * currentLengthAlpha.value)
+
+        buildValueSlotString(
+            sentence = line,
+            value = length.toString(),
+            appendValue = { current -> withStyle(SpanStyle(color = lengthColor)) { append(current) } },
+        )
+    }
+
+    Text(
+        modifier = modifier,
+        text = text,
+        style = AppTokens.typography.b12Med(),
+        color = lineColor,
+    )
+}
+
+@Composable
+public fun TrainingStreakCardSkeleton(
+    modifier: Modifier = Modifier,
+    style: TrainingStreakCardStyle.Loadable,
+) {
+    val textMeasurer = rememberTextMeasurer()
+    val titleLine = rememberSingleLineHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val headlineLine = rememberSingleLineHeight(style = AppTokens.typography.h4(), textMeasurer = textMeasurer)
+    val cadenceLine = rememberSingleLineHeight(style = AppTokens.typography.b13Med(), textMeasurer = textMeasurer)
+    val captionLine = rememberSingleLineHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
+
+    val spacer = AppTokens.dp.metrics.panel.large.spacer
+    val textGap = AppTokens.dp.contentPadding.text
+    val headerHeight = maxOf(titleLine, AppTokens.dp.metrics.overview.detailsIcon)
+    val indicatorHeight = AppTokens.dp.metrics.charts.indicator.height
+
+    val contentHeight = when (style) {
+        TrainingStreakCardStyle.Overview -> {
+            val countLine = rememberSingleLineHeight(style = AppTokens.typography.h3(), textMeasurer = textMeasurer)
+            val headlineHeight = maxOf(AppTokens.dp.metrics.overview.rhythmIcon, headlineLine) + textGap + cadenceLine
+            val activeDaysHeight = countLine + textGap + captionLine
+            headerHeight + maxOf(headlineHeight, activeDaysHeight) + indicatorHeight + captionLine + spacer * 3
+        }
+
+        is TrainingStreakCardStyle.Growth -> {
+            val headlineHeight = maxOf(AppTokens.dp.metrics.overview.rhythmIcon, headlineLine + textGap + cadenceLine)
+            headerHeight + headlineHeight + indicatorHeight + captionLine + textGap + captionLine + spacer * 3
+        }
+    }
+
+    SkeletonPanel(
+        modifier = modifier,
+        contentHeight = contentHeight,
+        style = SkeletonPanelStyle.Large,
+    )
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakCardSkeletonOverviewPreview() {
+    PreviewContainer {
+        TrainingStreakCardSkeleton(
+            modifier = Modifier.fillMaxWidth(),
+            style = TrainingStreakCardStyle.Overview,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakCardSkeletonGrowthPreview() {
+    PreviewContainer {
+        TrainingStreakCardSkeleton(
+            modifier = Modifier.fillMaxWidth(),
+            style = TrainingStreakCardStyle.Growth(previous = null),
+        )
+    }
+}
+
 @AppPreview
 @Composable
 private fun TrainingStreakCardDetailedDailyPreview() {
@@ -161,7 +409,7 @@ private fun TrainingStreakCardDetailedDailyPreview() {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
             value = stubTrainingStreaks()[0],
-            presentation = MetricCardPresentation.Detailed,
+            style = TrainingStreakCardStyle.Detailed,
         )
     }
 }
@@ -173,7 +421,7 @@ private fun TrainingStreakCardDetailedWeeklyPreview() {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
             value = stubTrainingStreaks()[1],
-            presentation = MetricCardPresentation.Detailed,
+            style = TrainingStreakCardStyle.Detailed,
         )
     }
 }
@@ -185,7 +433,7 @@ private fun TrainingStreakCardDetailedRhythmPreview() {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
             value = stubTrainingStreaks()[2],
-            presentation = MetricCardPresentation.Detailed,
+            style = TrainingStreakCardStyle.Detailed,
         )
     }
 }
@@ -197,7 +445,7 @@ private fun TrainingStreakCardDetailedPatternPreview() {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
             value = stubTrainingStreaks()[3],
-            presentation = MetricCardPresentation.Detailed,
+            style = TrainingStreakCardStyle.Detailed,
         )
     }
 }
@@ -211,7 +459,7 @@ private fun TrainingStreakCardDetailedRestartPreview() {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
             value = streak.copy(featured = featured.copy(length = 0)),
-            presentation = MetricCardPresentation.Detailed,
+            style = TrainingStreakCardStyle.Detailed,
         )
     }
 }
@@ -223,7 +471,7 @@ private fun TrainingStreakCardOverviewDailyPreview() {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
             value = stubTrainingStreaks()[0],
-            presentation = MetricCardPresentation.Overview,
+            style = TrainingStreakCardStyle.Overview,
         )
     }
 }
@@ -235,7 +483,7 @@ private fun TrainingStreakCardOverviewWeeklyPreview() {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
             value = stubTrainingStreaks()[1],
-            presentation = MetricCardPresentation.Overview,
+            style = TrainingStreakCardStyle.Overview,
         )
     }
 }
@@ -247,7 +495,7 @@ private fun TrainingStreakCardOverviewRhythmPreview() {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
             value = stubTrainingStreaks()[2],
-            presentation = MetricCardPresentation.Overview,
+            style = TrainingStreakCardStyle.Overview,
         )
     }
 }
@@ -259,7 +507,7 @@ private fun TrainingStreakCardOverviewPatternPreview() {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
             value = stubTrainingStreaks()[3],
-            presentation = MetricCardPresentation.Overview,
+            style = TrainingStreakCardStyle.Overview,
         )
     }
 }
@@ -271,7 +519,84 @@ private fun TrainingStreakCardOverviewRestartPreview() {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
             value = stubTrainingStreaks()[4],
-            presentation = MetricCardPresentation.Overview,
+            style = TrainingStreakCardStyle.Overview,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakCardGrowthExtendedPreview() {
+    val streak = stubTrainingStreaks()[0]
+    val featured = streak.featured as TrainingStreakFeaturedState.Daily
+    PreviewContainer {
+        TrainingStreakCard(
+            modifier = Modifier.fillMaxWidth(),
+            value = streak,
+            style = TrainingStreakCardStyle.Growth(
+                previous = streak.copy(
+                    totalActiveDays = streak.totalActiveDays - 1,
+                    featured = featured.copy(length = featured.length - 1, progressPercent = 80),
+                ),
+            ),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakCardGrowthKeptPreview() {
+    val streak = stubTrainingStreaks()[2]
+    PreviewContainer {
+        TrainingStreakCard(
+            modifier = Modifier.fillMaxWidth(),
+            value = streak,
+            style = TrainingStreakCardStyle.Growth(previous = streak),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakCardGrowthResetPreview() {
+    val streak = stubTrainingStreaks()[1]
+    val featured = streak.featured as TrainingStreakFeaturedState.Weekly
+    PreviewContainer {
+        TrainingStreakCard(
+            modifier = Modifier.fillMaxWidth(),
+            value = streak.copy(
+                featured = featured.copy(length = 1, mood = TrainingStreakMood.Restart, progressPercent = 25),
+            ),
+            style = TrainingStreakCardStyle.Growth(previous = streak.copy(featured = featured.copy(length = 6))),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakCardGrowthWeekDonePreview() {
+    val streak = stubTrainingStreaks()[1]
+    val currentWeek = streak.timeline.last()
+    PreviewContainer {
+        TrainingStreakCard(
+            modifier = Modifier.fillMaxWidth(),
+            value = streak.copy(
+                timeline = (streak.timeline.dropLast(1) + currentWeek.copy(achievedTrainingDays = 4))
+                    .toPersistentList(),
+            ),
+            style = TrainingStreakCardStyle.Growth(previous = streak),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakCardGrowthWithoutPreviousPreview() {
+    PreviewContainer {
+        TrainingStreakCard(
+            modifier = Modifier.fillMaxWidth(),
+            value = stubTrainingStreaks()[3],
+            style = TrainingStreakCardStyle.Growth(previous = null),
         )
     }
 }

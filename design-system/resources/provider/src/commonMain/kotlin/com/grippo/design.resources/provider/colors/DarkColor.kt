@@ -22,23 +22,18 @@ public object DarkColor : AppColor {
         override val borderPrimary = backgroundPrimary2
         override val textPrimary = AppPalette.NeutralDark.N100
         override val iconPrimary = AppPalette.NeutralDark.N100
-
         override val backgroundSecondary1 = AppPalette.NeutralDark.N300
         override val backgroundSecondary2 = AppPalette.NeutralDark.N300
         override val borderSecondary = AppPalette.NeutralDark.N450
         override val textSecondary = AppPalette.NeutralDark.N800
         override val iconSecondary = AppPalette.NeutralDark.N700
-
         override val textTertiary: Color = AppPalette.NeutralDark.N800
         override val borderTertiary: Color = Color.Transparent
         override val iconTertiary: Color = AppPalette.NeutralDark.N600
-
         override val textTransparent = AppPalette.Common.White
         override val iconTransparent = AppPalette.Common.White
-
         override val backgroundError = AppPalette.DarkAccent.Red
         override val contentError = AppPalette.NeutralDark.N100
-
         override val backgroundDisabled = AppPalette.NeutralDark.N300
         override val contentDisabled = AppPalette.NeutralDark.N550
     }
@@ -114,9 +109,7 @@ public object DarkColor : AppColor {
     override val brand: AppColor.BrandColors = object : AppColor.BrandColors {
         override val color1: Color = AppPalette.DarkAccent.Magenta
         override val color2: Color = AppPalette.DarkAccent.Coral
-
         override val color4: Color = AppPalette.DarkAccent.Teal
-
         override val color5: Color = AppPalette.DarkAccent.Sky
         override val color6: Color = AppPalette.DarkAccent.Indigo
     }
@@ -143,11 +136,13 @@ public object DarkColor : AppColor {
         override val warning = AppPalette.DarkAccent.Orange
         override val info = AppPalette.DarkAccent.Blue
         override val notice = AppPalette.DarkAccent.Yellow
+        override val decline = AppPalette.DarkAccent.Indigo
         override val successBackground = lerp(background.card, success, 0.14f)
         override val errorBackground = lerp(background.card, error, 0.14f)
         override val warningBackground = lerp(background.card, warning, 0.14f)
         override val infoBackground = lerp(background.card, info, 0.14f)
         override val noticeBackground = lerp(background.card, notice, 0.14f)
+        override val declineBackground = lerp(background.card, decline, 0.14f)
     }
 
     override val shimmer: AppColor.ShimmerColors = object : AppColor.ShimmerColors {
@@ -203,13 +198,10 @@ public object DarkColor : AppColor {
         }
 
     override val context: AppColor.ContextColors = object : AppColor.ContextColors {
-        // Profile
         override val muscle: Color = AppPalette.DarkAccent.Coral
         override val equipment: Color = AppPalette.DarkAccent.Green
         override val experience: Color = AppPalette.DarkAccent.Teal
         override val body: Color = AppPalette.DarkAccent.Sky
-
-        // Training
         override val volume: Color = AppPalette.DarkAccent.Blue
         override val repetitions: Color = AppPalette.DarkAccent.Purple
         override val intensity: Color = AppPalette.DarkAccent.Green
@@ -317,7 +309,6 @@ public object DarkColor : AppColor {
             }
         }
         override val indicator = object : AppColor.Charts.IndicatorColors {
-            // Brand accent — neutral start, warm finish. Fits hero-progress (goals, milestones).
             override val primary = object : AppColor.Charts.IndicatorColors.IndicatorColors {
                 override val colors: List<Color> = listOf(
                     AppPalette.Common.White,
@@ -326,7 +317,6 @@ public object DarkColor : AppColor {
                 override val track: Color = AppPalette.Common.White.copy(alpha = 0.2f)
             }
 
-            // Achievement / positive — green ramps into olive.
             override val success = object : AppColor.Charts.IndicatorColors.IndicatorColors {
                 override val colors: List<Color> = listOf(
                     AppPalette.DarkAccent.Green,
@@ -335,7 +325,6 @@ public object DarkColor : AppColor {
                 override val track: Color = AppPalette.DarkAccent.Emerald.copy(alpha = 0.2f)
             }
 
-            // Informational progress uses the same blue family as the semantic info slot.
             override val info = object : AppColor.Charts.IndicatorColors.IndicatorColors {
                 override val colors: List<Color> = listOf(
                     AppPalette.DarkAccent.Sky,
@@ -344,7 +333,6 @@ public object DarkColor : AppColor {
                 override val track: Color = AppPalette.NeutralDark.N500
             }
 
-            // Hot ramp — yellow attention fading into orange urgency.
             override val warning = object : AppColor.Charts.IndicatorColors.IndicatorColors {
                 override val colors: List<Color> = listOf(
                     AppPalette.DarkAccent.Yellow,
@@ -361,10 +349,22 @@ public object DarkColor : AppColor {
                 override val track: Color = AppPalette.DarkAccent.Orange.copy(alpha = 0.2f)
             }
 
-            // Muted — kept solid on purpose; used where progress should fade into the background.
+            override val decline = object : AppColor.Charts.IndicatorColors.IndicatorColors {
+                override val colors: List<Color> = listOf(
+                    lerp(AppPalette.DarkAccent.Indigo, AppPalette.Common.White, 0.25f),
+                    AppPalette.DarkAccent.Indigo,
+                )
+                override val track: Color = AppPalette.DarkAccent.Indigo.copy(alpha = 0.2f)
+            }
+
             override val muted = object : AppColor.Charts.IndicatorColors.IndicatorColors {
                 override val colors: List<Color> = listOf(AppPalette.NeutralDark.N500)
                 override val track: Color = AppPalette.NeutralDark.N500.copy(alpha = 0.2f)
+            }
+
+            override val before = object : AppColor.Charts.IndicatorColors.IndicatorColors {
+                override val colors: List<Color> = listOf(AppPalette.NeutralDark.N450)
+                override val track: Color = muted.track
             }
         }
     }

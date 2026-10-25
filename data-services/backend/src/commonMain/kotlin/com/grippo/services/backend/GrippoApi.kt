@@ -33,10 +33,6 @@ import org.koin.core.annotation.Single
 @Single
 public class GrippoApi internal constructor(private val client: BackendClient) {
 
-    /* * * * * * * * * * * * * * * * *
-     * Auth service
-     * * * * * * * * * * * * * * * * */
-
     public suspend fun login(body: EmailAuthBody): TokenResponse {
         return request(
             method = HttpMethod.Post,
@@ -77,10 +73,6 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    /* * * * * * * * * * * * * * * * *
-     * Push token service
-     * * * * * * * * * * * * * * * * */
-
     public suspend fun sendPushToken(body: PushTokenBody): Unit {
         return request(
             method = HttpMethod.Post,
@@ -95,10 +87,6 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
             path = "/push-tokens",
         )
     }
-
-    /* * * * * * * * * * * * * * * * *
-     * User service
-     * * * * * * * * * * * * * * * * */
 
     public suspend fun getUser(): UserResponse {
         return request(
@@ -168,10 +156,6 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    /* * * * * * * * * * * * * * * * *
-     * Muscle service
-     * * * * * * * * * * * * * * * * */
-
     public suspend fun getMuscles(): List<MuscleGroupResponse> {
         return request(
             method = HttpMethod.Get,
@@ -179,20 +163,12 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    /* * * * * * * * * * * * * * * * *
-     * Equipment service
-     * * * * * * * * * * * * * * * * */
-
     public suspend fun getEquipments(): List<EquipmentGroupResponse> {
         return request(
             method = HttpMethod.Get,
             path = "/equipments"
         )
     }
-
-    /* * * * * * * * * * * * * * * * *
-     * Weight history service
-     * * * * * * * * * * * * * * * * */
 
     public suspend fun updateWeightHistory(value: Float): WeightHistoryResponse {
         return request(
@@ -218,10 +194,6 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    /* * * * * * * * * * * * * * * * *
-     * Goal service
-     * * * * * * * * * * * * * * * * */
-
     public suspend fun getGoal(): GoalResponse? {
         return request(
             method = HttpMethod.Get,
@@ -236,10 +208,6 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
             body = body
         )
     }
-
-    /* * * * * * * * * * * * * * * * *
-     * Trainings service
-     * * * * * * * * * * * * * * * * */
 
     public suspend fun getTrainings(
         start: String,
@@ -283,10 +251,6 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
-    /* * * * * * * * * * * * * * * * *
-     * Exercise examples
-     * * * * * * * * * * * * * * * * */
-
     public suspend fun getExerciseExamples(locale: String): List<GetExerciseExampleResponse> {
         return request(
             method = HttpMethod.Get,
@@ -316,10 +280,6 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
             path = "exercise-metrics/exercise-example/${id}/achievements"
         )
     }
-
-    /* * * * * * * * * * * * * * * * *
-     * Utilities
-     * * * * * * * * * * * * * * * * */
 
     private suspend inline fun <reified T> request(
         method: HttpMethod,

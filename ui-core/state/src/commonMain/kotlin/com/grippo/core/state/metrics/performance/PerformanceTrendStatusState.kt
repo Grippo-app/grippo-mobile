@@ -6,9 +6,12 @@ import androidx.compose.ui.graphics.Color
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.performance_status_declined
+import com.grippo.design.resources.provider.performance_status_declined_previous
 import com.grippo.design.resources.provider.performance_status_improved
+import com.grippo.design.resources.provider.performance_status_improved_previous
 import com.grippo.design.resources.provider.performance_status_record
 import com.grippo.design.resources.provider.performance_status_stable
+import com.grippo.design.resources.provider.performance_status_stable_previous
 
 @Immutable
 public enum class PerformanceTrendStatusState {
@@ -19,11 +22,23 @@ public enum class PerformanceTrendStatusState {
     Declined;
 
     @Composable
-    public fun label(): String? = when (this) {
+    public fun label(baseline: PerformanceBaselineState): String? = when (this) {
         Record -> AppTokens.strings.res(Res.string.performance_status_record)
-        Improved -> AppTokens.strings.res(Res.string.performance_status_improved)
-        Stable -> AppTokens.strings.res(Res.string.performance_status_stable)
-        Declined -> AppTokens.strings.res(Res.string.performance_status_declined)
+        Improved -> when (baseline) {
+            PerformanceBaselineState.Average -> AppTokens.strings.res(Res.string.performance_status_improved)
+            PerformanceBaselineState.Previous -> AppTokens.strings.res(Res.string.performance_status_improved_previous)
+        }
+
+        Stable -> when (baseline) {
+            PerformanceBaselineState.Average -> AppTokens.strings.res(Res.string.performance_status_stable)
+            PerformanceBaselineState.Previous -> AppTokens.strings.res(Res.string.performance_status_stable_previous)
+        }
+
+        Declined -> when (baseline) {
+            PerformanceBaselineState.Average -> AppTokens.strings.res(Res.string.performance_status_declined)
+            PerformanceBaselineState.Previous -> AppTokens.strings.res(Res.string.performance_status_declined_previous)
+        }
+
         Empty -> null
     }
 
@@ -31,6 +46,6 @@ public enum class PerformanceTrendStatusState {
     public fun backgroundColor(): Color = when (this) {
         Record, Improved -> AppTokens.colors.semantic.successBackground
         Stable, Empty -> AppTokens.colors.background.screen
-        Declined -> AppTokens.colors.semantic.warningBackground
+        Declined -> AppTokens.colors.semantic.declineBackground
     }
 }

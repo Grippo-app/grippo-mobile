@@ -19,7 +19,6 @@ public val AppIcon.Dumbbell: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            // Left big weight (rounded)
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(2.5f, 10f)
                 curveTo(2.5f, 9.172f, 3.172f, 8.5f, 4f, 8.5f)
@@ -29,7 +28,6 @@ public val AppIcon.Dumbbell: ImageVector
                 curveTo(3.172f, 15.5f, 2.5f, 14.828f, 2.5f, 14f)
                 close()
             }
-            // Left small weight (rounded)
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(6f, 8f)
                 curveTo(6f, 7.172f, 6.672f, 6.5f, 7.5f, 6.5f)
@@ -39,7 +37,6 @@ public val AppIcon.Dumbbell: ImageVector
                 curveTo(6.672f, 17.5f, 6f, 16.828f, 6f, 16f)
                 close()
             }
-            // Bar (rounded)
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(9f, 11.25f)
                 curveTo(9f, 10.836f, 9.336f, 10.5f, 9.75f, 10.5f)
@@ -51,7 +48,6 @@ public val AppIcon.Dumbbell: ImageVector
                 curveTo(9.336f, 13.5f, 9f, 13.164f, 9f, 12.75f)
                 close()
             }
-            // Right small weight (rounded)
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(15f, 8f)
                 curveTo(15f, 7.172f, 15.672f, 6.5f, 16.5f, 6.5f)
@@ -61,7 +57,6 @@ public val AppIcon.Dumbbell: ImageVector
                 curveTo(15.672f, 17.5f, 15f, 16.828f, 15f, 16f)
                 close()
             }
-            // Right big weight (rounded)
             path(fill = SolidColor(Color(0xFF33363F))) {
                 moveTo(18.5f, 10f)
                 curveTo(18.5f, 9.172f, 19.172f, 8.5f, 20f, 8.5f)

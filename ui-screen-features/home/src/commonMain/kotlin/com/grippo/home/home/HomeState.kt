@@ -57,8 +57,6 @@ internal enum class HomeUnlock(
         lifetimeCount >= requiredLifetimeCount
 
     companion object {
-        // The user is "new" until they pass the last milestone. Derived from
-        // entries so adding a milestone automatically extends the new-user phase.
         val NEW_USER_THRESHOLD: Int = entries.maxOf { it.requiredLifetimeCount }
 
         fun shouldShowBanner(lifetimeCount: Int, hasGoal: Boolean): Boolean =

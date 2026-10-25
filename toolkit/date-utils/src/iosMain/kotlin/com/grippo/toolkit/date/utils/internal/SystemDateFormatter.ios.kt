@@ -23,13 +23,11 @@ import kotlin.time.Duration
 internal actual class SystemDateFormatter actual constructor() : DateFormatter {
     actual override fun format(value: LocalDateTime, pattern: String, localeTag: String?): String? {
         val formatter = NSDateFormatter().apply {
-            // Safer locale construction
             locale = localeTag?.let { NSLocale(localeIdentifier = it) } ?: NSLocale.currentLocale
-            // calendarWithIdentifier returns NSCalendar? -> provide fallback
             calendar = NSCalendar.calendarWithIdentifier(NSCalendarIdentifierGregorian)
                 ?: NSCalendar.currentCalendar
             timeZone = NSTimeZone.localTimeZone
-            dateFormat = normalizeApplePattern(pattern) // supports MMM/MMMM and LLL/LLLL
+            dateFormat = normalizeApplePattern(pattern)
         }
         return value.toNSDate()?.let { formatter.stringFromDate(it) }
     }
@@ -97,9 +95,8 @@ private fun LocalDate.toNSDateAtNoon(): NSDate? {
 }
 
 private fun LocalTime.toNSDateOnReferenceDate(): NSDate? {
-    // Fixed reference date to format time-only values
     val comps = NSDateComponents().apply {
-        year = 2001 // Apple reference date
+        year = 2001
         month = 1
         day = 1
         hour = this@toNSDateOnReferenceDate.hour.toLong()
@@ -122,5 +119,4 @@ private fun LocalDateTime.toNSDate(): NSDate? {
     return NSCalendar.currentCalendar.dateFromComponents(comps)
 }
 
-// Normalize Java-style 'u' to Apple 'y'
 private fun normalizeApplePattern(pattern: String): String = pattern.replace('u', 'y')

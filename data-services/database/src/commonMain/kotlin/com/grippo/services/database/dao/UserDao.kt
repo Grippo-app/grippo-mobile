@@ -47,8 +47,6 @@ public interface UserDao {
     @Query("SELECT * FROM user_stats WHERE userId = :userId LIMIT 1")
     public fun getStatsByUserId(userId: String): Flow<UserStatsEntity?>
 
-    // ────────────── INSERT ──────────────
-
     @Transaction
     public suspend fun insertOrUpdate(pack: UserPack) {
         insertOrUpdate(pack.user)
@@ -114,8 +112,6 @@ public interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertExcludedMuscles(muscles: List<UserExcludedMuscleEntity>)
-
-    // ────────────── DELETE ──────────────
 
     @Query("DELETE FROM user_excluded_equipment WHERE profileId = :profileId")
     public suspend fun clearExcludedEquipments(profileId: String)
