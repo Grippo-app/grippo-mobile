@@ -2,29 +2,22 @@ package com.grippo.training.completed
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.withFrameNanos
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
@@ -47,6 +40,7 @@ import com.grippo.core.state.metrics.engagement.TrainingStreakFeaturedState
 import com.grippo.core.state.metrics.engagement.TrainingStreakState
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
 import com.grippo.core.state.metrics.performance.PerformanceBaselineState
+import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceVerdictState
 import com.grippo.core.state.metrics.performance.stubPerformanceMetricsByType
 import com.grippo.core.state.metrics.performance.stubPerformanceMetricsDeclined
@@ -63,7 +57,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCard
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardStyle
@@ -80,7 +74,9 @@ import com.grippo.design.components.metrics.volume.WeeklyVolumeCard
 import com.grippo.design.components.metrics.volume.WeeklyVolumeCardSkeleton
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.training.TrainingRecapHero
+import com.grippo.design.components.training.TrainingRecapHeroState
 import com.grippo.design.components.training.TrainingRecapHeroStyle
+import com.grippo.design.components.training.rememberTrainingRecapHeroState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -101,6 +97,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -115,12 +112,11 @@ internal fun TrainingCompletedScreen(
         value = AppTokens.colors.background.screen,
     ),
 ) {
-    val basePadding = PaddingValues(bottom = AppTokens.dp.contentPadding.subContent)
     val isSaving = loaders.contains(TrainingCompletedLoader.SaveTraining)
     val isSharing = loaders.contains(TrainingCompletedLoader.ShareRecap)
     val heroStyle = trainingCompletedHeroStyle(state)
     val heroLayer = rememberGraphicsLayer()
-    val skeletonListState = rememberLazyListState()
+    val heroState = rememberTrainingRecapHeroState()
     val contentListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val shareState = when {
@@ -130,18 +126,18 @@ internal fun TrainingCompletedScreen(
         else -> ButtonState.Disabled
     }
 
-    BottomOverlayContainer(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),
-        contentPadding = basePadding,
-        content = { containerModifier, resolvedPadding ->
-            Box(modifier = containerModifier.fillMaxSize()) {
+    ) {
+        OverlayContainer(
+            modifier = Modifier.fillMaxSize(),
+            content = { resolvedPadding ->
                 if (isSaving) {
                     TrainingCompletedSkeleton(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = resolvedPadding,
-                        listState = skeletonListState,
                     )
                 } else {
                     TrainingCompletedContent(
@@ -151,87 +147,65 @@ internal fun TrainingCompletedScreen(
                         state = state,
                         loaders = loaders,
                         heroStyle = heroStyle,
+                        heroState = heroState,
                         heroLayer = heroLayer,
                         contract = contract,
                     )
                 }
-
-                StatusBarScrim(listState = if (isSaving) skeletonListState else contentListState)
-
-                KonfettiParade(
-                    show = state.recordCelebration == RecordCelebrationState.Playing && !isSaving,
-                    onShown = contract::onRecordConfettiShown,
-                )
-            }
-        },
-        overlay = AppTokens.colors.background.screen,
-        fadeHeight = AppTokens.dp.contentPadding.block,
-        bottom = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .padding(
-                        start = AppTokens.dp.screen.horizontalPadding,
-                        end = AppTokens.dp.screen.horizontalPadding,
-                        top = AppTokens.dp.contentPadding.block,
-                        bottom = AppTokens.dp.screen.verticalPadding,
-                    ),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-            ) {
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.training_completed_done),
-                    ),
-                    style = ButtonStyle.Primary,
-                    state = if (isSaving) ButtonState.Loading else ButtonState.Enabled,
-                    onClick = contract::onBack,
-                )
-
-                if (isSaving || state.training != null) {
+            },
+            overlay = AppTokens.colors.background.screen,
+            top = {
+                Spacer(modifier = Modifier.statusBarsPadding())
+            },
+            bottom = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .padding(
+                            start = AppTokens.dp.screen.horizontalPadding,
+                            end = AppTokens.dp.screen.horizontalPadding,
+                            bottom = AppTokens.dp.screen.verticalPadding,
+                        ),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                ) {
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         content = ButtonContent.Text(
-                            text = AppTokens.strings.res(Res.string.share),
-                            startIcon = ButtonIcon.Icon(AppTokens.icons.Share),
+                            text = AppTokens.strings.res(Res.string.training_completed_done),
                         ),
-                        style = ButtonStyle.Secondary,
-                        state = shareState,
-                        onClick = {
-                            coroutineScope.launch {
-                                contentListState.animateScrollToItem(index = 0)
-                                // Skipping this frame shares the hero's stale layer from before the scroll.
-                                withFrameNanos { }
-                                contract.onShareClick { heroLayer.toImageBitmap() }
-                            }
-                        },
+                        style = ButtonStyle.Primary,
+                        state = if (isSaving) ButtonState.Loading else ButtonState.Enabled,
+                        onClick = contract::onBack,
                     )
-                }
-            }
-        },
-    )
-}
 
-@Composable
-private fun BoxScope.StatusBarScrim(listState: LazyListState) {
-    val color = AppTokens.colors.background.screen
-
-    Spacer(
-        modifier = Modifier
-            .align(Alignment.TopCenter)
-            .fillMaxWidth()
-            .windowInsetsTopHeight(WindowInsets.statusBars)
-            .drawBehind {
-                val scrolled = if (listState.firstVisibleItemIndex > 0) {
-                    size.height
-                } else {
-                    listState.firstVisibleItemScrollOffset.toFloat()
+                    if (isSaving || state.training != null) {
+                        Button(
+                            modifier = Modifier.fillMaxWidth(),
+                            content = ButtonContent.Text(
+                                text = AppTokens.strings.res(Res.string.share),
+                                startIcon = ButtonIcon.Icon(AppTokens.icons.Share),
+                            ),
+                            style = ButtonStyle.Secondary,
+                            state = shareState,
+                            onClick = {
+                                coroutineScope.launch {
+                                    contentListState.animateScrollToItem(index = 0)
+                                    heroState.settle()
+                                    contract.onShareClick { heroLayer.toImageBitmap() }
+                                }
+                            },
+                        )
+                    }
                 }
-                val progress = if (size.height > 0f) (scrolled / size.height).coerceIn(0f, 1f) else 0f
-                drawRect(color = color, alpha = progress)
             },
-    )
+        )
+
+        KonfettiParade(
+            show = state.recordCelebration == RecordCelebrationState.Playing && !isSaving,
+            onShown = contract::onRecordConfettiShown,
+        )
+    }
 }
 
 @Composable
@@ -242,6 +216,7 @@ private fun TrainingCompletedContent(
     state: TrainingCompletedState,
     loaders: ImmutableSet<TrainingCompletedLoader>,
     heroStyle: TrainingRecapHeroStyle,
+    heroState: TrainingRecapHeroState,
     heroLayer: GraphicsLayer,
     contract: TrainingCompletedContract,
 ) {
@@ -263,9 +238,7 @@ private fun TrainingCompletedContent(
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .windowInsetsPadding(WindowInsets.statusBars)
                         .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                        .padding(top = AppTokens.dp.contentPadding.content)
                         .semantics { heading() },
                     text = AppTokens.strings.res(
                         if (state.savedTrainingId != null) {
@@ -286,6 +259,7 @@ private fun TrainingCompletedContent(
                 modifier = Modifier.fillMaxWidth(),
                 training = training,
                 style = heroStyle,
+                state = heroState,
                 layer = heroLayer,
             )
 
@@ -402,6 +376,7 @@ private fun TrainingCompletedHero(
     modifier: Modifier = Modifier,
     training: TrainingState,
     style: TrainingRecapHeroStyle,
+    state: TrainingRecapHeroState,
     layer: GraphicsLayer,
 ) {
     val captureBackground = AppTokens.colors.background.screen
@@ -416,7 +391,7 @@ private fun TrainingCompletedHero(
         },
         training = training,
         style = style,
-        windowInsets = WindowInsets.statusBars,
+        state = state,
     )
 }
 
@@ -426,7 +401,11 @@ private fun trainingCompletedHeroStyle(state: TrainingCompletedState): TrainingR
 
     val verdict = PerformanceVerdictState.of(performance.metrics)
     val summary = verdict.summary(metrics = performance.metrics, baseline = performance.baseline)
-    val rangeLabel = state.range.takeIf { it.value != null }?.label()?.text()
+    val rangeLabel = if (performance.period == state.range) {
+        state.range.label()?.text()
+    } else {
+        performance.period.short()
+    }
     val description = if (rangeLabel == null) {
         summary
     } else {
@@ -440,11 +419,9 @@ private fun trainingCompletedHeroStyle(state: TrainingCompletedState): TrainingR
     )
 }
 
-private const val PREVIEW_RHYTHM_STREAK_INDEX = 2
-
 private fun previewRhythmStreak(length: Int): TrainingStreakState {
-    val streak = stubTrainingStreaks()[PREVIEW_RHYTHM_STREAK_INDEX]
-    val featured = streak.featured as? TrainingStreakFeaturedState.Rhythm ?: return streak
+    val streak = stubTrainingStreaks().first { it.featured is TrainingStreakFeaturedState.Rhythm }
+    val featured = streak.featured as TrainingStreakFeaturedState.Rhythm
 
     return streak.copy(featured = featured.copy(length = length))
 }
@@ -462,51 +439,49 @@ private fun trainingCompletedPreviewState(): TrainingCompletedState {
         format = DateFormat.DateOnly.DateMmmDdYyyy,
     )
     val base = stubTraining()
-    val exercise = base.exercises.first()
+    val template = base.exercises.first()
     val iteration = stubPendingIteration().copy(
         id = "completed-set",
         repetitions = RepetitionsFormatState.of(10),
         externalWeight = VolumeFormatState.of(40f),
     )
-    val exercises = List(3) { index ->
-        exercise.copy(
-            id = "completed-exercise-$index",
-            exerciseExample = exercise.exerciseExample.copy(
-                id = "completed-example-$index",
-                lastUsed = createdAt,
-            ),
-            iterations = List(3) { setIndex ->
-                iteration.copy(id = "completed-set-$index-$setIndex")
-            }.toPersistentList(),
-            createdAt = createdAt,
-            total = exercise.total.copy(
-                volume = VolumeFormatState.of(1_200f),
-                intensity = IntensityFormatState.of(40f),
-                repetitions = RepetitionsFormatState.of(30),
-            ),
-        )
-    }.toPersistentList()
+    val total = base.total.copy(
+        volume = VolumeFormatState.ofTotal(1_200f),
+        intensity = IntensityFormatState.ofAverage(40f),
+        repetitions = RepetitionsFormatState.ofTotal(30),
+    )
+    val exercise = template.copy(
+        id = "completed-exercise",
+        exerciseExample = template.exerciseExample.copy(
+            id = "completed-example",
+            lastUsed = createdAt,
+        ),
+        iterations = List(3) { setIndex ->
+            iteration.copy(id = "completed-set-$setIndex")
+        }.toPersistentList(),
+        createdAt = createdAt,
+        total = total,
+    )
     val training = base.copy(
         id = "completed-training",
-        exercises = exercises,
+        exercises = persistentListOf(exercise),
         createdAt = createdAt,
-        duration = DurationFormatState.of(45.minutes),
-        total = base.total.copy(
-            volume = VolumeFormatState.of(3_600f),
-            intensity = IntensityFormatState.of(40f),
-            repetitions = RepetitionsFormatState.of(90),
-        ),
+        duration = DurationFormatState.ofTotal(65.minutes),
+        total = total,
     )
+
+    val range = DateRangeFormatState.of(DateRangeKind.Last30Days)
 
     return TrainingCompletedState(
         savedTrainingId = training.id,
         baseline = PerformanceBaselineState.Average,
         training = training,
         muscleLoad = stubMuscleLoadSummary(),
-        range = DateRangeFormatState.of(DateRangeKind.Last30Days),
+        range = range,
         performance = PerformanceComparisonState(
             metrics = stubPerformanceMetricsByType(),
             baseline = PerformanceBaselineState.Average,
+            period = range,
         ),
         records = stubTrainingRecords(),
         weeklyVolume = stubWeeklyVolume(),
@@ -532,13 +507,12 @@ private fun TrainingCompletedRecordPreview() {
 @AppPreview
 @Composable
 private fun TrainingCompletedImprovedPreview() {
+    val state = trainingCompletedPreviewState()
+
     PreviewContainer {
         TrainingCompletedScreen(
-            state = trainingCompletedPreviewState().copy(
-                performance = PerformanceComparisonState(
-                    metrics = stubPerformanceMetricsImproved(),
-                    baseline = PerformanceBaselineState.Average,
-                ),
+            state = state.copy(
+                performance = state.performance?.copy(metrics = stubPerformanceMetricsImproved()),
             ),
             loaders = persistentSetOf(),
             contract = TrainingCompletedContract.Empty,
@@ -549,11 +523,13 @@ private fun TrainingCompletedImprovedPreview() {
 @AppPreview
 @Composable
 private fun TrainingCompletedPreviousBaselinePreview() {
+    val state = trainingCompletedPreviewState()
+
     PreviewContainer {
         TrainingCompletedScreen(
-            state = trainingCompletedPreviewState().copy(
+            state = state.copy(
                 baseline = PerformanceBaselineState.Previous,
-                performance = PerformanceComparisonState(
+                performance = state.performance?.copy(
                     metrics = stubPerformanceMetricsImproved(),
                     baseline = PerformanceBaselineState.Previous,
                 ),
@@ -568,14 +544,17 @@ private fun TrainingCompletedPreviousBaselinePreview() {
 @Composable
 private fun TrainingCompletedDeclinedPreview() {
     val state = trainingCompletedPreviewState()
+    val training = requireNotNull(state.training)
+    val metrics = stubPerformanceMetricsDeclined()
+    val volume = metrics.filterIsInstance<PerformanceMetricState.Volume>().first().current
 
     PreviewContainer {
         TrainingCompletedScreen(
             state = state.copy(
-                performance = PerformanceComparisonState(
-                    metrics = stubPerformanceMetricsDeclined(),
-                    baseline = PerformanceBaselineState.Average,
+                training = training.copy(
+                    total = training.total.copy(volume = VolumeFormatState.ofTotal(volume)),
                 ),
+                performance = state.performance?.copy(metrics = metrics),
                 streak = previewRhythmStreak(length = 1),
                 previousStreak = state.streak,
                 goalProgress = state.previousGoalProgress,
@@ -590,16 +569,39 @@ private fun TrainingCompletedDeclinedPreview() {
 @AppPreview
 @Composable
 private fun TrainingCompletedFirstWorkoutInPeriodPreview() {
+    val state = trainingCompletedPreviewState()
+
     PreviewContainer {
         TrainingCompletedScreen(
-            state = trainingCompletedPreviewState().copy(
-                performance = PerformanceComparisonState(
-                    metrics = stubPerformanceMetricsWithoutBaseline(),
-                    baseline = PerformanceBaselineState.Average,
-                ),
+            state = state.copy(
+                performance = state.performance?.copy(metrics = stubPerformanceMetricsWithoutBaseline()),
                 records = persistentListOf(),
                 previousStreak = null,
                 goalProgress = null,
+                previousGoalProgress = null,
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingCompletedContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingCompletedOlderWorkoutPreview() {
+    val state = trainingCompletedPreviewState()
+
+    PreviewContainer {
+        TrainingCompletedScreen(
+            state = state.copy(
+                performance = state.performance?.copy(
+                    metrics = stubPerformanceMetricsImproved(),
+                    period = DateRangeFormatState.of(
+                        kind = DateRangeKind.Last30Days,
+                        anchor = LocalDate(year = 2026, month = 8, day = 11),
+                    ),
+                ),
+                previousStreak = null,
                 previousGoalProgress = null,
             ),
             loaders = persistentSetOf(),
@@ -685,10 +687,10 @@ private fun TrainingCompletedLongValuesPreview() {
         TrainingCompletedScreen(
             state = state.copy(
                 training = training.copy(
-                    duration = DurationFormatState.of(23.hours + 59.minutes),
+                    duration = DurationFormatState.ofTotal(23.hours + 59.minutes),
                     total = training.total.copy(
-                        volume = VolumeFormatState.of(12_345_678f),
-                        repetitions = RepetitionsFormatState.of(123_456),
+                        volume = VolumeFormatState.ofTotal(12_345_678f),
+                        repetitions = RepetitionsFormatState.ofTotal(123_456),
                     ),
                 ),
             ),
