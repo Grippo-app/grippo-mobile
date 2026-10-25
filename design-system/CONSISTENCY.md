@@ -870,8 +870,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   every saved workout has at least one set with repetitions, so an earlier
   workout always gives Repetitions a nonzero baseline and a comparison under
   either baseline. With an earlier workout the card shows its selector and the
-  hero a real verdict; without one the card shows its blocks without a selector
-  and without a note of its own, because the hero explains the first workout. An
+  hero a real verdict; without one the card is titled
+  `performance_comparison_first_title` ("This workout") and shows its blocks
+  without a selector, bars or a note of its own, because the hero explains the
+  first workout. An
   empty card shows neither. Each block owns its
   `scalableClick` and `subContent` vertical padding and ends its first row with
   one decorative `ArrowRight` chevron (`metrics.overview.detailsIcon`,
@@ -906,7 +908,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   `PerformanceComparisonCardSkeleton` sizes the four voting blocks with the chip
   line and the Duration block without it. Private `GrowthBars` follow across the
   block as two stacked rounded bars of `metrics.charts.indicator.height` with a
-  `contentPadding.text` gap, read top to bottom like "Before → after": the top
+  `contentPadding.text` gap, shown only for a metric with a value and a before
+  value (a row without one carries no bars), read top to bottom like
+  "Before → after": the top
   "before" bar is a `charts.indicator.before` fill to the baseline - a neutral
   visible on the card yet quieter than the muted "after" fill, on the muted track
   (WCAG contrast against `background.card`: Light NeutralLight.N400 2.3:1 beside

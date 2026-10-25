@@ -31,6 +31,9 @@ import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
+import com.grippo.core.state.metrics.engagement.TrainingStreakFeaturedState
+import com.grippo.core.state.metrics.engagement.TrainingStreakMood
+import com.grippo.core.state.metrics.engagement.TrainingStreakState
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
 import com.grippo.core.state.metrics.performance.PerformanceBaselineState
 import com.grippo.core.state.metrics.performance.PerformanceVerdictState
@@ -90,6 +93,8 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+
+private const val PREVIEW_RHYTHM_STREAK_INDEX = 2
 
 @Composable
 internal fun TrainingCompletedScreen(
@@ -392,6 +397,19 @@ private fun trainingCompletedHeroStyle(state: TrainingCompletedState): TrainingR
     )
 }
 
+private fun previewRhythmStreak(length: Int): TrainingStreakState {
+    return stubTrainingStreaks()[PREVIEW_RHYTHM_STREAK_INDEX].copy(
+        featured = TrainingStreakFeaturedState.Rhythm(
+            length = length,
+            workDays = 2,
+            restDays = 1,
+            mood = TrainingStreakMood.OnTrack,
+            progressPercent = 50,
+            confidence = 0.9f,
+        ),
+    )
+}
+
 private fun trainingCompletedPreviewState(): TrainingCompletedState {
     val createdAt = DateTimeFormatState.of(
         value = LocalDateTime(
@@ -440,7 +458,6 @@ private fun trainingCompletedPreviewState(): TrainingCompletedState {
             repetitions = RepetitionsFormatState.of(90),
         ),
     )
-    val streaks = stubTrainingStreaks()
 
     return TrainingCompletedState(
         savedTrainingId = training.id,
@@ -454,8 +471,8 @@ private fun trainingCompletedPreviewState(): TrainingCompletedState {
         ),
         records = stubTrainingRecords(),
         weeklyVolume = stubWeeklyVolume(),
-        streak = streaks[2],
-        previousStreak = streaks[1],
+        streak = previewRhythmStreak(length = 3),
+        previousStreak = previewRhythmStreak(length = 2),
         goalProgress = stubGoalProgress(),
         previousGoalProgress = stubGoalProgress(score = 68),
     )
@@ -520,7 +537,7 @@ private fun TrainingCompletedDeclinedPreview() {
                     metrics = stubPerformanceMetricsDeclined(),
                     baseline = PerformanceBaselineState.Average,
                 ),
-                streak = state.previousStreak,
+                streak = previewRhythmStreak(length = 1),
                 previousStreak = state.streak,
                 goalProgress = state.previousGoalProgress,
                 previousGoalProgress = state.goalProgress,

@@ -71,6 +71,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.performance_comparison_empty
+import com.grippo.design.resources.provider.performance_comparison_first_title
 import com.grippo.design.resources.provider.performance_comparison_title
 import com.grippo.design.resources.provider.performance_growth_before
 import kotlinx.collections.immutable.ImmutableList
@@ -124,7 +125,13 @@ public fun PerformanceComparisonCard(
         style = MetricSectionPanelStyle.Large,
     ) {
         Text(
-            text = AppTokens.strings.res(Res.string.performance_comparison_title),
+            text = AppTokens.strings.res(
+                if (hasValues && !hasBaseline) {
+                    Res.string.performance_comparison_first_title
+                } else {
+                    Res.string.performance_comparison_title
+                },
+            ),
             style = AppTokens.typography.h5(),
             color = AppTokens.colors.text.primary,
         )
@@ -225,7 +232,6 @@ private fun PerformanceGrowthBlock(
         modifier = modifier
             .scalableClick(onClick = onClick)
             .padding(vertical = AppTokens.dp.contentPadding.subContent),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -300,13 +306,16 @@ private fun PerformanceGrowthBlock(
             )
         }
 
-        if (!metric.isEmpty()) {
+        GrowthOptionalPart(
+            value = animatedBeforeFraction.takeIf { average != null && !metric.isEmpty() },
+            padding = PaddingValues(top = AppTokens.dp.contentPadding.subContent),
+        ) { shownBeforeFraction ->
             GrowthBars(
                 modifier = Modifier.fillMaxWidth(),
                 afterFraction = animatedAfterFraction,
                 fillColor = fillColor,
                 trackColor = trackColor,
-                beforeFraction = if (average != null) animatedBeforeFraction else null,
+                beforeFraction = shownBeforeFraction,
             )
         }
     }
@@ -400,21 +409,19 @@ private fun GrowthBars(
     afterFraction: State<Float>,
     fillColor: State<Color>,
     trackColor: State<Color>,
-    beforeFraction: State<Float>?,
+    beforeFraction: State<Float>,
 ) {
     val before = AppTokens.colors.charts.indicator.before
 
-    Column(modifier = modifier) {
-        GrowthOptionalPart(
-            value = beforeFraction,
-            padding = PaddingValues(bottom = AppTokens.dp.contentPadding.text),
-        ) { fraction ->
-            GrowthBar(
-                fraction = { fraction.value },
-                fill = { before.dominant },
-                track = { before.track },
-            )
-        }
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+    ) {
+        GrowthBar(
+            fraction = { beforeFraction.value },
+            fill = { before.dominant },
+            track = { before.track },
+        )
         GrowthBar(
             fraction = { afterFraction.value },
             fill = { fillColor.value },

@@ -864,6 +864,7 @@
     <string name="estimated_one_rm_unavailable">Пока нет подходящих данных для 1ПМ. Нужен подход на 1–10 повторов с полными данными о нагрузке.</string>
     <string name="performance_comparison_unavailable">Нет данных для сравнения</string>
     <string name="performance_comparison_title">Было → стало</string>
+    <string name="performance_comparison_first_title">Эта тренировка</string>
     <string name="performance_growth_before">Было: %1$s</string>
     <string name="performance_baseline_average">к среднему</string>
     <string name="performance_baseline_previous">к прошлому разу</string>
