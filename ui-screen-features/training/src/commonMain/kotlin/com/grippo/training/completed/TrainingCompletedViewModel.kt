@@ -62,11 +62,13 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.withContext
@@ -139,12 +141,21 @@ internal class TrainingCompletedViewModel(
         val savedPeriods = savedIds
             .flatMapLatest { observePeriods() }
 
-        combine(savedPeriods, observeBaseline(), savedTrainings.filterNotNull()) { period, baseline, saved ->
+        val comparisonPeriods = savedTrainings
+            .filterNotNull()
+            .flatMapLatest(::observeComparisonPeriods)
+
+        combine(comparisonPeriods, observeBaseline(), savedTrainings.filterNotNull()) { period, baseline, saved ->
             PeriodBaseline(saved = saved, period = period, baseline = baseline)
         }
             .distinctUntilChanged()
             .flatMapLatest(::observePeriodTrainings)
-            .onEach(::provideTrainings)
+            .onEach(::provideComparison)
+            .safeLaunch()
+
+        savedPeriods
+            .flatMapLatest(::observePeriodStreak)
+            .onEach(::provideStreak)
             .safeLaunch()
 
         savedPeriods
@@ -153,6 +164,13 @@ internal class TrainingCompletedViewModel(
             .safeLaunch()
 
         savedPeriods
+            .combine(comparisonPeriods.mapNotNull { it.value }) { period, comparisonPeriod ->
+                DateRange(
+                    from = minOf(period.from, comparisonPeriod.from),
+                    to = maxOf(period.to, comparisonPeriod.to),
+                )
+            }
+            .distinctUntilChanged()
             .mapLatest(::refreshTrainings)
             .safeLaunch()
 
@@ -231,6 +249,13 @@ internal class TrainingCompletedViewModel(
             .distinctUntilChanged()
     }
 
+    private fun observeComparisonPeriods(saved: Training): Flow<DateRangeFormatState> {
+        return state
+            .map { it.range.kind }
+            .distinctUntilChanged()
+            .map { kind -> DateRangeFormatState.of(kind = kind, anchor = saved.createdAt.date) }
+    }
+
     private fun observeBaseline(): Flow<PerformanceBaselineState> {
         return state
             .map { it.baseline }
@@ -240,10 +265,17 @@ internal class TrainingCompletedViewModel(
     private fun observePeriodTrainings(value: PeriodBaseline): Flow<PeriodTrainings> {
         val (saved, period, baseline) = value
 
-        return trainingFeature.observeTrainings(start = period.from, end = period.to)
+        val range = period.value ?: return emptyFlow()
+
+        return trainingFeature.observeTrainings(start = range.from, end = range.to)
             .map { trainings ->
                 PeriodTrainings(saved = saved, period = period, baseline = baseline, trainings = trainings)
             }
+    }
+
+    private fun observePeriodStreak(period: DateRange): Flow<PeriodStreak> {
+        return trainingFeature.observeTrainings(start = period.from, end = period.to)
+            .map { trainings -> PeriodStreak(period = period, trainings = trainings) }
     }
 
     private fun observePeriodGoal(period: DateRange): Flow<PeriodGoal> {
@@ -271,12 +303,12 @@ internal class TrainingCompletedViewModel(
             .map { trainings -> WeeklyTrainings(now = now, trainings = trainings) }
     }
 
-    private suspend fun refreshTrainings(period: DateRange) {
+    private suspend fun refreshTrainings(range: DateRange) {
         val window = weeklyVolumeUseCase.observationRange(DateTimeUtils.now())
 
-        val start = minOf(period.from, window.from)
+        val start = minOf(range.from, window.from)
 
-        val end = maxOf(period.to, window.to)
+        val end = maxOf(range.to, window.to)
 
         val refresh = safeLaunch {
             analytics.trackOperation(operation = TrainingOperation.RefreshTrainings) {
@@ -330,10 +362,8 @@ internal class TrainingCompletedViewModel(
         update { it.copy(range = range) }
     }
 
-    private fun provideTrainings(value: PeriodTrainings) {
+    private fun provideComparison(value: PeriodTrainings) {
         val (saved, period, baseline, trainings) = value
-
-        val previousTrainings = trainings.filter { it.id != saved.id }
 
         val domainBaseline = baseline.toDomain()
 
@@ -341,32 +371,35 @@ internal class TrainingCompletedViewModel(
             .fromTraining(training = saved, periodTrainings = trainings, baseline = domainBaseline)
             .toState()
 
-        val performance = PerformanceComparisonState(metrics = metrics, baseline = baseline)
+        val performance = PerformanceComparisonState(metrics = metrics, baseline = baseline, period = period)
 
         val verdict = PerformanceVerdictState.of(metrics)
-
-        val now = evaluationTime(trainings)
-
-        val streak = streakOf(trainings = trainings, period = period, now = now)
-
-        val previousStreak = if (stage.id == null) {
-            streakOf(trainings = previousTrainings, period = period, now = now)
-        } else {
-            null
-        }
 
         update { current ->
             val recordCelebration = current.recordCelebration.celebrate(
                 isRecord = verdict == PerformanceVerdictState.Record,
             )
 
-            current.copy(
-                performance = performance,
-                streak = streak,
-                previousStreak = previousStreak,
-                recordCelebration = recordCelebration,
-            )
+            current.copy(performance = performance, recordCelebration = recordCelebration)
         }
+    }
+
+    private fun provideStreak(value: PeriodStreak) {
+        val (period, trainings) = value
+
+        val savedId = state.value.savedTrainingId
+
+        val now = evaluationTime(trainings)
+
+        val streak = streakOf(trainings = trainings, period = period, now = now)
+
+        val previousStreak = if (stage.id == null) {
+            streakOf(trainings = trainings.filter { it.id != savedId }, period = period, now = now)
+        } else {
+            null
+        }
+
+        update { it.copy(streak = streak, previousStreak = previousStreak) }
     }
 
     private fun provideWeeklyVolume(value: WeeklyTrainings) {
@@ -492,11 +525,13 @@ internal class TrainingCompletedViewModel(
     }
 
     override fun onMetricClick(type: PerformanceMetricTypeState) {
-        val range = state.value.range.value ?: return
+        val period = state.value.performance?.period ?: return
+
+        val range = period.value ?: return
 
         analytics.trackEvent(event = TrainingEvent.Completed.MetricOpened)
 
-        val rangeLabel = state.value.range.label()
+        val rangeLabel = if (period == state.value.range) period.label() else null
 
         val metricLabel = type.labelText()
 
@@ -561,14 +596,19 @@ internal class TrainingCompletedViewModel(
 
     private data class PeriodBaseline(
         val saved: Training,
-        val period: DateRange,
+        val period: DateRangeFormatState,
         val baseline: PerformanceBaselineState,
     )
 
     private data class PeriodTrainings(
         val saved: Training,
-        val period: DateRange,
+        val period: DateRangeFormatState,
         val baseline: PerformanceBaselineState,
+        val trainings: List<Training>,
+    )
+
+    private data class PeriodStreak(
+        val period: DateRange,
         val trainings: List<Training>,
     )
 

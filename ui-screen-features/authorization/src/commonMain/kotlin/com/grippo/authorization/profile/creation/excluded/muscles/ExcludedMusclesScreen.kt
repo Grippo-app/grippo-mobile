@@ -74,8 +74,6 @@ internal fun ExcludedMusclesScreen(
             onGroupSelect = contract::onGroupClick,
             onMuscleSelect = contract::onSelect,
             bottom = {
-                Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
-
                 Button(
                     modifier = Modifier
                         .padding(horizontal = AppTokens.dp.screen.horizontalPadding)

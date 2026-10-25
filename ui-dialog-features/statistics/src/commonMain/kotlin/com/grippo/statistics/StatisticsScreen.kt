@@ -59,15 +59,15 @@ internal fun StatisticsScreen(
             .weight(1f),
         contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
         overlay = AppTokens.colors.background.dialog,
-        content = { containerModifier, resolvedPadding ->
+        content = { resolvedPadding ->
             if (loaders.contains(StatisticsLoader.Charts)) {
                 StatisticsSkeleton(
-                    modifier = containerModifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     contentPadding = resolvedPadding,
                 )
             } else {
                 LazyColumn(
-                    modifier = containerModifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     contentPadding = resolvedPadding,
                     verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
                 ) {
@@ -120,7 +120,6 @@ internal fun StatisticsScreen(
             }
         },
         bottom = {
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
             Spacer(modifier = Modifier.navigationBarsPadding())
         },
     )

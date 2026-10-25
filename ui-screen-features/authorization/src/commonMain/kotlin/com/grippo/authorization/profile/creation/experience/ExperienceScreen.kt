@@ -86,9 +86,9 @@ internal fun ExperienceScreen(
                 .weight(1f),
             contentPadding = basePadding,
             overlay = AppTokens.colors.background.screen,
-            content = { containerModifier, resolvedPadding ->
+            content = { resolvedPadding ->
                 LazyColumn(
-                    modifier = containerModifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
@@ -121,8 +121,6 @@ internal fun ExperienceScreen(
                         else -> ButtonState.Enabled
                     }
                 }
-
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
                 Button(
                     modifier = Modifier

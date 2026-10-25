@@ -160,7 +160,6 @@ public interface AppColor {
         public val shadow: Color
         public val shadowSpotAlphaMultiplier: Float
         public val overlay: Color
-        public val fadeAlpha: Float
     }
 
     public interface ShimmerColors {

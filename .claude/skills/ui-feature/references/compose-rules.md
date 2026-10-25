@@ -23,7 +23,7 @@ owns shared widget placement.
 Regular Toolbar belongs to screens; dialogs reuse the shared host's toolbar.
 Follow [BaseComposeScreen](base-classes.md#basecomposescreen--screenbackground)
 for screen/dialog shells and [OverlayContainer](../../design-system/references/components.md)
-for list content padding around a bottom action.
+for content padding around pinned top or bottom content.
 
 ## Secret input keyboard
 

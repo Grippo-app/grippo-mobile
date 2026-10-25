@@ -71,8 +71,6 @@ internal fun ProfileMusclesScreen(
         onGroupSelect = contract::onGroupClick,
         onMuscleSelect = contract::onSelect,
         bottom = {
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
-
             val buttonState = remember(loaders, state.suggestions) {
                 when {
                     loaders.contains(ProfileMusclesLoader.ApplyButton) -> ButtonState.Loading

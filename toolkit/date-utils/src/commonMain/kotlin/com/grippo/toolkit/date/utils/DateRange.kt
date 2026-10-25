@@ -1,5 +1,6 @@
 package com.grippo.toolkit.date.utils
 
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.daysUntil
 import kotlinx.serialization.Serializable
@@ -36,27 +37,28 @@ public enum class DateRangeKind {
 
 public object DateRangePresets {
 
-    public fun daily(): DateRange = DateTimeUtils.thisDay()
-    public fun weekly(): DateRange = DateTimeUtils.thisWeek()
-    public fun last7Days(): DateRange = DateTimeUtils.trailingWeek()
-    public fun last14Days(): DateRange = DateTimeUtils.trailing14Days()
-    public fun monthly(): DateRange = DateTimeUtils.thisMonth()
-    public fun last30Days(): DateRange = DateTimeUtils.trailingMonth()
-    public fun last60Days(): DateRange = DateTimeUtils.trailing60Days()
-    public fun last365Days(): DateRange = DateTimeUtils.trailingDays(365)
-    public fun yearly(): DateRange = DateTimeUtils.thisYear()
+    public fun daily(anchor: LocalDate = DateTimeUtils.today()): DateRange = DateTimeUtils.thisDay(anchor)
+    public fun weekly(anchor: LocalDate = DateTimeUtils.today()): DateRange = DateTimeUtils.thisWeek(anchor)
+    public fun last7Days(anchor: LocalDate = DateTimeUtils.today()): DateRange = DateTimeUtils.trailingWeek(anchor)
+    public fun last14Days(anchor: LocalDate = DateTimeUtils.today()): DateRange = DateTimeUtils.trailing14Days(anchor)
+    public fun monthly(anchor: LocalDate = DateTimeUtils.today()): DateRange = DateTimeUtils.thisMonth(anchor)
+    public fun last30Days(anchor: LocalDate = DateTimeUtils.today()): DateRange = DateTimeUtils.trailingMonth(anchor)
+    public fun last60Days(anchor: LocalDate = DateTimeUtils.today()): DateRange = DateTimeUtils.trailing60Days(anchor)
+    public fun last365Days(anchor: LocalDate = DateTimeUtils.today()): DateRange =
+        DateTimeUtils.trailingDays(days = 365, anchor = anchor)
+    public fun yearly(anchor: LocalDate = DateTimeUtils.today()): DateRange = DateTimeUtils.thisYear(anchor)
     public fun infinity(): DateRange = DateTimeUtils.infinity()
 
-    public fun resolve(kind: DateRangeKind): DateRange? = when (kind) {
-        DateRangeKind.Daily -> daily()
-        DateRangeKind.Weekly -> weekly()
-        DateRangeKind.Last7Days -> last7Days()
-        DateRangeKind.Last14Days -> last14Days()
-        DateRangeKind.Monthly -> monthly()
-        DateRangeKind.Last30Days -> last30Days()
-        DateRangeKind.Last60Days -> last60Days()
-        DateRangeKind.Last365Days -> last365Days()
-        DateRangeKind.Yearly -> yearly()
+    public fun resolve(kind: DateRangeKind, anchor: LocalDate = DateTimeUtils.today()): DateRange? = when (kind) {
+        DateRangeKind.Daily -> daily(anchor)
+        DateRangeKind.Weekly -> weekly(anchor)
+        DateRangeKind.Last7Days -> last7Days(anchor)
+        DateRangeKind.Last14Days -> last14Days(anchor)
+        DateRangeKind.Monthly -> monthly(anchor)
+        DateRangeKind.Last30Days -> last30Days(anchor)
+        DateRangeKind.Last60Days -> last60Days(anchor)
+        DateRangeKind.Last365Days -> last365Days(anchor)
+        DateRangeKind.Yearly -> yearly(anchor)
         DateRangeKind.Infinity -> infinity()
         DateRangeKind.Custom -> null
     }

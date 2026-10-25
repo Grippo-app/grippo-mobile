@@ -63,10 +63,10 @@ and Latin text in both themes; each role keeps its existing size and line height
 - Chart grid/axis/baseline colors and area/sparkline fill endpoints belong to
   their chart color groups. Each series retains its supplied semantic hue;
   history fills use their chart group's fade endpoints. Avatar fills/rings
-  retain experience hues through the profile coefficients; `OverlayContainer` edge
-  fades (top and bottom) retain their host surface hue through `overlay.fadeAlpha`.
-  Shadow spot
-  strength uses `overlay.shadowSpotAlphaMultiplier` without changing its hue.
+  retain experience hues through the profile coefficients; `OverlayContainer`
+  edges keep their host surface opaque behind a pinned slot and fade only its
+  alpha toward the content. Shadow spot strength uses
+  `overlay.shadowSpotAlphaMultiplier` without changing its hue.
 - Volume bar charts use flat series colors and substantial columns with a small
   4 dp corner radius, distributed in even slots across the plot. Each column uses
   60% of its slot, capped at 40 dp by `metrics.charts.bar.maxWidth`; the gap keeps
@@ -415,7 +415,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   verdict title leads, the `b14Med` description line joins
   the summary and the period label through `joined_pair` ("<summary> · <period>",
   with non-breaking spaces around the dot so it never ends or starts a line, here
-  or in the streak line) once the stored period is resolved, and the workout's own
+  or in the streak line) once the stored period is resolved. The period label is
+  the preset name ("30 days") when the comparison period is the current Home
+  period; an edited older workout is compared with the same kind of period ending
+  on its own date, so its label names those dates instead. The workout's own
   facts step down to
   `h3` with `b11Med` labels. The description lives on the types:
   `PerformanceVerdictState.summary(metrics, baseline)` gives
@@ -485,14 +488,12 @@ and Latin text in both themes; each role keeps its existing size and line height
   `icons.Share` as its start icon), Disabled until the verdict resolves (also while
   saving), Loading while the share operation runs and absent only in the result
   fallbacks that show no hero. The actions sit on the opaque screen surface:
-  `OverlayContainer(bottomStyle = OverlayStyle.Stacked(fadeHeight =
-  contentPadding.block))` adds that `background.screen` fade gap above the actions
-  itself and keeps the opaque surface below it, so no card content shows between
-  or under the buttons. Done keeps its resolved overlay insets in every terminal
-  state. The top mirrors it: the `top` slot holds only a `statusBarsPadding()`
-  spacer with `topStyle = OverlayStyle.Stacked(fadeHeight = contentPadding.block)`,
-  so the status bar sits on the opaque screen surface with a `block` fade below it,
-  scrolled content slides under that fade, and at rest the list starts below it.
+  `OverlayContainer` adds its `background.screen` fade gap above the actions and
+  keeps the opaque surface below it, so no card content shows between or under
+  the buttons. Done keeps its resolved overlay insets in every terminal state.
+  The top mirrors it: the `top` slot holds only a `statusBarsPadding()` spacer,
+  so the status bar sits on the opaque screen surface with the same fade below
+  it, scrolled content slides under that fade, and at rest the list starts below it.
   Missing saved details and an unconfirmed result use their quiet copy as the
   screen's `h4` `text.primary` heading below the status bar, without a success
   header.
@@ -1191,9 +1192,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   Equipment galleries use `content` between cards, keeping image and card sizes.
 - Training totals stack full-width LONG chips with `subContent` between present
   metrics, preserving complete localized labels and large values in both hosts.
-- Scrolling sheet lists own their final `dialog.bottom` through content padding,
-  with one navigation inset. A footer-only lazy item must not add an item gap to
-  that margin. Main-tab content uses `screen.verticalPadding` at its bottom edge:
+- Scrolling sheet lists end with the bottom overlay's `block` fade gap above one
+  navigation inset, through the resolved content padding; a pinned sheet action
+  keeps `dialog.bottom` below it. A footer-only lazy item must not add an item gap
+  to that margin. Main-tab content uses `screen.verticalPadding` at its bottom edge:
   Home dashboard/loading/welcome, Calendar daily/monthly (including empty/loading),
   Library lists/empty results and Profile content/pinned actions. Scrolling bodies
   own that margin through content padding; Main owns the bottom-bar navigation inset.
@@ -1223,8 +1225,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   completion counters, stale tonnage or detail chevrons.
   The single pinned Primary action names the selected next step, with measured
   OverlayContainer padding rather than a manually reserved overlay height.
-  Its pinned action padding includes the single navigation inset; the shared
-  bottom-action gradient overlays the exercises without an opaque footer surface.
+  Its pinned action padding includes the single navigation inset; the action sits
+  on the opaque dialog surface below the shared `block` fade over the exercises.
 - Draft workout sheets use a left-aligned task heading and short secondary
   explanation. A single Large neutral metrics panel groups exercise count,
   filled/all sets and positive saved duration with the existing `TrainingStat`
@@ -1233,10 +1235,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   stay open with text-aligned dividers between adjacent rows. Introduction,
   summary and contents heading stay above the exercise scroll area. Full-width
   Primary Continue and Secondary Start new stay pinned on the shared
-  `background.dialog` bottom-action backing with the navigation inset: like the
-  completed-workout actions, `bottomStyle = OverlayStyle.Stacked(fadeHeight =
-  contentPadding.content)` adds the fade gap above the actions itself, so both
-  buttons sit on the opaque dialog surface.
+  `background.dialog` bottom-action backing with the navigation inset: the
+  container's `block` fade gap above the actions keeps both buttons on the opaque
+  dialog surface.
 - Workout completion confirmation keeps the host title and left-aligned secondary
   introduction. One Large neutral metrics panel groups only recorded exercise and
   set counts with `TrainingStat` (`h5` neutral values, secondary `b12Med` labels);

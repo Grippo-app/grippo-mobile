@@ -49,7 +49,6 @@ import com.grippo.design.components.empty.IllustratedEmptyState
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.frames.FocusFrame
-import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
@@ -178,56 +177,48 @@ internal fun ExerciseLibraryScreen(
                     bottom = AppTokens.dp.screen.verticalPadding,
                 )
 
-                OverlayContainer(
+                val listState = rememberLazyListState()
+                val canLoadMore = !state.pagination.isEndReached &&
+                        !state.pagination.isLoadingNextPage
+
+                LaunchedEffect(listState, canLoadMore) {
+                    if (!canLoadMore) return@LaunchedEffect
+                    snapshotFlow {
+                        val layoutInfo = listState.layoutInfo
+                        val totalItems = layoutInfo.totalItemsCount
+                        if (totalItems == 0) return@snapshotFlow false
+                        val lastItemIndex = layoutInfo.visibleItemsInfo
+                            .lastOrNull()?.index ?: return@snapshotFlow false
+                        lastItemIndex >= totalItems - 1
+                    }
+                        .distinctUntilChanged()
+                        .collect { isAtEnd -> if (isAtEnd) contract.onLoadNextPage() }
+                }
+
+                LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .navigationBarsPadding(),
+                    state = listState,
                     contentPadding = basePadding,
-                    overlay = AppTokens.colors.background.screen,
-                    content = { containerModifier, resolvedPadding ->
-                        val listState = rememberLazyListState()
-                        val canLoadMore = !state.pagination.isEndReached &&
-                                !state.pagination.isLoadingNextPage
-
-                        LaunchedEffect(listState, canLoadMore) {
-                            if (!canLoadMore) return@LaunchedEffect
-                            snapshotFlow {
-                                val layoutInfo = listState.layoutInfo
-                                val totalItems = layoutInfo.totalItemsCount
-                                if (totalItems == 0) return@snapshotFlow false
-                                val lastItemIndex = layoutInfo.visibleItemsInfo
-                                    .lastOrNull()?.index ?: return@snapshotFlow false
-                                lastItemIndex >= totalItems - 1
-                            }
-                                .distinctUntilChanged()
-                                .collect { isAtEnd -> if (isAtEnd) contract.onLoadNextPage() }
+                ) {
+                    itemsIndexed(
+                        items = state.exerciseExamples,
+                        key = { _, item -> item.value.id },
+                    ) { index, item ->
+                        ExerciseExampleCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .scalableClick(role = Role.Button) {
+                                    contract.onExerciseExampleSelectClick(item.value.id)
+                                },
+                            style = ExerciseExampleCardStyle.Large(value = item),
+                        )
+                        if (index < state.exerciseExamples.lastIndex) {
+                            ContentDivider()
                         }
-
-                        LazyColumn(
-                            modifier = containerModifier
-                                .fillMaxSize(),
-                            state = listState,
-                            contentPadding = resolvedPadding
-                        ) {
-                            itemsIndexed(
-                                items = state.exerciseExamples,
-                                key = { _, item -> item.value.id },
-                            ) { index, item ->
-                                ExerciseExampleCard(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .scalableClick(role = Role.Button) {
-                                            contract.onExerciseExampleSelectClick(item.value.id)
-                                        },
-                                    style = ExerciseExampleCardStyle.Large(value = item),
-                                )
-                                if (index < state.exerciseExamples.lastIndex) {
-                                    ContentDivider()
-                                }
-                            }
-                        }
-                    },
-                )
+                    }
+                }
             }
         }
     }

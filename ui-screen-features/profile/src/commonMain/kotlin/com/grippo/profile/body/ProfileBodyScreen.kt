@@ -109,9 +109,9 @@ internal fun ProfileBodyScreen(
             .weight(1f),
         contentPadding = basePadding,
         overlay = AppTokens.colors.background.screen,
-        content = { containerModifier, resolvedPadding ->
+        content = { resolvedPadding ->
             LazyColumn(
-                modifier = containerModifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
@@ -137,8 +137,6 @@ internal fun ProfileBodyScreen(
             }
         },
         bottom = {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
             val buttonState = remember(loaders, state.user, state.weight, state.height) {
                 val user = state.user ?: return@remember ButtonState.Disabled
 

@@ -61,9 +61,9 @@ public fun MuscleSelection(
         modifier = modifier,
         overlay = AppTokens.colors.background.screen,
         bottom = bottom,
-        content = { containerModifier, resolvedPadding ->
+        content = { resolvedPadding ->
             BoxWithConstraints(
-                modifier = containerModifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             ) {
                 val availableHeight = (maxHeight - resolvedPadding.calculateBottomPadding())
                     .coerceAtLeast(0.dp)

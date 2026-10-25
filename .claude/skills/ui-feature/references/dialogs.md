@@ -180,7 +180,7 @@ Dialogs keep these typed config callbacks. Separate screen results use
 - **`onResult` callbacks fire only on explicit success.** Dismiss vs result are separate.
 - **Cross-dialog flows use the originating step's `Session` and the shared `StackNavigation<DialogStep>`.** Global `open` always starts a new session.
 - **Single-dialog multi-mode** lives in the dialog's own `State` as a `sealed interface`.
-- **Scrolling dialog bodies go through `OverlayContainer`** with the bottom spacers in its `bottom` slot (see step 3 of the recipe); non-scrolling bodies end with the two spacers directly.
+- **Scrolling dialog bodies go through `OverlayContainer`** with the navigation inset in its `bottom` slot (see step 3 of the recipe); non-scrolling bodies end with the two spacers directly.
 - Dialogs MAY read/write domain data through Feature/UseCase contracts in `:data-features:feature-api`, when their behavior requires it; never access services/DAOs directly. Value pickers return their accepted value through `onResult`; the caller owns its business persistence. A dialog-owned side effect MUST complete through safeLaunch and the shared error pipeline before emitting success.
 
 ---
@@ -316,10 +316,14 @@ with `Spacer(AppTokens.dp.dialog.top)` → body → `Spacer(AppTokens.dp.dialog.
 `AppTokens.dp.dialog.horizontalPadding`. A dialog whose body scrolls
 (`LazyColumn` or `verticalScroll`) MUST wrap the scroll container in
 `OverlayContainer` (`overlay = AppTokens.colors.background.dialog`, the
-resolved `Modifier`/`PaddingValues` applied to the scroll container) and put
-`Spacer(AppTokens.dp.dialog.bottom)` → `Spacer(Modifier.navigationBarsPadding())`
-in its `bottom` slot (plus any pinned action), so content scrolls under the
-navigation bar behind the bottom fade instead of stopping above it; never
+resolved `PaddingValues` applied to the scroll container) and end its `bottom`
+slot with the navigation inset (`Spacer(Modifier.navigationBarsPadding())` or
+the slot column's `navigationBarsPadding()`); the container's fade gap takes
+the place of `dialog.bottom` below the content. A pinned action comes first in
+the slot with `dialog.bottom` below it (a trailing
+`Spacer(AppTokens.dp.dialog.bottom)` or the action column's bottom padding).
+Content then scrolls under the bottom fade and the opaque navigation-bar band
+instead of stopping above them; never
 `navigationBarsPadding()` on the scroll container itself. Reference:
 `ExerciseExampleDetailsScreen.kt`. Include an `@AppPreview private fun
 ...Preview()` wrapped in `PreviewContainer { ... }` with `Contract.Empty`. Pick a

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -112,9 +111,9 @@ private fun MuscleLoadingDetailsContent(
     OverlayContainer(
         modifier = modifier,
         overlay = AppTokens.colors.background.dialog,
-        content = { containerModifier, resolvedPadding ->
+        content = { resolvedPadding ->
             LazyColumn(
-                modifier = containerModifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 state = listState,
                 contentPadding = resolvedPadding,
             ) {
@@ -187,7 +186,6 @@ private fun MuscleLoadingDetailsContent(
             }
         },
         bottom = {
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
             Spacer(modifier = Modifier.navigationBarsPadding())
         },
     )

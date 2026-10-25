@@ -128,12 +128,11 @@ internal fun ProfileGoalScreen(
             start = AppTokens.dp.screen.horizontalPadding,
             end = AppTokens.dp.screen.horizontalPadding,
             top = AppTokens.dp.contentPadding.block,
-            bottom = AppTokens.dp.contentPadding.block,
         ),
         overlay = AppTokens.colors.background.screen,
-        content = { containerModifier, resolvedPadding ->
+        content = { resolvedPadding ->
             LazyColumn(
-                modifier = containerModifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                 contentPadding = resolvedPadding,
             ) {
@@ -210,11 +209,11 @@ internal fun ProfileGoalScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(AppTokens.colors.background.screen)
                     .navigationBarsPadding()
                     .padding(
-                        horizontal = AppTokens.dp.screen.horizontalPadding,
-                        vertical = AppTokens.dp.screen.verticalPadding,
+                        start = AppTokens.dp.screen.horizontalPadding,
+                        end = AppTokens.dp.screen.horizontalPadding,
+                        bottom = AppTokens.dp.screen.verticalPadding,
                     ),
             ) {
                 Button(

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -99,10 +98,10 @@ private fun TrainingStreakDetailsContent(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
         overlay = AppTokens.colors.background.dialog,
-        content = { containerModifier, resolvedPadding ->
+        content = { resolvedPadding ->
             LazyColumn(
                 state = listState,
-                modifier = containerModifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 contentPadding = resolvedPadding,
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
             ) {
@@ -155,7 +154,6 @@ private fun TrainingStreakDetailsContent(
             }
         },
         bottom = {
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
             Spacer(modifier = Modifier.navigationBarsPadding())
         },
     )

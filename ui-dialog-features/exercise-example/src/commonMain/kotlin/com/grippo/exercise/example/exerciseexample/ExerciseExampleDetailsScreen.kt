@@ -67,9 +67,9 @@ internal fun ExerciseExampleDetailsScreen(
             .weight(1f),
         contentPadding = basePadding,
         overlay = AppTokens.colors.background.dialog,
-        content = { containerModifier, resolvedPadding ->
+        content = { resolvedPadding ->
             Column(
-                modifier = containerModifier
+                modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(resolvedPadding),
@@ -116,8 +116,6 @@ internal fun ExerciseExampleDetailsScreen(
             when (val mode = state.mode) {
                 ExerciseExampleDetailsModeState.Default -> Unit
                 is ExerciseExampleDetailsModeState.Action -> {
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -126,10 +124,10 @@ internal fun ExerciseExampleDetailsScreen(
                         style = ButtonStyle.Secondary,
                         onClick = contract::onAction,
                     )
+
+                    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
                 }
             }
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
 
             Spacer(modifier = Modifier.navigationBarsPadding())
         }

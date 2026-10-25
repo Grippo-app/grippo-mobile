@@ -73,10 +73,10 @@ public fun EquipmentSelection(
                 top = AppTokens.dp.contentPadding.content
             ),
             overlay = AppTokens.colors.background.screen,
-            content = { containerModifier, resolvedPadding ->
+            content = { resolvedPadding ->
                 key(selectedGroupId) {
                     LazyColumn(
-                        modifier = containerModifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                         contentPadding = resolvedPadding
                     ) {

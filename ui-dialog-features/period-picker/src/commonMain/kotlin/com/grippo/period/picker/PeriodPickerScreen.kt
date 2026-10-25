@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -53,9 +52,9 @@ internal fun PeriodPickerScreen(
             top = AppTokens.dp.dialog.top,
         ),
         overlay = AppTokens.colors.background.dialog,
-        content = { containerModifier, resolvedPadding ->
+        content = { resolvedPadding ->
             LazyColumn(
-                modifier = containerModifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 contentPadding = resolvedPadding,
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
             ) {
@@ -90,7 +89,6 @@ internal fun PeriodPickerScreen(
             }
         },
         bottom = {
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
             Spacer(modifier = Modifier.navigationBarsPadding())
         },
     )

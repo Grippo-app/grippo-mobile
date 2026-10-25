@@ -69,9 +69,9 @@ internal fun ExerciseScreen(
             top = AppTokens.dp.dialog.top,
         ),
         overlay = AppTokens.colors.background.dialog,
-        content = { containerModifier, resolvedPadding ->
+        content = { resolvedPadding ->
             Column(
-                modifier = containerModifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
                     .padding(resolvedPadding),
@@ -157,7 +157,6 @@ internal fun ExerciseScreen(
             }
         },
         bottom = {
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
             Spacer(modifier = Modifier.navigationBarsPadding())
         },
     )

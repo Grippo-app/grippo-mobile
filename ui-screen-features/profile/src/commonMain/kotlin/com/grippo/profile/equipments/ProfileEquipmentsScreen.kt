@@ -73,8 +73,6 @@ internal fun ProfileEquipmentsScreen(
         onGroupSelect = contract::onSelectGroup,
         onEquipmentSelect = contract::onSelectEquipment,
         bottom = {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
             val buttonState = remember(loaders, state.suggestions) {
                 when {
                     loaders.contains(ProfileEquipmentsLoader.ApplyButton) -> ButtonState.Loading

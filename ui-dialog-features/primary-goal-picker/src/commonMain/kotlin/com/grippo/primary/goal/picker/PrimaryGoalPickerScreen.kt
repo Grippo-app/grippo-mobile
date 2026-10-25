@@ -37,9 +37,9 @@ internal fun PrimaryGoalPickerScreen(
             .weight(weight = 1f, fill = false),
         contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
         overlay = AppTokens.colors.background.dialog,
-        content = { containerModifier, resolvedPadding ->
+        content = { resolvedPadding ->
             LazyColumn(
-                modifier = containerModifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 contentPadding = resolvedPadding,
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
             ) {
@@ -58,7 +58,6 @@ internal fun PrimaryGoalPickerScreen(
             }
         },
         bottom = {
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
             Spacer(modifier = Modifier.navigationBarsPadding())
         },
     )

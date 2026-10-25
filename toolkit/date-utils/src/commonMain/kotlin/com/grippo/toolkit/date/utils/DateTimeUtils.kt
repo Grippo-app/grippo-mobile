@@ -27,16 +27,18 @@ public object DateTimeUtils {
         return Clock.System.now().toLocalDateTime(timeZone)
     }
 
+    public fun today(): LocalDate {
+        return Clock.System.todayIn(timeZone)
+    }
+
     public fun asInstant(value: LocalDateTime): Instant {
         return value.toInstant(timeZone)
     }
 
-    public fun thisDay(): DateRange {
-        val date = Clock.System.now().toLocalDateTime(timeZone).date
-
+    public fun thisDay(anchor: LocalDate = today()): DateRange {
         return DateRange(
-            from = date.atTime(DayTime.StartOfDay.localTime),
-            to = date.atTime(DayTime.EndOfDay.localTime)
+            from = anchor.atTime(DayTime.StartOfDay.localTime),
+            to = anchor.atTime(DayTime.EndOfDay.localTime)
         )
     }
 
@@ -49,9 +51,8 @@ public object DateTimeUtils {
         )
     }
 
-    public fun thisWeek(): DateRange {
-        val today = Clock.System.now().toLocalDateTime(timeZone).date
-        val startOfWeek = startOfIsoWeek(today)
+    public fun thisWeek(anchor: LocalDate = today()): DateRange {
+        val startOfWeek = startOfIsoWeek(anchor)
         val endOfWeek = startOfWeek.plus(DatePeriod(days = 6))
 
         return DateRange(
@@ -60,9 +61,8 @@ public object DateTimeUtils {
         )
     }
 
-    public fun thisMonth(): DateRange {
-        val today = Clock.System.now().toLocalDateTime(timeZone).date
-        val startOfMonth = LocalDate(today.year, today.month, 1)
+    public fun thisMonth(anchor: LocalDate = today()): DateRange {
+        val startOfMonth = LocalDate(anchor.year, anchor.month, 1)
         val lastDayOfMonth = startOfMonth.plus(DatePeriod(months = 1)).minus(DatePeriod(days = 1))
 
         return DateRange(
@@ -71,9 +71,8 @@ public object DateTimeUtils {
         )
     }
 
-    public fun thisYear(): DateRange {
-        val today = Clock.System.now().toLocalDateTime(timeZone).date
-        val startOfYear = LocalDate(today.year, Month.JANUARY, 1)
+    public fun thisYear(anchor: LocalDate = today()): DateRange {
+        val startOfYear = LocalDate(anchor.year, Month.JANUARY, 1)
         val endOfYear = startOfYear.plus(DatePeriod(years = 1)).minus(DatePeriod(days = 1))
 
         return DateRange(
@@ -92,31 +91,30 @@ public object DateTimeUtils {
         )
     }
 
-    public fun trailingMonth(): DateRange {
-        return trailingDays(30)
+    public fun trailingMonth(anchor: LocalDate = today()): DateRange {
+        return trailingDays(days = 30, anchor = anchor)
     }
 
-    public fun trailing14Days(): DateRange {
-        return trailingDays(14)
+    public fun trailing14Days(anchor: LocalDate = today()): DateRange {
+        return trailingDays(days = 14, anchor = anchor)
     }
 
-    public fun trailing60Days(): DateRange {
-        return trailingDays(60)
+    public fun trailing60Days(anchor: LocalDate = today()): DateRange {
+        return trailingDays(days = 60, anchor = anchor)
     }
 
-    public fun trailingWeek(): DateRange {
-        return trailingDays(7)
+    public fun trailingWeek(anchor: LocalDate = today()): DateRange {
+        return trailingDays(days = 7, anchor = anchor)
     }
 
-    internal fun trailingDays(days: Int): DateRange {
+    internal fun trailingDays(days: Int, anchor: LocalDate = today()): DateRange {
         require(days > 0)
 
-        val today = Clock.System.now().toLocalDateTime(timeZone).date
-        val daysAgo = today.minus(DatePeriod(days = days - 1))
+        val daysAgo = anchor.minus(DatePeriod(days = days - 1))
 
         return DateRange(
             from = daysAgo.atTime(DayTime.StartOfDay.localTime),
-            to = today.atTime(DayTime.EndOfDay.localTime)
+            to = anchor.atTime(DayTime.EndOfDay.localTime)
         )
     }
 

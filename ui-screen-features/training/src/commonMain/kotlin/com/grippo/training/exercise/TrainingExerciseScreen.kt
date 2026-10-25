@@ -165,9 +165,9 @@ internal fun TrainingExerciseScreen(
             .weight(1f),
         contentPadding = basePadding,
         overlay = AppTokens.colors.background.screen,
-        content = { containerModifier, resolvedPadding ->
+        content = { resolvedPadding ->
             AnimatedContent(
-                modifier = containerModifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
                 transitionSpec = {
@@ -275,8 +275,6 @@ internal fun TrainingExerciseScreen(
             }
         },
         bottom = {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

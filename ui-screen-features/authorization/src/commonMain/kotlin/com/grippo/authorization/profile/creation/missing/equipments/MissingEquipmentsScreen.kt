@@ -78,8 +78,6 @@ internal fun MissingEquipmentsScreen(
             onGroupSelect = contract::onGroupClick,
             onEquipmentSelect = contract::onEquipmentClick,
             bottom = {
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
                 Button(
                     modifier = Modifier
                         .padding(horizontal = AppTokens.dp.screen.horizontalPadding)

@@ -12,12 +12,13 @@ import com.grippo.design.resources.provider.last_7_days
 import com.grippo.design.resources.provider.monthly
 import com.grippo.design.resources.provider.weekly
 import com.grippo.design.resources.provider.yearly
-import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateCompose
+import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
@@ -88,8 +89,11 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
             }
         }
 
-        public fun of(kind: DateRangeKind): DateRangeFormatState {
-            val range = DateRangePresets.resolve(kind)
+        public fun of(
+            kind: DateRangeKind,
+            anchor: LocalDate = DateTimeUtils.today(),
+        ): DateRangeFormatState {
+            val range = DateRangePresets.resolve(kind = kind, anchor = anchor)
                 ?: return Empty(kind = kind)
             val display = DateRangeFormatter.format(range, kind)
             return if (DateRangeValidator.isValid(range, kind)) {

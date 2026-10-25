@@ -51,9 +51,8 @@ internal fun ColumnScope.ExercisesPage(
         modifier = modifier,
         contentPadding = basePadding,
         overlay = AppTokens.colors.background.screen,
-        content = { containerModifier, resolvedPadding ->
+        content = { resolvedPadding ->
             AnimatedContent(
-                modifier = containerModifier,
                 transitionSpec = {
                     fadeIn(animationSpec = tween(durationMillis = 220, delayMillis = 90))
                         .togetherWith(fadeOut(animationSpec = tween(durationMillis = 90)))
@@ -124,8 +123,6 @@ internal fun ColumnScope.ExercisesPage(
             }
         },
         bottom = {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
             Button(
                 modifier = Modifier
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding)

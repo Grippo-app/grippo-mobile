@@ -156,7 +156,6 @@ private fun StartTrainingContent(
             } else {
                 AppTokens.dp.dialog.top
             },
-            bottom = AppTokens.dp.contentPadding.block,
         ),
         overlay = AppTokens.colors.background.dialog,
         bottom = {
@@ -167,7 +166,6 @@ private fun StartTrainingContent(
                     .padding(
                         start = AppTokens.dp.dialog.horizontalPadding,
                         end = AppTokens.dp.dialog.horizontalPadding,
-                        top = AppTokens.dp.contentPadding.content,
                         bottom = AppTokens.dp.dialog.bottom,
                     ),
             ) {
@@ -179,15 +177,15 @@ private fun StartTrainingContent(
                 )
             }
         },
-        content = { contentModifier, contentPadding ->
+        content = { contentPadding ->
             if (isLoading) {
                 StartTrainingSkeleton(
-                    modifier = contentModifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     contentPadding = contentPadding,
                 )
             } else {
                 StartTrainingPage(
-                    modifier = contentModifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     option = option,
                     contentPadding = contentPadding,
                     recentPicker = recentPicker,
