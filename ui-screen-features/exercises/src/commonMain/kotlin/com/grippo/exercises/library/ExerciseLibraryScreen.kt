@@ -36,8 +36,8 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.equipments.EquipmentEnumState
 import com.grippo.core.state.equipments.EquipmentState
 import com.grippo.core.state.examples.ExerciseExampleBundleState
-import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.PercentageFormatState
@@ -48,8 +48,8 @@ import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.empty.IllustratedEmptyState
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
-import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.frames.FocusFrame
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
@@ -59,9 +59,9 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.empty_exercise_examples
+import com.grippo.design.resources.provider.empty_exercises
 import com.grippo.design.resources.provider.exercise_library
 import com.grippo.design.resources.provider.exercise_library_replace_target
-import com.grippo.design.resources.provider.empty_exercises
 import com.grippo.exercises.library.internal.Header
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
@@ -178,7 +178,7 @@ internal fun ExerciseLibraryScreen(
                     bottom = AppTokens.dp.screen.verticalPadding,
                 )
 
-                BottomOverlayContainer(
+                OverlayContainer(
                     modifier = Modifier
                         .fillMaxSize()
                         .navigationBarsPadding(),

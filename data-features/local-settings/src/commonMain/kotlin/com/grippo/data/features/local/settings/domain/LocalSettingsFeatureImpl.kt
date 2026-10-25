@@ -29,7 +29,7 @@ internal class LocalSettingsFeatureImpl(
         return repository.setAnalyticsConsent(granted)
     }
 
-    override fun observeRange(): Flow<Range?> {
+    override fun observeRange(): Flow<Range> {
         return repository.observeRange()
     }
 

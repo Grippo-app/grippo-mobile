@@ -26,6 +26,8 @@ internal class LocalSettingsRepositoryImpl(
         val RangeKey = stringPreferencesKey("range")
         val LastGoalSuggestionShownAtKey = stringPreferencesKey("last_goal_suggestion_shown_at")
         val HomeWelcomeStatusKey = stringPreferencesKey("home_welcome_status")
+
+        val DefaultRange = Range.LAST_30_DAYS
     }
 
     override fun observeOnboardingShown(): Flow<Boolean> {
@@ -58,9 +60,9 @@ internal class LocalSettingsRepositoryImpl(
         dataStore.edit { preferences -> preferences[AnalyticsConsentKey] = granted }
     }
 
-    override fun observeRange(): Flow<Range?> {
+    override fun observeRange(): Flow<Range> {
         return dataStore.data
-            .map { preferences -> Range.of(preferences[RangeKey]) }
+            .map { preferences -> Range.of(preferences[RangeKey]) ?: DefaultRange }
     }
 
     override suspend fun setRange(range: Range?): Unit {

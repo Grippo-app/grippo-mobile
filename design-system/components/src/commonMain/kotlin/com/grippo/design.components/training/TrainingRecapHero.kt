@@ -1,29 +1,34 @@
 package com.grippo.design.components.training
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -34,7 +39,6 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
@@ -81,12 +85,54 @@ public sealed interface TrainingRecapHeroStyle {
     ) : TrainingRecapHeroStyle
 }
 
+@Stable
+public class TrainingRecapHeroState internal constructor(revealed: Boolean) {
+    internal val backdropReveal: Animatable<Float, AnimationVector1D> = Animatable(
+        initialValue = if (revealed) 1f else 0f,
+        typeConverter = Float.VectorConverter,
+        label = RECAP_BACKDROP_REVEAL_LABEL,
+    )
+    internal var backdropGeneration: Int by mutableIntStateOf(0)
+        private set
+
+    public suspend fun settle() {
+        backdropReveal.snapTo(targetValue = 1f)
+        backdropGeneration++
+        // With one frame a caller would still read the backdrop drawn before it settled.
+        withFrameNanos { }
+        withFrameNanos { }
+    }
+
+    internal suspend fun reveal() {
+        if (backdropReveal.value == 1f) return
+
+        backdropReveal.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(durationMillis = RECAP_BACKDROP_REVEAL_MS, easing = FastOutSlowInEasing),
+        )
+    }
+
+    internal companion object {
+        val Saver: Saver<TrainingRecapHeroState, Boolean> = Saver(
+            save = { state -> state.backdropReveal.targetValue == 1f },
+            restore = { revealed -> TrainingRecapHeroState(revealed = revealed) },
+        )
+    }
+}
+
+@Composable
+public fun rememberTrainingRecapHeroState(): TrainingRecapHeroState {
+    return rememberSaveable(saver = TrainingRecapHeroState.Saver) {
+        TrainingRecapHeroState(revealed = false)
+    }
+}
+
 @Composable
 public fun TrainingRecapHero(
     modifier: Modifier = Modifier,
     training: TrainingState,
     style: TrainingRecapHeroStyle,
-    windowInsets: WindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
+    state: TrainingRecapHeroState = rememberTrainingRecapHeroState(),
 ) {
     val durationValue = training.duration.value
     val volumeValue = training.total.volume.value
@@ -95,10 +141,7 @@ public fun TrainingRecapHero(
     }
     val resolvedVerdict = (style as? TrainingRecapHeroStyle.Resolved)?.verdict
 
-    RecapHeroSurface(
-        modifier = modifier,
-        windowInsets = windowInsets,
-    ) {
+    RecapHeroSurface(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
@@ -134,7 +177,10 @@ public fun TrainingRecapHero(
                 }
             }
 
-            RecapBackdrop(verdict = resolvedVerdict)
+            RecapBackdrop(
+                verdict = resolvedVerdict,
+                state = state,
+            )
         }
 
         Row(
@@ -166,16 +212,10 @@ public fun TrainingRecapHero(
 }
 
 @Composable
-public fun TrainingRecapHeroSkeleton(
-    modifier: Modifier = Modifier,
-    windowInsets: WindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
-) {
+public fun TrainingRecapHeroSkeleton(modifier: Modifier = Modifier) {
     val textMeasurer = rememberTextMeasurer()
 
-    RecapHeroSurface(
-        modifier = modifier,
-        windowInsets = windowInsets,
-    ) {
+    RecapHeroSurface(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
@@ -188,7 +228,7 @@ public fun TrainingRecapHeroSkeleton(
                 RecapDescriptionSkeleton(textMeasurer = textMeasurer)
             }
 
-            RecapBackdrop(verdict = null)
+            Spacer(modifier = Modifier.size(AppTokens.dp.illustration.compact))
         }
 
         Row(
@@ -205,18 +245,13 @@ public fun TrainingRecapHeroSkeleton(
 @Composable
 private fun RecapHeroSurface(
     modifier: Modifier = Modifier,
-    windowInsets: WindowInsets,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val shape = RoundedCornerShape(
-        bottomStart = AppTokens.dp.brandHeader.radius,
-        bottomEnd = AppTokens.dp.brandHeader.radius,
-    )
+    val shape = RoundedCornerShape(AppTokens.dp.brandHeader.radius)
 
     Column(
         modifier = modifier
             .illustrationBackground(shape)
-            .windowInsetsPadding(windowInsets)
             .padding(
                 horizontal = AppTokens.dp.screen.horizontalPadding + AppTokens.dp.brandHeader.horizontalPadding,
                 vertical = AppTokens.dp.brandHeader.verticalPadding,
@@ -227,31 +262,31 @@ private fun RecapHeroSurface(
 }
 
 @Composable
-private fun RecapBackdrop(verdict: PerformanceVerdictState?) {
+private fun RecapBackdrop(
+    verdict: PerformanceVerdictState?,
+    state: TrainingRecapHeroState,
+) {
     Box(modifier = Modifier.size(AppTokens.dp.illustration.compact)) {
         if (verdict != null) {
-            var revealed by rememberSaveable { mutableStateOf(false) }
-            LaunchedEffect(Unit) { revealed = true }
-            val reveal = animateFloatAsState(
-                targetValue = if (revealed) 1f else 0f,
-                animationSpec = tween(durationMillis = RECAP_BACKDROP_REVEAL_MS, easing = FastOutSlowInEasing),
-                label = RECAP_BACKDROP_REVEAL_LABEL,
-            )
+            LaunchedEffect(state) { state.reveal() }
             val rise = with(LocalDensity.current) { AppTokens.dp.training.recap.backdrop.rise.toPx() }
 
-            Crossfade(
-                modifier = Modifier.graphicsLayer {
-                    alpha = reveal.value
-                    translationY = (1f - reveal.value) * rise
-                },
-                targetState = verdict,
-                animationSpec = tween(durationMillis = RECAP_BACKDROP_SWITCH_MS),
-                label = RECAP_BACKDROP_SWITCH_LABEL,
-            ) { shown ->
-                Illustration(
-                    painter = rememberVectorPainter(shown.rememberBackdrop()),
-                    style = IllustrationStyle.Compact,
-                )
+            key(state.backdropGeneration) {
+                Crossfade(
+                    modifier = Modifier.graphicsLayer {
+                        val reveal = state.backdropReveal.value
+                        alpha = reveal
+                        translationY = (1f - reveal) * rise
+                    },
+                    targetState = verdict,
+                    animationSpec = tween(durationMillis = RECAP_BACKDROP_SWITCH_MS),
+                    label = RECAP_BACKDROP_SWITCH_LABEL,
+                ) { shown ->
+                    Illustration(
+                        painter = rememberVectorPainter(shown.rememberBackdrop()),
+                        style = IllustrationStyle.Compact,
+                    )
+                }
             }
         }
     }

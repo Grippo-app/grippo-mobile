@@ -20,7 +20,7 @@ import com.grippo.core.state.equipments.EquipmentGroupEnumState
 import com.grippo.core.state.equipments.EquipmentGroupState
 import com.grippo.core.state.equipments.stubEquipments
 import com.grippo.design.components.divider.ContentDivider
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
@@ -65,7 +65,7 @@ public fun EquipmentSelection(
             ContentDivider()
         }
 
-        BottomOverlayContainer(
+        OverlayContainer(
             modifier = Modifier.fillMaxWidth().weight(1f),
             contentPadding = PaddingValues(
                 start = AppTokens.dp.screen.horizontalPadding,

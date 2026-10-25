@@ -48,7 +48,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.divider.ContentDivider
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.goal.GoalMark
 import com.grippo.design.components.menu.MenuValueRow
 import com.grippo.design.components.modifiers.scalableClick
@@ -120,7 +120,7 @@ internal fun ProfileGoalScreen(
         leading = Leading.Back(contract::onBack),
     )
 
-    BottomOverlayContainer(
+    OverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),

@@ -15,7 +15,7 @@ public interface LocalSettingsFeature {
     public suspend fun setDefaultAnalyticsConsent(granted: Boolean): Unit
     public suspend fun setAnalyticsConsent(granted: Boolean): Unit
 
-    public fun observeRange(): Flow<Range?>
+    public fun observeRange(): Flow<Range>
     public suspend fun setRange(range: Range?): Unit
 
     public fun observeLastGoalSuggestionShownAt(): Flow<LocalDateTime?>

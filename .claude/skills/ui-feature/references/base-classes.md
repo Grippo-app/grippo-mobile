@@ -252,11 +252,11 @@ Notes: `Column` (not `Box`/`LazyColumn`); **no** `fillMaxSize()` (content drives
 
 - **Every top-level Screen is wrapped in `BaseComposeScreen`** — both stack and dialog screens.
 - **Background color from `AppTokens`** — `AppTokens.colors.background.screen` for stack screens; `AppTokens.colors.background.dialog` for dialog screens.
-- **Leaf dialog screens reuse `BaseComposeScreen`** (`ScreenBackground.Color(...background.dialog)`), laying out `Spacer(AppTokens.dp.dialog.top)` → body → `Spacer(AppTokens.dp.dialog.bottom)` → `Spacer(Modifier.navigationBarsPadding())`, horizontal padding `AppTokens.dp.dialog.horizontalPadding`; a scrolling body wraps its scroll container in `BottomOverlayContainer` with those spacers in the `bottom` slot (owner: [dialogs](dialogs.md)). They add no toolbar or duplicate title: the shared host renders `BottomSheetToolbar` from the active config's `title: UiText`, with Back for nested steps and Close for the entire session.
+- **Leaf dialog screens reuse `BaseComposeScreen`** (`ScreenBackground.Color(...background.dialog)`), laying out `Spacer(AppTokens.dp.dialog.top)` → body → `Spacer(AppTokens.dp.dialog.bottom)` → `Spacer(Modifier.navigationBarsPadding())`, horizontal padding `AppTokens.dp.dialog.horizontalPadding`; a scrolling body wraps its scroll container in `OverlayContainer` with those spacers in the `bottom` slot (owner: [dialogs](dialogs.md)). They add no toolbar or duplicate title: the shared host renders `BottomSheetToolbar` from the active config's `title: UiText`, with Back for nested steps and Close for the entire session.
 
 ### What it does NOT do
 
-No `Toolbar` (the screen adds its own). No system-insets handling (edge-to-edge is Activity-level; per-screen insets via `Toolbar`/`BottomOverlayContainer`). No scrolling container (use `LazyColumn` inside `content`).
+No `Toolbar` (the screen adds its own). No system-insets handling (edge-to-edge is Activity-level; per-screen insets via `Toolbar`/`OverlayContainer`). No scrolling container (use `LazyColumn` inside `content`).
 
 ---
 

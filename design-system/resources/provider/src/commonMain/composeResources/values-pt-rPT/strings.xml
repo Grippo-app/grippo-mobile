@@ -71,7 +71,7 @@
     <string name="performance_trend_desc_intensity">Peso médio de trabalho por repetição com carga. O valor depende dos exercícios e não mede, por si só, o esforço nem a força.</string>
     <string name="sets_value">Séries (%1$s)</string>
     <string name="percent">%</string>
-    <string name="joined_pair">%1$s · %2$s</string>
+    <string name="joined_pair">%1$s&#160;·&#160;%2$s</string>
     <string name="selected">Selecionado</string>
     <string name="cm">cm</string>
     <string name="apply_btn">Aplicar</string>
@@ -109,7 +109,7 @@
     <string name="training_recap_verdict_stable">No seu nível</string>
     <string name="training_recap_verdict_declined">Um treino mais leve</string>
     <string name="training_recap_verdict_first">O seu ponto de partida</string>
-    <string name="training_recap_first_description">Os seus próximos treinos serão comparados com este</string>
+    <string name="training_recap_first_description">Base para os seus próximos treinos</string>
     <string name="total">Total</string>
     <string name="per_group">Por grupo</string>
     <string name="per_muscle">Por músculo</string>

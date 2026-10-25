@@ -53,8 +53,8 @@ import com.grippo.domain.state.user.toState
 import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.state.domain.range.toDomain
 import com.grippo.toolkit.analytics.context.NavigationReason
-import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.date.utils.currentDateFlow
 import com.grippo.toolkit.local.notification.AppNotification
@@ -62,7 +62,6 @@ import com.grippo.toolkit.local.notification.NotificationKey
 import com.grippo.toolkit.local.notification.NotificationManager
 import com.grippo.toolkit.permission.AppPermission
 import com.grippo.toolkit.permission.PermissionManager
-import kotlin.time.Duration.Companion.days
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.cancelAndJoin
@@ -75,6 +74,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.days
 
 internal class HomeViewModel(
     private val analytics: HomeAnalytics,
@@ -265,8 +265,9 @@ internal class HomeViewModel(
         update { it.copy(hasGoal = hasGoal) }
     }
 
-    private fun provideRange(value: Range?) {
-        val kind = value?.toState() ?: DateRangeKind.Last30Days
+    private fun provideRange(value: Range) {
+        val kind = value.toState()
+
         val range = DateRangeFormatState.of(kind)
 
         update { it.copy(range = range) }

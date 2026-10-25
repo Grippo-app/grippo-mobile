@@ -39,10 +39,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   `lerp(background.card, decline, 0.10f / 0.14f)` recipe) and the
   `charts.indicator.decline` ramp (a lighter Indigo - `lerp(Indigo, background.card,
   0.25f)` in Light, `lerp(Indigo, Common.White, 0.25f)` in Dark - → Indigo on a
-  0.2-alpha Indigo track) color the completed-workout Declined chip, bars and
-  verdict icon, the streak/goal Growth headline drops and, on the streak Growth
-  card, the flame and bar of that drop; the goal Growth card's status label and
-  bar keep their severity band. Indigo keeps a dip calm
+  0.2-alpha Indigo track) color the completed-workout Declined chip and bars and
+  the current value of a drop on the streak and goal Growth cards; the goal Growth
+  card's status label and bar keep their severity band. Indigo keeps a dip calm
   and distinct from orange warning (validation, overdue, restart), red error, the
   neutral grey of ordinary variation and the purple identities of
   `context.repetitions` and `profile.experience.beginner`, which a decline must
@@ -64,8 +63,9 @@ and Latin text in both themes; each role keeps its existing size and line height
 - Chart grid/axis/baseline colors and area/sparkline fill endpoints belong to
   their chart color groups. Each series retains its supplied semantic hue;
   history fills use their chart group's fade endpoints. Avatar fills/rings
-  retain experience hues through the profile coefficients; bottom action fades
-  retain their host surface hue through `overlay.bottomActionAlpha`. Shadow spot
+  retain experience hues through the profile coefficients; `OverlayContainer` edge
+  fades (top and bottom) retain their host surface hue through `overlay.fadeAlpha`.
+  Shadow spot
   strength uses `overlay.shadowSpotAlphaMultiplier` without changing its hue.
 - Volume bar charts use flat series colors and substantial columns with a small
   4 dp corner radius, distributed in even slots across the plot. Each column uses
@@ -338,7 +338,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   menu, profile, recap, achievement and gallery cards. Equipment detail images
   are unframed; its selection variant uses the repeated-row shape.
 - 28 dp is reserved for BrandHeader, the onboarding hero, the completed-workout
-  recap hero's bottom corners and bottom-sheet top corners. Warm card fills alone do not change a
+  recap hero's bottom corners and all four corners of its shared card, and
+  bottom-sheet top corners. Warm card fills alone do not change a
   card's radius.
 - Filled segments use a 16 dp outer shape and a 12 dp selection shape with 4 dp
   inset. Neutral navigation and utility icon buttons use `ButtonStyle.Tertiary`
@@ -409,14 +410,19 @@ and Latin text in both themes; each role keeps its existing size and line height
   moved the user's standing in their Home period, with growth in `semantic.success`
   and a dip in `semantic.decline`, never Home's cards repeated. It starts with the
   warm `TrainingRecapHero` (the only illustration region on the screen), a
-  full-width region that reaches up under the status bar - the screen has no
+  full-width region just below the status-bar overlay - the screen has no
   toolbar, and its verdict title is the screen's heading: an `h2`
-  verdict title beside its icon tile leads, the `b14Med` description line joins
-  the summary and the period label through `joined_pair` ("<summary> · <period>")
-  once the stored period is resolved, and the workout's own facts step down to
+  verdict title leads, the `b14Med` description line joins
+  the summary and the period label through `joined_pair` ("<summary> · <period>",
+  with non-breaking spaces around the dot so it never ends or starts a line, here
+  or in the streak line) once the stored period is resolved, and the workout's own
+  facts step down to
   `h3` with `b11Med` labels. The description lives on the types:
   `PerformanceVerdictState.summary(metrics, baseline)` gives
-  `training_recap_first_description` for a first workout and otherwise
+  `training_recap_first_description` for a first workout ("The baseline for your
+  next workouts", "База для следующих тренировок", "Основа для наступних
+  тренувань", "Base para seus próximos treinos", "Base para os seus próximos
+  treinos": short enough to keep two lines with the period label) and otherwise
   `PerformanceBaselineState.comparedSummary(improved, compared)`, which names the
   selected baseline: `training_recap_compared` ("N of M metrics above your
   average") under `Average`, `training_recap_compared_previous` ("… above last
@@ -462,8 +468,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   separates the cards; the cards keep the `screen.horizontalPadding` gutters while
   the hero spans the screen width. The content is a lazy list, so each lower card
   composes, and plays its entrance, as it scrolls into view. Share first scrolls the
-  list back to the hero and captures it one frame later, after the hero has redrawn,
-  so the shared image always shows its current verdict. A
+  list back to the hero, settles its backdrop (`TrainingRecapHeroState.settle()`
+  ends a running entrance and drops a running verdict crossfade) and captures it
+  once the settled hero has been drawn, so the shared image always shows the final
+  art of its current verdict. A
   period-best verdict or the first non-empty records load fires the shared
   `KonfettiParade` once per screen instance; a started parade never re-arms. While
   saving, the same order renders as skeletons (`TrainingCompletedSkeleton`,
@@ -476,22 +484,22 @@ and Latin text in both themes; each role keeps its existing size and line height
   gap: the Primary Done above the Secondary Share (the `share` label with
   `icons.Share` as its start icon), Disabled until the verdict resolves (also while
   saving), Loading while the share operation runs and absent only in the result
-  fallbacks that show no hero. The actions sit on the container's even backing:
-  `fadeHeight` ends the `background.screen` fade within the slot's
-  `contentPadding.block` top spacing, and `overlay.bottomActionAlpha` stays even
-  behind both buttons, so the cards dim evenly behind them rather than showing
-  through the gap between them.
-  Done keeps its resolved overlay insets in every terminal state. While the
-  content scrolls, a `background.screen` scrim over the status bar fades in across
-  the first status-bar height of scrolling, so cards never pass under the system
-  icons while the hero still reaches up under them at rest. Missing saved details
-  and an unconfirmed result use their quiet copy as the screen's `h4`
-  `text.primary` heading under the status bar, without a success header.
-- `TrainingRecapHero(modifier, training, style, windowInsets)` replaces the
+  fallbacks that show no hero. The actions sit on the opaque screen surface:
+  `OverlayContainer(bottomStyle = OverlayStyle.Stacked(fadeHeight =
+  contentPadding.block))` adds that `background.screen` fade gap above the actions
+  itself and keeps the opaque surface below it, so no card content shows between
+  or under the buttons. Done keeps its resolved overlay insets in every terminal
+  state. The top mirrors it: the `top` slot holds only a `statusBarsPadding()`
+  spacer with `topStyle = OverlayStyle.Stacked(fadeHeight = contentPadding.block)`,
+  so the status bar sits on the opaque screen surface with a `block` fade below it,
+  scrolled content slides under that fade, and at rest the list starts below it.
+  Missing saved details and an unconfirmed result use their quiet copy as the
+  screen's `h4` `text.primary` heading below the status bar, without a success
+  header.
+- `TrainingRecapHero(modifier, training, style, state)` replaces the
   completion BrandHeader and the summary facts in one warm full-width region:
-  `illustrationBackground` with only its bottom corners at `brandHeader.radius`,
-  the caller's `windowInsets` (the status bar here) inside the region so the warm
-  surface reaches the top edge, `screen.horizontalPadding` plus
+  `illustrationBackground` with all four corners at `brandHeader.radius`,
+  `screen.horizontalPadding` plus
   `brandHeader.horizontalPadding` sides so its text starts on the cards' text edge,
   and `brandHeader.verticalPadding`. Like the last-workout recap, its top row pairs
   the text column (verdict title and description, `content` apart) with a compact
@@ -506,11 +514,14 @@ and Latin text in both themes; each role keeps its existing size and line height
   feather, FirstWorkout a start ring with a dotted path to a large sparkle, each
   on a soft radial glow and fully inside the slot, never under text. None of them
   draws a trend or axis that could read as the user's data. It is revealed once
-  per screen instance over 900 ms (fade and a `training.recap.backdrop.rise` lift
-  behind a saveable flag) and crossfades in 250 ms when the verdict changes. It
-  carries no semantics and is part of the shared image, which is the whole region:
-  screen width, the warm status-bar band at its top, square top and rounded bottom
-  corners. These vectors are a user-chosen departure from the 3D raster
+  per screen instance over 900 ms (fade and a `training.recap.backdrop.rise` lift)
+  and crossfades in 250 ms when the verdict changes; the reveal lives in the
+  caller's saveable `TrainingRecapHeroState` (`rememberTrainingRecapHeroState()`),
+  so a hero that scrolls out of the lazy list and back does not replay it. It
+  carries no semantics. The shared image is exactly the on-screen hero, at screen
+  width with its four rounded corners over the opaque `background.screen` base,
+  so every device exports the same card, as before the redesign. These
+  vectors are a user-chosen departure from the 3D raster
   illustration family, made because no image generator was available;
   the column keeps `content` gaps between the top row and the facts row. The
   backdrop is the verdict's only image: no icon tile competes with it, and the
@@ -629,8 +640,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   `divider.default` value in both themes) clipped to its `shape` with the shared
   `shimmer.highlight` band applied after clip and background. The shape defaults
   to the `dp.skeleton.radius` text-line corner; a bone
-  standing in for a control or a tile takes that owner's shape (the verdict tile
-  radius, `button.medium.radius` for a reserved button). A text bone is one laid-out line of the real typography role it stands
+  standing in for a control or a tile takes that owner's shape (`button.medium.radius`
+  for a reserved button). A text bone is one laid-out line of the real typography role it stands
   in for, measured under [typography.md](../.claude/skills/design-system/references/typography.md)
   so the populated content does not jump; the `dp.skeleton.line` scale is short
   40%, medium 60% and long 80%. Width, animation and wrapped-text rules follow the
@@ -645,7 +656,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   one node per loading region, on the host root or on each section skeleton that
   loads on its own. A shared card's loading
   geometry lives beside the card as its `*CardSkeleton`
-  (`PerformanceComparisonCardSkeleton` sized to the baseline segment and the five
+  (`PerformanceComparisonCardSkeleton` sized to the baseline segment and the four
   growth blocks with stacked bars; `TrainingStreakCardSkeleton(style)` and
   `MuscleLoadingCardSkeleton(style)` accept only the styles a loading host shows,
   every `TrainingStreakCardStyle` and `MuscleLoadingCardStyle.Loadable` (Overview,
@@ -654,9 +665,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   headline/active-days row (the flame beside the headline alone), the indicator
   and the `training_streak_current_progress` line with three Large spacers; the
   streak Growth for the completed workout sizes the header, the flame beside
-  headline and cadence (`maxOf(rhythmIcon, h4 + text + b13Med)`), the indicator
-  and the text group of the `b12Med` outcome and next-training lines (`text` apart)
-  with three Large spacers; the
+  headline and cadence (`maxOf(rhythmIcon, h4 + text + b13Med)`) and the text group
+  of the `b12Med` outcome and next-training lines (`text` apart) with two Large
+  spacers; the
   streak Detailed for the streak dialog sizes the `h3` headline, the `b14Med`
   description and the `b13Med` active-days line with two Large spacers; the
   muscle Session for the completed workout sizes the title and the map row; the
@@ -857,7 +868,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   chooses the baseline - `PerformanceBaselineState.Average` "vs average" or
   `Previous` "vs last workout" (labels from `PerformanceBaselineState.labelText()`)
   - and then growth blocks in the fixed order Volume, Repetitions, Intensity,
-  Density, Duration separated by `ContentDivider`. Both segment labels fit one
+  Density separated by `ContentDivider`. Duration is not a row here: it never votes
+  and the hero already states the workout time, so every row carries a status and
+  the hero's "N of M" equals the rows. Both segment labels fit one
   line in every locale at the standard viewport: an `EqualFill` half of the Large
   panel leaves about 138 dp for the `b14Bold` selected label, so the labels stay
   short - en "vs average / vs last workout", uk "до середнього / до попереднього",
@@ -909,12 +922,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   percentage exists, Record included (a period best over a zero baseline keeps its
   chip without a change): the chip and the bars already carry the status, so the
   number stays quiet and a Declined row does not repeat the decline accent three
-  times. Duration never votes: its row shows the value, the
-  "Before" sub-line and its neutral pair only (the before bar over a muted after
-  bar) - no signed change and no chip - so the
-  hero's "N of M" count matches the rows that carry a status. The
-  `PerformanceComparisonCardSkeleton` sizes the four voting blocks with the chip
-  line and the Duration block without it. Private `GrowthBars` follow across the
+  times. The `PerformanceComparisonCardSkeleton` sizes its four blocks with the
+  chip line. Private `GrowthBars` follow across the
   block as two stacked rounded bars of `metrics.charts.indicator.height` with a
   `contentPadding.text` gap, shown only for a metric with a value and a before
   value (a row without one carries no bars), read top to bottom like
@@ -924,7 +933,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   (WCAG contrast against `background.card`: Light NeutralLight.N400 2.3:1 beside
   muted N500 4.8:1; Dark NeutralDark.N450 1.75:1, 1.5:1 on its track, beside muted
   N500 2.1:1, where the earlier N400 at 1.4:1 nearly vanished) - static during the
-  entrance, so in Light Stable and Duration pairs read apart by tone (≈2.1:1
+  entrance, so in Light a Stable pair reads apart by tone (≈2.1:1
   between the bars) as well as by position; in Dark the tones stay close (≈1.2:1),
   so they read apart mainly by position and length, the values being in text; the
   bottom "after" bar fills to this workout, its
@@ -936,7 +945,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   before bar's length. A row without a value or a before value draws no bars. The
   after bar's track and fill take `PerformanceMetricState.indicatorColors()`:
   `charts.indicator.success` for Record/Improved, `decline` for Declined and
-  `muted` for Stable and Duration. The brand
+  `muted` for Stable. The brand
   `charts.indicator.primary` is not a neutral here: its dominant is the warning
   orange in both themes. The entrance is a 900 ms FastOutSlowIn tween through one
   card-level `updateTransition` over a `rememberSaveable` reveal flag (played once
@@ -969,18 +978,17 @@ and Latin text in both themes; each role keeps its existing size and line height
   is followed by one secondary `b13Med` empty note and no blocks.
 - `TrainingStreakCardStyle.Growth(previous)` is the completed-workout streak: the
   shared `metric_overview_streak_title` heading with chevron, a `Flame` at
-  `metrics.overview.rhythmIcon` beside an `h4` headline over the `b13Med`
-  `text.secondary` cadence, the existing `LineIndicator`, and one `b12Med`
-  `text.secondary` outcome line. The headline
-  is always `overviewHeadline()` with its unit ("5-week streak"), colored
-  `semantic.success` when the streak grew, `semantic.decline` when it dropped and
-  `text.primary` otherwise. The flame and the bar take the mood colors
-  (`mood.indicatorColors()`) except after a drop: a drop is one fact in one color,
-  so they follow the headline into `charts.indicator.decline`; Overview and
-  Detailed keep their mood colors. When the previous length differs the outcome line
+  `metrics.overview.rhythmIcon` beside an `h4` `text.primary` headline over the
+  `b13Med` `text.secondary` cadence, and one `b12Med` `text.secondary` outcome
+  line. It draws no indicator bar: without the Overview's progress caption a bar
+  would read as progress toward an unstated goal, and Overview and Details keep it.
+  The headline is always `overviewHeadline()` with its unit ("5-week streak") and the
+  flame keeps the mood colors (`mood.indicatorColors()`) like Overview and Detailed;
+  a change is one fact in one color, so only the current length carries the
+  direction. When the previous length differs the outcome line
   joins the outcome text and `training_streak_growth_headline` through
   `joined_pair` ("Streak extended · 4 → 5"), the previous length in the line's
-  `text.secondary` and the current one in the headline's direction color
+  `text.secondary` and the current one in the direction color
   (`semantic.success` after growth, `semantic.decline` after a drop), like the goal
   score, stated as previous →
   current from the
@@ -989,7 +997,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   "4 → 4"; an unchanged length shows the outcome text alone
   (`training_streak_growth_kept`), and no outcome line is shown without a
   previous state. The outcome line and the forward line form one text group at
-  `contentPadding.text` below the bar, not separated by the panel spacer. The
+  `contentPadding.text` below the headline row, not separated by the panel spacer. The
   second `b12Med` `text.secondary` line looks forward through
   `TrainingStreakState.nextTrainingLine()`: `training_streak_next_date` with the
   rhythm's next day (`nextTrainingDate`, contextual `DateCompose` "Tomorrow" or
@@ -999,14 +1007,15 @@ and Latin text in both themes; each role keeps its existing size and line height
   default: every producer states whether a next day exists.
 - `GoalCardStyle.Growth(previous)` is the completed-workout goal card: the Course
   identity row shared with the Overview (`GoalIdentity`: `GoalMark`, `b12Med`
-  `goal_course_title`, `h5` goal label, decorative chevron), an `h2` score line in
-  the Overview typography - the numbers in `h2`, the percent signs and the arrow in
-  secondary `b14Med` - that becomes `goal_growth_score` ("68% → 76%") when the
+  `goal_course_title`, `h5` goal label, decorative chevron), an `h3` score line -
+  the numbers in `h3`, one step below the hero's `h2` heading so the score does not
+  compete with it, the percent signs and the arrow in secondary `b14Med` - that
+  becomes `goal_growth_score` ("68% → 76%") when the
   previous score differs, the previous score in `text.secondary` beside the
   current one, stated from the first frame while only the current score
   fades in over 900 ms (saveable reveal, once per screen instance) and the bar fills
   from the previous score to the current one, so it never reads "68% → 68%"; its
-  current score is colored by direction like the streak headline (`semantic.success`
+  current score is colored by direction like the streak's current length (`semantic.success`
   when the score grew, `semantic.decline` when it dropped, `text.primary` when
   unchanged or without a previous score). The `b12Med` status label takes
   `statusColor()` and a `LineIndicator` of the score, drawn only with a score,
@@ -1025,8 +1034,11 @@ and Latin text in both themes; each role keeps its existing size and line height
   workouts/sets context, no leading-muscle line and no details hint; empty entries
   show `muscle_load_no_data`.
 - `TrainingRecordsCard` is the completed-workout "Personal records" card: a Large
-  MetricSectionPanel with the `h5` `training_records_title` and `b13Med`
-  `text.secondary` `training_records_description`, then one row per exercise
+  MetricSectionPanel with the `h5` `training_records_title`, one `Trophy` at
+  `metrics.performance.records.trophyIcon` in `semantic.success` at the end of the
+  title row (the card's single celebration accent: every row is a record, so the
+  rows carry none) and the `b13Med` `text.secondary`
+  `training_records_description`, then one row per exercise
   example (`TrainingRecordState`, its achievements in the order best weight, best
   tonnage, max repetitions, peak intensity) separated by `ContentDivider`: a
   `SMALL` (32 dp) `ExerciseExampleImage`, the `b13Semi` `text.primary` exercise
@@ -1039,10 +1051,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   value and hold the dot to the kind before it, so the line never breaks mid-phrase
   like "Max / repetitions"; at most four kinds - at the standard viewport a first
   attempt takes two lines in en, three in ru/pt and one per kind in uk - and an
-  ellipsis would hide a record) - then a `Trophy` at
-  `metrics.performance.records.trophyIcon` (the trend icon size) in
-  `semantic.success`, the single celebration accent of the row (name and line stay
-  neutral), and one decorative `metrics.overview.detailsIcon` chevron. The row stays
+  ellipsis would hide a record) - then one decorative
+  `metrics.overview.detailsIcon` chevron centered on the row, while the thumbnail
+  stays top-aligned with the name when the kinds wrap. The row stays
   light: no nested cells, chips or per-kind value columns. Each row owns one
   `scalableClick` to its exercise example (`onRecordClick(exerciseExample.id)`)
   with `subContent` vertical padding; its spoken text reads the name, then every
@@ -1186,7 +1197,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   Home dashboard/loading/welcome, Calendar daily/monthly (including empty/loading),
   Library lists/empty results and Profile content/pinned actions. Scrolling bodies
   own that margin through content padding; Main owns the bottom-bar navigation inset.
-  Pinned actions still reserve their measured height through BottomOverlayContainer.
+  Pinned actions still reserve their measured height through OverlayContainer.
 - Editable set rows own their vertical padding; the list draws the optional divider
   below the swipe-reveal content and omits it for the final or only row. Their list
   adds no second row gap; the Sets heading
@@ -1211,7 +1222,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   wrapping `b14Semi` names and secondary planned sets/repetitions; they carry no
   completion counters, stale tonnage or detail chevrons.
   The single pinned Primary action names the selected next step, with measured
-  BottomOverlayContainer padding rather than a manually reserved overlay height.
+  OverlayContainer padding rather than a manually reserved overlay height.
   Its pinned action padding includes the single navigation inset; the shared
   bottom-action gradient overlays the exercises without an opaque footer surface.
 - Draft workout sheets use a left-aligned task heading and short secondary
@@ -1223,8 +1234,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   summary and contents heading stay above the exercise scroll area. Full-width
   Primary Continue and Secondary Start new stay pinned on the shared
   `background.dialog` bottom-action backing with the navigation inset: like the
-  completed-workout actions, `fadeHeight` ends the fade within the slot's `content`
-  top spacing, so both buttons sit on the even backing.
+  completed-workout actions, `bottomStyle = OverlayStyle.Stacked(fadeHeight =
+  contentPadding.content)` adds the fade gap above the actions itself, so both
+  buttons sit on the opaque dialog surface.
 - Workout completion confirmation keeps the host title and left-aligned secondary
   introduction. One Large neutral metrics panel groups only recorded exercise and
   set counts with `TrainingStat` (`h5` neutral values, secondary `b12Med` labels);

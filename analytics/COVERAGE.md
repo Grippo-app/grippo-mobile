@@ -116,9 +116,10 @@ keeps the null container hook. Per-feature files hold each owner.
 Operation events identify their owner through feature-specific operation/action
 codes and correlate outcomes by operation_id. They omit visible-screen fields
 (screen_id, navigation_reason, referrer_screen, dialog_id), because construction,
-background work and pause/navigation do not establish operation ownership. The user
-confirmed that the app has never been released: every analytics schema is reset to
-initial version 1. No released-report compatibility or migration is required.
+background work and pause/navigation do not establish operation ownership. The
+typed catalog has not shipped in a store build: every typed schema stays at version 1
+by the owner's decision until the first store release that ships it, and the legacy
+store-build events have no admin consumer to migrate.
 No substitute origin, referrer, saved provenance or reporting context propagation
 is introduced.
 
@@ -160,10 +161,11 @@ programmatic correction. Parameter shapes and event populations are unchanged.
   navigation owners stays an omission under the feature-analytics observation
   boundary; no context propagation mechanism exists for reporting.
 
-## Pre-release baseline
+## Typed catalog baseline (not yet in a store build)
 
-User decision: no app release exists. All literal analytics schemas, including
-built-ins and auth_input_changed, use version 1 (see Verification for the count).
+The store builds send only automatic and legacy events, so no typed population has
+shipped. All literal analytics schemas, including built-ins and
+auth_input_changed, use version 1 (see Verification for the count).
 Dismissal observations are named DismissRequested across all public events, common
 ControlAction, internal actions/encoders and owning VM callers; obsolete
 Back/back/dismiss analytics encodings are removed. This is a telemetry-only
@@ -171,17 +173,18 @@ contract cleanup: actual routes/screen hooks, business callbacks/guards,
 input/selection/draft owners and navigation are unchanged. No additional state
 archive or synthetic callback is introduced. Comparing the UI source before and
 after that cleanup confirmed that only typed analytics references changed.
-Legacy personal self-test populations are retained separately from the current
-operation definitions; no release cutoff is invented.
+Legacy store-build and owner test-build populations are retained separately from
+the current operation definitions; no release cutoff is invented.
 
 ## Verification
 
 Current source inventory (re-counted on 2026-10-15, read-only): 24
 `screenPresentation` overrides, one per entry of the seven FeatureScreen enums (24
 entries), all presenting typed values; 59 BaseViewModel subclasses = 24 screen VMs
-+ 12 containers + 23 dialog VMs; 148 `AnalyticsEventSchema` literals (147 feature
-schemas plus the built-in `screen_view`), all version 1, unique, lowercase and
-underscore-only, longest 39 characters against the 40-character limit; 30
++ 12 containers + 23 dialog VMs; 153 `AnalyticsEventSchema` literals (recounted on
+2026-10-25: 152 feature schemas plus the built-in `screen_view`), all version 1,
+unique, lowercase and underscore-only, longest 39 characters against the
+40-character limit; 30
 `@Module` analytics modules, every one listed in `shared/.../Koin.kt`, with 29
 distinct schema qualifiers (Debug registers no schema); DismissRequested declared
 in 28 event files (41 variants) plus the common ControlAction, encoded as 25
@@ -240,12 +243,22 @@ under that chat's delegation restrictions; self-review is not independent review
 ---
 # Live GA4 setup review — 2026-10-14
 
-Owner-confirmed release boundary: the mobile app is unreleased; existing history
-is personal testing, not a released-user cohort or a product baseline. No launch
-date, production migration or historical backfill is assumed. Record the actual
-release boundary when it occurs. This entry is setup evidence, not project policy.
-Later admin reconciliations are merged into this section; it is replaced, not
-copied, when the admin or the emitted contract changes.
+Release boundary (owner statement plus received data, 2026-10-25): the app is
+published and has real users. Store builds report iOS 2.1 (App Store, first release
+2026-03-24, current 2.1 since 2026-05-17) and Android 2.0 (versionCode 19, the only
+Android 2.x version received; the repository never set Android 2.1, so the owner's
+"2.1 in the stores" matches iOS). Store builds send only automatic events and the
+legacy screen-entry events (see the legacy row). The typed catalog (schemas v1)
+exists only in the owner's test builds: Android debug builds that also report 2.0,
+iOS 2.2, and iOS simulator builds that reported 2.1 between 2026-10-11 and
+2026-10-19. App version therefore does not separate test from real users on
+Android; the event family does. History since 2026-01 includes real users of
+Android 1.0–2.0 and iOS 1.0–2.1. The first store release that ships the typed
+catalog is the schema start boundary; record its date when it occurs. No launch
+date, production migration or historical backfill is assumed beyond this. This
+entry is setup evidence, not project policy. Later admin reconciliations are
+merged into this section; it is replaced, not copied, when the admin or the
+emitted contract changes.
 
 Verified property: Grippo Analytics / `grippo-e3960`, property `519002689`.
 Affected streams: Android `com.grippo.android` (`G-0YXY3NRJ7J`) and iOS
@@ -294,11 +307,12 @@ does not truncate to two months; key-event data follows user-data retention.
 | `main_tab_selected` with `main_tab=library`; `exercises_filter_clicked` (`library_filter`); parameterless `exercises_exercise_selected` (Pick modes only), `exercises_exercise_details_clicked` v1 (Browse mode, new), `exercises_load_next_page`, `exercises_dismiss_requested` | **Keep; live reconciliation verified on 2026-10-20; no new admin object required.** Source schemas, encoders, emission placement and feature records match the requested contract. Live Chrome inspection confirmed account `Grippo Analytics` (`379805710`), property `grippo-e3960` (`519002689`), Android `App Android` / `com.grippo.android` (`13265245917`) and iOS `App IOS` / `com.grippo.app` (`13348167981`), matching the synced Firebase app identifiers; web `Site` (`13688917680`) is separate. The only drift was the `main_tab` description above; its authorized correction was saved and reopened with the same name/scope/parameter. Both mobile streams have no event modifications and only two create rules: `grippo_profile_created` requires `event_name=profile_operation_completed` AND `profile_action=create`; `grippo_training_create_completed` requires `event_name=training_task_completed` AND `training_operation=create_training`. No rule filters on `main_tab` or `exercises_exercise_selected`. Seven enabled key marks are `app_store_subscription_convert`, `app_store_subscription_renew`, `first_open`, `grippo_profile_created`, `grippo_training_create_completed`, `in_app_purchase`, `purchase`; none depends on this change. Audiences are only `All Users` and `Purchasers`; nine saved segments use all-data/channel/device conditions, and ten saved comparisons add only `Grippo — приложения` (Platform iOS/Android) to those general populations. The exploration's unused local `US` segment filters only Country ID exactly `US`. Published collection `Grippo — главное` (`16123752488`) retains `События и экраны` (`16123956244`), whose only filter is Platform regex `^(Android\|iOS)$`, with Event name, Event count and Total users and no event allowlist; the new details event is eligible on delivery. Outcome report `Профиль и тренировки` (`16123745061`) deliberately allows only the two exact Grippo profile/training derived events under the same mobile regex. Library funnel `16123817061` and the sole saved exploration `Grippo — профиль → создание тренировки` (`f6N3SASFRz-xExkk-sYHeQ`) retain exact `grippo_profile_created` → `grippo_training_create_completed` steps and exclude web; the exploration is closed with the enabled 7 Days constraint. Its second tab `Создание тренировки — события` retains only `training_operation=create_training`, the mobile Platform regex and `^training_task_(started\|completed\|failed\|interrupted)$`. No inspected audience, segment, comparison, report or exploration filters on `main_tab` or `exercises_*`; specialized result/training filters are intentional, while general diagnostics accepts the new event. No other admin mutation or new object was needed. Realtime All Users showed zero active users in 30/5 minutes and no event rows; current-build target-event receipt remains unverified, and DebugView was not inspected. |
 | `duration_ms` | Saved event-scoped custom metric `Grippo Operation duration ms`, unit Milliseconds. Terminal-operation elapsed time, not workout length. Filter the event/operation population and choose aggregation explicitly; copied source/derived values are not separate operations. |
 | `duration_picker_submit_clicked` v1 (empty parameters); `training_interaction` v1 with `training_action=completion_confirmation_confirm` | Source eligibility requires `DurationFormatState.Valid` before either observation and its result navigation; Empty/Invalid callbacks emit nothing. Schemas, encoders, consent and transport are unchanged; no workout duration is sent. Current Android/iOS stream rules, key events, reports, funnels, audiences and SDK receipt are uninspected under the requested source-only review. Existing saved `training_action` registration is historical evidence, not a current synchronization claim; no admin action or migration conclusion is established. |
-| `training_interaction` v1 with `training_action` = `completed_metric_opened` / `completed_streak_opened` / `completed_goal_opened` / `completed_add_goal_clicked` (new, Completed redesign of 2026-10-24) and `completed_baseline_selected` / `completed_record_opened` / `completed_share_clicked` (new, Completed recap extension of 2026-10-24: baseline toggle, records card, hero share); `training_task_started/completed/failed/interrupted` v1 with `training_operation=refresh_trainings` (new), `load_records` and `share_recap` (new, recap extension: `share_recap` covers the hero capture plus the share request, completes once presentation is requested and fails on capture, encode/IO, file-name or no-presenter errors, so its `duration_ms` includes the capture; `completed_share_clicked` is one event per accepted tap, and taps while a share is in flight emit nothing) and terminal `duration_ms`; `completed_exercise_opened` deleted with the Completed exercise list; `completed_summary_opened` deleted with the Completed hero's Statistics button (user decision; the Statistics dialog is now opened only from Trainings) | **Reconciliation pending: live admin not reachable.** Attempts on 2026-10-24 and a re-check on 2026-10-25 found no Chrome instance with the Claude extension connected to this account (`list_connected_browsers` empty, pairing broadcast unanswered, tab context "not connected"), so the user's "Grippo App" GA4 tab could not be inspected and nothing was written; on 2026-10-25 the user was asked to open the Grippo GA4 admin tab in Chrome and connect the Claude in Chrome extension, and that request is outstanding. Source is verified: `TrainingEventMatrix.kt` encodes the seven new Completed codes, `TrainingOperationSchema.kt` adds `refresh_trainings`, `load_records` and `share_recap`, `completed_exercise_opened` and `completed_summary_opened` have no remaining source reference, all emitters sit after their eligibility guards in `TrainingCompletedViewModel`, and schema names/keys/versions are unchanged. Property/streams matched only to the synced Firebase configs (`grippo-e3960`, sender `219092892396`, `com.grippo.android`, `com.grippo.app`). Expected admin outcome from the 2026-10-20 live inventory: keep the `training_action`/`training_operation` dimensions (update descriptions only if they enumerate codes), keep the `grippo_training_create_completed` rule/key event and the Explore `create_training` filter unchanged (the discriminator already excludes refresh completions), no object to retire for `completed_exercise_opened`. The `completed_summary_opened` removal is pending admin reconciliation: it has not been inspected live, and no keep or retire decision is made for any consumer that may reference it. Still to confirm live: both descriptions, both streams' create rules, key events, audiences/segments, saved comparisons, the Library collection `16123752488` with reports `16123956244`/`16123745061`, funnel `16123817061`, Explore `f6N3SASFRz-xExkk-sYHeQ` (both tabs) and any custom metric or derived event for any `completed_exercise_opened` or `completed_summary_opened` reference and an intact `create_training` filter. Four features share the value `refresh_trainings` under different keys (`home_operation`, `trainings_operation`, `statistics_operation`, `training_operation`); only the first and last are registered, so reports must select by key. Current-build SDK receipt unobserved. |
+| `training_interaction` v1, `training_action` Completed codes (8 of the 41): `completed_metric_opened`, `completed_streak_opened`, `completed_goal_opened`, `completed_add_goal_clicked`, `completed_baseline_selected`, `completed_record_opened`, `completed_share_clicked`, `completed_dismiss_requested`; `training_task_started/completed/failed/interrupted` v1 with `training_operation` adding `refresh_trainings`, `load_records` and `share_recap` (hero capture plus share request; completes once presentation is requested, so its `duration_ms` includes the capture) and terminal `duration_ms`. `completed_share_clicked` is one event per tap accepted by the VM busy guard; the Screen first scrolls the list back to the hero and waits until the settled hero has been drawn, so a tap whose Screen coroutine is cancelled first (a drag or fling during that scroll, leaving the screen, a recreation), or made while a share is in flight, emits nothing. `completed_exercise_opened` (Completed exercise list removed) and `completed_summary_opened` (hero Statistics button removed by the user's decision; the Statistics dialog opens only from Trainings) are deleted without an alias | **Keep; one description updated; live reconciliation verified on 2026-10-25; nothing to retire.** Live Chrome inspection confirmed account `Grippo Analytics` (`379805710`), property `grippo-e3960` (`519002689`, Property details), Android `App Android` / `com.grippo.android` (`13265245917`, `G-0YXY3NRJ7J`) and iOS `App IOS` / `com.grippo.app` (`13348167981`, `G-PBKNNR7JHE`), matching the synced Firebase configs; web `Site` (`13688917680`) is separate. Neither training description enumerated codes. `Grippo Training action` limited the population to recording and editing; under the user's authorization its description became `Наблюдаемое действие при записи, редактировании и на экране итогов тренировки (completed_*). Намерение не подтверждает сохранение или отправку.` (143 of 150 characters), saved and re-read after a full reload in the list and the editor with the same name, Event scope and `training_action` parameter; Property change history lists only this modification. `Grippo Training operation` lists no complete code set (its contract wording was later corrected, see the release-status reconciliation row), and the `training_operation` key separates the Training `refresh_trainings` from the same value under `home_operation` and the unregistered `trainings_operation`/`statistics_operation`. Custom definitions remain 13 dimensions, the metric `Grippo Operation duration ms` (Event, `duration_ms`, Milliseconds) and no calculated metric. Both mobile streams have no modifications and only the two create rules; `grippo_training_create_completed`, re-opened on both, keeps `event_name=training_task_completed` AND `training_operation=create_training` with Copy parameters, so the new operation codes cannot match it (28-day check: 21 derived events = 21 source `create_training` completions). The seven key marks are unchanged; the two default audiences, nine segments and ten comparisons have no event or `training_action` condition. Published `Grippo — главное` (`16123752488`) keeps Acquisition/Engagement/Retention; of 39 Library reports only the eight Grippo App items are custom and none filters on `training_action` or a Completed code. `События и экраны` (`16123956244`) keeps only Platform regex `^(Android\|iOS)$` and no allowlist, so every Completed code stays eligible; `Профиль и тренировки` (`16123745061`) keeps its exact two-derived-event regex AND the mobile regex. Funnel `16123817061` keeps exact `grippo_profile_created` → indirectly `grippo_training_create_completed`, closed, web excluded; exploration `f6N3SASFRz-xExkk-sYHeQ` keeps the closed funnel tab with the enabled 7 Days constraint and `Создание тренировки — события` with `training_operation exactly matches create_training`, the mobile Platform regex and `^training_task_(started\|completed\|failed\|interrupted)$`. No admin object references `completed_exercise_opened` or `completed_summary_opened`; their received events (28 days: 5 from one GA4 user on app version 2.0; 8 from two GA4 users on 2.0 and 2.2) remain raw history. The same window shows processed receipt of `completed_baseline_selected`, `completed_goal_opened`, `completed_metric_opened`, `completed_share_clicked` (app version 2.0) and of `refresh_trainings`, `load_records`, `share_recap` (one GA4 user); `completed_streak_opened`, `completed_add_goal_clicked` and `completed_record_opened` were not yet received, and app version 2.1 carries no `training_action` value. Release status is resolved in the release boundary above: the store builds (iOS 2.1, Android 2.0) send no `training_action`, so the 28-day traffic (202 active users, iOS 131 and Android 65, 51 from `google-play / organic`, 129 on iOS 2.1) cannot carry the deleted codes; both were only ever emitted by the owner's test builds and need no alias. Delivery from a build with the scroll-and-settle share change, Realtime and DebugView remain unobserved. |
 | `draft_training_continue_clicked` / `draft_training_start_new_clicked` v1 (empty parameters); `draft_training_task_started/completed/failed/interrupted` v1 with `draft_training_operation=delete_draft` and terminal `duration_ms` | Source guards reject callbacks while opening or deleting the draft, before click observations or deletion operations; an absent draft closes programmatically without a dismissal observation. Schemas and encoders are unchanged. Current Android/iOS definitions, stream rules, key events, reports, funnels, audiences and SDK receipt are uninspected under the requested source-only review; no admin action or synchronization conclusion is established. |
 | Random operation IDs, secrets, unused identity/context | No custom definitions. `launch_source` remains unknown without a real caller; do not interpret it as attribution. |
 | Built-in `dialog_viewed` (`dialog_name`) | Retired from `BUILT_IN_EVENTS` on 2026-10-15 by the owner's decision. Never emitted by any build in repository history (no constructor call in any commit), so no received data from this codebase exists. The 2026-10-14 live review recorded no definition, derived rule, key event, dimension or report for it. Current admin state not inspected: the owner explicitly restricted this change to source-only scope. |
-| Legacy `registration_completed`, `workout_started`, `workout_completed` | Historical observations have initialization/entry semantics; do not merge them with the new successful-operation population. Raw history retained. |
+| Release-status reconciliation (2026-10-25, authorized by the owner's "исправь все в админке") | **Updated; saved and re-read after a full reload.** Identity as in the release boundary; streams `13265245917` / `13348167981`, web `13688917680` separate. Corrected prerelease wording in the Library descriptions of `16123956244`, `16123745061`, `16123817061` and `16123829170`; the current Reports snapshot is renamed `Grippo — обзор приложения` with a description separating store builds (real users, legacy events) from the owner's test builds (typed catalog); `16123774523` is renamed `Архив — старая воронка first_open` (its first_open step counts store and test installs, steps 2–3 only test builds, so it is no conversion); the 2026-10-14 annotation is renamed `Новый каталог событий: только тесты владельца`. Stale contract wording corrected in `Grippo Training operation` (completion requires the ID and the refreshed cache) and `Grippo Profile operation` (`refresh_goal` may complete without a goal; `save_goal` returns after the write and cache); names, Event scope and parameters unchanged. Rules, key events, filters, collection membership, audiences, segments, comparisons, the `Internal Traffic` data filter (Testing), retention (event data 2 months, user data 14 months) and reporting identity are unchanged; extending event-data retention is left to the owner as a privacy decision. |
+| Legacy `registration_completed`, `workout_started`, `workout_completed`, `start_workout_empty/suggestion/recent` (store builds; removed from source 2026-10-11) | **Keep; no custom admin consumer; released-user data.** Fired on screen entry before any result: the final profile-setup screen (before creation), the recording screen (new, edit, draft) and the completion screen (before the save, including edits); repeated on recreation, so they are upper bounds, never successes. 28 days to 2026-10-24: first_open 167 users; registration_completed 56 events / 51 users; workout_started 159 / 34; workout_completed 60 / 5; start_workout_empty 62 / 19; start_workout_recent 18 / 3. Since 2026-01-01: 1,156 first_open users, 451 registration_completed, 320 workout_started, 89 workout_completed. Never merge with `grippo_*` counts. |
 | Goal refresh with Boolean result | No goal-success key event: a goal refresh may return false for an absent goal; saving a goal completes only after valid cache hydration. |
 | `start_training_task_started/completed/failed/interrupted` v1 with `start_training_operation=build_options` and terminal `duration_ms`; separate `start_training_option_confirmed` v1 with `option=empty/preset/recent` | BuildOptions retains its local boundary: one cache snapshot, the complete preset use case, mapping and State update. The required remote refresh precedes this operation; its throwing command propagates failures through the shared error pipeline, before any BuildOptions fact. Completion may contain no generated preset and proves neither availability nor workout creation. Custom selection is available independently while options load; unknown keys emit no selection observation. Schemas/encoders are unchanged. Current Android/iOS stream rules, definitions, key events, reports, funnels, audiences and SDK receipt are uninspected under the requested source-only review. The saved `option` registration is historical evidence, not current reconciliation; no admin action, generation-success key or availability rate is inferred. |
 | SDK identity / screen context | No app caller updates analytics identity; current user counts are GA4 identities, not registered accounts. Native SDK screen context does not prove an operation's owner/origin; operation payload deliberately omits the app's navigation context. |
@@ -310,8 +324,8 @@ Saved and inspected reporting configuration:
   Retention. Engagement now opens the two working reports below. The save
   confirmations named only this published collection. Business objectives and
   Data import stay unpublished; no deletion.
-- Current Reports snapshot is `Grippo — обзор (до релиза: тесты)`, with a saved
-  description identifying personal testing. Four hero metrics and seven useful
+- Current Reports snapshot is `Grippo — обзор приложения`, with a saved
+  description separating store builds from the owner's test builds. Four hero metrics and seven useful
   cards cover activity, sources, platform, app versions, retention and stability.
   `Grippo — приложения` comparison selects Android/iOS. Stability
   card is unavailable with a comparison and can be viewed without it / in Firebase.
@@ -444,10 +458,14 @@ Saved and inspected reporting configuration:
   not establish average-metric availability in the native UI. Any derived average
   needs duration occurrences from the same filtered population; Event count with
   started/unrelated events is not a valid denominator.
-- Old saved funnel `16123774523` is labelled `Архив — тестовые первые запуски`,
-  explicitly describes its first_open/consent/test limitations, and is unpublished.
-- Annotation dated October 14, 2026, `До релиза: личное тестирование`, was saved
-  and read back in Admin > Annotations. It records review status, not a launch date.
+- Old saved funnel `16123774523` is labelled `Архив — старая воронка first_open`;
+  its description states that step 1 counts all first launches (store and test
+  builds) while steps 2–3 count only the owner's test builds, so it is no
+  conversion; it is unpublished.
+- Annotation dated October 14, 2026, now `Новый каталог событий: только тесты
+  владельца` (the app is in the stores; the new event catalog since 2026-10-11
+  comes only from the owner's test builds), was saved and read back in Admin >
+  Annotations. It records review status, not a launch date.
 
 Outstanding / verification limits:
 
@@ -592,10 +610,11 @@ through October 13). The earlier unassigned Library export retains read-only ste
 labels and its verified explanatory description; the current Explore is the
 supported 7-day path. No event rule, schema, metric or population changed.
 Source/diff review, three skill frontmatters and agent YAML, 71 instruction links,
-23 coverage links and `git diff --check` passed. Current literal naming checks
-cover 147 feature schemas plus one toolkit built-in, `screen_view`, after the
-2026-10-15 retirement of the built-in dialog schema (148 unique, all v1, longest
-39 characters). These checks and saved admin readback do not verify current mobile
+23 coverage links and `git diff --check` passed. The literal naming checks
+of that review covered 147 feature schemas plus one toolkit built-in, `screen_view`,
+after the 2026-10-15 retirement of the built-in dialog schema (148 unique, all v1,
+longest 39 characters); the 2026-10-25 recount is in the source inventory above.
+These checks and saved admin readback do not verify current mobile
 SDK receipt; the runtime limitations above remain.
 
 A subsequent independent review corrected the canonical collection reference's
@@ -621,6 +640,7 @@ exact two-derived-event regex, while diagnostics retained received legacy histor
 A fresh fourth reviewer traced feature-change, prerelease-report, editorial-only
 and retirement requests through the canonical workflow and found no defect.
 
-The requested prerelease admin configuration and its usable reporting paths are
-saved and verified. Actual delivery of the current mobile schema and derived
+The admin configuration requested in that review and its usable reporting paths
+were saved and verified; its prerelease wording was corrected later (release-status
+reconciliation row). Actual delivery of the current mobile schema and derived
 outcomes remains a separate unverified runtime check on both platforms.

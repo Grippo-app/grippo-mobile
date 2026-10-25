@@ -165,7 +165,7 @@ private fun GoalScoreLine(
     Text(
         modifier = modifier,
         text = text,
-        style = AppTokens.typography.h2(),
+        style = AppTokens.typography.h3(),
         color = numberColor,
     )
 }

@@ -7,8 +7,7 @@ verification limits: [current analytics contract review](../COVERAGE.md#current-
 admin reconciliation: [Live GA4 setup review](../COVERAGE.md#live-ga4-setup-review--2026-10-14).
 Rows describe the current code of `:ui-dialog-features:confirmation` and
 `:analytics:confirmation`; replace them when that code changes. Typed dismissal
-observations use DismissRequested with `dismiss_requested` wire names; the app is
-unreleased and every schema is version 1.
+observations use DismissRequested with `dismiss_requested` wire names; the typed catalog is not yet in a store build and every schema is version 1.
 
 ## Surfaces and screen hooks
 

@@ -8,7 +8,7 @@ admin reconciliation: [Live GA4 setup review](../COVERAGE.md#live-ga4-setup-revi
 Rows describe the current code of `:ui-screen-features:exercises`, `ExercisesRouter`
 in `:ui-screen-features:screen-api` and `:analytics:exercises`; replace them when
 that code changes. Typed dismissal observations use DismissRequested with
-`dismiss_requested` wire names; the app is unreleased and every schema is version 1.
+`dismiss_requested` wire names; the typed catalog is not yet in a store build and every schema is version 1.
 
 ## Surfaces and screen hooks
 

@@ -33,7 +33,7 @@ import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
 import com.grippo.core.state.metrics.performance.stubPerformanceTrendHistory
 import com.grippo.design.components.datetime.DialogRangeHeader
 import com.grippo.design.components.divider.ContentDivider
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.metrics.performance.PerformanceMetricCard
 import com.grippo.design.components.metrics.performance.PerformanceTrendHistoryCard
 import com.grippo.design.components.utils.AnchorScrollBehavior
@@ -90,7 +90,7 @@ private fun PerformanceTrendDetailsContent(
     val hasChart = history != null && history.count { it.metric.chartValue() != null } >= 2
     val listState = rememberAnchoredLazyListState(behavior = AnchorScrollBehavior.Animated)
 
-    BottomOverlayContainer(
+    OverlayContainer(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
         overlay = AppTokens.colors.background.dialog,

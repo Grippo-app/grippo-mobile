@@ -25,7 +25,7 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.inputs.InputHeight
 import com.grippo.design.components.inputs.InputWeight
 import com.grippo.design.components.toolbar.Leading
@@ -103,7 +103,7 @@ internal fun ProfileBodyScreen(
         end = AppTokens.dp.screen.horizontalPadding,
     )
 
-    BottomOverlayContainer(
+    OverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),

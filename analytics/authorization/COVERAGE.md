@@ -10,8 +10,7 @@ in `:ui-screen-features:screen-api` (`RootRouter.Auth`, `AuthRouter`,
 `AuthProcessRouter`, `ProfileCreationRouter`) and `:analytics:authorization`;
 replace them when that code changes. Typed dismissal observations use
 DismissRequested with `dismiss_requested` wire codes; operation schemas omit
-visible-screen context and correlate outcomes by `operation_id`; the app is
-unreleased and every schema is version 1. The historical route-entry reason codes
+visible-screen context and correlate outcomes by `operation_id`; the typed catalog is not yet in a store build and every schema is version 1. The historical route-entry reason codes
 (`AuthorizationEntryPoint`) are no longer part of the contract.
 
 ## Startup and navigation
@@ -202,10 +201,10 @@ schemas:
 Reporting decision: height/weight accepted picker results belong exclusively to
 `auth_picker_confirmed`; `auth_input_changed` observes only existing text
 validation-status transitions for email, password and name. Dismissal action
-codes use `dismiss_requested` consistently. The app has not been released, so no
-reporting population requires a migration; legacy self-test populations
-(`registration_completed`, `workout_*`) are retained separately from the current
-operation definitions. Durations and failure populations across older installed
+codes use `dismiss_requested` consistently. The typed catalog has not shipped in a
+store build, so no typed reporting population requires a migration; the legacy
+store-build events (`registration_completed`, `workout_*`) are retained separately
+from the current operation definitions. Durations and failure populations across older installed
 builds are not an unchanged baseline, because exercise-example refresh failures
 now belong to Home. Admin consumers of `auth_attempt_*`, `auth_session_check_*`,
 `profile_operation_*`, `auth_control_clicked` and `screen_view` are reconciled in

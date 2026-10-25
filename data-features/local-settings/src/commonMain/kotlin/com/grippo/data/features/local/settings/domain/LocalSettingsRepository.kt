@@ -15,7 +15,7 @@ internal interface LocalSettingsRepository {
     suspend fun setDefaultAnalyticsConsent(granted: Boolean): Unit
     suspend fun setAnalyticsConsent(granted: Boolean): Unit
 
-    fun observeRange(): Flow<Range?>
+    fun observeRange(): Flow<Range>
     suspend fun setRange(range: Range?): Unit
 
     fun observeLastGoalSuggestionShownAt(): Flow<LocalDateTime?>

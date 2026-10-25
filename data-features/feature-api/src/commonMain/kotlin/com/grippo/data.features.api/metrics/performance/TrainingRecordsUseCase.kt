@@ -14,26 +14,20 @@ public class TrainingRecordsUseCase(
 ) {
 
     public suspend fun fromTraining(training: Training): List<TrainingRecord> {
-        val exercises = training.exercises.filter { exercise ->
-            exercise.id.isNotBlank() && exercise.exerciseExample.id.isNotBlank()
-        }
-        val exercisesByExample = exercises.groupBy { exercise -> exercise.exerciseExample.id }
-        val achievementsByExample = coroutineScope {
-            exercisesByExample.keys
-                .map { exampleId ->
+        val exercisesByExample = training.exercises.groupBy { exercise -> exercise.exerciseExample.id }
+
+        val records = coroutineScope {
+            exercisesByExample
+                .map { (exampleId, sameExample) ->
                     async {
                         val achievements = exerciseMetricsFeature.getAchievementsByExampleId(exampleId)
-                        exampleId to achievements
+                        recordOf(exercises = sameExample, achievements = achievements)
                     }
                 }
                 .awaitAll()
-                .toMap()
         }
 
-        return exercisesByExample.mapNotNull { (exampleId, sameExample) ->
-            val achievements = achievementsByExample[exampleId].orEmpty()
-            recordOf(exercises = sameExample, achievements = achievements)
-        }
+        return records.filterNotNull()
     }
 
     private fun recordOf(exercises: List<Exercise>, achievements: List<Achievement>): TrainingRecord? {

@@ -21,7 +21,7 @@ import com.grippo.core.state.metrics.volume.stubTotal
 import com.grippo.core.state.metrics.volume.stubVolumeSeries
 import com.grippo.design.components.chart.internal.BarChartXAxisLabels
 import com.grippo.design.components.datetime.DialogRangeHeader
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingMode
 import com.grippo.design.components.metrics.volume.TrainingTotalSection
@@ -53,7 +53,7 @@ internal fun StatisticsScreen(
         }
     }
 
-    BottomOverlayContainer(
+    OverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),

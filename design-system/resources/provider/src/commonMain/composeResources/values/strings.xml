@@ -71,7 +71,7 @@
     <string name="performance_trend_desc_intensity">Average working weight per weighted repetition. Exercise choice affects this value; it does not measure effort or strength on its own.</string>
     <string name="sets_value">Sets (%1$s)</string>
     <string name="percent">%</string>
-    <string name="joined_pair">%1$s · %2$s</string>
+    <string name="joined_pair">%1$s&#160;·&#160;%2$s</string>
     <string name="selected">Selected</string>
     <string name="cm">cm</string>
     <string name="apply_btn">Apply</string>
@@ -109,7 +109,7 @@
     <string name="training_recap_verdict_stable">Right on your level</string>
     <string name="training_recap_verdict_declined">A lighter session</string>
     <string name="training_recap_verdict_first">Your starting point</string>
-    <string name="training_recap_first_description">Your next workouts will be compared with this one</string>
+    <string name="training_recap_first_description">The baseline for your next workouts</string>
     <string name="total">Total</string>
     <string name="per_group">Per group</string>
     <string name="per_muscle">Per muscle</string>

@@ -22,7 +22,7 @@ import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
@@ -144,7 +144,7 @@ private fun StartTrainingContent(
         )
     }
 
-    BottomOverlayContainer(
+    OverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
             .weight(weight = 1f, fill = true),

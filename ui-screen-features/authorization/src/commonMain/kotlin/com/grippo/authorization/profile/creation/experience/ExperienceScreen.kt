@@ -27,7 +27,7 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.cards.selectable.CheckSelectableCard
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -80,7 +80,7 @@ internal fun ExperienceScreen(
             end = AppTokens.dp.screen.horizontalPadding,
         )
 
-        BottomOverlayContainer(
+        OverlayContainer(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),

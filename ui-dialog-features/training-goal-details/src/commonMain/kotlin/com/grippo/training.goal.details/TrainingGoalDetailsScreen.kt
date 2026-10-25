@@ -40,7 +40,7 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.metrics.profile.goal.GoalCardStyle
 import com.grippo.design.components.metrics.profile.goal.GoalFitDriftingCard
@@ -107,7 +107,7 @@ private fun TrainingGoalDetailsContent(
     val notice = state.notice()
     val listState = rememberAnchoredLazyListState(behavior = AnchorScrollBehavior.Animated)
 
-    BottomOverlayContainer(
+    OverlayContainer(
         modifier = modifier,
         contentPadding = PaddingValues(
             start = AppTokens.dp.dialog.horizontalPadding,

@@ -39,7 +39,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.datetime.DialogRangeHeader
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCard
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardStyle
@@ -109,7 +109,7 @@ private fun MuscleLoadingDetailsContent(
     }
     val listState = rememberAnchoredLazyListState(behavior = AnchorScrollBehavior.Animated)
 
-    BottomOverlayContainer(
+    OverlayContainer(
         modifier = modifier,
         overlay = AppTokens.colors.background.dialog,
         content = { containerModifier, resolvedPadding ->

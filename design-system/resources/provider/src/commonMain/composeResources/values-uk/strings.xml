@@ -71,7 +71,7 @@
     <string name="performance_trend_desc_intensity">Середня робоча вага на повторення з вагою. Вибір вправ впливає на значення; саме по собі воно не показує зусилля чи зростання сили.</string>
     <string name="sets_value">Підходи (%1$s)</string>
     <string name="percent">%</string>
-    <string name="joined_pair">%1$s · %2$s</string>
+    <string name="joined_pair">%1$s&#160;·&#160;%2$s</string>
     <string name="selected">Обрано</string>
     <string name="cm">см</string>
     <string name="apply_btn">Застосувати</string>
@@ -109,7 +109,7 @@
     <string name="training_recap_verdict_stable">На своєму рівні</string>
     <string name="training_recap_verdict_declined">Легке тренування</string>
     <string name="training_recap_verdict_first">Точка відліку</string>
-    <string name="training_recap_first_description">Наступні тренування порівнюватимуться з цим</string>
+    <string name="training_recap_first_description">Основа для наступних тренувань</string>
     <string name="total">Всього</string>
     <string name="per_group">По групам</string>
     <string name="per_muscle">По м’язах</string>

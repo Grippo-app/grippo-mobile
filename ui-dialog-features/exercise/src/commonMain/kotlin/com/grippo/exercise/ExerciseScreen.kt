@@ -33,7 +33,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -59,7 +59,7 @@ internal fun ExerciseScreen(
     loaders: ImmutableSet<ExerciseLoader>,
     contract: ExerciseContract,
 ) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
-    BottomOverlayContainer(
+    OverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
             .weight(weight = 1f, fill = false),

@@ -9,7 +9,6 @@ import com.grippo.core.state.metrics.performance.TrainingRecordState
 import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.core.state.metrics.volume.WeeklyVolumeState
 import com.grippo.core.state.trainings.TrainingState
-import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
@@ -25,7 +24,7 @@ internal data class TrainingCompletedState(
     @Transient
     val muscleLoad: MuscleLoadSummaryState? = null,
     @Transient
-    val range: DateRangeFormatState = DateRangeFormatState.Empty(kind = DateRangeKind.Last30Days),
+    val range: DateRangeFormatState = DateRangeFormatState.Empty(),
     @Transient
     val performance: PerformanceComparisonState? = null,
     @Transient

@@ -28,7 +28,7 @@ import com.grippo.core.state.muscles.stubMuscleGroup
 import com.grippo.design.components.cards.selectable.ToggleSelectableCard
 import com.grippo.design.components.cards.selectable.ToggleSelectableCardStyle
 import com.grippo.design.components.divider.ContentDivider
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
@@ -57,7 +57,7 @@ public fun MuscleSelection(
     }
     val selectedIds = remember(selectedMuscleIds) { selectedMuscleIds.toSet() }
 
-    BottomOverlayContainer(
+    OverlayContainer(
         modifier = modifier,
         overlay = AppTokens.colors.background.screen,
         bottom = bottom,

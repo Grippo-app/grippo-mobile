@@ -77,14 +77,12 @@ import com.grippo.design.resources.provider.performance_growth_before
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlin.time.Duration.Companion.minutes
 
 private val comparisonDisplayOrder: ImmutableList<PerformanceMetricTypeState> = persistentListOf(
     PerformanceMetricTypeState.Volume,
     PerformanceMetricTypeState.Repetitions,
     PerformanceMetricTypeState.Intensity,
     PerformanceMetricTypeState.Density,
-    PerformanceMetricTypeState.Duration,
 )
 
 private const val GROWTH_REVEAL_DURATION_MS = 900
@@ -471,23 +469,17 @@ public fun PerformanceComparisonCardSkeleton(modifier: Modifier = Modifier) {
     val chipHeight = chipLine + AppTokens.dp.metrics.status.verticalPadding * 2
     val barsHeight = AppTokens.dp.metrics.charts.indicator.height * 2 + textGap
     val blockFrameHeight = AppTokens.dp.contentPadding.subContent * 3
-    val votingBlockHeight = maxOf(
+    val blockHeight = maxOf(
         labelColumnHeight + textGap + chipHeight,
         valueLine + textGap + deltaLine,
         AppTokens.dp.metrics.overview.detailsIcon,
     ) + barsHeight + blockFrameHeight
-    val durationBlockHeight = maxOf(
-        labelColumnHeight,
-        valueLine,
-        AppTokens.dp.metrics.overview.detailsIcon,
-    ) + barsHeight + blockFrameHeight
-    val votingBlocks = comparisonDisplayOrder.size - 1
     val panelSpacer = AppTokens.dp.metrics.panel.large.spacer
 
     SkeletonPanel(
         modifier = modifier,
         contentHeight = titleLine + panelSpacer + AppTokens.dp.segment.outline.height + panelSpacer +
-            votingBlockHeight * votingBlocks + durationBlockHeight +
+            blockHeight * comparisonDisplayOrder.size +
             AppTokens.dp.divider.thickness * (comparisonDisplayOrder.size - 1),
         style = SkeletonPanelStyle.Large,
     )
@@ -516,7 +508,6 @@ private fun previewMixedMetrics(): ImmutableList<PerformanceMetricState> {
         status = PerformanceTrendStatusState.Stable,
     )
     return persistentListOf(
-        stubs.filterIsInstance<PerformanceMetricState.Duration>().first(),
         stableDensity,
         declinedIntensity,
         stubs.filterIsInstance<PerformanceMetricState.Volume>().first(),
@@ -588,13 +579,7 @@ private fun previewFarBelowBestMetrics(): ImmutableList<PerformanceMetricState> 
                 status = PerformanceTrendStatusState.Stable,
             )
 
-            is PerformanceMetricState.Duration -> metric.copy(
-                currentVsAveragePercentage = -6.0,
-                current = 47.minutes,
-                average = 50.minutes,
-                best = 120.minutes,
-                status = PerformanceTrendStatusState.Stable,
-            )
+            is PerformanceMetricState.Duration -> metric
 
             is PerformanceMetricState.Repetitions -> metric.copy(
                 currentVsAveragePercentage = 8.0,
@@ -730,7 +715,6 @@ private fun PerformanceComparisonCardLargeAndFractionalPreview() {
         val stubs = stubPerformanceMetrics()
         val volume = stubs.filterIsInstance<PerformanceMetricState.Volume>().first()
         val repetitions = stubs.filterIsInstance<PerformanceMetricState.Repetitions>().first()
-        val duration = stubs.filterIsInstance<PerformanceMetricState.Duration>().first()
         val emptyDensity = stubEmptyPerformanceMetrics().filterIsInstance<PerformanceMetricState.Density>().first()
         PerformanceComparisonCard(
             modifier = Modifier.fillMaxWidth(),
@@ -749,12 +733,6 @@ private fun PerformanceComparisonCardLargeAndFractionalPreview() {
                     currentVsAveragePercentage = 11.2583,
                 ),
                 emptyDensity,
-                duration.copy(
-                    current = 1_439.minutes,
-                    average = 20.minutes,
-                    best = 1_439.minutes,
-                    currentVsAveragePercentage = 7_095.0,
-                ),
             ),
             baseline = PerformanceBaselineState.Average,
             onBaselineSelect = {},

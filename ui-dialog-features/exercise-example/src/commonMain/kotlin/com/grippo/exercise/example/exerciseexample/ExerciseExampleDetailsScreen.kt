@@ -27,7 +27,7 @@ import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
@@ -61,7 +61,7 @@ internal fun ExerciseExampleDetailsScreen(
 
     val basePadding = PaddingValues(top = AppTokens.dp.dialog.top)
 
-    BottomOverlayContainer(
+    OverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),

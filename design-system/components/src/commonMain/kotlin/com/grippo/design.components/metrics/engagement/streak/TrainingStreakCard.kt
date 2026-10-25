@@ -216,7 +216,6 @@ private fun TrainingStreakGrowth(
 ) {
     val length = value.featured.length
     val previousLength = previous?.featured?.length
-    val dropped = previousLength != null && length < previousLength
 
     var revealed by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) { revealed = true }
@@ -226,18 +225,12 @@ private fun TrainingStreakGrowth(
         label = STREAK_GROWTH_LABEL,
     )
 
-    val headlineColor = when {
+    val lengthColor = when {
         previousLength == null || length == previousLength -> AppTokens.colors.text.primary
         length > previousLength -> AppTokens.colors.semantic.success
         else -> AppTokens.colors.semantic.decline
     }
     val nextTrainingLine = value.nextTrainingLine()
-    val progressColors = if (dropped) {
-        AppTokens.colors.charts.indicator.decline
-    } else {
-        value.featured.mood.indicatorColors()
-    }
-    val progressValue = value.featured.progressPercent.coerceIn(0, 100) / 100f
 
     MetricSectionPanel(
         modifier = modifier,
@@ -253,7 +246,7 @@ private fun TrainingStreakGrowth(
             Icon(
                 modifier = Modifier.size(AppTokens.dp.metrics.overview.rhythmIcon),
                 imageVector = AppTokens.icons.Flame,
-                tint = progressColors.dominant,
+                tint = value.featured.mood.indicatorColors().dominant,
                 contentDescription = null,
             )
             Column(
@@ -263,7 +256,7 @@ private fun TrainingStreakGrowth(
                 Text(
                     text = value.featured.overviewHeadline(),
                     style = AppTokens.typography.h4(),
-                    color = headlineColor,
+                    color = AppTokens.colors.text.primary,
                 )
                 Text(
                     text = value.featured.overviewCadence(),
@@ -273,19 +266,13 @@ private fun TrainingStreakGrowth(
             }
         }
 
-        LineIndicator(
-            modifier = Modifier.fillMaxWidth(),
-            progress = progressValue,
-            colors = progressColors,
-        )
-
         if (previousLength != null || nextTrainingLine != null) {
             Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
                 if (previousLength != null) {
                     StreakOutcomeLine(
                         previousLength = previousLength,
                         length = length,
-                        currentColor = headlineColor,
+                        currentColor = lengthColor,
                         currentLengthAlpha = currentLengthAlpha,
                     )
                 }
@@ -326,13 +313,13 @@ private fun StreakOutcomeLine(
             ValueSlot.marker(0),
         )
         val line = AppTokens.strings.res(Res.string.joined_pair, outcome, change)
-        val lengthColor = currentColor.copy(alpha = currentColor.alpha * currentLengthAlpha.value)
+        val revealedColor = currentColor.copy(alpha = currentColor.alpha * currentLengthAlpha.value)
 
         buildValueSlotString(
             sentence = line,
             slots = listOf(
                 ValueSlot(value = length.toString()) { current ->
-                    withStyle(SpanStyle(color = lengthColor)) { append(current) }
+                    withStyle(SpanStyle(color = revealedColor)) { append(current) }
                 },
             ),
         )
@@ -378,7 +365,7 @@ public fun TrainingStreakCardSkeleton(
 
         is TrainingStreakCardStyle.Growth -> {
             val headlineHeight = maxOf(AppTokens.dp.metrics.overview.rhythmIcon, headlineLine + textGap + cadenceLine)
-            headerHeight + headlineHeight + indicatorHeight + captionLine + textGap + captionLine + spacer * 3
+            headerHeight + headlineHeight + captionLine + textGap + captionLine + spacer * 2
         }
     }
 
@@ -556,7 +543,7 @@ private fun TrainingStreakCardGrowthExtendedPreview() {
             style = TrainingStreakCardStyle.Growth(
                 previous = streak.copy(
                     totalActiveDays = streak.totalActiveDays - 1,
-                    featured = featured.copy(length = featured.length - 1, progressPercent = 80),
+                    featured = featured.copy(length = featured.length - 1),
                 ),
             ),
         )
@@ -585,7 +572,7 @@ private fun TrainingStreakCardGrowthResetPreview() {
         TrainingStreakCard(
             modifier = Modifier.fillMaxWidth(),
             value = streak.copy(
-                featured = featured.copy(length = 1, mood = TrainingStreakMood.Restart, progressPercent = 25),
+                featured = featured.copy(length = 1, mood = TrainingStreakMood.Restart),
             ),
             style = TrainingStreakCardStyle.Growth(previous = streak.copy(featured = featured.copy(length = 6))),
         )

@@ -50,7 +50,7 @@ import com.grippo.design.components.dragdrop.rememberDragDropListState
 import com.grippo.design.components.empty.IllustratedEmptyState
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.illustration.IllustrationStyle
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.swipe.SwipeRevealAction
@@ -159,7 +159,7 @@ internal fun TrainingExerciseScreen(
 
     val basePadding = PaddingValues(top = AppTokens.dp.contentPadding.block)
 
-    BottomOverlayContainer(
+    OverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),

@@ -40,7 +40,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
 private const val RECORD_KINDS_SEPARATOR = "\u00A0· "
-
 private const val NO_BREAK_SPACE = '\u00A0'
 
 @Composable
@@ -54,11 +53,24 @@ public fun TrainingRecordsCard(
         style = MetricSectionPanelStyle.Large,
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
-            Text(
-                text = AppTokens.strings.res(Res.string.training_records_title),
-                style = AppTokens.typography.h5(),
-                color = AppTokens.colors.text.primary,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = AppTokens.strings.res(Res.string.training_records_title),
+                    style = AppTokens.typography.h5(),
+                    color = AppTokens.colors.text.primary,
+                )
+                Icon(
+                    modifier = Modifier.size(AppTokens.dp.metrics.performance.records.trophyIcon),
+                    imageVector = AppTokens.icons.Trophy,
+                    tint = AppTokens.colors.semantic.success,
+                    contentDescription = null,
+                )
+            }
             Text(
                 text = AppTokens.strings.res(Res.string.training_records_description),
                 style = AppTokens.typography.b13Med(),
@@ -99,7 +111,6 @@ private fun TrainingRecordRow(
             .scalableClick(onClick = onClick)
             .padding(vertical = AppTokens.dp.contentPadding.subContent),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
         ExerciseExampleImage(
             value = record.exerciseExample.imageUrl,
@@ -124,14 +135,9 @@ private fun TrainingRecordRow(
         }
 
         Icon(
-            modifier = Modifier.size(AppTokens.dp.metrics.performance.records.trophyIcon),
-            imageVector = AppTokens.icons.Trophy,
-            tint = AppTokens.colors.semantic.success,
-            contentDescription = null,
-        )
-
-        Icon(
-            modifier = Modifier.size(AppTokens.dp.metrics.overview.detailsIcon),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .size(AppTokens.dp.metrics.overview.detailsIcon),
             imageVector = AppTokens.icons.ArrowRight,
             tint = AppTokens.colors.icon.secondary,
             contentDescription = null,
@@ -148,7 +154,7 @@ public fun TrainingRecordsCardSkeleton(modifier: Modifier = Modifier) {
     val kindsLine = rememberTextHeight(style = AppTokens.typography.b11Med(), textMeasurer = textMeasurer)
 
     val textGap = AppTokens.dp.contentPadding.text
-    val headerHeight = titleLine + textGap + descriptionLine
+    val headerHeight = maxOf(titleLine, AppTokens.dp.metrics.performance.records.trophyIcon) + textGap + descriptionLine
     val rowHeight = maxOf(
         AppTokens.dp.exerciseExampleImage.small.size,
         nameLine + textGap + kindsLine,

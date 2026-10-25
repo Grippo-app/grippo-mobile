@@ -2,15 +2,11 @@ package com.grippo.training.completed.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
@@ -34,7 +30,6 @@ import com.grippo.design.resources.provider.loading
 internal fun TrainingCompletedSkeleton(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues,
-    listState: LazyListState,
 ) {
     val loadingDescription = AppTokens.strings.res(Res.string.loading)
     val cardModifier = Modifier
@@ -46,14 +41,10 @@ internal fun TrainingCompletedSkeleton(
             contentDescription = loadingDescription
             progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
         },
-        state = listState,
         contentPadding = contentPadding,
     ) {
         item(key = "completion_hero_skeleton") {
-            TrainingRecapHeroSkeleton(
-                modifier = Modifier.fillMaxWidth(),
-                windowInsets = WindowInsets.statusBars,
-            )
+            TrainingRecapHeroSkeleton(modifier = Modifier.fillMaxWidth())
 
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
         }
@@ -95,7 +86,6 @@ private fun TrainingCompletedSkeletonPreview() {
         TrainingCompletedSkeleton(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = AppTokens.dp.contentPadding.content),
-            listState = rememberLazyListState(),
         )
     }
 }

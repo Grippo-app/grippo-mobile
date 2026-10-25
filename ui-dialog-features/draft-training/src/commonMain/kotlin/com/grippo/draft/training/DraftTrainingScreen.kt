@@ -25,7 +25,8 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.divider.ContentDivider
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
+import com.grippo.design.components.frames.OverlayStyle
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
@@ -115,7 +116,7 @@ internal fun DraftTrainingScreen(
         }
     }
 
-    BottomOverlayContainer(
+    OverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f, false),
@@ -126,7 +127,7 @@ internal fun DraftTrainingScreen(
             bottom = AppTokens.dp.contentPadding.block,
         ),
         overlay = AppTokens.colors.background.dialog,
-        fadeHeight = AppTokens.dp.contentPadding.content,
+        bottomStyle = OverlayStyle.Stacked(fadeHeight = AppTokens.dp.contentPadding.content),
         content = { containerModifier, resolvedPadding ->
             LazyColumn(
                 modifier = containerModifier.fillMaxWidth(),
@@ -178,7 +179,6 @@ internal fun DraftTrainingScreen(
                     .padding(
                         start = AppTokens.dp.dialog.horizontalPadding,
                         end = AppTokens.dp.dialog.horizontalPadding,
-                        top = AppTokens.dp.contentPadding.content,
                         bottom = AppTokens.dp.dialog.bottom,
                     ),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),

@@ -9,8 +9,7 @@ Rows describe the current code of `:ui-screen-features:home`, `HomeRouter` in
 `:ui-screen-features:screen-api` and `:analytics:home`; replace them when that
 code changes. Typed dismissal observations use DismissRequested with
 `dismiss_requested` wire names; operation schemas omit visible-screen context and
-correlate outcomes by `operation_id`; the app is unreleased and every schema is
-version 1.
+correlate outcomes by `operation_id`; the typed catalog is not yet in a store build and every schema is version 1.
 
 ## Entry path
 

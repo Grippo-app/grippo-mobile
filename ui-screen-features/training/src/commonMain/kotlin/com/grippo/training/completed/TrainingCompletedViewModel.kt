@@ -53,7 +53,6 @@ import com.grippo.state.domain.metrics.performance.toDomain
 import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.date.utils.DateRange
-import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.date.utils.currentDateFlow
 import com.grippo.toolkit.share.ImageSharer
@@ -121,6 +120,11 @@ internal class TrainingCompletedViewModel(
             .mapLatest(::loadRecords)
             .safeLaunch(processing = Processing.Infinity)
 
+        savedIds
+            .take(1)
+            .mapLatest { refreshExamples() }
+            .safeLaunch(processing = Processing.Infinity)
+
         localSettingsFeature.observeRange()
             .combine(currentDateFlow()) { range, _ -> range }
             .onEach(::provideRange)
@@ -132,16 +136,13 @@ internal class TrainingCompletedViewModel(
             .onEach(::provideWeeklyVolume)
             .safeLaunch()
 
-        // Period metrics wait for the saved ID so the just-saved workout is already in the cache.
-        val savedPeriods = state
-            .map { it.range.value }
-            .filterNotNull()
-            .distinctUntilChanged()
-            .combine(savedIds) { period, _ -> period }
-            .distinctUntilChanged()
+        val savedPeriods = savedIds
+            .flatMapLatest { observePeriods() }
 
-        savedPeriods
-            .combine(observeBaseline()) { period, baseline -> PeriodBaseline(period = period, baseline = baseline) }
+        combine(savedPeriods, observeBaseline(), savedTrainings.filterNotNull()) { period, baseline, saved ->
+            PeriodBaseline(saved = saved, period = period, baseline = baseline)
+        }
+            .distinctUntilChanged()
             .flatMapLatest(::observePeriodTrainings)
             .onEach(::provideTrainings)
             .safeLaunch()
@@ -174,10 +175,6 @@ internal class TrainingCompletedViewModel(
                 trainingFeature.observeTraining(id).firstOrNull()
             }
             provideTraining(training)
-
-            analytics.trackOperation(operation = TrainingOperation.RefreshExamples) {
-                exerciseExampleFeature.getExerciseExamples()
-            }
         }
     }
 
@@ -216,17 +213,22 @@ internal class TrainingCompletedViewModel(
 
         val domainExercises = exercises.toDomain()
 
-        val totals = trainingTotalUseCase
-            .fromSetExercises(domainExercises)
-            .toState()
+        val totals = trainingTotalUseCase.fromSetExercises(domainExercises)
 
         return SetTraining(
             exercises = domainExercises,
             duration = duration,
-            volume = totals.volume.value ?: 0f,
-            intensity = totals.intensity.value ?: 0f,
-            repetitions = totals.repetitions.value ?: 0,
+            volume = totals.volume,
+            intensity = totals.intensity,
+            repetitions = totals.repetitions,
         )
+    }
+
+    private fun observePeriods(): Flow<DateRange> {
+        return state
+            .map { it.range.value }
+            .filterNotNull()
+            .distinctUntilChanged()
     }
 
     private fun observeBaseline(): Flow<PerformanceBaselineState> {
@@ -236,10 +238,12 @@ internal class TrainingCompletedViewModel(
     }
 
     private fun observePeriodTrainings(value: PeriodBaseline): Flow<PeriodTrainings> {
-        val (period, baseline) = value
+        val (saved, period, baseline) = value
 
         return trainingFeature.observeTrainings(start = period.from, end = period.to)
-            .map { trainings -> PeriodTrainings(period = period, baseline = baseline, trainings = trainings) }
+            .map { trainings ->
+                PeriodTrainings(saved = saved, period = period, baseline = baseline, trainings = trainings)
+            }
     }
 
     private fun observePeriodGoal(period: DateRange): Flow<PeriodGoal> {
@@ -290,6 +294,12 @@ internal class TrainingCompletedViewModel(
         }
     }
 
+    private suspend fun refreshExamples() {
+        analytics.trackOperation(operation = TrainingOperation.RefreshExamples) {
+            exerciseExampleFeature.getExerciseExamples()
+        }
+    }
+
     private suspend fun loadRecords(training: Training) {
         val records = withLoader(loader = TrainingCompletedLoader.LoadRecords) {
             analytics.trackOperation(operation = TrainingOperation.LoadRecords) {
@@ -312,8 +322,8 @@ internal class TrainingCompletedViewModel(
         update { it.copy(training = training, muscleLoad = muscleLoad) }
     }
 
-    private fun provideRange(value: Range?) {
-        val kind = value?.toState() ?: DateRangeKind.Last30Days
+    private fun provideRange(value: Range) {
+        val kind = value.toState()
 
         val range = DateRangeFormatState.of(kind)
 
@@ -321,26 +331,14 @@ internal class TrainingCompletedViewModel(
     }
 
     private fun provideTrainings(value: PeriodTrainings) {
-        val (period, baseline, trainings) = value
+        val (saved, period, baseline, trainings) = value
 
-        val savedId = state.value.savedTrainingId
-
-        val saved = trainings.firstOrNull { it.id == savedId }
-
-        val previousTrainings = trainings.filter { it.id != savedId }
-
-        val comparedTrainings = if (saved == null) {
-            emptyList()
-        } else {
-            previousTrainings.filter {
-                it.createdAt < saved.createdAt || (it.createdAt == saved.createdAt && it.id < saved.id)
-            } + saved
-        }
+        val previousTrainings = trainings.filter { it.id != saved.id }
 
         val domainBaseline = baseline.toDomain()
 
         val metrics = performanceTrendUseCase
-            .fromTrainings(trainings = comparedTrainings, baseline = domainBaseline)
+            .fromTraining(training = saved, periodTrainings = trainings, baseline = domainBaseline)
             .toState()
 
         val performance = PerformanceComparisonState(metrics = metrics, baseline = baseline)
@@ -555,16 +553,20 @@ internal class TrainingCompletedViewModel(
     }
 
     override fun onBack() {
+        if (TrainingCompletedLoader.SaveTraining in loaders.value) return
+
         analytics.trackEvent(event = TrainingEvent.Completed.DismissRequested)
         navigateTo(TrainingCompletedDirection.Back)
     }
 
     private data class PeriodBaseline(
+        val saved: Training,
         val period: DateRange,
         val baseline: PerformanceBaselineState,
     )
 
     private data class PeriodTrainings(
+        val saved: Training,
         val period: DateRange,
         val baseline: PerformanceBaselineState,
         val trainings: List<Training>,

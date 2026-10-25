@@ -180,7 +180,7 @@ Dialogs keep these typed config callbacks. Separate screen results use
 - **`onResult` callbacks fire only on explicit success.** Dismiss vs result are separate.
 - **Cross-dialog flows use the originating step's `Session` and the shared `StackNavigation<DialogStep>`.** Global `open` always starts a new session.
 - **Single-dialog multi-mode** lives in the dialog's own `State` as a `sealed interface`.
-- **Scrolling dialog bodies go through `BottomOverlayContainer`** with the bottom spacers in its `bottom` slot (see step 3 of the recipe); non-scrolling bodies end with the two spacers directly.
+- **Scrolling dialog bodies go through `OverlayContainer`** with the bottom spacers in its `bottom` slot (see step 3 of the recipe); non-scrolling bodies end with the two spacers directly.
 - Dialogs MAY read/write domain data through Feature/UseCase contracts in `:data-features:feature-api`, when their behavior requires it; never access services/DAOs directly. Value pickers return their accepted value through `onResult`; the caller owns its business persistence. A dialog-owned side effect MUST complete through safeLaunch and the shared error pipeline before emitting success.
 
 ---
@@ -315,7 +315,7 @@ with `Spacer(AppTokens.dp.dialog.top)` → body → `Spacer(AppTokens.dp.dialog.
 → `Spacer(Modifier.navigationBarsPadding())`. Horizontal padding is
 `AppTokens.dp.dialog.horizontalPadding`. A dialog whose body scrolls
 (`LazyColumn` or `verticalScroll`) MUST wrap the scroll container in
-`BottomOverlayContainer` (`overlay = AppTokens.colors.background.dialog`, the
+`OverlayContainer` (`overlay = AppTokens.colors.background.dialog`, the
 resolved `Modifier`/`PaddingValues` applied to the scroll container) and put
 `Spacer(AppTokens.dp.dialog.bottom)` → `Spacer(Modifier.navigationBarsPadding())`
 in its `bottom` slot (plus any pinned action), so content scrolls under the

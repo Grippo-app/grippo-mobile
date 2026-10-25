@@ -23,7 +23,7 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.dragdrop.DraggableItem
 import com.grippo.design.components.dragdrop.rememberDragDropListState
 import com.grippo.design.components.empty.IllustratedEmptyState
-import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.swipe.SwipeRevealAction
 import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.training.ExerciseCard
@@ -32,8 +32,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_exercise_btn
 import com.grippo.design.resources.provider.delete_btn
-import com.grippo.design.resources.provider.empty_training_exercises
 import com.grippo.design.resources.provider.empty_exercises
+import com.grippo.design.resources.provider.empty_training_exercises
 import com.grippo.design.resources.provider.icons.Trash
 import com.grippo.training.recording.TrainingRecordingContract
 import com.grippo.training.recording.TrainingRecordingState
@@ -47,7 +47,7 @@ internal fun ColumnScope.ExercisesPage(
     val exercises = state.exercises.orEmpty()
     val basePadding = PaddingValues(top = AppTokens.dp.contentPadding.content)
 
-    BottomOverlayContainer(
+    OverlayContainer(
         modifier = modifier,
         contentPadding = basePadding,
         overlay = AppTokens.colors.background.screen,

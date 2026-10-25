@@ -14,20 +14,40 @@ public class PerformanceTrendUseCase {
 
     private companion object {
         private const val MIN_COMPARISON_PERCENT: Double = 5.0
+        private val trainingOrder: Comparator<Training> = compareBy<Training> { it.createdAt }.thenBy { it.id }
     }
 
     public fun fromTrainings(
         trainings: List<Training>,
         baseline: PerformanceBaseline = PerformanceBaseline.Average,
     ): List<PerformanceMetric> {
-        val sorted = trainings.sortedWith(compareBy<Training> { it.createdAt }.thenBy { it.id })
+        val sorted = trainings.sortedWith(trainingOrder)
 
+        return metricsOf(trainings = sorted, baseline = baseline)
+    }
+
+    public fun fromTraining(
+        training: Training,
+        periodTrainings: List<Training>,
+        baseline: PerformanceBaseline = PerformanceBaseline.Average,
+    ): List<PerformanceMetric> {
+        val history = periodTrainings
+            .filter { trainingOrder.compare(it, training) < 0 }
+            .sortedWith(trainingOrder)
+
+        return metricsOf(trainings = history + training, baseline = baseline)
+    }
+
+    private fun metricsOf(
+        trainings: List<Training>,
+        baseline: PerformanceBaseline,
+    ): List<PerformanceMetric> {
         return listOf(
-            densityMetric(trainings = sorted, baseline = baseline),
-            volumeMetric(trainings = sorted, baseline = baseline),
-            repetitionsMetric(trainings = sorted, baseline = baseline),
-            intensityMetric(trainings = sorted, baseline = baseline),
-            durationMetricNeutral(trainings = sorted, baseline = baseline),
+            densityMetric(trainings = trainings, baseline = baseline),
+            volumeMetric(trainings = trainings, baseline = baseline),
+            repetitionsMetric(trainings = trainings, baseline = baseline),
+            intensityMetric(trainings = trainings, baseline = baseline),
+            durationMetricNeutral(trainings = trainings, baseline = baseline),
         )
     }
 
