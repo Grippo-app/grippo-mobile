@@ -69,9 +69,9 @@ achievements, request/response payloads or exception text are encoded.
 | Shared dialog host | Session, id, mode/title, action/back callbacks and nested step | Runtime only | Existing retained host; slot/step serializer = null | Ordinary recreation can retain the session; process death closes it |
 | ExerciseExampleDetailsViewModel | mode | Runtime only | Existing DialogConfig input | Fresh opening uses supplied mode; no editable draft |
 | ExerciseExampleDetailsViewModel | example, muscleLoad | Rebuild | ExerciseExampleFeature observer/refresh; pure MuscleLoadingSummaryUseCase.fromExerciseExample(observedExample) | Fresh opening observes current data and derives anatomy directly, without re-reading a separate cache snapshot |
-| ExerciseExampleDetailsViewModel | recent, exerciseVolume, estimatedOneRepMax (dated source set and External/Effective load basis) | Rebuild | ExerciseMetricsFeature, VolumeSeriesUseCase, EstimatedOneRepMaxUseCase with the observed route example and its component requirements | Startup fetch rebuilds chronological records; combining them with the current example recalculates valid 1–10-rep estimates; no eligible estimates, including empty history, show an explicit explanation |
+| ExerciseExampleDetailsViewModel | recent, exerciseVolume, estimatedOneRepMax (dated source set and External/Effective load basis) | Rebuild | ExerciseMetricsFeature, VolumeSeriesUseCase, EstimatedOneRepMaxUseCase with the observed route example and its component requirements | Startup fetch rebuilds chronological records; combining them with the current example recalculates valid 1–10-rep estimates; recent stays null until its request succeeds; no eligible estimates show an explicit explanation, including after a failed request; records and achievements both received empty show the Achievements empty state |
 | ExerciseExampleDetailsViewModel | Recent-record source | Rebuild | Finite request Flow combined with the observed example through Processing.Infinity | Runs once per VM; an empty result remains a known empty sample. No member cache/MutableStateFlow or loading flag; the independent metadata observation survives a failed history request |
-| ExerciseExampleDetailsViewModel | achievements | Rebuild | ExerciseMetricsFeature | Existing startup fetch and mapping |
+| ExerciseExampleDetailsViewModel | achievements | Rebuild | ExerciseMetricsFeature | Existing startup fetch and mapping; null until the request succeeds, so a failure is not shown as absence |
 | ExerciseExampleDetailsScreen | selected tab and scroll | Runtime only, presentation widget state | Existing rememberSaveable(example id) and rememberScrollState | No business draft; new dialog defaults to Information; existing saveable UI behavior unchanged |
 | VM/foundation | Loaders, jobs, directions, errors, telemetry provenance | Runtime only | Existing foundation ownership | No StateKeeper supplier, secret archive, restoration flag or shadow snapshot added |
 | Calling screen | Any business result of the supplied Action callback | Existing caller owner outside scope | Existing callback | This dialog returns no edited input; caller remains responsible for its own draft |
@@ -119,13 +119,16 @@ observer, so either arrival order and later catalog updates recalculate the
 estimate without a member cache or a second request. Processing.Infinity keeps
 that one-time source from restarting after pause/resume; independent metadata
 observation retains its WhileActive lifetime and survives a failed history load. Empty
-estimates, including an entirely empty history, show eligibility information
-without a fabricated zero or confidence score. No new interaction or event is
+estimates show eligibility information without a fabricated zero or confidence
+score, including after a failed request (recent and achievements stay null until
+received); when both requests return empty, the Achievements tab shows its empty
+state instead, the sheet body stops scrolling and the empty state fills the
+remaining height. No new interaction or event is
 introduced.
 Tap and horizontal exploration
 stay local to the chart; recent records and exerciseVolume keep their existing
-rebuild sources. No top-level VM State field, draft, callback, wire name, parameter,
-schema, consent or transport contract changes. LoadRecentExercises now completes
+rebuild sources. Chart exploration adds no top-level VM State field, draft, callback,
+wire name, parameter, schema, consent or transport contract. LoadRecentExercises now completes
 before the combined one-rep-max calculation. The root admin mapping records this
 boundary and its live consumer reconciliation; earlier-build duration comparisons
 are not established.

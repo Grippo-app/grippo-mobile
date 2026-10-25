@@ -811,6 +811,8 @@
     <string name="dialog_close">Fechar</string>
     <string name="dialog_saved_workout">Treino guardado</string>
     <string name="exercise_example_information">Informações</string>
+    <string name="exercise_example_achievements_empty_title">Ainda sem histórico</string>
+    <string name="exercise_example_achievements_empty_description">Faça este exercício num treino para ver aqui as suas conquistas, o 1RM estimado e o histórico de séries.</string>
     <string name="exercise_sets_count">%1$d/%2$d séries</string>
     <string name="exercise_max_weight">%1$s máx</string>
     <string name="home">Início</string>

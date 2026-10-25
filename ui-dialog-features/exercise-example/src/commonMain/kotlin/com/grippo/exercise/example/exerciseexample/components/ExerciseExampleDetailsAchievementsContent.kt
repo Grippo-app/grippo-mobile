@@ -30,39 +30,28 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_history_volume_delta
 import com.grippo.design.resources.provider.history
-import com.grippo.exercise.example.exerciseexample.ExerciseExampleDetailsLoader
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleDetailsState
 import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
-import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun ExerciseExampleDetailsAchievementsContent(
     modifier: Modifier,
     state: ExerciseExampleDetailsState,
-    loaders: ImmutableSet<ExerciseExampleDetailsLoader>,
 ) {
-    val isLoading = ExerciseExampleDetailsLoader.RecentExercises in loaders ||
-        ExerciseExampleDetailsLoader.Achievements in loaders
-
-    if (isLoading) {
-        ExerciseExampleDetailsAchievementsSkeleton(modifier = modifier)
-        return
-    }
+    val achievements = state.achievements
+    val recent = state.recent.orEmpty()
 
     Column(modifier = modifier) {
-        if (state.achievements.isNotEmpty()) {
+        if (!achievements.isNullOrEmpty()) {
             AchievementsCard(
                 modifier = Modifier.fillMaxWidth(),
-                value = state.achievements,
+                value = achievements,
                 contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
             )
-        }
 
-        if (state.achievements.isNotEmpty()) {
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
         }
 
@@ -73,7 +62,7 @@ internal fun ExerciseExampleDetailsAchievementsContent(
             state = state.estimatedOneRepMax,
         )
 
-        if (state.recent.isNotEmpty()) {
+        if (recent.isNotEmpty()) {
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             Text(
@@ -88,7 +77,7 @@ internal fun ExerciseExampleDetailsAchievementsContent(
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
             state.exerciseVolume?.let { series ->
-                val chronological = state.recent.asReversed()
+                val chronological = recent.asReversed()
                 val entries = series.entries.mapIndexed { index, entry ->
                     entry.copy(label = rememberHistoryDateLabel(chronological[index].createdAt))
                 }.toPersistentList()
@@ -105,8 +94,8 @@ internal fun ExerciseExampleDetailsAchievementsContent(
                 Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
             }
 
-            state.recent.forEachIndexed { index, item ->
-                val previous = state.recent.getOrNull(index + 1)
+            recent.forEachIndexed { index, item ->
+                val previous = recent.getOrNull(index + 1)
                 val delta = previous?.let(item::volumeDeltaPercent)
                 val trailing: (@Composable () -> Unit)? = if (delta != null) {
                     { ExerciseHistoryVolumeDelta(delta = delta) }
@@ -124,7 +113,7 @@ internal fun ExerciseExampleDetailsAchievementsContent(
                     )
                 }
 
-                if (index < state.recent.lastIndex) {
+                if (index < recent.lastIndex) {
                     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
                 }
             }
@@ -163,7 +152,6 @@ private fun ExerciseExampleDetailsAchievementsContentPreview() {
                 estimatedOneRepMax = stubEstimatedOneRepMax(),
                 achievements = stubAchievements(),
             ),
-            loaders = persistentSetOf(),
         )
     }
 }
@@ -175,7 +163,6 @@ private fun ExerciseExampleDetailsAchievementsContentHistoryPreview() {
         ExerciseExampleDetailsAchievementsContent(
             modifier = Modifier.fillMaxWidth(),
             state = historyPreviewState(stubExerciseHistory()),
-            loaders = persistentSetOf(),
         )
     }
 }
@@ -187,7 +174,6 @@ private fun ExerciseExampleDetailsAchievementsContentSingleEntryPreview() {
         ExerciseExampleDetailsAchievementsContent(
             modifier = Modifier.fillMaxWidth(),
             state = historyPreviewState(stubExerciseHistory().take(1).toPersistentList()),
-            loaders = persistentSetOf(),
         )
     }
 }
@@ -199,31 +185,17 @@ private fun ExerciseExampleDetailsAchievementsContentZeroTonnagePreview() {
         ExerciseExampleDetailsAchievementsContent(
             modifier = Modifier.fillMaxWidth(),
             state = historyPreviewState(stubExerciseHistory().drop(2).toPersistentList()),
-            loaders = persistentSetOf(),
         )
     }
 }
 
 @AppPreview
 @Composable
-private fun ExerciseExampleDetailsAchievementsContentEmptyPreview() {
+private fun ExerciseExampleDetailsAchievementsContentUnavailablePreview() {
     PreviewContainer {
         ExerciseExampleDetailsAchievementsContent(
             modifier = Modifier.fillMaxWidth(),
             state = ExerciseExampleDetailsState(),
-            loaders = persistentSetOf(),
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun EstimatedMaxOnlyPreview() {
-    PreviewContainer {
-        ExerciseExampleDetailsAchievementsContent(
-            modifier = Modifier.fillMaxWidth(),
-            state = ExerciseExampleDetailsState(estimatedOneRepMax = stubEstimatedOneRepMax()),
-            loaders = persistentSetOf(),
         )
     }
 }

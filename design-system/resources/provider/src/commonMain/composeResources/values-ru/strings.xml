@@ -799,6 +799,8 @@
     <string name="dialog_close">Закрыть</string>
     <string name="dialog_saved_workout">Сохранённая тренировка</string>
     <string name="exercise_example_information">Информация</string>
+    <string name="exercise_example_achievements_empty_title">Пока нет истории</string>
+    <string name="exercise_example_achievements_empty_description">Выполните упражнение на тренировке — здесь появятся достижения, оценка 1ПМ и история подходов.</string>
     <string name="exercise_sets_count">%1$d/%2$d подх.</string>
     <string name="exercise_max_weight">%1$s макс.</string>
     <string name="home">Главная</string>
@@ -868,7 +870,7 @@
     <string name="performance_baseline_average">к среднему</string>
     <string name="performance_baseline_previous">к прошлому разу</string>
     <string name="training_records_title">Личные рекорды</string>
-    <string name="training_records_description">Лучшие результаты за всё время, установленные в этой тренировке.</string>
+    <string name="training_records_description">Лучшие результаты за&#160;всё время, установленные в&#160;этой тренировке.</string>
     <string name="weekly_volume_title">Эта неделя</string>
     <string name="weekly_volume_progress">%1$s из обычных %2$s</string>
     <string name="weekly_volume_no_typical">Пока не с чем сравнить: в последние недели тренировок не было.</string>

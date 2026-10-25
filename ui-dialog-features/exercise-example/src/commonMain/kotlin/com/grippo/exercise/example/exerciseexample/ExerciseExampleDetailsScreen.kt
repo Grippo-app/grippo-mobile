@@ -38,6 +38,8 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.achievements
 import com.grippo.design.resources.provider.exercise_example_information
 import com.grippo.exercise.example.exerciseexample.components.ExerciseExampleDetailsAchievementsContent
+import com.grippo.exercise.example.exerciseexample.components.ExerciseExampleDetailsAchievementsEmpty
+import com.grippo.exercise.example.exerciseexample.components.ExerciseExampleDetailsAchievementsSkeleton
 import com.grippo.exercise.example.exerciseexample.components.ExerciseExampleDetailsHeader
 import com.grippo.exercise.example.exerciseexample.components.ExerciseExampleDetailsInformationContent
 import kotlinx.collections.immutable.ImmutableSet
@@ -59,7 +61,15 @@ internal fun ExerciseExampleDetailsScreen(
         )
     }
 
+    val isAchievementsLoading = ExerciseExampleDetailsLoader.RecentExercises in loaders ||
+        ExerciseExampleDetailsLoader.Achievements in loaders
+    val isAchievementsEmpty = isAchievementsLoading.not() &&
+        state.recent?.isEmpty() == true &&
+        state.achievements?.isEmpty() == true
+    val isEmptyTab = selectedTab == ExerciseExampleDetailsTabState.Achievements && isAchievementsEmpty
+
     val basePadding = PaddingValues(top = AppTokens.dp.dialog.top)
+    val scrollState = rememberScrollState()
 
     OverlayContainer(
         modifier = Modifier
@@ -71,7 +81,7 @@ internal fun ExerciseExampleDetailsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                    .then(if (isEmptyTab) Modifier else Modifier.verticalScroll(scrollState))
                     .padding(resolvedPadding),
             ) {
                 val example = state.example ?: return@Column
@@ -104,11 +114,22 @@ internal fun ExerciseExampleDetailsScreen(
                         muscleLoad = state.muscleLoad,
                     )
 
-                    ExerciseExampleDetailsTabState.Achievements -> ExerciseExampleDetailsAchievementsContent(
-                        modifier = Modifier.fillMaxWidth(),
-                        state = state,
-                        loaders = loaders,
-                    )
+                    ExerciseExampleDetailsTabState.Achievements -> when {
+                        isAchievementsLoading -> ExerciseExampleDetailsAchievementsSkeleton(
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+
+                        isAchievementsEmpty -> ExerciseExampleDetailsAchievementsEmpty(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                        )
+
+                        else -> ExerciseExampleDetailsAchievementsContent(
+                            modifier = Modifier.fillMaxWidth(),
+                            state = state,
+                        )
+                    }
                 }
             }
         },

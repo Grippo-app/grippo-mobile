@@ -1207,6 +1207,12 @@ and Latin text in both themes; each role keeps its existing size and line height
   keeps `text` bottom padding beside the first row's
   `subContent` top padding. Exercise sheets scroll long content rather than
   compressing text, images, sets or the final action.
+- The exercise-details Achievements tab without history (both the recent-exercise
+  and achievement requests returned empty) stops the sheet body scroll and lets
+  IllustratedEmptyState fill the height left below the header and Segment: the
+  existing empty-workouts journal artwork with a Medium illustration, `h4` title
+  and secondary `b14Med` description. A failed request is not shown as absence: the
+  tab keeps its regular content with the estimated-1RM explanation.
 - Start workout sheets expose available Custom, Suggested and Repeat choices
   through pinned equal-width Segment controls. All modes fill the same available
   host height so the sheet, choices and action stay in place when content changes.

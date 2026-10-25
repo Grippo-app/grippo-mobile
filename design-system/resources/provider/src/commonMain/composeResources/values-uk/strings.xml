@@ -790,6 +790,8 @@
     <string name="dialog_close">Закрити</string>
     <string name="dialog_saved_workout">Збережене тренування</string>
     <string name="exercise_example_information">Інформація</string>
+    <string name="exercise_example_achievements_empty_title">Поки немає історії</string>
+    <string name="exercise_example_achievements_empty_description">Виконайте вправу на тренуванні — тут з’являться досягнення, оцінка 1ПМ та історія підходів.</string>
     <string name="exercise_sets_count">%1$d/%2$d підх.</string>
     <string name="exercise_max_weight">%1$s макс.</string>
     <string name="home">Головна</string>
@@ -859,7 +861,7 @@
     <string name="performance_baseline_average">до середнього</string>
     <string name="performance_baseline_previous">до попереднього</string>
     <string name="training_records_title">Особисті рекорди</string>
-    <string name="training_records_description">Найкращі результати за весь час, встановлені в цьому тренуванні.</string>
+    <string name="training_records_description">Найкращі результати за&#160;весь час, встановлені в&#160;цьому тренуванні.</string>
     <string name="weekly_volume_title">Цей тиждень</string>
     <string name="weekly_volume_progress">%1$s зі звичних %2$s</string>
     <string name="weekly_volume_no_typical">Поки нема з чим порівняти: останніми тижнями тренувань не було.</string>
