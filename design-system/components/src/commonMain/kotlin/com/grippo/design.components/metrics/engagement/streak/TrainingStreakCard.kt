@@ -56,18 +56,15 @@ import kotlinx.collections.immutable.toPersistentList
 @Immutable
 public sealed interface TrainingStreakCardStyle {
     @Immutable
-    public sealed interface Loadable : TrainingStreakCardStyle
+    public data object Overview : TrainingStreakCardStyle
 
     @Immutable
-    public data object Overview : Loadable
-
-    @Immutable
-    public data object Detailed : Loadable
+    public data object Detailed : TrainingStreakCardStyle
 
     @Immutable
     public data class Growth(
         public val previous: TrainingStreakState?,
-    ) : Loadable
+    ) : TrainingStreakCardStyle
 }
 
 private const val STREAK_GROWTH_DURATION_MS = 900
@@ -349,7 +346,7 @@ private fun StreakOutcomeLine(
 @Composable
 public fun TrainingStreakCardSkeleton(
     modifier: Modifier = Modifier,
-    style: TrainingStreakCardStyle.Loadable,
+    style: TrainingStreakCardStyle,
 ) {
     val textMeasurer = rememberTextMeasurer()
     val titleLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
@@ -396,6 +393,17 @@ private fun TrainingStreakCardSkeletonOverviewPreview() {
         TrainingStreakCardSkeleton(
             modifier = Modifier.fillMaxWidth(),
             style = TrainingStreakCardStyle.Overview,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakCardSkeletonDetailedPreview() {
+    PreviewContainer {
+        TrainingStreakCardSkeleton(
+            modifier = Modifier.fillMaxWidth(),
+            style = TrainingStreakCardStyle.Detailed,
         )
     }
 }

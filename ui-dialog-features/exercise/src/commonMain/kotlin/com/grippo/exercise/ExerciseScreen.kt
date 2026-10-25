@@ -41,9 +41,9 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_details_btn
 import com.grippo.design.resources.provider.exercise_history_no_sets
 import com.grippo.design.resources.provider.exercise_history_unavailable
-import com.grippo.exercise.components.ExerciseLoadingContent
 import com.grippo.exercise.components.ExerciseProgressCard
 import com.grippo.exercise.components.ExerciseSetsContent
+import com.grippo.exercise.components.ExerciseSkeleton
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.ImmutableSet
@@ -77,7 +77,7 @@ internal fun ExerciseScreen(
                     .padding(resolvedPadding),
             ) {
                 when (state) {
-                    ExerciseState.Loading -> ExerciseLoadingContent(modifier = Modifier.fillMaxWidth())
+                    ExerciseState.Loading -> ExerciseSkeleton(modifier = Modifier.fillMaxWidth())
                     ExerciseState.Unavailable -> Text(
                         text = AppTokens.strings.res(Res.string.exercise_history_unavailable),
                         style = AppTokens.typography.b14Med(),

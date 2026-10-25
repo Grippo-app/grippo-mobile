@@ -71,7 +71,7 @@ import com.grippo.design.resources.provider.muscle_loading_details_no_workouts_m
 import com.grippo.design.resources.provider.muscle_loading_details_no_workouts_title
 import com.grippo.design.resources.provider.muscle_loading_details_unknown_message
 import com.grippo.design.resources.provider.muscle_loading_details_unknown_title
-import com.grippo.muscle.loading.details.components.MuscleLoadingDetailsLoadingContent
+import com.grippo.muscle.loading.details.components.MuscleLoadingDetailsSkeleton
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
@@ -131,7 +131,7 @@ private fun MuscleLoadingDetailsContent(
                     ) {
                         val summary = state.summary
                         if (summary == null) {
-                            MuscleLoadingDetailsLoadingContent(modifier = Modifier.fillMaxWidth())
+                            MuscleLoadingDetailsSkeleton(modifier = Modifier.fillMaxWidth())
                         } else {
                             if (summary.meta.trainingsCount > 0) {
                                 MuscleLoadingCard(

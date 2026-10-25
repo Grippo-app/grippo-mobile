@@ -297,6 +297,17 @@ public fun MuscleLoadingCardSkeleton(
 
 @AppPreview
 @Composable
+private fun MuscleLoadingCardSkeletonSummaryPreview() {
+    PreviewContainer {
+        MuscleLoadingCardSkeleton(
+            modifier = Modifier.fillMaxWidth(),
+            style = MuscleLoadingCardStyle.Summary,
+        )
+    }
+}
+
+@AppPreview
+@Composable
 private fun MuscleLoadingCardSkeletonSessionPreview() {
     PreviewContainer {
         MuscleLoadingCardSkeleton(

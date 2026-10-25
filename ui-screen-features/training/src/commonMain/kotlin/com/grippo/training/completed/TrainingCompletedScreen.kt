@@ -82,7 +82,7 @@ import com.grippo.design.resources.provider.workout_summary
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.toolkit.date.utils.DateRangePresets
-import com.grippo.training.completed.components.TrainingCompletedLoadingContent
+import com.grippo.training.completed.components.TrainingCompletedSkeleton
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -124,7 +124,7 @@ internal fun TrainingCompletedScreen(
         content = { containerModifier, resolvedPadding ->
             Box(modifier = containerModifier.fillMaxSize()) {
                 if (isSaving) {
-                    TrainingCompletedLoadingContent(
+                    TrainingCompletedSkeleton(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = resolvedPadding,
                     )
@@ -281,7 +281,7 @@ private fun TrainingCompletedContent(
         }
 
         if (state.performance == null) {
-            item(key = "training_streak_loading") {
+            item(key = "training_streak_skeleton") {
                 Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
                 TrainingStreakCardSkeleton(

@@ -83,14 +83,21 @@ behavior and cover the added variant under the existing preview rules.
 - A placeholder that stands in for content while it loads is built from the
   skeleton primitives above, with its size taken from the content it replaces;
   MUST NOT hand-roll a clip/background/shimmer box or add per-component bone
-  color, corner or width tokens: a text bone's width is a `dp.skeleton.line`
-  step, the full width of a wrapped line or of a fixed-width slot. A wrapped text
+  color, corner or width tokens. A text bone's width is a `dp.skeleton.line`
+  step, the full width of a wrapped line or of a fixed-width slot; a wrapped text
   keeps its measured line count. Text bones and bones standing in for controls
-  (buttons, segments, pickers) are static unless the host animates one slot on
-  purpose; block and panel bones shimmer. A skeleton of a shared component lives
-  beside it as `<Component>Skeleton` (or a `Loadable` card style) once a second
-  host needs it. `Button` and `MenuActionRow` loading is not a
-  placeholder: they keep their real content and shimmer it.
+  (buttons, segments, pickers) are static and block and panel bones shimmer,
+  unless the host's recorded composition animates one slot or keeps a region
+  static on purpose. `Button` and `MenuActionRow` loading is
+  not a placeholder: they keep their real content and shimmer it.
+- Every placeholder composable, public or private, is named `<Owner>Skeleton`:
+  `<Component>Skeleton` (or `<Card>CardSkeleton` taking the card's style) beside
+  a design-system component once a second host needs it or it reuses the
+  component's private layout, `<Feature>Skeleton` for
+  a whole screen or dialog, `<Part>Skeleton` for a section of either. MUST NOT
+  name one `*LoadingContent`, `*Loading<Part>`, `*Shimmer`, `*Bones` or
+  `*Placeholder`. `Loading` in a name means the muscle-load domain
+  (`MuscleLoading*`) or a loading state in a preview name, never the placeholder.
 - Existing Check/CheckSelectableCard/ToggleSelectableCard/Toggle variants serve
   selection roles. Inspect their actual size and state contracts; role-to-token
   choices stay in [CONSISTENCY.md](../../../../design-system/CONSISTENCY.md).

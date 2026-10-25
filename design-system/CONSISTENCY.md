@@ -462,7 +462,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   separates the actions row from the cards, `content` separates the cards. A
   period-best verdict or the first non-empty records load fires the shared
   `KonfettiParade` once per screen instance; a started parade never re-arms. While
-  saving, the same order renders as skeletons (`TrainingCompletedLoadingContent`,
+  saving, the same order renders as skeletons (`TrainingCompletedSkeleton`,
   whose list root carries the single loading node):
   `TrainingRecapHeroSkeleton` with static text bones on the hero's warm surface,
   `TrainingRecapActionsSkeleton` bones, then the shimmering comparison, weekly,
@@ -607,7 +607,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   without simulated facts, icons or chart details. Panel geometry derives from
   the existing typography, image and spacing slots; section text placeholders
   are one laid-out line of their typography role tall and stay static. The highlights header keeps
-  one animated slot, its `b13Med` hint line, beside the static period-picker bone
+  one animated slot, its `b13Med` hint line below the static period-picker bone
   (the larger of the `h6` line and `periodPicker.icon`); the spotlight gallery uses one coarse panel without a
   nested loading scroll. One localized indeterminate loading
   node describes the skeleton; the real period picker remains independently
@@ -640,8 +640,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   (`PerformanceComparisonCardSkeleton` sized to the baseline segment and the five
   growth blocks with stacked bars; `TrainingStreakCardSkeleton(style)` and
   `MuscleLoadingCardSkeleton(style)` accept only the styles a loading host shows,
-  `TrainingStreakCardStyle.Loadable` (Overview, Detailed, Growth) and
-  `MuscleLoadingCardStyle.Loadable` (Overview, Summary, Session), with no default, so each
+  every `TrainingStreakCardStyle` and `MuscleLoadingCardStyle.Loadable` (Overview,
+  Summary, Session; Detailed has no loading host), with no default, so each
   host names its style: the streak Overview for Home sizes the header, the
   headline/active-days row (the flame beside the headline alone), the indicator
   and the `training_streak_current_progress` line with three Large spacers; the
@@ -649,7 +649,11 @@ and Latin text in both themes; each role keeps its existing size and line height
   headline and cadence (`maxOf(rhythmIcon, h4 + text + b13Med)`), the indicator
   and the text group of the `b12Med` outcome and next-training lines (`text` apart)
   with three Large spacers; the
+  streak Detailed for the streak dialog sizes the `h3` headline, the `b14Med`
+  description and the `b13Med` active-days line with two Large spacers; the
   muscle Session for the completed workout sizes the title and the map row; the
+  muscle Summary for the muscle dialog sizes the `h3` count over its `b12Med`
+  label; the
   muscle Overview for Home sizes the title with its `b12Med` period context, the
   map row and the `b12Med` details hint with two Large spacers - data notices
   appear only with real data, so no skeleton reserves them;
@@ -664,10 +668,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   further group rows of `MuscleLoading`, and `VolumeMetricChartSkeleton` sized to
   the tonnage caption and the width-derived bar chart), consumed by every host;
   a skeleton with a single host stays private to that host until a second host
-  needs it.
-- Dialog content loads show a private `<Feature>LoadingContent` skeleton instead
-  of the `Loader` spinner, which remains only for the brand splash and debug
-  pages; section-level placeholders are `<Section>Skeleton`. Each mirrors its
+  needs it or it reuses the component's private layout.
+- Dialog content loads show a private `<Feature>Skeleton` instead of the `Loader`
+  spinner, which remains only for the brand splash and debug pages. Each mirrors its
   populated content with the dialog's gutters and gaps, keeps real range headers
   and carries one localized `loading` node on its root: Statistics (two
   `chip.medium` total bones, `VolumeMetricChartSkeleton`, the `h4` Muscles line over
@@ -683,7 +686,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   `illustration.large` halo, the `h4` title and two-line `b14Med` description);
   draft training (the `h3` header and two-line description, the
   `metrics.panel.large.radius` summary tile, the `h4` contents line and three
-  exercise-row bones); the completed exercise (`ExerciseLoadingContent`: the 64 dp
+  exercise-row bones); the completed exercise (`ExerciseSkeleton`: the 64 dp
   image-slot bone with `h4`/`b12Med` lines, `ExerciseSetsSkeleton` with three static
   `IterationCard.Recorded` rows and dividers, `ExerciseProgressCardSkeleton` on the
   card's real Large surface with the shared `ExerciseHistorySkeleton`, and a static

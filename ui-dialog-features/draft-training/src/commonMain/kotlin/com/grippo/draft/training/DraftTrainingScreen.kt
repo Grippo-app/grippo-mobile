@@ -40,7 +40,7 @@ import com.grippo.design.resources.provider.draft_training_alert_title_edit
 import com.grippo.design.resources.provider.draft_training_contents
 import com.grippo.design.resources.provider.draft_training_empty
 import com.grippo.design.resources.provider.start_new
-import com.grippo.draft.training.components.DraftTrainingLoadingContent
+import com.grippo.draft.training.components.DraftTrainingSkeleton
 import com.grippo.draft.training.components.DraftTrainingSummary
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -132,8 +132,8 @@ internal fun DraftTrainingScreen(
                 contentPadding = resolvedPadding,
             ) {
                 if (isLoading) {
-                    item(key = "loading", contentType = "loading") {
-                        DraftTrainingLoadingContent(modifier = Modifier.fillMaxWidth())
+                    item(key = "skeleton", contentType = "skeleton") {
+                        DraftTrainingSkeleton(modifier = Modifier.fillMaxWidth())
                     }
                 } else {
                     if (state.exercises.isEmpty()) {

@@ -28,7 +28,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.loading
 
 @Composable
-internal fun StartTrainingLoadingContent(
+internal fun StartTrainingSkeleton(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues,
 ) {
@@ -104,9 +104,9 @@ internal fun StartTrainingLoadingContent(
 
 @AppPreview
 @Composable
-private fun StartTrainingLoadingContentPreview() {
+private fun StartTrainingSkeletonPreview() {
     PreviewContainer {
-        StartTrainingLoadingContent(
+        StartTrainingSkeleton(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
                 start = AppTokens.dp.dialog.horizontalPadding,

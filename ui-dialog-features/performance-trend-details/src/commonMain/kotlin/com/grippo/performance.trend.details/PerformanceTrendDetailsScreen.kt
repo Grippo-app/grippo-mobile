@@ -48,7 +48,7 @@ import com.grippo.design.resources.provider.performance_trend_details_latest
 import com.grippo.design.resources.provider.performance_trend_details_recent_workouts
 import com.grippo.performance.trend.details.components.PerformanceHistoryRow
 import com.grippo.performance.trend.details.components.PerformanceMetricExplanation
-import com.grippo.performance.trend.details.components.PerformanceTrendDetailsLoadingContent
+import com.grippo.performance.trend.details.components.PerformanceTrendDetailsSkeleton
 import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
@@ -101,8 +101,8 @@ private fun PerformanceTrendDetailsContent(
                 contentPadding = resolvedPadding,
             ) {
                 if (history == null) {
-                    item(key = "loading", contentType = "loading") {
-                        PerformanceTrendDetailsLoadingContent(modifier = Modifier.fillMaxWidth())
+                    item(key = "skeleton", contentType = "skeleton") {
+                        PerformanceTrendDetailsSkeleton(modifier = Modifier.fillMaxWidth())
                     }
                 } else {
                     if (history.isEmpty()) {

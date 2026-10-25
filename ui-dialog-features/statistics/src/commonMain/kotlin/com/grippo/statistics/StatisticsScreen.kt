@@ -31,7 +31,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.muscles
-import com.grippo.statistics.components.StatisticsLoadingContent
+import com.grippo.statistics.components.StatisticsSkeleton
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.datetime.LocalDateTime
@@ -61,7 +61,7 @@ internal fun StatisticsScreen(
         overlay = AppTokens.colors.background.dialog,
         content = { containerModifier, resolvedPadding ->
             if (loaders.contains(StatisticsLoader.Charts)) {
-                StatisticsLoadingContent(
+                StatisticsSkeleton(
                     modifier = containerModifier.fillMaxSize(),
                     contentPadding = resolvedPadding,
                 )

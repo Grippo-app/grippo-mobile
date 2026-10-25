@@ -36,9 +36,9 @@ import com.grippo.design.resources.provider.start_training_choice_recent
 import com.grippo.design.resources.provider.start_training_choose_exercises_btn
 import com.grippo.design.resources.provider.start_training_repeat_btn
 import com.grippo.design.resources.provider.start_training_use_preset_btn
-import com.grippo.start.training.components.StartTrainingLoadingContent
 import com.grippo.start.training.components.StartTrainingPage
 import com.grippo.start.training.components.StartTrainingRecentPicker
+import com.grippo.start.training.components.StartTrainingSkeleton
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.ImmutableSet
@@ -181,7 +181,7 @@ private fun StartTrainingContent(
         },
         content = { contentModifier, contentPadding ->
             if (isLoading) {
-                StartTrainingLoadingContent(
+                StartTrainingSkeleton(
                     modifier = contentModifier.fillMaxSize(),
                     contentPadding = contentPadding,
                 )

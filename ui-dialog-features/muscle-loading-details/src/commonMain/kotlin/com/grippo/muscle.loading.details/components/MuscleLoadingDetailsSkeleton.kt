@@ -23,7 +23,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.loading
 
 @Composable
-internal fun MuscleLoadingDetailsLoadingContent(modifier: Modifier = Modifier) {
+internal fun MuscleLoadingDetailsSkeleton(modifier: Modifier = Modifier) {
     val loadingDescription = AppTokens.strings.res(Res.string.loading)
 
     Column(
@@ -61,8 +61,8 @@ internal fun MuscleLoadingDetailsLoadingContent(modifier: Modifier = Modifier) {
 
 @AppPreview
 @Composable
-private fun MuscleLoadingDetailsLoadingContentPreview() {
+private fun MuscleLoadingDetailsSkeletonPreview() {
     PreviewContainer {
-        MuscleLoadingDetailsLoadingContent(modifier = Modifier.fillMaxWidth())
+        MuscleLoadingDetailsSkeleton(modifier = Modifier.fillMaxWidth())
     }
 }

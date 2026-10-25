@@ -136,6 +136,7 @@ internal fun ExerciseProgressCardSkeleton(modifier: Modifier = Modifier) {
                 ExerciseHistorySkeleton(
                     captionStyle = captionStyle,
                     chartHeight = chartHeight,
+                    textMeasurer = textMeasurer,
                 )
             }
         }

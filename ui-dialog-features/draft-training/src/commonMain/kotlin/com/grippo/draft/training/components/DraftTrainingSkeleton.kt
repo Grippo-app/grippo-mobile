@@ -25,7 +25,7 @@ import com.grippo.design.resources.provider.loading
 private const val EXERCISE_ROW_COUNT = 3
 
 @Composable
-internal fun DraftTrainingLoadingContent(
+internal fun DraftTrainingSkeleton(
     modifier: Modifier = Modifier,
 ) {
     val loadingDescription = AppTokens.strings.res(Res.string.loading)
@@ -114,8 +114,8 @@ internal fun DraftTrainingLoadingContent(
 
 @AppPreview
 @Composable
-private fun DraftTrainingLoadingContentPreview() {
+private fun DraftTrainingSkeletonPreview() {
     PreviewContainer {
-        DraftTrainingLoadingContent(modifier = Modifier.fillMaxWidth())
+        DraftTrainingSkeleton(modifier = Modifier.fillMaxWidth())
     }
 }

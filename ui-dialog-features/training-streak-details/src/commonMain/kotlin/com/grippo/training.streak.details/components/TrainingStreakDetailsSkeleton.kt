@@ -26,7 +26,7 @@ import com.grippo.design.resources.provider.loading
 private const val TIMELINE_PERIOD_COUNT = 4
 
 @Composable
-internal fun TrainingStreakDetailsLoadingContent(modifier: Modifier = Modifier) {
+internal fun TrainingStreakDetailsSkeleton(modifier: Modifier = Modifier) {
     val loadingDescription = AppTokens.strings.res(Res.string.loading)
     val textMeasurer = rememberTextMeasurer()
     val periodLine = rememberTextHeight(style = AppTokens.typography.b13Semi(), textMeasurer = textMeasurer)
@@ -81,8 +81,8 @@ internal fun TrainingStreakDetailsLoadingContent(modifier: Modifier = Modifier) 
 
 @AppPreview
 @Composable
-private fun TrainingStreakDetailsLoadingContentPreview() {
+private fun TrainingStreakDetailsSkeletonPreview() {
     PreviewContainer {
-        TrainingStreakDetailsLoadingContent(modifier = Modifier.fillMaxWidth())
+        TrainingStreakDetailsSkeleton(modifier = Modifier.fillMaxWidth())
     }
 }

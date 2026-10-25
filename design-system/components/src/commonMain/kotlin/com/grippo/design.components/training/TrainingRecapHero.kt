@@ -93,8 +93,8 @@ public fun TrainingRecapHero(
             TrainingRecapHeroStyle.Pending -> {
                 val textMeasurer = rememberTextMeasurer()
 
-                RecapVerdictRowBones(textMeasurer = textMeasurer)
-                RecapDescriptionBone(textMeasurer = textMeasurer)
+                RecapVerdictRowSkeleton(textMeasurer = textMeasurer)
+                RecapDescriptionSkeleton(textMeasurer = textMeasurer)
             }
 
             is TrainingRecapHeroStyle.Resolved -> {
@@ -178,15 +178,15 @@ public fun TrainingRecapHeroSkeleton(modifier: Modifier = Modifier) {
     val textMeasurer = rememberTextMeasurer()
 
     RecapHeroSurface(modifier = modifier) {
-        RecapVerdictRowBones(textMeasurer = textMeasurer)
-        RecapDescriptionBone(textMeasurer = textMeasurer)
+        RecapVerdictRowSkeleton(textMeasurer = textMeasurer)
+        RecapDescriptionSkeleton(textMeasurer = textMeasurer)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         ) {
             repeat(RECAP_FACT_COUNT) {
-                RecapFactBones(modifier = Modifier.weight(1f), textMeasurer = textMeasurer)
+                RecapFactSkeleton(modifier = Modifier.weight(1f), textMeasurer = textMeasurer)
             }
         }
     }
@@ -273,7 +273,7 @@ private fun RecapVerdictRow(
 }
 
 @Composable
-private fun RecapVerdictRowBones(textMeasurer: TextMeasurer) {
+private fun RecapVerdictRowSkeleton(textMeasurer: TextMeasurer) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.training.recap.verdict.space),
@@ -293,7 +293,7 @@ private fun RecapVerdictRowBones(textMeasurer: TextMeasurer) {
 }
 
 @Composable
-private fun RecapDescriptionBone(textMeasurer: TextMeasurer) {
+private fun RecapDescriptionSkeleton(textMeasurer: TextMeasurer) {
     SkeletonText(
         modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.long),
         style = AppTokens.typography.b14Med(),
@@ -328,7 +328,7 @@ private fun RecapFact(
 }
 
 @Composable
-private fun RecapFactBones(
+private fun RecapFactSkeleton(
     modifier: Modifier = Modifier,
     textMeasurer: TextMeasurer,
 ) {

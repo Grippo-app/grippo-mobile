@@ -37,8 +37,10 @@ import com.grippo.design.resources.provider.loading
 import com.grippo.home.home.HomeState
 import com.grippo.home.home.HomeUnlock
 
+private const val PERFORMANCE_ROW_COUNT = 2
+
 @Composable
-internal fun HomeLoadingContent(
+internal fun HomeSkeleton(
     modifier: Modifier,
     state: HomeState,
     onPeriodChange: () -> Unit,
@@ -58,13 +60,13 @@ internal fun HomeLoadingContent(
         ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
-        item(key = "last_training_loading") {
-            HomeLoadingRecap(
+        item(key = "last_training_skeleton") {
+            HomeRecapSkeleton(
                 modifier = Modifier.padding(horizontal = horizontalPadding),
             )
         }
 
-        item(key = "highlights_header_loading") {
+        item(key = "highlights_header_skeleton") {
             val textMeasurer = rememberTextMeasurer()
 
             Column(
@@ -113,21 +115,21 @@ internal fun HomeLoadingContent(
         }
 
         if (state.hasGoal) {
-            item(key = "goal_progress_loading") {
-                HomeLoadingGoal(
+            item(key = "goal_progress_skeleton") {
+                HomeGoalSkeleton(
                     modifier = Modifier.padding(horizontal = horizontalPadding),
                 )
             }
         }
 
-        item(key = "muscle_loading") {
+        item(key = "muscle_load_skeleton") {
             MuscleLoadingCardSkeleton(
                 modifier = Modifier.padding(horizontal = horizontalPadding),
                 style = MuscleLoadingCardStyle.Overview,
             )
         }
 
-        item(key = "training_streak_loading") {
+        item(key = "training_streak_skeleton") {
             TrainingStreakCardSkeleton(
                 modifier = Modifier.padding(horizontal = horizontalPadding),
                 style = TrainingStreakCardStyle.Overview,
@@ -135,7 +137,7 @@ internal fun HomeLoadingContent(
         }
 
         if (lifetimeTrainingCount != null && lifetimeTrainingCount > 0) {
-            item(key = "exercise_spotlight_loading") {
+            item(key = "exercise_spotlight_skeleton") {
                 Column(
                     modifier = Modifier
                         .padding(top = AppTokens.dp.contentPadding.subContent)
@@ -148,7 +150,7 @@ internal fun HomeLoadingContent(
                             .fillMaxWidth(AppTokens.dp.skeleton.line.medium),
                         style = AppTokens.typography.h4(),
                     )
-                    HomeLoadingSpotlight(
+                    HomeSpotlightSkeleton(
                         modifier = Modifier
                             .padding(horizontal = horizontalPadding)
                             .fillMaxWidth(),
@@ -158,7 +160,7 @@ internal fun HomeLoadingContent(
         }
 
         if (lifetimeTrainingCount != null && HomeUnlock.DurationTrend.isUnlocked(lifetimeTrainingCount)) {
-            item(key = "performance_header_loading") {
+            item(key = "performance_header_skeleton") {
                 val textMeasurer = rememberTextMeasurer()
 
                 Column(
@@ -180,8 +182,8 @@ internal fun HomeLoadingContent(
                 }
             }
 
-            item(key = "performance_duration_loading") {
-                HomeLoadingPerformance(
+            item(key = "performance_duration_skeleton") {
+                HomePerformanceSkeleton(
                     modifier = Modifier.padding(horizontal = horizontalPadding),
                     compact = true,
                 )
@@ -189,13 +191,13 @@ internal fun HomeLoadingContent(
         }
 
         if (lifetimeTrainingCount != null && HomeUnlock.PerformanceTrends.isUnlocked(lifetimeTrainingCount)) {
-            items(count = 2, key = { "performance_row_loading_$it" }) {
+            items(count = PERFORMANCE_ROW_COUNT, key = { "performance_row_skeleton_$it" }) {
                 Row(
                     modifier = Modifier.padding(horizontal = horizontalPadding),
                     horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                 ) {
                     repeat(2) {
-                        HomeLoadingPerformance(modifier = Modifier.weight(1f))
+                        HomePerformanceSkeleton(modifier = Modifier.weight(1f))
                     }
                 }
             }
@@ -204,7 +206,7 @@ internal fun HomeLoadingContent(
 }
 
 @Composable
-private fun HomeLoadingRecap(modifier: Modifier) {
+private fun HomeRecapSkeleton(modifier: Modifier) {
     val textMeasurer = rememberTextMeasurer()
     val titleLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
     val dateLine = rememberTextHeight(style = AppTokens.typography.b13Med(), textMeasurer = textMeasurer)
@@ -223,7 +225,7 @@ private fun HomeLoadingRecap(modifier: Modifier) {
 }
 
 @Composable
-private fun HomeLoadingGoal(modifier: Modifier) {
+private fun HomeGoalSkeleton(modifier: Modifier) {
     val textMeasurer = rememberTextMeasurer()
     val captionLine = rememberTextHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
     val goalLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
@@ -251,7 +253,7 @@ private fun HomeLoadingGoal(modifier: Modifier) {
 }
 
 @Composable
-private fun HomeLoadingSpotlight(modifier: Modifier) {
+private fun HomeSpotlightSkeleton(modifier: Modifier) {
     val textMeasurer = rememberTextMeasurer()
     val nameLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
     val chipLine = rememberTextHeight(style = AppTokens.typography.b11Semi(), textMeasurer = textMeasurer)
@@ -268,7 +270,7 @@ private fun HomeLoadingSpotlight(modifier: Modifier) {
 }
 
 @Composable
-private fun HomeLoadingPerformance(
+private fun HomePerformanceSkeleton(
     modifier: Modifier,
     compact: Boolean = false,
 ) {
@@ -293,9 +295,9 @@ private fun HomeLoadingPerformance(
 
 @AppPreview
 @Composable
-private fun HomeLoadingUnknownUserPreview() {
+private fun HomeSkeletonUnknownUserPreview() {
     PreviewContainer {
-        HomeLoadingContent(
+        HomeSkeleton(
             modifier = Modifier.fillMaxSize(),
             state = HomeState(),
             onPeriodChange = {},
@@ -305,9 +307,9 @@ private fun HomeLoadingUnknownUserPreview() {
 
 @AppPreview
 @Composable
-private fun HomeLoadingGoalAndAllMetricsPreview() {
+private fun HomeSkeletonGoalAndAllMetricsPreview() {
     PreviewContainer {
-        HomeLoadingContent(
+        HomeSkeleton(
             modifier = Modifier.fillMaxSize(),
             state = homePreviewState(lifetimeTrainingCount = 12, hasGoal = true),
             onPeriodChange = {},
@@ -317,9 +319,9 @@ private fun HomeLoadingGoalAndAllMetricsPreview() {
 
 @AppPreview
 @Composable
-private fun HomeLoadingDurationUnlockedPreview() {
+private fun HomeSkeletonDurationUnlockedPreview() {
     PreviewContainer {
-        HomeLoadingContent(
+        HomeSkeleton(
             modifier = Modifier.fillMaxSize(),
             state = homePreviewState(lifetimeTrainingCount = 2, hasGoal = false),
             onPeriodChange = {},

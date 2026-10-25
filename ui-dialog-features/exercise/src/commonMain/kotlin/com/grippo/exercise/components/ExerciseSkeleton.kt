@@ -27,7 +27,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.loading
 
 @Composable
-internal fun ExerciseLoadingContent(modifier: Modifier = Modifier) {
+internal fun ExerciseSkeleton(modifier: Modifier = Modifier) {
     val loadingDescription = AppTokens.strings.res(Res.string.loading)
     val textMeasurer = rememberTextMeasurer()
     val image = AppTokens.dp.exerciseExampleImage.medium
@@ -87,9 +87,9 @@ internal fun ExerciseLoadingContent(modifier: Modifier = Modifier) {
 
 @AppPreview
 @Composable
-private fun ExerciseLoadingContentPreview() {
+private fun ExerciseSkeletonPreview() {
     PreviewContainer {
-        ExerciseLoadingContent(
+        ExerciseSkeleton(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(AppTokens.colors.background.dialog)

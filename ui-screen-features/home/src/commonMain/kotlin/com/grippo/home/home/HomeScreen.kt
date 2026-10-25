@@ -16,7 +16,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.dashboard
 import com.grippo.home.home.components.DashboardHomeContent
-import com.grippo.home.home.components.HomeLoadingContent
+import com.grippo.home.home.components.HomeSkeleton
 import com.grippo.home.home.components.WelcomeHomeContent
 import com.grippo.home.home.components.homePreviewState
 import com.grippo.toolkit.date.utils.DateRangeKind
@@ -49,7 +49,7 @@ internal fun HomeScreen(
             style = ToolbarStyle.Transparent,
             title = AppTokens.strings.res(Res.string.dashboard),
         )
-        HomeLoadingContent(
+        HomeSkeleton(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),

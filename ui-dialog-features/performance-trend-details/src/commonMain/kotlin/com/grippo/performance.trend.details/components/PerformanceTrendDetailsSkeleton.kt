@@ -34,7 +34,7 @@ import com.grippo.design.resources.provider.loading
 private const val HISTORY_ROW_COUNT = 3
 
 @Composable
-internal fun PerformanceTrendDetailsLoadingContent(modifier: Modifier = Modifier) {
+internal fun PerformanceTrendDetailsSkeleton(modifier: Modifier = Modifier) {
     val loadingDescription = AppTokens.strings.res(Res.string.loading)
     val textMeasurer = rememberTextMeasurer()
     val valueLine = rememberTextHeight(style = AppTokens.typography.h4(), textMeasurer = textMeasurer)
@@ -132,8 +132,8 @@ private fun PerformanceTrendLineSkeleton(
 
 @AppPreview
 @Composable
-private fun PerformanceTrendDetailsLoadingContentPreview() {
+private fun PerformanceTrendDetailsSkeletonPreview() {
     PreviewContainer {
-        PerformanceTrendDetailsLoadingContent(modifier = Modifier.fillMaxWidth())
+        PerformanceTrendDetailsSkeleton(modifier = Modifier.fillMaxWidth())
     }
 }

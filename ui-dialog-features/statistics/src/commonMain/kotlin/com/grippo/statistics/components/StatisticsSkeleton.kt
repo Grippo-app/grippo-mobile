@@ -28,7 +28,7 @@ import com.grippo.design.resources.provider.loading
 private const val TOTAL_CHIP_COUNT = 2
 
 @Composable
-internal fun StatisticsLoadingContent(
+internal fun StatisticsSkeleton(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues,
 ) {
@@ -42,15 +42,15 @@ internal fun StatisticsLoadingContent(
         contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
     ) {
-        item(key = "total_chips_loading") {
+        item(key = "total_chips_skeleton") {
             StatisticsTotalSkeleton(modifier = Modifier.fillMaxWidth())
         }
 
-        item(key = "exercise_volume_loading") {
+        item(key = "exercise_volume_skeleton") {
             VolumeMetricChartSkeleton(modifier = Modifier.fillMaxWidth())
         }
 
-        item(key = "muscle_load_loading") {
+        item(key = "muscle_load_skeleton") {
             StatisticsMuscleLoadSkeleton(modifier = Modifier.fillMaxWidth())
         }
     }
@@ -93,9 +93,9 @@ private fun StatisticsMuscleLoadSkeleton(modifier: Modifier = Modifier) {
 
 @AppPreview
 @Composable
-private fun StatisticsLoadingContentPreview() {
+private fun StatisticsSkeletonPreview() {
     PreviewContainer {
-        StatisticsLoadingContent(
+        StatisticsSkeleton(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
         )

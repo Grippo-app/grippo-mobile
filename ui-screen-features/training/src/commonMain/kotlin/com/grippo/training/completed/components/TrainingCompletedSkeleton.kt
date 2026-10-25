@@ -27,7 +27,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.loading
 
 @Composable
-internal fun TrainingCompletedLoadingContent(
+internal fun TrainingCompletedSkeleton(
     modifier: Modifier,
     contentPadding: PaddingValues,
 ) {
@@ -40,7 +40,7 @@ internal fun TrainingCompletedLoadingContent(
         },
         contentPadding = contentPadding,
     ) {
-        item(key = "completion_hero_loading") {
+        item(key = "completion_hero_skeleton") {
             TrainingRecapHeroSkeleton(modifier = Modifier.fillMaxWidth())
 
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
@@ -50,17 +50,17 @@ internal fun TrainingCompletedLoadingContent(
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
         }
 
-        item(key = "performance_comparison_loading") {
+        item(key = "performance_comparison_skeleton") {
             PerformanceComparisonCardSkeleton(modifier = Modifier.fillMaxWidth())
         }
 
-        item(key = "weekly_volume_loading") {
+        item(key = "weekly_volume_skeleton") {
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
             WeeklyVolumeCardSkeleton(modifier = Modifier.fillMaxWidth())
         }
 
-        item(key = "training_streak_loading") {
+        item(key = "training_streak_skeleton") {
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
             TrainingStreakCardSkeleton(
@@ -69,7 +69,7 @@ internal fun TrainingCompletedLoadingContent(
             )
         }
 
-        item(key = "muscle_load_loading") {
+        item(key = "muscle_load_skeleton") {
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
             MuscleLoadingCardSkeleton(
@@ -82,9 +82,9 @@ internal fun TrainingCompletedLoadingContent(
 
 @AppPreview
 @Composable
-private fun TrainingCompletedLoadingContentPreview() {
+private fun TrainingCompletedSkeletonPreview() {
     PreviewContainer {
-        TrainingCompletedLoadingContent(
+        TrainingCompletedSkeleton(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
                 horizontal = AppTokens.dp.screen.horizontalPadding,
