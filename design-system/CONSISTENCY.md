@@ -413,15 +413,14 @@ and Latin text in both themes; each role keeps its existing size and line height
   full-width region just below the status-bar overlay - the screen has no
   toolbar, and its verdict title is the screen's heading: an `h2`
   verdict title leads, the `b14Med` description line joins
-  the summary and the period label through `joined_pair` ("<summary> · <period>",
-  with non-breaking spaces around the dot so it never ends or starts a line, here
-  or in the streak line) once the stored period is resolved. An edited older
+  the summary and the period label through `joined_pair` ("<summary> · <period>")
+  once the stored period is resolved. An edited older
   workout is compared with the same kind of period around its own date (a rolling
   preset ends on that day, a calendar preset is the week, month or year containing
   it). The period label is the preset name ("30 days") whenever that comparison
   period is the current Home period and otherwise its end date through
   `training_recap_period_as_of` ("as of 27 May", "на 27 мая", "на 27 трав.",
-  "até 27 mai.", the preposition held to the date by no-break spaces): a range
+  "até 27 mai."): a range
   does not fit the uk `Average` line ("середнього · 28 жовт. – 27 лист." is
   ≈216 dp against the ≈200 dp column). The workout's own
   facts step down to
@@ -1052,12 +1051,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   its value - `AchievementState.text()` and `totalValue()` (spaced weights such as
   "92.5 kg", repetitions as "x14"; `AchievementState.value()` keeps the compact form
   for exercise details), the kinds joined by " · " ("Best weight 22.5 kg · Best
-  tonnage 380 kg · Max repetitions x10 · Peak intensity 21.1 kg") and wrapping only
-  between whole kinds, without truncation (no-break spaces join each kind's words and
-  value and hold the dot to the kind before it, so the line never breaks mid-phrase
-  like "Max / repetitions"; at most four kinds - at the standard viewport a first
-  attempt takes two lines in en, three in ru/pt and one per kind in uk - and an
-  ellipsis would hide a record) - then one decorative
+  tonnage 380 kg · Max repetitions x10 · Peak intensity 21.1 kg") and wrapping
+  without truncation (at most four kinds; an ellipsis would hide a record) - then
+  one decorative
   `metrics.overview.detailsIcon` chevron centered on the row, while the thumbnail
   stays top-aligned with the name when the kinds wrap. The row stays
   light: no nested cells, chips or per-kind value columns. Each row owns one
@@ -1190,12 +1186,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   muscle detail controls likewise keep one `content` gap before their scrolling content.
   Other sheet bodies start once at `dialog.top`.
 - Date ranges are written by `DateRangeFormatState` (`short()` and `display` give
-  the same text): both ends in the period kind's date format, an en dash with a
-  no-break space before it and a plain space after it, and no-break spaces inside
-  each date ("28 Apr – 27 May", "28 апр. – 27 мая", "28 квіт. – 27 трав.",
-  "28 abr. – 27 mai."), so a wrap never splits a date or starts a line with the
-  dash; the only break is after the dash (a fully glued range would force a break
-  inside a word). A one-day period prints one glued date ("27 травня"). Dialog
+  the same text): both ends in the period kind's date format joined by an en dash
+  ("28 Apr – 27 May", "28 апр. – 27 мая", "28 квіт. – 27 трав.",
+  "28 abr. – 27 mai."). A one-day period prints one date ("27 травня"). Dialog
   range headers, the weekly card header, streak timeline ranges, period picker
   rows and the goal card's "Analyzed" line use it (its analysis window is a custom
   range, so it always carries the year: "28 Apr 2026 – 27 May 2026"); chart week

@@ -88,6 +88,7 @@ import com.grippo.design.resources.provider.share
 import com.grippo.design.resources.provider.training_completed_details_unavailable
 import com.grippo.design.resources.provider.training_completed_done
 import com.grippo.design.resources.provider.training_completed_result_unavailable
+import com.grippo.design.resources.provider.training_recap_period_as_of
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.toolkit.date.utils.DateRangePresets
@@ -404,7 +405,7 @@ private fun trainingCompletedHeroStyle(state: TrainingCompletedState): TrainingR
     val rangeLabel = if (performance.isOver(state.range.value)) {
         state.range.label()?.text()
     } else {
-        performance.period.short()
+        performance.period.shortEnd()?.let { AppTokens.strings.res(Res.string.training_recap_period_as_of, it) }
     }
     val description = if (rangeLabel == null) {
         summary
@@ -436,7 +437,7 @@ private fun trainingCompletedPreviewState(): TrainingCompletedState {
             minute = 0,
         ),
         range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
+        format = DateFormat.DateOnly.DateDdMmmYyyy,
     )
     val base = stubTraining()
     val template = base.exercises.first()
@@ -598,7 +599,7 @@ private fun TrainingCompletedOlderWorkoutPreview() {
                     metrics = stubPerformanceMetricsImproved(),
                     period = DateRangeFormatState.of(
                         kind = DateRangeKind.Last30Days,
-                        anchor = LocalDate(year = 2026, month = 8, day = 11),
+                        anchor = LocalDate(year = 2026, month = 5, day = 27),
                     ),
                 ),
                 previousStreak = null,

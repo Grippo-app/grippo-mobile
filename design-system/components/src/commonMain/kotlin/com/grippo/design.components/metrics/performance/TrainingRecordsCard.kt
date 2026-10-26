@@ -16,7 +16,6 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.rememberTextMeasurer
-import com.grippo.core.state.formatters.NonBreaking
 import com.grippo.core.state.metrics.performance.TrainingRecordState
 import com.grippo.core.state.metrics.performance.stubTrainingRecords
 import com.grippo.design.components.divider.ContentDivider
@@ -101,7 +100,7 @@ private fun TrainingRecordRow(
     onClick: () -> Unit,
 ) {
     val kinds = record.achievements.map { achievement -> "${achievement.text().text()} ${achievement.totalValue()}" }
-    val kindsLine = kinds.joinToString(separator = NonBreaking.separator('·')) { kind -> NonBreaking.glue(kind) }
+    val kindsLine = kinds.joinToString(separator = " · ")
     val spokenKinds = AnnotatedString(kinds.joinToString(separator = ", "))
 
     Row(

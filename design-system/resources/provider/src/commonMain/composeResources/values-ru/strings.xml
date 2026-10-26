@@ -71,7 +71,7 @@
     <string name="performance_trend_desc_intensity">Средний рабочий вес на повторение с весом. Выбор упражнений влияет на значение; оно само по себе не показывает усилие или рост силы.</string>
     <string name="sets_value">Подходы (%1$s)</string>
     <string name="percent">%</string>
-    <string name="joined_pair">%1$s&#160;·&#160;%2$s</string>
+    <string name="joined_pair">%1$s · %2$s</string>
     <string name="selected">Выбрано</string>
     <string name="cm">см</string>
     <string name="apply_btn">Применить</string>
@@ -110,7 +110,7 @@
     <string name="training_recap_verdict_declined">Лёгкая тренировка</string>
     <string name="training_recap_verdict_first">Точка отсчёта</string>
     <string name="training_recap_first_description">База для следующих тренировок</string>
-    <string name="training_recap_period_as_of">на&#160;%1$s</string>
+    <string name="training_recap_period_as_of">на %1$s</string>
     <string name="total">Всего</string>
     <string name="per_group">По группам</string>
     <string name="per_muscle">По мышцам</string>
@@ -878,7 +878,7 @@
     <string name="performance_baseline_average">к среднему</string>
     <string name="performance_baseline_previous">к прошлому разу</string>
     <string name="training_records_title">Личные рекорды</string>
-    <string name="training_records_description">Лучшие результаты за&#160;всё время, установленные в&#160;этой тренировке.</string>
+    <string name="training_records_description">Лучшие результаты за всё время, установленные в этой тренировке.</string>
     <string name="weekly_volume_title">Эта неделя</string>
     <string name="weekly_volume_progress">%1$s из обычных %2$s</string>
     <string name="weekly_volume_no_typical">Пока не с чем сравнить: в последние недели тренировок не было.</string>
