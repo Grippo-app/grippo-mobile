@@ -1,7 +1,6 @@
 package com.grippo.shared.root
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
@@ -35,7 +34,6 @@ import com.grippo.shared.root.RootComponent.Child.Debug
 import com.grippo.shared.root.RootComponent.Child.Profile
 import com.grippo.shared.root.RootComponent.Child.Training
 import com.grippo.shared.root.RootComponent.Child.Trainings
-import com.grippo.toolkit.date.utils.DateFormatting
 import com.grippo.toolkit.localization.AppLocale
 import com.grippo.toolkit.theme.AppTheme
 import com.grippo.training.TrainingComponent
@@ -225,13 +223,9 @@ public class RootComponent(
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
 
         val systemIsDark = AppTheme.current
-        val systemLocaleTag = AppLocale.current
+        val localeTag = AppLocale.current
 
-        LaunchedEffect(systemLocaleTag) {
-            DateFormatting.install(systemLocaleTag)
-        }
-
-        AppTheme(darkTheme = systemIsDark, localeTag = systemLocaleTag) {
+        AppTheme(darkTheme = systemIsDark, localeTag = localeTag) {
             RootScreen(this, state.value, loaders.value, viewModel)
             dialogComponent.Render()
         }

@@ -5,36 +5,28 @@ import android.icu.util.Measure
 import android.icu.util.MeasureUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toJavaLocalDateTime
-import kotlinx.datetime.toJavaLocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 
 internal actual class SystemDateFormatter actual constructor() {
-    actual fun format(value: LocalDateTime, pattern: String, localeTag: String?): String? {
-        val loc = localeTag?.let(Locale::forLanguageTag) ?: Locale.getDefault()
+    actual fun format(value: LocalDateTime, pattern: String, localeTag: String): String? {
+        val loc = Locale.forLanguageTag(localeTag)
         val fmt = DateTimeFormatter.ofPattern(pattern, loc)
         return fmt.format(value.toJavaLocalDateTime())
     }
 
-    actual fun format(value: LocalDate, pattern: String, localeTag: String?): String? {
-        val loc = localeTag?.let(Locale::forLanguageTag) ?: Locale.getDefault()
+    actual fun format(value: LocalDate, pattern: String, localeTag: String): String? {
+        val loc = Locale.forLanguageTag(localeTag)
         val fmt = DateTimeFormatter.ofPattern(pattern, loc)
         return fmt.format(value.toJavaLocalDate())
     }
 
-    actual fun format(value: LocalTime, pattern: String, localeTag: String?): String? {
-        val loc = localeTag?.let(Locale::forLanguageTag) ?: Locale.getDefault()
-        val fmt = DateTimeFormatter.ofPattern(pattern, loc)
-        return fmt.format(value.toJavaLocalTime())
-    }
-
-    actual fun format(duration: Duration, localeTag: String?): String? {
-        val loc = localeTag?.let(Locale::forLanguageTag) ?: Locale.getDefault()
+    actual fun format(duration: Duration, localeTag: String): String? {
+        val loc = Locale.forLanguageTag(localeTag)
         val absolute = duration.toJavaDuration().abs()
         val isNegative = duration.isNegative()
 

@@ -25,18 +25,6 @@ public sealed interface DateFormat {
 
         @Immutable
         @Serializable
-        public data object MonthShort : DateOnly {
-            override val pattern: String = "MMM"
-        }
-
-        @Immutable
-        @Serializable
-        public data object MonthShortStandalone : DateOnly {
-            override val pattern: String = "LLL"
-        }
-
-        @Immutable
-        @Serializable
         @SerialName("com.grippo.toolkit.date.utils.DateFormat.DateOnly.DateMmmDdYyyy")
         public data object DateDdMmmYyyy : DateOnly {
             override val pattern: String = "d MMM yyyy"
@@ -56,12 +44,6 @@ public sealed interface DateFormat {
 
         @Immutable
         @Serializable
-        public data object Mmmm : DateOnly {
-            override val pattern: String = "MMMM"
-        }
-
-        @Immutable
-        @Serializable
         public data object DateDdMmmm : DateOnly {
             override val pattern: String = "d MMMM"
         }
@@ -72,11 +54,6 @@ public sealed interface DateFormat {
             override val pattern: String = "EEE"
         }
 
-        @Immutable
-        @Serializable
-        public data object WeekdayLong : DateOnly {
-            override val pattern: String = "EEEE"
-        }
     }
 
     @Serializable

@@ -2,7 +2,6 @@ package com.grippo.toolkit.date.utils.internal
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.number
 import platform.Foundation.NSCalendar
 import platform.Foundation.NSCalendarIdentifierGregorian
@@ -16,14 +15,13 @@ import platform.Foundation.NSDateComponentsFormatterZeroFormattingBehaviorDropAl
 import platform.Foundation.NSDateFormatter
 import platform.Foundation.NSLocale
 import platform.Foundation.NSTimeZone
-import platform.Foundation.currentLocale
 import platform.Foundation.localTimeZone
 import kotlin.time.Duration
 
 internal actual class SystemDateFormatter actual constructor() {
-    actual fun format(value: LocalDateTime, pattern: String, localeTag: String?): String? {
+    actual fun format(value: LocalDateTime, pattern: String, localeTag: String): String? {
         val formatter = NSDateFormatter().apply {
-            locale = localeTag?.let { NSLocale(localeIdentifier = it) } ?: NSLocale.currentLocale
+            locale = NSLocale(localeIdentifier = localeTag)
             calendar = NSCalendar.calendarWithIdentifier(NSCalendarIdentifierGregorian)
                 ?: NSCalendar.currentCalendar
             timeZone = NSTimeZone.localTimeZone
@@ -35,10 +33,10 @@ internal actual class SystemDateFormatter actual constructor() {
     actual fun format(
         value: LocalDate,
         pattern: String,
-        localeTag: String?
+        localeTag: String
     ): String? {
         val formatter = NSDateFormatter().apply {
-            locale = localeTag?.let { NSLocale(localeIdentifier = it) } ?: NSLocale.currentLocale
+            locale = NSLocale(localeIdentifier = localeTag)
             calendar = NSCalendar.calendarWithIdentifier(NSCalendarIdentifierGregorian)
                 ?: NSCalendar.currentCalendar
             timeZone = NSTimeZone.localTimeZone
@@ -47,22 +45,10 @@ internal actual class SystemDateFormatter actual constructor() {
         return value.toNSDateAtNoon()?.let { formatter.stringFromDate(it) }
     }
 
-    actual fun format(value: LocalTime, pattern: String, localeTag: String?): String? {
-        val formatter = NSDateFormatter().apply {
-            locale = localeTag?.let { NSLocale(localeIdentifier = it) } ?: NSLocale.currentLocale
-            calendar = NSCalendar.calendarWithIdentifier(NSCalendarIdentifierGregorian)
-                ?: NSCalendar.currentCalendar
-            timeZone = NSTimeZone.localTimeZone
-            dateFormat = normalizeApplePattern(pattern)
-        }
-        return value.toNSDateOnReferenceDate()?.let { formatter.stringFromDate(it) }
-    }
-
-    actual fun format(duration: Duration, localeTag: String?): String? {
+    actual fun format(duration: Duration, localeTag: String): String? {
         val isNegative = duration.isNegative()
         val absoluteSeconds = duration.absoluteValue.inWholeSeconds
-        val localeValue =
-            localeTag?.let { NSLocale(localeIdentifier = it) } ?: NSLocale.currentLocale
+        val localeValue = NSLocale(localeIdentifier = localeTag)
 
         val formatter = NSDateComponentsFormatter().apply {
             allowedUnits = NSCalendarUnitHour or NSCalendarUnitMinute
@@ -89,19 +75,6 @@ private fun LocalDate.toNSDateAtNoon(): NSDate? {
         hour = 12
         minute = 0
         second = 0
-        timeZone = NSTimeZone.localTimeZone
-    }
-    return NSCalendar.currentCalendar.dateFromComponents(comps)
-}
-
-private fun LocalTime.toNSDateOnReferenceDate(): NSDate? {
-    val comps = NSDateComponents().apply {
-        year = 2001
-        month = 1
-        day = 1
-        hour = this@toNSDateOnReferenceDate.hour.toLong()
-        minute = this@toNSDateOnReferenceDate.minute.toLong()
-        second = this@toNSDateOnReferenceDate.second.toLong()
         timeZone = NSTimeZone.localTimeZone
     }
     return NSCalendar.currentCalendar.dateFromComponents(comps)

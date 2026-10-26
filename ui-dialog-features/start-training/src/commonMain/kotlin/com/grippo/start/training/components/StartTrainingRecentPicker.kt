@@ -16,6 +16,8 @@ import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.joined_pair
 import com.grippo.start.training.StartTrainingOption
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -50,7 +52,7 @@ internal fun StartTrainingRecentPicker(
                 value = option.createdAt,
                 format = DateFormat.TimeOnly.Time24hHm,
             )
-            val label = "$date · $time"
+            val label = AppTokens.strings.res(Res.string.joined_pair, date, time)
 
             CheckSelectableCard(
                 style = CheckSelectableCardStyle.Small(title = label),

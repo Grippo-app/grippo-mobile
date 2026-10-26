@@ -19,6 +19,7 @@ import androidx.core.view.WindowCompat
 import com.arkivanov.decompose.retainedComponent
 import com.grippo.shared.root.RootComponent
 import com.grippo.toolkit.local.notification.LocalNotificationExtras
+import com.grippo.toolkit.localization.AppLocale
 
 class MainActivity : ComponentActivity() {
 
@@ -33,7 +34,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        installSplashScreen().setKeepOnScreenCondition { !AppLocale.isResolved }
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge(

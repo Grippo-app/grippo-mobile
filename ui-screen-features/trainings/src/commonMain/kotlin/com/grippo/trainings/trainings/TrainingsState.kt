@@ -117,7 +117,7 @@ internal sealed interface TrainingsTimelinePeriod {
             ): Monthly {
                 val anchor = range.from.date
                 val monthAnchor = LocalDate(anchor.year, anchor.month, 1)
-                val today = DateTimeUtils.now().date
+                val today = DateTimeUtils.today()
 
                 var digestEntry: TimelineState.MonthlyDigest? = null
                 val trainingDays = mutableListOf<TimelineState.MonthlyTrainingsDay>()
@@ -180,7 +180,7 @@ internal sealed interface TrainingsTimelinePeriod {
             }
 
             private fun defaultMonthReference(): DateFormatState {
-                val today = DateTimeUtils.now().date
+                val today = DateTimeUtils.today()
                 return DateFormatState.of(
                     value = LocalDate(today.year, today.month, 1),
                     range = DateRangePresets.infinity(),

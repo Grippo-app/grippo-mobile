@@ -6,11 +6,9 @@ import com.grippo.toolkit.localization.AppLocale
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
-import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
@@ -46,7 +44,7 @@ public object DateTimeUtils {
     }
 
     public fun leadingYear(): DateRange {
-        val date = Clock.System.now().toLocalDateTime(timeZone).date
+        val date = today()
 
         return DateRange(
             from = date.atTime(DayTime.StartOfDay.localTime),
@@ -85,12 +83,12 @@ public object DateTimeUtils {
     }
 
     public fun trailingYear(): DateRange {
-        val today = Clock.System.now().toLocalDateTime(timeZone).date
-        val oneYearAgo = today.minus(DatePeriod(years = 1))
+        val date = today()
+        val oneYearAgo = date.minus(DatePeriod(years = 1))
 
         return DateRange(
             from = oneYearAgo.atTime(DayTime.StartOfDay.localTime),
-            to = today.atTime(DayTime.EndOfDay.localTime)
+            to = date.atTime(DayTime.EndOfDay.localTime)
         )
     }
 
@@ -158,17 +156,10 @@ public object DateTimeUtils {
             .toLocalDateTime(timeZone)
     }
 
-    @OptIn(FormatStringsInDatetimeFormats::class)
     public fun format(value: LocalDateTime, format: DateFormat): String {
         return formatter.format(value, format.pattern, AppLocale.current()) ?: "-"
     }
 
-    @OptIn(FormatStringsInDatetimeFormats::class)
-    public fun format(value: LocalTime, format: DateFormat.TimeOnly): String {
-        return formatter.format(value, format.pattern, AppLocale.current()) ?: "-"
-    }
-
-    @OptIn(FormatStringsInDatetimeFormats::class)
     public fun format(value: LocalDate, format: DateFormat.DateOnly): String {
         return formatter.format(value, format.pattern, AppLocale.current()) ?: "-"
     }
@@ -188,11 +179,6 @@ public object DateTimeUtils {
         return instant.toLocalDateTime(timeZone)
     }
 
-    public fun plus(value: LocalDateTime, plus: Duration): LocalDateTime {
-        val instant = value.toInstant(timeZone) + plus
-        return instant.toLocalDateTime(timeZone)
-    }
-
     public fun shift(range: DateRange, period: DatePeriod): DateRange {
         val newFromDate = range.from.date.plus(period)
         val newToDate = range.to.date.plus(period)
@@ -200,16 +186,6 @@ public object DateTimeUtils {
             from = newFromDate.atTime(range.from.time),
             to = newToDate.atTime(range.to.time)
         )
-    }
-
-    public fun isToday(date: LocalDate): Boolean {
-        val today = Clock.System.todayIn(timeZone)
-        return date == today
-    }
-
-    public fun isPast(date: LocalDate): Boolean {
-        val today = Clock.System.todayIn(timeZone)
-        return date < today
     }
 
     public fun isPast(value: LocalDateTime): Boolean {

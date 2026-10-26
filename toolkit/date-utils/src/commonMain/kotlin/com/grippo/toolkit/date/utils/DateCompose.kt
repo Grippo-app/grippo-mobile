@@ -23,7 +23,7 @@ public object DateCompose {
 
     @Composable
     public fun rememberWeekDayShortLabels(): List<String> {
-        val localeTag = AppLocale.current.split(',').firstOrNull { it.isNotBlank() }?.trim()
+        val localeTag = AppLocale.current
 
         return remember(localeTag) {
             val monday = LocalDate(2023, 1, 2)
@@ -40,7 +40,7 @@ public object DateCompose {
 
     @Composable
     public fun rememberFormat(value: LocalDateTime, format: DateFormat): String {
-        val localeTag = AppLocale.current.split(',').firstOrNull { it.isNotBlank() }?.trim()
+        val localeTag = AppLocale.current
 
         return remember(value, format, localeTag) {
             SystemDateFormatter().format(value = value, pattern = format.pattern, localeTag = localeTag) ?: "-"
@@ -56,8 +56,8 @@ public object DateCompose {
         val today: String = AppTokens.strings.res(Res.string.today)
         val tomorrow: String = AppTokens.strings.res(Res.string.tomorrow)
         val yesterday: String = AppTokens.strings.res(Res.string.yesterday)
-        val localeTag = AppLocale.current.split(',').firstOrNull { it.isNotBlank() }?.trim()
-        val referenceDate = DateTimeUtils.now().date
+        val localeTag = AppLocale.current
+        val referenceDate = DateTimeUtils.today()
 
         return remember(value, format, contextual, localeTag, referenceDate, today, tomorrow, yesterday) {
             val contextualResult = if (contextual) {
@@ -79,7 +79,7 @@ public object DateCompose {
 
     @Composable
     public fun rememberFormat(value: Duration): String {
-        val localeTag = AppLocale.current.split(',').firstOrNull { it.isNotBlank() }?.trim()
+        val localeTag = AppLocale.current
 
         return remember(key1 = value, key2 = localeTag) {
             SystemDateFormatter().format(duration = value, localeTag = localeTag) ?: "-"
