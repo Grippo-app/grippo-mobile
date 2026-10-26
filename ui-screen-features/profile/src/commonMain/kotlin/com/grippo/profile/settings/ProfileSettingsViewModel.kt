@@ -6,6 +6,7 @@ import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.UiText
+import com.grippo.core.state.settings.LanguageEnumState
 import com.grippo.data.features.api.authorization.DeleteProfileUseCase
 import com.grippo.data.features.api.authorization.LogoutUseCase
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
@@ -15,10 +16,13 @@ import com.grippo.data.features.api.user.models.User
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.account_deletion
 import com.grippo.design.resources.provider.account_deletion_description
+import com.grippo.design.resources.provider.app_language
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.user.toState
+import com.grippo.state.domain.language.toDomain
 import com.grippo.toolkit.analytics.context.NavigationReason
+import com.grippo.toolkit.localization.AppLocale
 import kotlinx.coroutines.flow.onEach
 
 internal class ProfileSettingsViewModel(
@@ -70,6 +74,30 @@ internal class ProfileSettingsViewModel(
         navigateTo(ProfileSettingsDirection.Back)
     }
 
+    override fun onLanguageClick() {
+        analytics.trackEvent(ProfileEvent.Settings.LanguageOpened)
+
+        val config = DialogConfig.LanguagePicker(
+            initial = currentLanguage(),
+            title = UiText.Res(Res.string.app_language),
+            onResult = { value ->
+                analytics.trackEvent(ProfileEvent.Settings.LanguageConfirmed)
+
+                if (value != currentLanguage()) {
+                    val language = value.toDomain()
+
+                    safeLaunch {
+                        analytics.trackOperation(ProfileOperation.SaveLanguage) {
+                            localSettingsFeature.setLanguage(language)
+                        }
+                    }
+                }
+            },
+        )
+
+        dialogController.open(config)
+    }
+
     override fun onLogoutClick() {
         analytics.trackEvent(ProfileEvent.Settings.Logout)
         safeLaunch(loader = ProfileSettingsLoader.LogoutButton) {
@@ -93,5 +121,11 @@ internal class ProfileSettingsViewModel(
                 }
             })
         dialogController.open(config)
+    }
+
+    private fun currentLanguage(): LanguageEnumState {
+        val localeTag = AppLocale.current()
+
+        return LanguageEnumState.of(localeTag)
     }
 }

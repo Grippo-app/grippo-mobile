@@ -16,6 +16,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.rememberTextMeasurer
+import com.grippo.core.state.formatters.NonBreaking
 import com.grippo.core.state.metrics.performance.TrainingRecordState
 import com.grippo.core.state.metrics.performance.stubTrainingRecords
 import com.grippo.design.components.divider.ContentDivider
@@ -38,9 +39,6 @@ import com.grippo.design.resources.provider.training_records_title
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
-
-private const val RECORD_KINDS_SEPARATOR = "\u00A0· "
-private const val NO_BREAK_SPACE = '\u00A0'
 
 @Composable
 public fun TrainingRecordsCard(
@@ -103,7 +101,7 @@ private fun TrainingRecordRow(
     onClick: () -> Unit,
 ) {
     val kinds = record.achievements.map { achievement -> "${achievement.text().text()} ${achievement.totalValue()}" }
-    val kindsLine = kinds.joinToString(separator = RECORD_KINDS_SEPARATOR) { kind -> kind.replace(' ', NO_BREAK_SPACE) }
+    val kindsLine = kinds.joinToString(separator = NonBreaking.separator('·')) { kind -> NonBreaking.glue(kind) }
     val spokenKinds = AnnotatedString(kinds.joinToString(separator = ", "))
 
     Row(

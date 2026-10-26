@@ -1,0 +1,26 @@
+plugins {
+    id("android.library.convention")
+    id("kotlin.multiplatform.convention")
+    id("compose.multiplatform.convention")
+    id("koin.annotation.convention")
+}
+
+kotlin {
+    android {
+        namespace = "com.grippo.ui.dialog.features.language.picker"
+    }
+
+    sourceSets.commonMain.dependencies {
+        implementation(projects.analytics.analyticsApi)
+        implementation(projects.uiCore.foundation)
+        implementation(projects.uiCore.state)
+        implementation(projects.designSystem.core)
+        implementation(projects.designSystem.resources.provider)
+        implementation(projects.designSystem.preview)
+        implementation(projects.designSystem.components)
+        implementation(libs.compose.foundation)
+        implementation(libs.compose.material3)
+
+        implementation(libs.immutable.collections)
+    }
+}

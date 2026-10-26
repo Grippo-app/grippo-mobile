@@ -53,12 +53,13 @@ A successful return establishes the complete operation outcome, not just an acce
   malformed row makes the response incomplete. Do not overwrite a complete cache with partial
   records. Validate received objects' intrinsic enum, component and consumed date mappings
   before writing. A non-null entity is insufficient when those mappings reject its value.
-  Exception: the equipment catalog (`EquipmentRepositoryImpl.getEquipments`) stores group and
-  equipment rows whose `type` key this app version does not know, so that exercise-example
-  references keep their foreign-key parents and a build with this exception keeps working when
-  the server adds a type. The entity-to-domain mappers hide those rows; an unknown group type
-  hides the whole group from the catalog projection, including its equipment of known types.
-  Missing fields, duplicate IDs and wrong parents still make that response incomplete. Store
+  Exception: the equipment and muscle catalogs (`EquipmentRepositoryImpl.getEquipments`,
+  `MuscleRepositoryImpl.getMuscles`) store group and item rows whose `type` key this app
+  version does not know, so a catalog refresh, Splash's included, keeps succeeding when the
+  server adds a type, and exercise-example snapshots written after that refresh find their
+  foreign-key parents. The entity-to-domain mappers hide those rows; an unknown group type
+  hides the whole group from the catalog projection, including its items of known types. Missing fields,
+  duplicate IDs and wrong parents still make that response incomplete. For equipment, store
   and TestFlight builds without this exception and the user-visible effects of hiding are
   described in the [equipment integration map](../../add-equipment/references/integration-map.md#mobile-touchpoints).
   For muscles: a hidden muscle drops out of exercise-example bundles, so an example's load is
