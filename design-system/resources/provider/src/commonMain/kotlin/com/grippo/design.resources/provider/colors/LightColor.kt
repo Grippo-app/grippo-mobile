@@ -124,8 +124,8 @@ public object LightColor : AppColor {
 
     override val text: AppColor.TextColors = object : AppColor.TextColors {
         override val primary = AppPalette.NeutralLight.N800
-        override val secondary = AppPalette.NeutralLight.N700
-        override val tertiary = AppPalette.NeutralLight.N500
+        override val secondary = AppPalette.NeutralLight.N550
+        override val tertiary = AppPalette.NeutralLight.N450
         override val disabled = AppPalette.NeutralLight.N400
     }
 

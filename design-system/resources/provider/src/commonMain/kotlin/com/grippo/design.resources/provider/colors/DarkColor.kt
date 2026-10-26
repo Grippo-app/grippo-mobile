@@ -125,7 +125,7 @@ public object DarkColor : AppColor {
     override val text: AppColor.TextColors = object : AppColor.TextColors {
         override val primary = AppPalette.NeutralDark.N800
         override val secondary = AppPalette.NeutralDark.N700
-        override val tertiary = AppPalette.NeutralDark.N650
+        override val tertiary = AppPalette.NeutralDark.N600
         override val disabled = AppPalette.NeutralDark.N400
     }
 
