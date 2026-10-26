@@ -3,7 +3,8 @@
 Scope: `:ui-dialog-features:performance-trend-details`; Home opens the selected
 metric and selected training period, and the Completed workout screen opens the
 tapped growth-bar metric and its comparison period (the Home period's kind anchored
-at the saved workout's date), through the same
+at the saved workout's date; for an edited workout it ends at the end of that
+workout's day, so workouts from later days are excluded), through the same
 `DialogConfig.PerformanceTrendDetails`, which also carries the comparison reference:
 Home always passes `Average`, Completed the reference of its visible comparison.
 
@@ -120,4 +121,5 @@ No editable business fields, selections, filters, picker results, secrets or par
 drafts are introduced. Calculated values are rebuilt; no StateKeeper supplier, extra
 lifecycle job or reporting state is added. Each caller owns its period: Home its
 selected range, Completed its comparison period: the Home period's kind (from
-`LocalSettingsFeature.observeRange()`) anchored at the saved workout's date.
+`LocalSettingsFeature.observeRange()`) anchored at the saved workout's date, ending
+at the end of an edited workout's day.

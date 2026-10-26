@@ -429,8 +429,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   period is the current Home period (none for Infinity, which has no preset name)
   and otherwise its end date through `training_recap_period_as_of` ("as of 27 May",
   "на 27 мая", "на 27 трав.", "até 27 mai."; `PerformanceComparisonState.periodLabel()`
-  owns this choice for the hero and `presetLabel()` the same choice for the trend
-  sheet title): a range does not fit the uk `Average` line ("середнього · 28 жовт. – 27 лист." is
+  owns this choice; the trend sheet title names the preset only when the sheet shows
+  exactly the Home period): a range does not fit the uk `Average` line ("середнього · 28 жовт. – 27 лист." is
   ≈216 dp against the ≈200 dp column). The workout's own
   facts step down to
   `h3` with `b11Med` labels. The description lives on the types:
@@ -870,7 +870,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   `PerformanceMetricCardStyle.Detailed(reference)` with the reference from its
   caller: Home always passes `Average`, the completed-workout screen its selected
   one, so a row read against the last workout opens a summary measured the same way
-  (the history rows and the chart show values only). Detailed summaries omit status
+  (the history rows and the chart show values only). For an edited workout the sheet
+  ends at the end of that workout's day, so its latest entry is the edited workout
+  unless another workout was saved later that day. Detailed summaries omit status
   chips and best-value repetitions; missing current data, missing earlier data and a
   zero earlier value have distinct quiet copy, the last two worded for the reference
   (`missingValueNotice()`, `zeroValueNotice()`).

@@ -491,6 +491,15 @@ internal class TrainingCompletedViewModel(
         return adherence.toState(now = now)
     }
 
+    private fun trendRange(period: DateRange): DateRange {
+        val savedAt = state.value.training?.createdAt?.value
+        if (stage.id == null || savedAt == null) {
+            return period
+        }
+
+        return period.copy(to = DateTimeUtils.endOfDay(savedAt))
+    }
+
     override fun onShareClick(capture: suspend () -> ImageBitmap) {
         if (TrainingCompletedLoader.ShareRecap in loaders.value) return
 
@@ -526,11 +535,13 @@ internal class TrainingCompletedViewModel(
     override fun onMetricClick(type: PerformanceMetricTypeState) {
         val performance = state.value.performance ?: return
 
-        val range = performance.period.value ?: return
+        val period = performance.period.value ?: return
 
         analytics.trackEvent(event = TrainingEvent.Completed.MetricOpened)
 
-        val rangeLabel = performance.presetLabel(state.value.range)
+        val range = trendRange(period)
+
+        val rangeLabel = state.value.range.takeIf { it.value == range }?.label()
 
         val metricLabel = type.labelText()
 
