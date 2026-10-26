@@ -24,13 +24,18 @@ Android and iOS versions are maintained independently and may differ.
 
 - **Room**: schema compatibility and version changes follow
   [migration decisions](../../data-layer/references/cookbook-room-migration.md).
-- **Additive serialized fields**: adding an optional property with a default to a
-  `@Serializable` State or route is backward-compatible and needs no bump;
-  removing, renaming or retyping a field does.
-- **iOS restoration archive**: when a serializer, `PersistenceKey` address,
-  router shape or Essenty key changes so that a saved checkpoint can no longer
-  decode, increment `formatVersion` (or the build version) so the old checkpoint
-  is discarded instead of failing. Ordinary refactors keep keys unchanged.
+- **Saved UI state** (StateKeeper drafts, routes, the iOS restoration archive)
+  never crosses an app update: the iOS store discards a checkpoint whose build
+  version differs, every release raises the build version, and an Android update
+  starts without the previous saved state. Adding, removing, renaming or retyping a
+  `@Serializable` State or route field, a `PersistenceKey` address, a router shape
+  or an Essenty key therefore needs no compatibility work. MUST NOT add a
+  `formatVersion` bump, `@SerialName` alias, `@JsonIgnoreUnknownKeys`, decode
+  fallback or migration for it unless a concrete reader of an older archive exists
+  and the owner asks for it. A development reinstall with the same build number may
+  then fail once on a stale checkpoint; the store clears it before decoding, and
+  that is accepted. `formatVersion` changes only with the archive's own format in
+  `ApplicationStateStore.swift`.
 - **Analytics**: released schemas keep their meaning; semantic changes need a
   reporting decision before a version bump (owner: feature-analytics).
 - **Public Swift API**: changes to exported `:shared`, `:toolkit:*:api` or

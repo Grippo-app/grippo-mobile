@@ -28,7 +28,6 @@
     <string name="metric_overview_streak_pattern_pattern">Dias de treino: %1$d · Dias por ciclo: %2$d</string>
     <string name="metric_overview_performance_average">Média anterior: %1$s</string>
     <string name="metric_overview_performance_comparison">%1$s em relação à média anterior</string>
-    <string name="metric_overview_performance_comparison_previous">%1$s em relação ao treino anterior</string>
     <string name="metric_overview_duration">Tempo de treino</string>
     <string name="metric_overview_volume">Peso levantado</string>
     <string name="metric_overview_density">Peso por minuto</string>
@@ -949,7 +948,7 @@
     <string name="muscle_loading_details_method_expanded">Expandido</string>
     <string name="muscle_loading_details_method_collapsed">Recolhido</string>
 
-    <string name="performance_trend_details_latest">Último treino</string>
+    <string name="performance_trend_details_latest">Treino mais recente</string>
     <string name="performance_trend_details_previous_average">Média anterior: %1$s</string>
     <string name="performance_previous_value">Treino anterior: %1$s</string>
     <string name="performance_trend_details_comparison">Variação: %1$s</string>
@@ -987,7 +986,6 @@
     <string name="training_streak_details_cycle_value">Dias coincidentes: %1$d / %2$d</string>
     <string name="training_streak_details_day_recorded">Treino registrado</string>
     <string name="training_streak_details_day_unrecorded">Sem treino registrado</string>
-    <string name="training_streak_details_day_description">%1$s · %2$s</string>
     <string name="training_streak_details_empty">Nenhum dia de treino neste período. Treinos registrados com repetições concluídas vão revelar seu ritmo aqui.</string>
     <string name="training_streak_details_method_expanded">Expandido</string>
     <string name="training_streak_details_method_collapsed">Recolhido</string>

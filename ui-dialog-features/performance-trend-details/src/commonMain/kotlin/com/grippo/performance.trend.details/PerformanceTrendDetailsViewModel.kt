@@ -42,11 +42,14 @@ public class PerformanceTrendDetailsViewModel(
 
     private fun providePerformance(trainings: List<Training>) {
         val sorted = trainings.sortedWith(compareBy<Training> { it.createdAt }.thenBy { it.id })
+
         val reference = state.value.reference.toDomain()
+
         val history = sorted.indices.reversed().take(HISTORY_LIMIT).map { index ->
             val training = sorted[index]
+            val trainingsSoFar = sorted.subList(fromIndex = 0, toIndex = index + 1)
             val metric = performanceTrendUseCase
-                .fromTrainings(trainings = sorted.subList(0, index + 1), reference = reference)
+                .fromTrainings(trainings = trainingsSoFar, reference = reference)
                 .toState()
                 .first { it.type == state.value.metricType }
 

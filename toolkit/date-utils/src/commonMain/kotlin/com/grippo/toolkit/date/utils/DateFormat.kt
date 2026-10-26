@@ -1,7 +1,6 @@
 package com.grippo.toolkit.date.utils
 
 import androidx.compose.runtime.Immutable
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Immutable
@@ -25,7 +24,6 @@ public sealed interface DateFormat {
 
         @Immutable
         @Serializable
-        @SerialName("com.grippo.toolkit.date.utils.DateFormat.DateOnly.DateMmmDdYyyy")
         public data object DateDdMmmYyyy : DateOnly {
             override val pattern: String = "d MMM yyyy"
         }
@@ -53,7 +51,6 @@ public sealed interface DateFormat {
         public data object WeekdayShort : DateOnly {
             override val pattern: String = "EEE"
         }
-
     }
 
     @Serializable

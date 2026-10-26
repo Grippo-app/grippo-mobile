@@ -173,6 +173,11 @@ Screen-result rules are defined in the ui-feature skill,
 - **Redundant domain constructor fields** — apply
   [minimal domain models](../../data-layer/references/repositories.md#minimal-domain-models).
 - **Flat scalar pile.** 15+ primitive fields, or booleans encoding one lifecycle (`isRunning` + `hasCompletedTest` + `activePhase`). Group clusters into sub-states, fixed sets into enums, the lifecycle into a sealed interface. See the ui-feature skill, references/state.md § "No flat scalar piles". Reviewer-enforced.
+- **Compatibility shims for saved UI state** - a `formatVersion` bump, `@SerialName`
+  alias, `@JsonIgnoreUnknownKeys`, decode fallback or migration added because a
+  State, route or key changed, without a concrete reader of an older archive and
+  the owner's request. The positive rule is in
+  [compatibility bumps](../../platform-build-toolkit/references/release.md#compatibility-bumps).
 
 ## Build
 

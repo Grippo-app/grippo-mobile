@@ -2,7 +2,8 @@
 
 Scope: `:ui-dialog-features:performance-trend-details`; Home opens the selected
 metric and selected training period, and the Completed workout screen opens the
-tapped growth-bar metric and its resolved period, through the same
+tapped growth-bar metric and its comparison period (the Home period's kind anchored
+at the saved workout's date), through the same
 `DialogConfig.PerformanceTrendDetails`, which also carries the comparison reference:
 Home always passes `Average`, Completed the reference of its visible comparison.
 
@@ -23,7 +24,7 @@ the default null screenPresentation. Dialog sessions have no presentation contra
 |---|---|---|
 | PerformanceTrendDetailsViewModel.onBack | DismissRequested / performance_trend_dismiss_requested v1 | Existing Back callback, empty parameters before the existing direction |
 | HomeViewModel.onPerformanceMetricClick | HomeEvent.PerformanceMetricClicked | Existing valid-range guard; parameterless event. Metric type and the `Average` reference are business dialog inputs omitted from telemetry; owned by Home |
-| TrainingCompletedViewModel.onMetricClick | TrainingEvent.Completed.MetricOpened / completed_metric_opened v1 | Resolved-period guard (`state.range.value`); parameterless event. The tapped metric type, the Completed period and its computed reference are business dialog inputs (title `value_performance_trend(rangeLabel, metric)` or `performance_trend(metric)`), not encoded; owned by Completed |
+| TrainingCompletedViewModel.onMetricClick | TrainingEvent.Completed.MetricOpened / completed_metric_opened v1 | Computed-comparison guard (`performance.period.value`); parameterless event. The tapped metric type, the Completed period and its computed reference are business dialog inputs (title `value_performance_trend(rangeLabel, metric)` or `performance_trend(metric)`), not encoded; owned by Completed |
 | Training observation and history calculation | Deliberate omission | Data-backed rebuilding and pure local calculation, no finite request or submission |
 
 The leaf Back callback observes a dismissal request, not delivered dismissal.
@@ -109,7 +110,7 @@ no earlier measurement.
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
-| PerformanceTrendDetailsComponent / VM | range, metricType and reference | Runtime only for live dialog | Caller inputs and retainedInstance; no draft key | Retained VM survives ordinary recreation; a fresh opening uses the caller's current inputs (Home's selected period, metric and `Average`, or Completed's resolved period, tapped metric and computed reference) |
+| PerformanceTrendDetailsComponent / VM | range, metricType and reference | Runtime only for live dialog | Caller inputs and retainedInstance; no draft key | Retained VM survives ordinary recreation; a fresh opening uses the caller's current inputs (Home's selected period, metric and `Average`, or Completed's comparison period, tapped metric and computed reference) |
 | PerformanceTrendDetailsViewModel | history, training identity, dates and metric presentation | Rebuild | TrainingFeature.observeTrainings for the selected range, PerformanceTrendUseCase and domain-to-state mapper | History starts null; the first emission resolves populated/empty data in one update. At most ten newest entries are retained for the summary and chart, with up to nine previous-session rows derived locally; their comparisons still use all predecessors |
 | PerformanceTrendDetailsScreen | Methodology disclosure state | Runtime only | Local rememberSaveable presentation state in the live dialog | Fresh opening starts collapsed; ordinary recomposition/recreation retains the current disclosure. No business draft or process-death dialog restoration |
 | Dialog host | Session, callbacks and pending Back | Runtime only | Slot/step serializer = null | Process death discards the session |
@@ -118,5 +119,5 @@ no earlier measurement.
 No editable business fields, selections, filters, picker results, secrets or parent
 drafts are introduced. Calculated values are rebuilt; no StateKeeper supplier, extra
 lifecycle job or reporting state is added. Each caller owns its period: Home its
-selected range, Completed the committed Home period it rebuilds from
-`LocalSettingsFeature.observeRange()`.
+selected range, Completed its comparison period: the Home period's kind (from
+`LocalSettingsFeature.observeRange()`) anchored at the saved workout's date.

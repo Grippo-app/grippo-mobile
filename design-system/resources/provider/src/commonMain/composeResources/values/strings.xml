@@ -28,7 +28,6 @@
     <string name="metric_overview_streak_pattern_pattern">Training days: %1$d · Days per cycle: %2$d</string>
     <string name="metric_overview_performance_average">Previous avg: %1$s</string>
     <string name="metric_overview_performance_comparison">%1$s vs previous average</string>
-    <string name="metric_overview_performance_comparison_previous">%1$s vs previous workout</string>
     <string name="metric_overview_duration">Workout time</string>
     <string name="metric_overview_volume">Weight lifted</string>
     <string name="metric_overview_density">Weight per minute</string>
@@ -956,7 +955,7 @@
     <string name="performance_trend_details_first_workout">A comparison needs an earlier workout with data in this period.</string>
     <string name="performance_trend_details_no_previous">A comparison needs data from the previous workout in this period.</string>
     <string name="performance_trend_details_zero_average">The earlier average is zero, so a percentage change is unavailable.</string>
-    <string name="performance_trend_details_zero_previous">The previous workout's value is zero, so a percentage change is unavailable.</string>
+    <string name="performance_trend_details_zero_previous">The previous workout’s value is zero, so a percentage change is unavailable.</string>
     <string name="performance_trend_details_value_unavailable">Value unavailable</string>
     <string name="performance_trend_details_value_unavailable_description">This workout does not have enough data for this metric.</string>
     <string name="performance_trend_details_recent_workouts">Recent workouts</string>
@@ -987,7 +986,6 @@
     <string name="training_streak_details_cycle_value">Matched days: %1$d / %2$d</string>
     <string name="training_streak_details_day_recorded">Training recorded</string>
     <string name="training_streak_details_day_unrecorded">No training recorded</string>
-    <string name="training_streak_details_day_description">%1$s · %2$s</string>
     <string name="training_streak_details_empty">No training days in this period. Recorded workouts with completed reps will form your rhythm here.</string>
     <string name="training_streak_details_method_expanded">Expanded</string>
     <string name="training_streak_details_method_collapsed">Collapsed</string>

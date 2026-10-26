@@ -105,11 +105,9 @@ private fun TrainingRecordRow(
     val kinds = record.achievements.map { achievement ->
         AppTokens.strings.res(Res.string.labeled_value, achievement.text().text(), achievement.spacedValue())
     }
-    val kindsLine = kinds
-        .reduceOrNull { line, kind -> AppTokens.strings.res(Res.string.joined_pair, line, kind) }
-        .orEmpty()
+    val kindsLine = kinds.reduce { line, kind -> AppTokens.strings.res(Res.string.joined_pair, line, kind) }
     val spokenKinds = AnnotatedString(
-        kinds.reduceOrNull { line, kind -> AppTokens.strings.res(Res.string.listed_pair, line, kind) }.orEmpty(),
+        kinds.reduce { line, kind -> AppTokens.strings.res(Res.string.listed_pair, line, kind) },
     )
 
     Row(

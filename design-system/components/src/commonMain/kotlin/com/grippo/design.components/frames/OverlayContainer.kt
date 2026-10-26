@@ -248,6 +248,8 @@ private fun OverlayContainerBottomOnlyPreview() {
                     onClick = {},
                 )
 
+                Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
                 Spacer(modifier = Modifier.navigationBarsPadding())
             },
             content = { padding ->

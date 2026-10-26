@@ -28,7 +28,6 @@
     <string name="metric_overview_streak_pattern_pattern">Днів тренувань: %1$d · Днів у циклі: %2$d</string>
     <string name="metric_overview_performance_average">Раніше в середньому: %1$s</string>
     <string name="metric_overview_performance_comparison">%1$s порівняно з попереднім середнім</string>
-    <string name="metric_overview_performance_comparison_previous">%1$s порівняно з попереднім тренуванням</string>
     <string name="metric_overview_duration">Час тренування</string>
     <string name="metric_overview_volume">Піднята вага</string>
     <string name="metric_overview_density">Вага за хвилину</string>
@@ -966,7 +965,6 @@
     <string name="training_streak_details_cycle_value">Днів зі збігом: %1$d / %2$d</string>
     <string name="training_streak_details_day_recorded">Тренування записано</string>
     <string name="training_streak_details_day_unrecorded">Немає запису про тренування</string>
-    <string name="training_streak_details_day_description">%1$s · %2$s</string>
     <string name="training_streak_details_empty">У цьому періоді ще немає тренувальних днів. Збережені тренування з виконаними повтореннями допоможуть побачити твій ритм.</string>
     <string name="training_streak_details_method_expanded">Розгорнуто</string>
     <string name="training_streak_details_method_collapsed">Згорнуто</string>

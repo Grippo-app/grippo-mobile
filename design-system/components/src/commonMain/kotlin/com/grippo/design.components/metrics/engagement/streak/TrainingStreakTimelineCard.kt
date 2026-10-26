@@ -21,7 +21,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.training_streak_details_day_description
+import com.grippo.design.resources.provider.listed_pair
 import com.grippo.design.resources.provider.training_streak_details_day_recorded
 import com.grippo.design.resources.provider.training_streak_details_day_unrecorded
 import com.grippo.design.resources.provider.training_streak_partial_period
@@ -31,8 +31,8 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.plus
 import kotlinx.datetime.atTime
+import kotlinx.datetime.plus
 
 @Composable
 public fun TrainingStreakTimelineCard(
@@ -125,7 +125,7 @@ private fun TrainingStreakDay(
         },
     )
     val description = AppTokens.strings.res(
-        Res.string.training_streak_details_day_description,
+        Res.string.listed_pair,
         fullDate,
         recordLabel,
     )

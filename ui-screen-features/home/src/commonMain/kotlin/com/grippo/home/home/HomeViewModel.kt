@@ -24,6 +24,7 @@ import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadSummar
 import com.grippo.data.features.api.metrics.engagement.TrainingStreakUseCase
 import com.grippo.data.features.api.metrics.performance.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.performance.PerformanceTrendUseCase
+import com.grippo.data.features.api.metrics.performance.models.PerformanceReference
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase
 import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.training.TrainingFeature
@@ -276,8 +277,9 @@ internal class HomeViewModel(
 
     private fun provideTrainings(value: Triple<DateRange, List<Training>, List<ExerciseExample>>) {
         val (period, list, examples) = value
+
         val performance = performanceTrendUseCase
-            .fromTrainings(list)
+            .fromTrainings(trainings = list, reference = PerformanceReference.Average)
             .toState()
 
         val last = list.maxByOrNull { it.createdAt }?.toState()

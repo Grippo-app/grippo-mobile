@@ -19,7 +19,7 @@ public class PerformanceTrendUseCase {
 
     public fun fromTrainings(
         trainings: List<Training>,
-        reference: PerformanceReference = PerformanceReference.Average,
+        reference: PerformanceReference,
     ): List<PerformanceMetric> {
         val sorted = trainings.sortedWith(trainingOrder)
 

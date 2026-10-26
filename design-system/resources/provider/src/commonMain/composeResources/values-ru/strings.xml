@@ -28,7 +28,6 @@
     <string name="metric_overview_streak_pattern_pattern">Дней тренировок: %1$d · Дней в цикле: %2$d</string>
     <string name="metric_overview_performance_average">В среднем раньше: %1$s</string>
     <string name="metric_overview_performance_comparison">%1$s по сравнению с предыдущим средним</string>
-    <string name="metric_overview_performance_comparison_previous">%1$s по сравнению с предыдущей тренировкой</string>
     <string name="metric_overview_duration">Время тренировки</string>
     <string name="metric_overview_volume">Поднятый вес</string>
     <string name="metric_overview_density">Вес за минуту</string>
@@ -975,7 +974,6 @@
     <string name="training_streak_details_cycle_value">Дней с совпадением: %1$d / %2$d</string>
     <string name="training_streak_details_day_recorded">Тренировка записана</string>
     <string name="training_streak_details_day_unrecorded">Нет записи о тренировке</string>
-    <string name="training_streak_details_day_description">%1$s · %2$s</string>
     <string name="training_streak_details_empty">В этом периоде ещё нет тренировочных дней. Сохранённые тренировки с выполненными повторениями помогут увидеть твой ритм.</string>
     <string name="training_streak_details_method_expanded">Развёрнуто</string>
     <string name="training_streak_details_method_collapsed">Свёрнуто</string>

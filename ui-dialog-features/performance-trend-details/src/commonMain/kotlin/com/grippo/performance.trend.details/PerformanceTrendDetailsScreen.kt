@@ -35,6 +35,7 @@ import com.grippo.design.components.datetime.DialogRangeHeader
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.metrics.performance.PerformanceMetricCard
+import com.grippo.design.components.metrics.performance.PerformanceMetricCardStyle
 import com.grippo.design.components.metrics.performance.PerformanceTrendHistoryCard
 import com.grippo.design.components.utils.AnchorScrollBehavior
 import com.grippo.design.components.utils.rememberAnchoredLazyListState
@@ -176,7 +177,7 @@ private fun PerformanceTrendDetailsContent(
                                 PerformanceMetricCard(
                                     modifier = Modifier.fillMaxWidth(),
                                     metric = latest.metric,
-                                    reference = state.reference,
+                                    style = PerformanceMetricCardStyle.Detailed(reference = state.reference),
                                 )
                             }
                         }

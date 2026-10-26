@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.formatters.PercentageFormatState
@@ -19,7 +20,6 @@ import com.grippo.core.state.metrics.performance.PerformanceReferenceState
 import com.grippo.core.state.metrics.performance.PerformanceTrendStatusState
 import com.grippo.core.state.metrics.performance.stubEmptyPerformanceMetric
 import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
-import com.grippo.design.components.metrics.MetricCardPresentation
 import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
@@ -28,23 +28,45 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.metric_overview_performance_average
+import com.grippo.design.resources.provider.metric_overview_performance_comparison
 import com.grippo.design.resources.provider.performance_comparison_unavailable
 import com.grippo.design.resources.provider.performance_trend_details_comparison
 import com.grippo.design.resources.provider.performance_trend_details_value_unavailable
 import com.grippo.design.resources.provider.performance_trend_details_value_unavailable_description
 
+@Immutable
+public sealed interface PerformanceMetricCardStyle {
+    @Immutable
+    public data object Overview : PerformanceMetricCardStyle
+
+    @Immutable
+    public data class Detailed(
+        public val reference: PerformanceReferenceState,
+    ) : PerformanceMetricCardStyle
+}
+
 @Composable
 public fun PerformanceMetricCard(
     modifier: Modifier = Modifier,
     metric: PerformanceMetricState,
-    reference: PerformanceReferenceState = PerformanceReferenceState.Average,
-    presentation: MetricCardPresentation = MetricCardPresentation.Detailed,
+    style: PerformanceMetricCardStyle,
 ) {
-    if (presentation == MetricCardPresentation.Detailed) {
-        DetailedPerformanceMetric(modifier = modifier, metric = metric, reference = reference)
-        return
+    when (style) {
+        PerformanceMetricCardStyle.Overview -> OverviewPerformanceMetric(modifier = modifier, metric = metric)
+        is PerformanceMetricCardStyle.Detailed -> DetailedPerformanceMetric(
+            modifier = modifier,
+            metric = metric,
+            reference = style.reference,
+        )
     }
+}
 
+@Composable
+private fun OverviewPerformanceMetric(
+    modifier: Modifier = Modifier,
+    metric: PerformanceMetricState,
+) {
     val empty = metric.isEmpty()
     val comparisonPercentage = metric.currentVsAveragePercentage
 
@@ -70,7 +92,7 @@ public fun PerformanceMetricCard(
         }
 
         if (metric.showsComparison()) {
-            PerformanceTrendChip(status = metric.status, reference = reference)
+            PerformanceTrendChip(status = metric.status, reference = PerformanceReferenceState.Average)
         }
 
         if (!empty && comparisonPercentage == null) {
@@ -88,13 +110,19 @@ public fun PerformanceMetricCard(
             ) {
                 if (metric is PerformanceMetricState.Duration) {
                     Text(
-                        text = reference.overviewComparison(PercentageFormatState.shortDelta(comparisonPercentage)),
+                        text = AppTokens.strings.res(
+                            Res.string.metric_overview_performance_comparison,
+                            PercentageFormatState.shortDelta(comparisonPercentage),
+                        ),
                         style = AppTokens.typography.b12Med(),
                         color = AppTokens.colors.text.secondary,
                     )
                 } else {
                     Text(
-                        text = reference.overviewValue(metric.averageDisplay()),
+                        text = AppTokens.strings.res(
+                            Res.string.metric_overview_performance_average,
+                            metric.averageDisplay(),
+                        ),
                         style = AppTokens.typography.b12Med(),
                         color = AppTokens.colors.text.secondary,
                     )
@@ -181,19 +209,19 @@ private fun DetailedPerformanceMetric(
 @Composable
 private fun PerformanceTrendCardPreviewCard() {
     PreviewContainer {
-        PerformanceMetricGridPreview(presentation = MetricCardPresentation.Detailed)
+        PerformanceMetricGridPreview(style = PerformanceMetricCardStyle.Detailed(PerformanceReferenceState.Average))
     }
 }
 
 @Composable
-private fun PerformanceMetricGridPreview(presentation: MetricCardPresentation) {
+private fun PerformanceMetricGridPreview(style: PerformanceMetricCardStyle) {
     val metrics = stubPerformanceMetrics()
-    val gridMetrics = if (presentation == MetricCardPresentation.Overview) {
+    val gridMetrics = if (style == PerformanceMetricCardStyle.Overview) {
         metrics.filterIsInstance<PerformanceMetricState.Duration>().forEach { metric ->
             PerformanceMetricCard(
                 modifier = Modifier.fillMaxWidth(),
                 metric = metric,
-                presentation = presentation,
+                style = style,
             )
         }
         metrics.filterNot { it is PerformanceMetricState.Duration }
@@ -210,7 +238,7 @@ private fun PerformanceMetricGridPreview(presentation: MetricCardPresentation) {
                 PerformanceMetricCard(
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                     metric = metric,
-                    presentation = presentation,
+                    style = style,
                 )
             }
         }
@@ -221,7 +249,7 @@ private fun PerformanceMetricGridPreview(presentation: MetricCardPresentation) {
 @Composable
 private fun PerformanceMetricCardOverviewPreview() {
     PreviewContainer {
-        PerformanceMetricGridPreview(presentation = MetricCardPresentation.Overview)
+        PerformanceMetricGridPreview(style = PerformanceMetricCardStyle.Overview)
     }
 }
 
@@ -231,7 +259,7 @@ private fun PerformanceMetricCardOverviewEmptyPreview() {
     PreviewContainer {
         PerformanceMetricCard(
             metric = stubEmptyPerformanceMetric(),
-            presentation = MetricCardPresentation.Overview,
+            style = PerformanceMetricCardStyle.Overview,
         )
     }
 }
@@ -242,6 +270,7 @@ private fun PerformanceMetricCardEmptyPreview() {
     PreviewContainer {
         PerformanceMetricCard(
             metric = stubEmptyPerformanceMetric(),
+            style = PerformanceMetricCardStyle.Detailed(PerformanceReferenceState.Average),
         )
     }
 }
@@ -258,9 +287,12 @@ private fun PerformanceMetricCardWithoutComparisonPreview() {
             )
         PerformanceMetricCard(
             metric = metric,
-            presentation = MetricCardPresentation.Overview,
+            style = PerformanceMetricCardStyle.Overview,
         )
-        PerformanceMetricCard(metric = metric)
+        PerformanceMetricCard(
+            metric = metric,
+            style = PerformanceMetricCardStyle.Detailed(PerformanceReferenceState.Average),
+        )
     }
 }
 
@@ -275,6 +307,7 @@ private fun PerformanceMetricCardRecordAfterZeroReferencePreview() {
                 currentVsAveragePercentage = null,
                 status = PerformanceTrendStatusState.Record,
             ),
+            style = PerformanceMetricCardStyle.Detailed(PerformanceReferenceState.Average),
         )
     }
 }
@@ -286,9 +319,12 @@ private fun PerformanceMetricCardDurationComparisonPreview() {
         val metric = stubPerformanceMetrics().filterIsInstance<PerformanceMetricState.Duration>().first()
         PerformanceMetricCard(
             metric = metric,
-            presentation = MetricCardPresentation.Overview,
+            style = PerformanceMetricCardStyle.Overview,
         )
-        PerformanceMetricCard(metric = metric)
+        PerformanceMetricCard(
+            metric = metric,
+            style = PerformanceMetricCardStyle.Detailed(PerformanceReferenceState.Average),
+        )
     }
 }
 
@@ -296,15 +332,9 @@ private fun PerformanceMetricCardDurationComparisonPreview() {
 @Composable
 private fun PerformanceMetricCardPreviousReferencePreview() {
     PreviewContainer {
-        val metrics = stubPerformanceMetrics()
         PerformanceMetricCard(
-            metric = metrics.filterIsInstance<PerformanceMetricState.Volume>().first(),
-            reference = PerformanceReferenceState.Previous,
-            presentation = MetricCardPresentation.Overview,
-        )
-        PerformanceMetricCard(
-            metric = metrics.filterIsInstance<PerformanceMetricState.Volume>().first(),
-            reference = PerformanceReferenceState.Previous,
+            metric = stubPerformanceMetrics().filterIsInstance<PerformanceMetricState.Volume>().first(),
+            style = PerformanceMetricCardStyle.Detailed(PerformanceReferenceState.Previous),
         )
     }
 }
@@ -327,12 +357,12 @@ private fun PerformanceMetricCardLargeAndFractionalPreview() {
                     best = 123_456.7f,
                     currentVsAveragePercentage = 23.4567,
                 ),
-                presentation = MetricCardPresentation.Overview,
+                style = PerformanceMetricCardStyle.Overview,
             )
             PerformanceMetricCard(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 metric = stubPerformanceMetrics().filterIsInstance<PerformanceMetricState.Density>().first(),
-                presentation = MetricCardPresentation.Overview,
+                style = PerformanceMetricCardStyle.Overview,
             )
         }
         PerformanceMetricCard(
@@ -342,6 +372,7 @@ private fun PerformanceMetricCardLargeAndFractionalPreview() {
                 best = 92,
                 currentVsAveragePercentage = 11.2583,
             ),
+            style = PerformanceMetricCardStyle.Detailed(PerformanceReferenceState.Average),
         )
     }
 }

@@ -26,13 +26,13 @@ import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
-import com.grippo.design.components.metrics.MetricCardPresentation
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCard
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardStyle
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardStyle
 import com.grippo.design.components.metrics.performance.ExerciseSpotlightsCard
 import com.grippo.design.components.metrics.performance.PerformanceMetricCard
+import com.grippo.design.components.metrics.performance.PerformanceMetricCardStyle
 import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.metrics.profile.goal.GoalCardStyle
 import com.grippo.design.components.modifiers.scalableClick
@@ -295,7 +295,7 @@ private fun LazyGridScope.performanceMetricsItem(
                             .fillMaxHeight()
                             .scalableClick(onClick = onClick),
                         metric = metric,
-                        presentation = MetricCardPresentation.Overview,
+                        style = PerformanceMetricCardStyle.Overview,
                     )
                 }
             }

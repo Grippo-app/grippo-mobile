@@ -79,9 +79,8 @@ Verified example rows for the trainings calendar (`TrainingsComponent`,
   object at the bottom of the owning Component. The key is the descriptor: it
   pairs the stable archive address with its matching serializer, and it is final
   and invariant (the address does not change). Keep descriptors at their owning
-  Components rather than in a separate descriptor registry. Reuse the exact
-  existing archive address when refactoring. Never derive an address from class names, `toString`, route IDs or
-  live-instance identity. The descriptor is metadata; it does not belong in State
+  Components rather than in a separate descriptor registry. Never derive an
+  address from class names, `toString`, route IDs or live-instance identity. The descriptor is metadata; it does not belong in State
   or Router payloads or in DI.
 - **Wiring.** The owning Component calls the protected `restoreState(DRAFT)`
   inside the existing `retainedInstance` factory and passes the typed
@@ -112,11 +111,8 @@ Verified example rows for the trainings calendar (`TrainingsComponent`,
 - **Defaults.** Saved fields need stable defaults. A date-dependent default can be
   omitted during encoding and then change on restoration. Apply dynamic initial
   values only when no saved draft exists.
-- **Removing saved fields.** Check the actual StateKeeper codec against an old
-  archive. If only obsolete metadata is removed, class-scoped
-  `@JsonIgnoreUnknownKeys` preserves the recognized typed values without legacy
-  fields or recovery fallbacks. Known fields still reject invalid types. Global
-  opt-ins belong to the convention plugins.
+- **Changing saved fields** follows
+  [compatibility bumps](../platform-build-toolkit/references/release.md#compatibility-bumps).
 - **Rebuilt data.** Rebuild catalogs, localized presentation and provider
   availability from their current sources. Preserve catalog selection intent
   across an initial empty emission. Saved known/selected or excluded IDs
@@ -145,7 +141,7 @@ Verified example rows for the trainings calendar (`TrainingsComponent`,
   guaranteed. Feature keys and local ownership stay unchanged. Add no feature
   storage or lifecycle bridge. See the reference's
   [iOS policy](../ui-feature/references/process-death.md#ios-specifics), including
-  format/build invalidation when archive schemas change. Dialog sessions stay
+  the build check that discards another build's checkpoint. Dialog sessions stay
   unsaved. Accepted results belong to the owning screen's draft.
 
 Inspect [PersistenceKey](../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/models/PersistenceKey.kt)

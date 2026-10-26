@@ -198,10 +198,8 @@ Maintained sources:
 
 Restoration supports a completed background checkpoint from the same application,
 build and archive format. Missing, mismatched or modified checkpoints start fresh;
-a consumed checkpoint cannot replay repeatedly after a failed launch. Increment the
-build or archive format when serializer, key or route changes make saved data
-incompatible: nested Essenty data is decoded lazily, and the envelope is not a
-migration framework. Keep existing Component keys unchanged in ordinary refactors.
+a consumed checkpoint cannot replay repeatedly after a failed launch. Saved-state
+changes follow [compatibility bumps](../../platform-build-toolkit/references/release.md#compatibility-bumps).
 
 Abrupt active-process termination, a failed checkpoint write and termination before
 background saving completes have no restoration guarantee. Session/authorization

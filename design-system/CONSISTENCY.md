@@ -611,7 +611,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   The history toolbar uses `divider.subtle` to separate controls from records.
 - Home uses `GoalCardStyle.Overview`, `MuscleLoadingCardStyle.Overview` and
   `TrainingStreakCardStyle.Overview` for goal, muscle and streak summaries, and
-  `MetricCardPresentation.Overview` for performance summaries. The streak dialog
+  `PerformanceMetricCardStyle.Overview` for performance summaries. The streak dialog
   summary is `TrainingStreakCardStyle.Detailed`; both keep their established
   rendering unchanged beside the Growth variant.
   Detail dialogs provide the corresponding period evidence and diagnostics;
@@ -851,12 +851,14 @@ and Latin text in both themes; each role keeps its existing size and line height
   The earlier value and signed change use secondary `b12Med`; the value label names
   the comparison reference once ("Earlier average: X" under `Average`, "Previous
   workout: X" under `Previous`, from `PerformanceReferenceState.detailedValue()`)
-  and the adjacent delta uses a short change label. The sheet takes the reference
-  from its caller: Home always passes `Average`, the completed-workout screen its
-  selected one, so a row read against the last workout opens a history measured the
-  same way. Detailed summaries omit status chips and best-value repetitions; missing
-  current data, missing earlier data and a zero earlier value have distinct quiet
-  copy for each reference (`missingValueNotice()`, `zeroValueNotice()`).
+  and the adjacent delta uses a short change label. The sheet's card is
+  `PerformanceMetricCardStyle.Detailed(reference)` with the reference from its
+  caller: Home always passes `Average`, the completed-workout screen its selected
+  one, so a row read against the last workout opens a summary measured the same way
+  (the history rows and the chart show values only). Detailed summaries omit status
+  chips and best-value repetitions; missing current data, missing earlier data and a
+  zero earlier value have distinct quiet copy, the last two worded for the reference
+  (`missingValueNotice()`, `zeroValueNotice()`).
   Home Overview retains its title/chevron, statuses, comparisons and paired
   intrinsic-height rows; for an empty metric it shows the Detailed card's
   `performance_trend_details_value_unavailable` copy as one secondary `b12Med`
@@ -926,10 +928,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   workout / Like last workout / Below last workout" under `Previous`, and "Period
   best" in either - a Record is never produced against the previous workout, and
   no preview pairs the two;
-  Home's Overview `PerformanceMetricCard` shows its chip on the same
-  `showsComparison()` with the card's default `PerformanceReferenceState.Average`
-  reference through the same `label(reference)`, and the detailed summary shows no
-  chip) under that
+  Home's `PerformanceMetricCardStyle.Overview` card shows its chip on the same
+  `showsComparison()`, always worded for `Average` through the same
+  `label(reference)` (the Overview style carries no reference), and the detailed
+  summary shows no chip) under that
   sub-line in the left column; the right column holds the `h5` `text.primary`
   value that counts from the average to this workout through `displayValue()`
   with the `b12Semi` signed change in `text.secondary` beneath it whenever a

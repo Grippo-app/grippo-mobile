@@ -5,9 +5,6 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.metric_overview_performance_average
-import com.grippo.design.resources.provider.metric_overview_performance_comparison
-import com.grippo.design.resources.provider.metric_overview_performance_comparison_previous
 import com.grippo.design.resources.provider.performance_previous_value
 import com.grippo.design.resources.provider.performance_reference_average
 import com.grippo.design.resources.provider.performance_reference_previous
@@ -37,18 +34,6 @@ public enum class PerformanceReferenceState {
     public fun comparedSummary(improved: Int, compared: Int): String = when (this) {
         Average -> AppTokens.strings.res(Res.plurals.training_recap_compared, compared, improved, compared)
         Previous -> AppTokens.strings.res(Res.plurals.training_recap_compared_previous, compared, improved, compared)
-    }
-
-    @Composable
-    public fun overviewValue(value: String): String = when (this) {
-        Average -> AppTokens.strings.res(Res.string.metric_overview_performance_average, value)
-        Previous -> AppTokens.strings.res(Res.string.performance_previous_value, value)
-    }
-
-    @Composable
-    public fun overviewComparison(delta: String): String = when (this) {
-        Average -> AppTokens.strings.res(Res.string.metric_overview_performance_comparison, delta)
-        Previous -> AppTokens.strings.res(Res.string.metric_overview_performance_comparison_previous, delta)
     }
 
     @Composable
