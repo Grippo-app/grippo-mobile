@@ -1063,7 +1063,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   records exist; records are evidence, not selection, so the row carries no orange.
 - `WeeklyVolumeCard` is the "This week" tonnage card: a Large MetricSectionPanel
   whose header row pairs the `h5` `weekly_volume_title` with the `b12Med`
-  `text.secondary` `weekRange.short()`. With a typical week one localized
+  `text.secondary` `weekRange.shortStartEnd()`. With a typical week one localized
   sentence, `weekly_volume_progress` ("6 450 kg of your usual 9 800 kg", both
   values through `VolumeFormatState.shortTotal`), renders as one `AnnotatedString`
   on one baseline: the current tonnage in `h3` `text.primary` and the rest of the
@@ -1185,7 +1185,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   after the toolbar. The range header owns the single gap before its body;
   muscle detail controls likewise keep one `content` gap before their scrolling content.
   Other sheet bodies start once at `dialog.top`.
-- Date ranges are written by `DateRangeFormatState` (`short()` and `display` give
+- Date ranges are written by `DateRangeFormatState` (`shortStartEnd()` and `display` give
   the same text): both ends in the period kind's date format joined by an en dash
   ("28 Apr – 27 May", "28 апр. – 27 мая", "28 квіт. – 27 трав.",
   "28 abr. – 27 mai."). A one-day period prints one date ("27 травня"). Dialog

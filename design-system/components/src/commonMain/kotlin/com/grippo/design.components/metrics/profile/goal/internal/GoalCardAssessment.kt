@@ -124,7 +124,7 @@ private fun GoalAnalysisSummary(
     ) {
         if (range.value != null) {
             Text(
-                text = AppTokens.strings.res(Res.string.goal_details_analysis_period, range.short()),
+                text = AppTokens.strings.res(Res.string.goal_details_analysis_period, range.shortStartEnd()),
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,
             )

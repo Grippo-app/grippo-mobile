@@ -118,7 +118,7 @@ private fun MuscleLoadingDetailsContent(
                 contentPadding = resolvedPadding,
             ) {
                 item(key = "range") {
-                    DialogRangeHeader(text = state.range.short())
+                    DialogRangeHeader(text = state.range.shortStartEnd())
                 }
 
                 item(key = "distribution") {

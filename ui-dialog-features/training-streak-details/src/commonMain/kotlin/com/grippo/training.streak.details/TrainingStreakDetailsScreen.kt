@@ -70,7 +70,7 @@ internal fun TrainingStreakDetailsScreen(
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
     var isMethodExpanded by rememberSaveable(state.range) { mutableStateOf(false) }
 
-    DialogRangeHeader(text = state.range.short())
+    DialogRangeHeader(text = state.range.shortStartEnd())
 
     TrainingStreakDetailsContent(
         modifier = Modifier
@@ -377,7 +377,7 @@ private fun TrainingStreakExpandedMethodPreview() {
     PreviewContainer {
         val state = trainingStreakDetailsPreview(streak = dailyStreakPreview())
         BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
-            DialogRangeHeader(text = state.range.short())
+            DialogRangeHeader(text = state.range.shortStartEnd())
             TrainingStreakDetailsContent(
                 modifier = Modifier.fillMaxWidth().weight(1f, false),
                 state = state,

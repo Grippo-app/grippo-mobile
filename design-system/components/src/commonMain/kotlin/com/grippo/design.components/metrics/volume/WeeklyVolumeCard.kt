@@ -57,7 +57,7 @@ public fun WeeklyVolumeCard(
                 color = AppTokens.colors.text.primary,
             )
             Text(
-                text = value.weekRange.short(),
+                text = value.weekRange.shortStartEnd(),
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,
                 textAlign = TextAlign.End,

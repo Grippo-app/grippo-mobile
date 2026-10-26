@@ -53,7 +53,7 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
     ) : DateRangeFormatState(), FormatState.Empty<DateRange>
 
     @Composable
-    public fun short(): String {
+    public fun shortStartEnd(): String {
         val range = value ?: return display
         val format = DateRangeFormatter.dateFormat(kind)
         val from = DateCompose.rememberFormat(value = range.from, format = format)

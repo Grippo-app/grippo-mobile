@@ -61,7 +61,7 @@ internal fun PeriodPickerScreen(
                         modifier = Modifier.fillMaxWidth(),
                         style = CheckSelectableCardStyle.Medium(
                             title = item.label()?.text() ?: AppTokens.strings.res(Res.string.custom),
-                            description = item.short(),
+                            description = item.shortStartEnd(),
                         ),
                         isSelected = state.value.kind == item.kind,
                         onSelect = { contract.onSelectRange(item.kind) }

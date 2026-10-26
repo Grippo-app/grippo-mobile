@@ -42,7 +42,7 @@ private fun ShortRangePreview() {
             text = DateRangeFormatState.of(
                 kind = DateRangeKind.Last7Days,
                 anchor = LocalDate(year = 2026, month = 10, day = 17),
-            ).short(),
+            ).shortStartEnd(),
         )
     }
 }
@@ -55,7 +55,7 @@ private fun CrossMonthRangePreview() {
             text = DateRangeFormatState.of(
                 kind = DateRangeKind.Last30Days,
                 anchor = LocalDate(year = 2026, month = 5, day = 27),
-            ).short(),
+            ).shortStartEnd(),
         )
     }
 }
@@ -68,7 +68,7 @@ private fun LongRangePreview() {
             text = DateRangeFormatState.of(
                 from = LocalDateTime(year = 2025, month = 9, day = 30, hour = 0, minute = 0),
                 to = LocalDateTime(year = 2026, month = 10, day = 20, hour = 23, minute = 59),
-            ).short(),
+            ).shortStartEnd(),
         )
     }
 }

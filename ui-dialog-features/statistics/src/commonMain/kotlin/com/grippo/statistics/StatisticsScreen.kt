@@ -49,7 +49,7 @@ internal fun StatisticsScreen(
         }
 
         is StatisticsMode.Trainings -> {
-            DialogRangeHeader(text = mode.range.short())
+            DialogRangeHeader(text = mode.range.shortStartEnd())
         }
     }
 

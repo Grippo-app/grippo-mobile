@@ -68,7 +68,7 @@ internal fun PerformanceTrendDetailsScreen(
         mutableStateOf(false)
     }
 
-    DialogRangeHeader(text = state.range.short())
+    DialogRangeHeader(text = state.range.shortStartEnd())
 
     PerformanceTrendDetailsContent(
         modifier = Modifier.fillMaxWidth().weight(1f, false),
@@ -428,7 +428,7 @@ private fun ExpandedExplanationPreview() {
     PreviewContainer {
         val state = performanceDetailsPreviewState()
         BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
-            DialogRangeHeader(text = state.range.short())
+            DialogRangeHeader(text = state.range.shortStartEnd())
             PerformanceTrendDetailsContent(
                 modifier = Modifier.fillMaxWidth().weight(1f, false),
                 state = state,
@@ -457,7 +457,7 @@ private fun ExpandedSingleWorkoutExplanationPreview() {
             ),
         )
         BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
-            DialogRangeHeader(text = state.range.short())
+            DialogRangeHeader(text = state.range.shortStartEnd())
             PerformanceTrendDetailsContent(
                 modifier = Modifier.fillMaxWidth().weight(1f, false),
                 state = state,

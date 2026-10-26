@@ -45,7 +45,7 @@ No screen enum, lifecycle observer, operation API or retention key is introduced
 |---|---|---|---|
 | PeriodPickerComponent / VM | value (current selection) | Runtime session only, retained during ordinary recreation | Existing retainedInstance; fresh dialog seeds caller initial |
 | PeriodPickerState | suggestion date bounds and kinds | Rebuild for fresh dialog | DateRangeFormatState.of and current preset defaults |
-| PeriodPickerScreen | displayed suggestion dates | Rebuild for current locale during composition | DateRangeFormatState.short() formats the existing bounds; selection and accepted range stay unchanged |
+| PeriodPickerScreen | displayed suggestion dates | Rebuild for current locale during composition | DateRangeFormatState.shortStartEnd() formats the existing bounds; selection and accepted range stay unchanged |
 | Home / LocalSettings | confirmed range kind | Durable settings; no duplicate StateKeeper snapshot | onResult → setRange → DataStore range preference; observeRange → provideRange builds current date bounds |
 | Dialog host | callbacks, sessions, pending result | Runtime only | Slot/step serializer = null; process death closes dialog |
 | Picker VM | delay/job/loaders and telemetry | Runtime only | Existing VM lifetime; no serialized provenance |

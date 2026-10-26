@@ -61,7 +61,7 @@ error messages or request/response data enter the payload.
 | StatisticsViewModel | total, exerciseVolume, muscleLoad | Rebuild | observeTrainings/observeTraining plus metric use cases; muscleLoad also observes referenced anatomy through observeFromTrainings/observeFromExercises | Both modes calculate from available mapped exercise details; no scope caption is rendered and no completeness state is inferred. Anatomy changes recalculate shares and excluded/unassigned notices |
 | StatisticsViewModel | Charts loader, jobs, Back direction, telemetry | Runtime only | Foundation runtime owners | No archive supplier or serializer |
 | StatisticsComponent | ViewModel | Runtime retention | Existing retainedInstance | Ordinary configuration recreation retains VM; process restart closes dialog |
-| StatisticsScreen | Configured range label | Rebuild in composition | `DateRangeFormatState.short()` from the existing mode range | Uses the current locale without changing the range, VM state, inputs or dialog lifetime |
+| StatisticsScreen | Configured range label | Rebuild in composition | `DateRangeFormatState.shortStartEnd()` from the existing mode range | Uses the current locale without changing the range, VM state, inputs or dialog lifetime |
 
 No user-owned draft, selection or parent-flow output exists in this module.
 Therefore no StateKeeper key, initialState boundary or serialization is required.

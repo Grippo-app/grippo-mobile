@@ -81,7 +81,7 @@ private fun TrainingStreakDayStrip(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
         Text(
-            text = dateScope.short(),
+            text = dateScope.shortStartEnd(),
             style = AppTokens.typography.b13Med(),
             color = AppTokens.colors.text.secondary,
         )
@@ -114,7 +114,7 @@ private fun TrainingStreakDay(
             contextual = false,
         )
     } else {
-        entry.range.short()
+        entry.range.shortStartEnd()
     }
     val isRecorded = entry.achievedTrainingDays > 0
     val recordLabel = AppTokens.strings.res(
@@ -141,7 +141,7 @@ private fun TrainingStreakDay(
             colors = AppTokens.colors.charts.indicator.info,
         )
         Text(
-            text = date?.day?.toString() ?: entry.range.short(),
+            text = date?.day?.toString() ?: entry.range.shortStartEnd(),
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.primary,
         )
@@ -162,7 +162,7 @@ private fun TrainingStreakTimelineRow(
             text = DateRangeFormatState.of(
                 from = entry.range.value?.from,
                 to = entry.range.value?.to,
-            ).short(),
+            ).shortStartEnd(),
             style = AppTokens.typography.b13Semi(),
             color = AppTokens.colors.text.primary,
         )
