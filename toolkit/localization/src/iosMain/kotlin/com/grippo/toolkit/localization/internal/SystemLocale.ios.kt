@@ -27,11 +27,7 @@ internal actual object SystemLocale {
         return normalize(preferredTag())
     }
 
-    actual fun apply(tag: String?) {
-        if (tag == null) {
-            return
-        }
-
+    actual fun apply(tag: String) {
         NSUserDefaults.standardUserDefaults.setObject(listOf(tag), forKey = LANGUAGES_KEY)
     }
 

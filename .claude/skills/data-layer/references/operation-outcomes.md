@@ -55,7 +55,7 @@ A successful return establishes the complete operation outcome, not just an acce
   before writing. A non-null entity is insufficient when those mappings reject its value.
   Exception: the equipment and muscle catalogs (`EquipmentRepositoryImpl.getEquipments`,
   `MuscleRepositoryImpl.getMuscles`) store group and item rows whose `type` key this app
-  version does not know, so a catalog refresh, Splash's included, keeps succeeding when the
+  version does not know, so Splash's catalog refresh keeps succeeding when the
   server adds a type, and exercise-example snapshots written after that refresh find their
   foreign-key parents. The entity-to-domain mappers hide those rows; an unknown group type
   hides the whole group from the catalog projection, including its items of known types. Missing fields,

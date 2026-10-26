@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.engagement.TrainingStreakState
-import com.grippo.core.state.metrics.performance.PerformanceBaselineState
+import com.grippo.core.state.metrics.performance.PerformanceReferenceState
 import com.grippo.core.state.metrics.performance.TrainingRecordState
 import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.core.state.metrics.volume.WeeklyVolumeState
@@ -18,7 +18,7 @@ import kotlinx.serialization.Transient
 @Serializable
 internal data class TrainingCompletedState(
     val savedTrainingId: String? = null,
-    val baseline: PerformanceBaselineState = PerformanceBaselineState.Average,
+    val reference: PerformanceReferenceState = PerformanceReferenceState.Average,
     @Transient
     val training: TrainingState? = null,
     @Transient

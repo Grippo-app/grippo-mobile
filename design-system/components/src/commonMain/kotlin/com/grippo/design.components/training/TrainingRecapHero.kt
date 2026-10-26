@@ -24,7 +24,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -42,16 +41,16 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.core.state.metrics.performance.PerformanceBaselineState
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
+import com.grippo.core.state.metrics.performance.PerformanceReferenceState
 import com.grippo.core.state.metrics.performance.PerformanceVerdictState
 import com.grippo.core.state.metrics.performance.stubPerformanceMetricsByType
 import com.grippo.core.state.metrics.performance.stubPerformanceMetricsDeclined
 import com.grippo.core.state.metrics.performance.stubPerformanceMetricsImproved
-import com.grippo.core.state.metrics.performance.stubPerformanceMetricsWithoutBaseline
+import com.grippo.core.state.metrics.performance.stubPerformanceMetricsWithoutReference
 import com.grippo.core.state.trainings.TrainingState
-import com.grippo.core.state.trainings.stubTrainingSummary
+import com.grippo.core.state.trainings.stubRecapTraining
 import com.grippo.design.components.illustration.Illustration
 import com.grippo.design.components.illustration.IllustrationStyle
 import com.grippo.design.components.modifiers.illustrationBackground
@@ -60,6 +59,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.listed_pair
 import com.grippo.design.resources.provider.sets
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -80,7 +80,7 @@ public sealed interface TrainingRecapHeroStyle {
     @Immutable
     public data class Resolved(
         public val verdict: PerformanceVerdictState,
-        public val baseline: PerformanceBaselineState,
+        public val reference: PerformanceReferenceState,
         public val description: String,
     ) : TrainingRecapHeroStyle
 }
@@ -136,9 +136,7 @@ public fun TrainingRecapHero(
 ) {
     val durationValue = training.duration.value
     val volumeValue = training.total.volume.value
-    val setsCount = remember(training.exercises) {
-        training.exercises.sumOf { exercise -> exercise.iterations.size }
-    }
+    val setsCount = training.exercises.sumOf { exercise -> exercise.iterations.size }
     val resolvedVerdict = (style as? TrainingRecapHeroStyle.Resolved)?.verdict
 
     RecapHeroSurface(modifier = modifier) {
@@ -163,7 +161,7 @@ public fun TrainingRecapHero(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .semantics { heading() },
-                            text = style.verdict.title(baseline = style.baseline),
+                            text = style.verdict.title(reference = style.reference),
                             style = AppTokens.typography.h2(),
                             color = AppTokens.colors.text.primary,
                         )
@@ -317,7 +315,7 @@ private fun RecapFact(
     label: String,
     dimmed: Boolean = false,
 ) {
-    val description = "$label, $value"
+    val description = AppTokens.strings.res(Res.string.listed_pair, label, value)
 
     Column(
         modifier = modifier.clearAndSetSemantics { contentDescription = description },
@@ -361,13 +359,13 @@ private fun RecapFactSkeleton(
 @Composable
 private fun previewResolvedStyle(
     metrics: ImmutableList<PerformanceMetricState>,
-    baseline: PerformanceBaselineState = PerformanceBaselineState.Average,
+    reference: PerformanceReferenceState = PerformanceReferenceState.Average,
 ): TrainingRecapHeroStyle.Resolved {
     val verdict = PerformanceVerdictState.of(metrics)
     return TrainingRecapHeroStyle.Resolved(
         verdict = verdict,
-        baseline = baseline,
-        description = verdict.summary(metrics = metrics, baseline = baseline),
+        reference = reference,
+        description = verdict.summary(metrics = metrics, reference = reference),
     )
 }
 
@@ -377,7 +375,7 @@ private fun TrainingRecapHeroRecordPreview() {
     PreviewContainer {
         TrainingRecapHero(
             modifier = Modifier.fillMaxWidth(),
-            training = stubTrainingSummary(),
+            training = stubRecapTraining(),
             style = previewResolvedStyle(metrics = stubPerformanceMetricsByType()),
         )
     }
@@ -389,7 +387,7 @@ private fun TrainingRecapHeroImprovedPreview() {
     PreviewContainer {
         TrainingRecapHero(
             modifier = Modifier.fillMaxWidth(),
-            training = stubTrainingSummary(),
+            training = stubRecapTraining(),
             style = previewResolvedStyle(metrics = stubPerformanceMetricsImproved()),
         )
     }
@@ -401,11 +399,11 @@ private fun TrainingRecapHeroStablePreview() {
     PreviewContainer {
         TrainingRecapHero(
             modifier = Modifier.fillMaxWidth(),
-            training = stubTrainingSummary(),
+            training = stubRecapTraining(),
             style = TrainingRecapHeroStyle.Resolved(
                 verdict = PerformanceVerdictState.Stable,
-                baseline = PerformanceBaselineState.Average,
-                description = PerformanceBaselineState.Average.comparedSummary(improved = 2, compared = 4),
+                reference = PerformanceReferenceState.Average,
+                description = PerformanceReferenceState.Average.comparedSummary(improved = 2, compared = 4),
             ),
         )
     }
@@ -417,7 +415,7 @@ private fun TrainingRecapHeroDeclinedPreview() {
     PreviewContainer {
         TrainingRecapHero(
             modifier = Modifier.fillMaxWidth(),
-            training = stubTrainingSummary(),
+            training = stubRecapTraining(),
             style = previewResolvedStyle(metrics = stubPerformanceMetricsDeclined()),
         )
     }
@@ -429,8 +427,8 @@ private fun TrainingRecapHeroFirstWorkoutPreview() {
     PreviewContainer {
         TrainingRecapHero(
             modifier = Modifier.fillMaxWidth(),
-            training = stubTrainingSummary(),
-            style = previewResolvedStyle(metrics = stubPerformanceMetricsWithoutBaseline()),
+            training = stubRecapTraining(),
+            style = previewResolvedStyle(metrics = stubPerformanceMetricsWithoutReference()),
         )
     }
 }
@@ -441,7 +439,7 @@ private fun TrainingRecapHeroPendingPreview() {
     PreviewContainer {
         TrainingRecapHero(
             modifier = Modifier.fillMaxWidth(),
-            training = stubTrainingSummary(),
+            training = stubRecapTraining(),
             style = TrainingRecapHeroStyle.Pending,
         )
     }
@@ -457,14 +455,14 @@ private fun TrainingRecapHeroSkeletonPreview() {
 
 @AppPreview
 @Composable
-private fun TrainingRecapHeroPreviousBaselinePreview() {
+private fun TrainingRecapHeroPreviousReferencePreview() {
     PreviewContainer {
         TrainingRecapHero(
             modifier = Modifier.fillMaxWidth(),
-            training = stubTrainingSummary(),
+            training = stubRecapTraining(),
             style = previewResolvedStyle(
                 metrics = stubPerformanceMetricsImproved(),
-                baseline = PerformanceBaselineState.Previous,
+                reference = PerformanceReferenceState.Previous,
             ),
         )
     }
@@ -473,12 +471,12 @@ private fun TrainingRecapHeroPreviousBaselinePreview() {
 @AppPreview
 @Composable
 private fun TrainingRecapHeroLongValuesPreview() {
-    val training = stubTrainingSummary()
+    val training = stubRecapTraining()
     PreviewContainer {
         TrainingRecapHero(
             modifier = Modifier.fillMaxWidth(),
             training = training.copy(
-                duration = DurationFormatState.of(23.hours + 59.minutes),
+                duration = DurationFormatState.ofTotal(23.hours + 59.minutes),
                 total = training.total.copy(
                     volume = VolumeFormatState.ofTotal(12_345_678f),
                     repetitions = RepetitionsFormatState.ofTotal(123_456),
@@ -492,7 +490,7 @@ private fun TrainingRecapHeroLongValuesPreview() {
 @AppPreview
 @Composable
 private fun TrainingRecapHeroMissingFactsPreview() {
-    val training = stubTrainingSummary()
+    val training = stubRecapTraining()
     PreviewContainer {
         TrainingRecapHero(
             modifier = Modifier.fillMaxWidth(),
@@ -501,7 +499,7 @@ private fun TrainingRecapHeroMissingFactsPreview() {
                 exercises = persistentListOf(),
                 total = training.total.copy(volume = VolumeFormatState.Empty()),
             ),
-            style = previewResolvedStyle(metrics = stubPerformanceMetricsWithoutBaseline()),
+            style = previewResolvedStyle(metrics = stubPerformanceMetricsWithoutReference()),
         )
     }
 }

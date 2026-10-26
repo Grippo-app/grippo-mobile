@@ -44,7 +44,9 @@ public class ApplicationBootstrap internal constructor(
                 )
             }
             .retryWhen { error, attempt ->
-                if (error is CancellationException || error !is Exception) throw error
+                if (error is CancellationException || error !is Exception) {
+                    throw error
+                }
                 collectionController.updateCollection(AnalyticsCollection.Denied)
                 AppLogger.General.error("Unable to read analytics consent")
                 delay(1.seconds * (attempt + 1).coerceAtMost(30).toInt())

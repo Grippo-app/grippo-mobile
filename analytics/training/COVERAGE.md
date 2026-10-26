@@ -113,7 +113,8 @@ Ten typed operations decorate complete throwing Feature/UseCase/toolkit calls in
   screen or holding the saving skeleton. It starts with the saved-ID commit,
   alongside DeleteDraft and LoadTraining, so it can also run in a session whose
   DeleteDraft or LoadTraining later fails (that failure still closes the flow) and
-  it ends `interrupted` when the screen closes first; the catalog's usage counts
+  it ends `interrupted` when the screen closes first or when the app language
+  changes before the response is written (the repository discards it); the catalog's usage counts
   and last-used dates then keep their pre-save values until Home next refreshes
   the examples, a known trade-off of running the refresh outside the save.
 - RefreshTrainings: one `getTrainings(start, end)` per distinct pair of Home and

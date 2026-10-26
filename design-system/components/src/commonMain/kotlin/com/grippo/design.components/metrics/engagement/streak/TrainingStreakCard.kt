@@ -49,9 +49,9 @@ import com.grippo.design.resources.provider.metric_overview_streak_active_days
 import com.grippo.design.resources.provider.metric_overview_streak_title
 import com.grippo.design.resources.provider.training_streak_current_progress
 import com.grippo.design.resources.provider.training_streak_growth_extended
-import com.grippo.design.resources.provider.training_streak_growth_headline
 import com.grippo.design.resources.provider.training_streak_growth_kept
 import com.grippo.design.resources.provider.training_streak_growth_reset
+import com.grippo.design.resources.provider.value_transition
 import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
@@ -308,7 +308,7 @@ private fun StreakOutcomeLine(
         }
         val outcome = AppTokens.strings.res(outcomeResource)
         val change = AppTokens.strings.res(
-            Res.string.training_streak_growth_headline,
+            Res.string.value_transition,
             previousLength.toString(),
             ValueSlot.marker(0),
         )

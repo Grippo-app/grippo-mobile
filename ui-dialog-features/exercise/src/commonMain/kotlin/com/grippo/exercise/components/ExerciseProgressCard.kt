@@ -47,11 +47,11 @@ import com.grippo.design.resources.provider.exercise_history_chart_unavailable
 import com.grippo.design.resources.provider.exercise_history_comparison_loading
 import com.grippo.design.resources.provider.exercise_history_max_load
 import com.grippo.design.resources.provider.exercise_history_no_previous
-import com.grippo.design.resources.provider.exercise_history_previous_short
 import com.grippo.design.resources.provider.exercise_history_total_volume
 import com.grippo.design.resources.provider.exercise_history_trend_title
 import com.grippo.design.resources.provider.exercise_history_volume_delta
 import com.grippo.design.resources.provider.icons.LineUp
+import com.grippo.design.resources.provider.joined_pair
 import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.percent
 import com.grippo.design.resources.provider.repetitions
@@ -223,7 +223,7 @@ private fun ExerciseVolumeHistory(
             it.total.volume.short()
         }
         AppTokens.strings.res(
-            Res.string.exercise_history_previous_short,
+            Res.string.joined_pair,
             previousVolumeText,
             previousDate.orEmpty(),
         )

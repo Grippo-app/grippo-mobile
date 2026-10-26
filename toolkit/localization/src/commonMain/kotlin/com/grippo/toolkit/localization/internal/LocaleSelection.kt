@@ -7,12 +7,12 @@ internal sealed interface LocaleSelection {
         get() = this !is Pending
 
     data object Pending : LocaleSelection
-    data object Platform : LocaleSelection
+    data object System : LocaleSelection
     data class App(override val tag: String) : LocaleSelection
 
     companion object {
         fun of(tag: String?): LocaleSelection {
-            return if (tag == null) Platform else App(tag)
+            return if (tag == null) System else App(tag)
         }
     }
 }

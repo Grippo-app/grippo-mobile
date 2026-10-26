@@ -40,6 +40,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val SETTLE_DURATION_MS = 220
 private const val AUTO_SCROLL_TICK_MS = 16L
@@ -170,11 +171,12 @@ public class DragDropListState<K : Any> internal constructor(
         val translation = draggingTranslation()
         val top = item.offset + translation
         val bottom = top + item.size
-        val viewportTop = listState.layoutInfo.viewportStartOffset.toFloat()
-        val viewportBottom = listState.layoutInfo.viewportEndOffset.toFloat()
+        val layoutInfo = listState.layoutInfo
+        val contentTop = (layoutInfo.viewportStartOffset + layoutInfo.beforeContentPadding).toFloat()
+        val contentBottom = (layoutInfo.viewportEndOffset - layoutInfo.afterContentPadding).toFloat()
         return when {
-            top < viewportTop -> top - viewportTop
-            bottom > viewportBottom -> bottom - viewportBottom
+            top < contentTop -> top - contentTop
+            bottom > contentBottom -> bottom - contentBottom
             else -> 0f
         }
     }
@@ -185,7 +187,7 @@ public class DragDropListState<K : Any> internal constructor(
             if (amount != 0f) {
                 listState.scrollBy(amount * AUTO_SCROLL_FACTOR)
             }
-            delay(AUTO_SCROLL_TICK_MS)
+            delay(AUTO_SCROLL_TICK_MS.milliseconds)
         }
     }
 }

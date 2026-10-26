@@ -5,7 +5,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,7 +38,7 @@ import com.grippo.training.recording.TrainingRecordingContract
 import com.grippo.training.recording.TrainingRecordingState
 
 @Composable
-internal fun ColumnScope.ExercisesPage(
+internal fun ExercisesPage(
     modifier: Modifier = Modifier,
     state: TrainingRecordingState,
     contract: TrainingRecordingContract,

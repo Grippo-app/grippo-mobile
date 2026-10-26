@@ -13,8 +13,7 @@ public object AppLocale {
 
     public val current: String
         @Composable get() {
-            val systemTag = SystemLocale.current
-            return selection.tag ?: systemTag
+            return selection.tag ?: SystemLocale.current
         }
 
     public val isResolved: Boolean
@@ -25,7 +24,9 @@ public object AppLocale {
     }
 
     public fun update(tag: String?) {
-        SystemLocale.apply(tag)
+        if (tag != null) {
+            SystemLocale.apply(tag)
+        }
         selection = LocaleSelection.of(tag)
     }
 

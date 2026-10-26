@@ -35,9 +35,9 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.AppColor
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.goal_growth_score
 import com.grippo.design.resources.provider.metric_overview_goal_analyzed
 import com.grippo.design.resources.provider.percent
+import com.grippo.design.resources.provider.value_transition
 
 private const val GOAL_GROWTH_DURATION_MS = 900
 private const val GOAL_GROWTH_LABEL = "GoalGrowthScore"
@@ -138,7 +138,7 @@ private fun GoalScoreLine(
 
         else -> {
             val sentence = AppTokens.strings.res(
-                Res.string.goal_growth_score,
+                Res.string.value_transition,
                 "$previousScore$percent",
                 ValueSlot.marker(0),
             )

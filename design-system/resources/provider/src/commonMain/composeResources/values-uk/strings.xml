@@ -28,6 +28,7 @@
     <string name="metric_overview_streak_pattern_pattern">Днів тренувань: %1$d · Днів у циклі: %2$d</string>
     <string name="metric_overview_performance_average">Раніше в середньому: %1$s</string>
     <string name="metric_overview_performance_comparison">%1$s порівняно з попереднім середнім</string>
+    <string name="metric_overview_performance_comparison_previous">%1$s порівняно з попереднім тренуванням</string>
     <string name="metric_overview_duration">Час тренування</string>
     <string name="metric_overview_volume">Піднята вага</string>
     <string name="metric_overview_density">Вага за хвилину</string>
@@ -72,6 +73,9 @@
     <string name="sets_value">Підходи (%1$s)</string>
     <string name="percent">%</string>
     <string name="joined_pair">%1$s · %2$s</string>
+    <string name="value_transition">%1$s → %2$s</string>
+    <string name="listed_pair">%1$s, %2$s</string>
+    <string name="labeled_value">%1$s %2$s</string>
     <string name="selected">Обрано</string>
     <string name="cm">см</string>
     <string name="apply_btn">Застосувати</string>
@@ -852,10 +856,8 @@
     <string name="exercise_history_previous_set_date">Попередні підходи · %1$s</string>
     <string name="exercise_history_chart_unavailable">Графік недоступний для цих значень обсягу</string>
     <string name="exercise_history_set_result">%1$s × %2$s</string>
-    <string name="exercise_history_previous_short">%1$s · %2$s</string>
     <string name="exercise_history_vs_date">Раніше · %1$s</string>
     <string name="training_streak_current_progress">Останній період: %1$d / %2$d активних дн.</string>
-    <string name="training_streak_growth_headline">%1$s → %2$s</string>
     <string name="training_streak_growth_extended">Серія триває</string>
     <string name="training_streak_growth_kept">Ритм збережено</string>
     <string name="training_streak_growth_reset">Серія почалася знову</string>
@@ -866,8 +868,8 @@
     <string name="performance_comparison_title">Було → стало</string>
     <string name="performance_comparison_first_title">Це тренування</string>
     <string name="performance_growth_before">Було: %1$s</string>
-    <string name="performance_baseline_average">до середнього</string>
-    <string name="performance_baseline_previous">до попереднього</string>
+    <string name="performance_reference_average">до середнього</string>
+    <string name="performance_reference_previous">до попереднього</string>
     <string name="training_records_title">Особисті рекорди</string>
     <string name="training_records_description">Найкращі результати за весь час, встановлені в цьому тренуванні.</string>
     <string name="weekly_volume_title">Цей тиждень</string>
@@ -893,7 +895,6 @@
     <string name="digest_unavailable">—</string>
     <string name="digest_zero_duration">0 хв</string>
     <string name="goal_card_status_not_evaluated">Поки немає оцінки</string>
-    <string name="goal_growth_score">%1$s → %2$s</string>
     <string name="goal_details_analysis_period">Період аналізу: %1$s</string>
     <string name="goal_details_analysis_evidence">%1$d дн. · %2$d записаних підходів</string>
     <string name="goal_details_analysis_excluded">Виключено підходів із помилковими або неповними даними: %1$d</string>
@@ -909,6 +910,7 @@
     <string name="muscle_load_unassigned_sets">Підходів без даних про участь м’язів: %1$d.</string>
     <string name="performance_history_scope">Графік з’єднує доступні значення до 10 останніх тренувань.</string>
     <string name="performance_trend_details_comparison_scope">Порівняння — із середнім усіх попередніх тренувань із даними у вибраному періоді.</string>
+    <string name="performance_trend_details_comparison_scope_previous">Порівняння — з попереднім тренуванням у вибраному періоді.</string>
     <string name="muscle_load_unmeasured_volume_sets">Підходів із неповними даними про навантаження: %1$d. Частки м’язів розраховано за записаними підходами, тоннаж — лише за повністю виміряними.</string>
     <string name="goal_card_limited_data">Обмежені дані</string>
     <string name="available_sets_label">Доступні підходи</string>
@@ -928,9 +930,12 @@
 
     <string name="performance_trend_details_latest">Останнє тренування</string>
     <string name="performance_trend_details_previous_average">Середнє попередніх: %1$s</string>
+    <string name="performance_previous_value">Попереднє тренування: %1$s</string>
     <string name="performance_trend_details_comparison">Зміна: %1$s</string>
     <string name="performance_trend_details_first_workout">Для порівняння потрібне попереднє тренування з даними в цьому періоді.</string>
+    <string name="performance_trend_details_no_previous">Для порівняння потрібні дані попереднього тренування в цьому періоді.</string>
     <string name="performance_trend_details_zero_average">Середнє попередніх дорівнює нулю, тому відсоткову зміну не розрахувати.</string>
+    <string name="performance_trend_details_zero_previous">Значення попереднього тренування дорівнює нулю, тому відсоткову зміну не розрахувати.</string>
     <string name="performance_trend_details_value_unavailable">Немає даних</string>
     <string name="performance_trend_details_value_unavailable_description">Даних цього тренування недостатньо для розрахунку показника.</string>
     <string name="performance_trend_details_recent_workouts">Останні тренування</string>

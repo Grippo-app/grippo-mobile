@@ -119,7 +119,7 @@ public sealed interface AchievementState {
     }
 
     @Composable
-    public fun totalValue(): String = when (this) {
+    public fun spacedValue(): String = when (this) {
         is BestTonnage -> VolumeFormatState.shortTotal(tonnage.value)
         is BestWeight -> VolumeFormatState.shortTotal(weight.value)
         is LifetimeVolume -> VolumeFormatState.shortTotal(totalVolume.value)

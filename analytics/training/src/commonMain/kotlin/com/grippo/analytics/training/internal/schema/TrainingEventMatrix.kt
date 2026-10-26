@@ -47,7 +47,7 @@ internal object TrainingEventMatrix {
             InteractionAction.CompletedStreakOpened -> "completed_streak_opened"
             InteractionAction.CompletedGoalOpened -> "completed_goal_opened"
             InteractionAction.CompletedAddGoalClicked -> "completed_add_goal_clicked"
-            InteractionAction.CompletedBaselineSelected -> "completed_baseline_selected"
+            InteractionAction.CompletedReferenceSelected -> "completed_baseline_selected"
             InteractionAction.CompletedRecordOpened -> "completed_record_opened"
             InteractionAction.CompletedShareClicked -> "completed_share_clicked"
             InteractionAction.CompletedDismissRequested -> "completed_dismiss_requested"
@@ -94,7 +94,7 @@ internal object TrainingEventMatrix {
         TrainingEvent.Completed.StreakOpened -> InteractionAction.CompletedStreakOpened
         TrainingEvent.Completed.GoalOpened -> InteractionAction.CompletedGoalOpened
         TrainingEvent.Completed.AddGoalClicked -> InteractionAction.CompletedAddGoalClicked
-        TrainingEvent.Completed.BaselineSelected -> InteractionAction.CompletedBaselineSelected
+        TrainingEvent.Completed.ReferenceSelected -> InteractionAction.CompletedReferenceSelected
         TrainingEvent.Completed.RecordOpened -> InteractionAction.CompletedRecordOpened
         TrainingEvent.Completed.ShareClicked -> InteractionAction.CompletedShareClicked
         TrainingEvent.Completed.DismissRequested -> InteractionAction.CompletedDismissRequested

@@ -112,7 +112,6 @@ private fun StartTrainingSkeletonPreview() {
                 start = AppTokens.dp.dialog.horizontalPadding,
                 end = AppTokens.dp.dialog.horizontalPadding,
                 top = AppTokens.dp.dialog.top,
-                bottom = AppTokens.dp.contentPadding.block,
             ),
         )
     }

@@ -118,7 +118,7 @@ internal class LocalSettingsRepositoryImpl(
         }
     }
 
-    override suspend fun clearUserSettings() {
+    override suspend fun clearUserSettings(): Unit {
         dataStore.edit { preferences ->
             val consent = preferences[AnalyticsConsentKey]
             val onboardingShown = preferences[OnboardingShownKey]

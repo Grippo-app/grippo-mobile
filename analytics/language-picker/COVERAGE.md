@@ -70,7 +70,7 @@ No local StateKeeper supplier, serializer or session restoration exists.
 Permitted manual checks: open the picker from Profile settings and
 verify the effective language is checked; select another language and verify the
 sheet closes after the selection feedback and the parent row and UI switch (ViewModel-preformatted date text keeps the old language until its data re-emits, an accepted limitation); select
-the already effective language and verify nothing is written; system Back, toolbar
+the already effective language and verify it is saved as an explicit choice; system Back, toolbar
 Close, swipe and scrim leave the language unchanged; ordinary Activity recreation
 keeps the live selection; process recreation with the sheet open closes it and
 keeps the last saved language; with a live sink, check both events and that a

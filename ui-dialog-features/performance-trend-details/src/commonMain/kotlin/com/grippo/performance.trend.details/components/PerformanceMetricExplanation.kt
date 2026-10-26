@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
+import com.grippo.core.state.metrics.performance.PerformanceReferenceState
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
@@ -30,7 +31,6 @@ import com.grippo.design.resources.provider.icons.ArrowTop
 import com.grippo.design.resources.provider.performance_history_scope
 import com.grippo.design.resources.provider.performance_trend_details_about
 import com.grippo.design.resources.provider.performance_trend_details_collapsed
-import com.grippo.design.resources.provider.performance_trend_details_comparison_scope
 import com.grippo.design.resources.provider.performance_trend_details_expanded
 
 private const val DisclosureAnimationDurationMillis = 200
@@ -39,6 +39,7 @@ private const val DisclosureAnimationDurationMillis = 200
 internal fun PerformanceMetricExplanation(
     modifier: Modifier = Modifier,
     metricType: PerformanceMetricTypeState,
+    reference: PerformanceReferenceState,
     showChartScope: Boolean,
     isExpanded: Boolean,
     onToggle: () -> Unit,
@@ -93,7 +94,7 @@ internal fun PerformanceMetricExplanation(
                     )
                 }
                 Text(
-                    text = AppTokens.strings.res(Res.string.performance_trend_details_comparison_scope),
+                    text = reference.comparisonScope(),
                     style = AppTokens.typography.b12Med(),
                     color = AppTokens.colors.text.secondary,
                 )
@@ -108,6 +109,7 @@ private fun PerformanceMetricExplanationCollapsedPreview() {
     PreviewContainer {
         PerformanceMetricExplanation(
             metricType = PerformanceMetricTypeState.Volume,
+            reference = PerformanceReferenceState.Average,
             showChartScope = true,
             isExpanded = false,
             onToggle = {},
@@ -121,6 +123,7 @@ private fun PerformanceMetricExplanationExpandedPreview() {
     PreviewContainer {
         PerformanceMetricExplanation(
             metricType = PerformanceMetricTypeState.Volume,
+            reference = PerformanceReferenceState.Average,
             showChartScope = true,
             isExpanded = true,
             onToggle = {},

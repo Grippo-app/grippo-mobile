@@ -5,26 +5,26 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlin.time.Duration
 
-internal expect class SystemDateFormatter() : DateFormatter {
-    override fun format(
+internal expect class SystemDateFormatter() {
+    fun format(
         value: LocalDateTime,
         pattern: String,
         localeTag: String?
     ): String?
 
-    override fun format(
+    fun format(
         value: LocalDate,
         pattern: String,
         localeTag: String?
     ): String?
 
-    override fun format(
+    fun format(
         value: LocalTime,
         pattern: String,
         localeTag: String?
     ): String?
 
-    override fun format(
+    fun format(
         duration: Duration,
         localeTag: String?
     ): String?

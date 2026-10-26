@@ -1,6 +1,6 @@
 package com.grippo.data.features.api.metrics.performance.models
 
-public enum class PerformanceBaseline {
+public enum class PerformanceReference {
     Average,
     Previous,
 }

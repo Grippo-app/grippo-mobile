@@ -14,14 +14,14 @@ import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.HeightFormatState
-import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.formatters.UiText
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.exercise_details_btn
-import com.grippo.design.resources.provider.weight_picker_title
-import com.grippo.design.resources.provider.duration_picker_title
+import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.menu.TrainingMenu
 import com.grippo.date.picker.DatePickerComponent
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.duration_picker_title
+import com.grippo.design.resources.provider.exercise_details_btn
+import com.grippo.design.resources.provider.weight_picker_title
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.draft.training.DraftTrainingComponent
 import com.grippo.duration.picker.DurationPickerComponent
@@ -182,6 +182,7 @@ internal class DialogContentComponent(
                     componentContext = context,
                     range = router.range,
                     metricType = router.metricType,
+                    reference = router.reference,
                     back = { dialogNavigation.finish(null) }
                 )
             )

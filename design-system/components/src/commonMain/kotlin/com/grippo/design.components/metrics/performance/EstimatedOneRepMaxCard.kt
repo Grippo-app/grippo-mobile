@@ -23,6 +23,7 @@ import com.grippo.design.resources.provider.estimated_one_rm
 import com.grippo.design.resources.provider.estimated_one_rm_history_peak
 import com.grippo.design.resources.provider.estimated_one_rm_source
 import com.grippo.design.resources.provider.estimated_one_rm_unavailable
+import com.grippo.design.resources.provider.listed_pair
 import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
 import kotlinx.collections.immutable.persistentListOf
@@ -74,7 +75,11 @@ public fun EstimatedOneRepMaxCard(
             val days = origin.date.daysUntil(entry.start.date)
             val seconds = entry.start.time.toSecondOfDay() - origin.time.toSecondOfDay()
             val elapsedDays = days.toDouble() + seconds / 86_400.0
-            SparklinePoint(x = elapsedDays.toFloat(), y = entry.value, label = "$pointDate $pointTime")
+            SparklinePoint(
+                x = elapsedDays.toFloat(),
+                y = entry.value,
+                label = AppTokens.strings.res(Res.string.listed_pair, pointDate, pointTime),
+            )
         }
         val graphDescription = entries.zip(points).joinToString("; ") { (entry, point) ->
             "${point.label}: ${valueLabels.getValue(entry.value)}"
@@ -91,7 +96,7 @@ public fun EstimatedOneRepMaxCard(
                 Res.string.estimated_one_rm_source,
                 sourceLabel,
                 latest.repetitions.toString(),
-                "$date $time",
+                AppTokens.strings.res(Res.string.listed_pair, date, time),
             ),
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.secondary,

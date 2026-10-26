@@ -29,13 +29,13 @@ public enum class PerformanceVerdictState {
     FirstWorkout;
 
     @Composable
-    public fun title(baseline: PerformanceBaselineState): String = when (this) {
+    public fun title(reference: PerformanceReferenceState): String = when (this) {
         Record -> AppTokens.strings.res(Res.string.training_recap_verdict_record)
 
         Improved -> AppTokens.strings.res(
-            when (baseline) {
-                PerformanceBaselineState.Average -> Res.string.training_recap_verdict_improved
-                PerformanceBaselineState.Previous -> Res.string.training_recap_verdict_improved_previous
+            when (reference) {
+                PerformanceReferenceState.Average -> Res.string.training_recap_verdict_improved
+                PerformanceReferenceState.Previous -> Res.string.training_recap_verdict_improved_previous
             },
         )
 
@@ -62,10 +62,10 @@ public enum class PerformanceVerdictState {
     @Composable
     public fun summary(
         metrics: ImmutableList<PerformanceMetricState>,
-        baseline: PerformanceBaselineState,
+        reference: PerformanceReferenceState,
     ): String = when (this) {
         FirstWorkout -> AppTokens.strings.res(Res.string.training_recap_first_description)
-        Record, Improved, Stable, Declined -> baseline.comparedSummary(
+        Record, Improved, Stable, Declined -> reference.comparedSummary(
             improved = improvedCount(metrics),
             compared = comparedCount(metrics),
         )
@@ -91,13 +91,13 @@ public enum class PerformanceVerdictState {
             }
         }
 
-        public fun improvedCount(metrics: List<PerformanceMetricState>): Int = metrics.count { metric ->
+        private fun improvedCount(metrics: List<PerformanceMetricState>): Int = metrics.count { metric ->
             metric.showsComparison() && (
                 metric.status == PerformanceTrendStatusState.Record ||
                     metric.status == PerformanceTrendStatusState.Improved
                 )
         }
 
-        public fun comparedCount(metrics: List<PerformanceMetricState>): Int = metrics.count { it.showsComparison() }
+        private fun comparedCount(metrics: List<PerformanceMetricState>): Int = metrics.count { it.showsComparison() }
     }
 }

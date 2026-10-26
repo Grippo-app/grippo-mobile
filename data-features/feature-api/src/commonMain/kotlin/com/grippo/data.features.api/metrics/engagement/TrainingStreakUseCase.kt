@@ -302,6 +302,7 @@ public class TrainingStreakUseCase {
     }
 
     private fun detectSchedule(observation: Observation, period: Int): Schedule? {
+        // The first training fixes the phase; shifting the mask would move today's cycle boundary and fake progress.
         val completedDays = observation.from.daysUntil(observation.completedThrough) + 1
         val completeCycles = completedDays / period
         if (completeCycles < MIN_COMPLETED_CYCLES) {

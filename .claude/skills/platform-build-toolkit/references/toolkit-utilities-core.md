@@ -14,8 +14,9 @@ Inspect the affected `toolkit/<module>/` implementation and direct consumers.
   fatal errors; keep this isolation in the sink rather than adding consumer catches.
 - `localization` owns locale access and the app-level language override (`AppLocale`).
   `current` (composable) and `current()` return the tag last passed to `update` or else the
-  system locale; `isResolved` becomes true at the first `update(tag)`. `update` applies the tag
-  to the platform through internal `SystemLocale`: Android `Locale.setDefault`, re-applied from
+  system locale; `isResolved` becomes true at the first `update(tag)`. `update` applies a non-null
+  tag to the platform through internal `SystemLocale` (a null tag only resolves and leaves the
+  platform locale untouched, so it is meaningful only before the first non-null tag): Android `Locale.setDefault`, re-applied from
   the Application callbacks registered by the eager `LocalizationModule`; iOS the
   `AppleLanguages` user default.
 - `number-utils` owns pure numeric representation with explicit separator inputs.

@@ -30,28 +30,25 @@ import androidx.compose.ui.semantics.semantics
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
-import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.DurationFormatState
-import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.engagement.TrainingStreakFeaturedState
 import com.grippo.core.state.metrics.engagement.TrainingStreakState
 import com.grippo.core.state.metrics.engagement.stubTrainingStreaks
-import com.grippo.core.state.metrics.performance.PerformanceBaselineState
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
+import com.grippo.core.state.metrics.performance.PerformanceReferenceState
 import com.grippo.core.state.metrics.performance.PerformanceVerdictState
 import com.grippo.core.state.metrics.performance.stubPerformanceMetricsByType
 import com.grippo.core.state.metrics.performance.stubPerformanceMetricsDeclined
 import com.grippo.core.state.metrics.performance.stubPerformanceMetricsImproved
-import com.grippo.core.state.metrics.performance.stubPerformanceMetricsWithoutBaseline
+import com.grippo.core.state.metrics.performance.stubPerformanceMetricsWithoutReference
 import com.grippo.core.state.metrics.performance.stubTrainingRecords
 import com.grippo.core.state.metrics.profile.stubGoalProgress
 import com.grippo.core.state.metrics.volume.stubWeeklyVolume
 import com.grippo.core.state.trainings.TrainingState
-import com.grippo.core.state.trainings.stubPendingIteration
-import com.grippo.core.state.trainings.stubTraining
+import com.grippo.core.state.trainings.stubRecapTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
@@ -89,17 +86,13 @@ import com.grippo.design.resources.provider.training_completed_details_unavailab
 import com.grippo.design.resources.provider.training_completed_done
 import com.grippo.design.resources.provider.training_completed_result_unavailable
 import com.grippo.design.resources.provider.training_recap_period_as_of
-import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangeKind
-import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.training.completed.components.TrainingCompletedSkeleton
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
@@ -300,8 +293,8 @@ private fun TrainingCompletedContent(
                 PerformanceComparisonCard(
                     modifier = cardModifier,
                     metrics = performance.metrics,
-                    baseline = performance.baseline,
-                    onBaselineSelect = contract::onBaselineSelect,
+                    reference = performance.reference,
+                    onReferenceSelect = contract::onReferenceSelect,
                     onMetricClick = contract::onMetricClick,
                 )
             }
@@ -401,12 +394,9 @@ private fun trainingCompletedHeroStyle(state: TrainingCompletedState): TrainingR
     val performance = state.performance ?: return TrainingRecapHeroStyle.Pending
 
     val verdict = PerformanceVerdictState.of(performance.metrics)
-    val summary = verdict.summary(metrics = performance.metrics, baseline = performance.baseline)
-    val rangeLabel = if (performance.isOver(state.range.value)) {
-        state.range.label()?.text()
-    } else {
-        performance.period.shortEnd()?.let { AppTokens.strings.res(Res.string.training_recap_period_as_of, it) }
-    }
+    val summary = verdict.summary(metrics = performance.metrics, reference = performance.reference)
+    val rangeLabel = performance.presetLabel(state.range)?.text()
+        ?: performance.period.shortEnd()?.let { AppTokens.strings.res(Res.string.training_recap_period_as_of, it) }
     val description = if (rangeLabel == null) {
         summary
     } else {
@@ -415,7 +405,7 @@ private fun trainingCompletedHeroStyle(state: TrainingCompletedState): TrainingR
 
     return TrainingRecapHeroStyle.Resolved(
         verdict = verdict,
-        baseline = performance.baseline,
+        reference = performance.reference,
         description = description,
     )
 }
@@ -428,60 +418,18 @@ private fun previewRhythmStreak(length: Int): TrainingStreakState {
 }
 
 private fun trainingCompletedPreviewState(): TrainingCompletedState {
-    val createdAt = DateTimeFormatState.of(
-        value = LocalDateTime(
-            year = 2026,
-            month = 10,
-            day = 16,
-            hour = 12,
-            minute = 0,
-        ),
-        range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateDdMmmYyyy,
-    )
-    val base = stubTraining()
-    val template = base.exercises.first()
-    val iteration = stubPendingIteration().copy(
-        id = "completed-set",
-        repetitions = RepetitionsFormatState.of(10),
-        externalWeight = VolumeFormatState.of(40f),
-    )
-    val total = base.total.copy(
-        volume = VolumeFormatState.ofTotal(1_200f),
-        intensity = IntensityFormatState.ofAverage(40f),
-        repetitions = RepetitionsFormatState.ofTotal(30),
-    )
-    val exercise = template.copy(
-        id = "completed-exercise",
-        exerciseExample = template.exerciseExample.copy(
-            id = "completed-example",
-            lastUsed = createdAt,
-        ),
-        iterations = List(3) { setIndex ->
-            iteration.copy(id = "completed-set-$setIndex")
-        }.toPersistentList(),
-        createdAt = createdAt,
-        total = total,
-    )
-    val training = base.copy(
-        id = "completed-training",
-        exercises = persistentListOf(exercise),
-        createdAt = createdAt,
-        duration = DurationFormatState.ofTotal(65.minutes),
-        total = total,
-    )
-
+    val training = stubRecapTraining()
     val range = DateRangeFormatState.of(DateRangeKind.Last30Days)
 
     return TrainingCompletedState(
         savedTrainingId = training.id,
-        baseline = PerformanceBaselineState.Average,
+        reference = PerformanceReferenceState.Average,
         training = training,
         muscleLoad = stubMuscleLoadSummary(),
         range = range,
         performance = PerformanceComparisonState(
             metrics = stubPerformanceMetricsByType(),
-            baseline = PerformanceBaselineState.Average,
+            reference = PerformanceReferenceState.Average,
             period = range,
         ),
         records = stubTrainingRecords(),
@@ -523,16 +471,16 @@ private fun TrainingCompletedImprovedPreview() {
 
 @AppPreview
 @Composable
-private fun TrainingCompletedPreviousBaselinePreview() {
+private fun TrainingCompletedPreviousReferencePreview() {
     val state = trainingCompletedPreviewState()
 
     PreviewContainer {
         TrainingCompletedScreen(
             state = state.copy(
-                baseline = PerformanceBaselineState.Previous,
+                reference = PerformanceReferenceState.Previous,
                 performance = state.performance?.copy(
                     metrics = stubPerformanceMetricsImproved(),
-                    baseline = PerformanceBaselineState.Previous,
+                    reference = PerformanceReferenceState.Previous,
                 ),
             ),
             loaders = persistentSetOf(),
@@ -575,8 +523,9 @@ private fun TrainingCompletedFirstWorkoutInPeriodPreview() {
     PreviewContainer {
         TrainingCompletedScreen(
             state = state.copy(
-                performance = state.performance?.copy(metrics = stubPerformanceMetricsWithoutBaseline()),
+                performance = state.performance?.copy(metrics = stubPerformanceMetricsWithoutReference()),
                 records = persistentListOf(),
+                streak = previewRhythmStreak(length = 1),
                 previousStreak = null,
                 goalProgress = null,
                 previousGoalProgress = null,

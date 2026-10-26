@@ -23,6 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -34,41 +36,20 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlin.math.max
 
-private object OverlaySlots {
-    const val TOP = "top"
-    const val BOTTOM = "bottom"
-    const val CONTENT = "content"
-    const val TOP_OVERLAY = "top_overlay"
-    const val BOTTOM_OVERLAY = "bottom_overlay"
-}
-
-private enum class OverlayEdge {
-    Top,
-    Bottom;
-
-    fun brush(color: Color, fadeFraction: Float): Brush {
-        val clear = color.copy(alpha = 0f)
-
-        return when (this) {
-            Top -> Brush.verticalGradient(0f to color, 1f - fadeFraction to color, 1f to clear)
-            Bottom -> Brush.verticalGradient(0f to clear, fadeFraction to color, 1f to color)
-        }
-    }
-}
-
 @Composable
 public fun OverlayContainer(
     modifier: Modifier = Modifier,
+    overlay: Color,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     top: (@Composable ColumnScope.() -> Unit)? = null,
     bottom: (@Composable ColumnScope.() -> Unit)? = null,
-    overlay: Color,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val fade = AppTokens.dp.contentPadding.block
     val slotModifier = Modifier
         .fillMaxWidth()
-        // Without this empty handler (as in Material's Surface), taps on an opaque slot reach the hidden content.
+        // As in Material's Surface: without these, touches and accessibility focus reach hidden content.
+        .semantics { isTraversalGroup = true }
         .pointerInput(Unit) {}
 
     SubcomposeLayout(modifier = modifier) { constraints ->
@@ -146,6 +127,14 @@ public fun OverlayContainer(
     }
 }
 
+private object OverlaySlots {
+    const val TOP = "top"
+    const val BOTTOM = "bottom"
+    const val CONTENT = "content"
+    const val TOP_OVERLAY = "top_overlay"
+    const val BOTTOM_OVERLAY = "bottom_overlay"
+}
+
 @Composable
 private fun EdgeOverlay(
     edge: OverlayEdge,
@@ -163,6 +152,20 @@ private fun EdgeOverlay(
     )
 }
 
+private enum class OverlayEdge {
+    Top,
+    Bottom;
+
+    fun brush(color: Color, fadeFraction: Float): Brush {
+        val clear = color.copy(alpha = 0f)
+
+        return when (this) {
+            Top -> Brush.verticalGradient(0f to color, 1f - fadeFraction to color, 1f to clear)
+            Bottom -> Brush.verticalGradient(0f to clear, fadeFraction to color, 1f to color)
+        }
+    }
+}
+
 @AppPreview
 @Composable
 private fun OverlayContainerPreview() {
@@ -171,8 +174,8 @@ private fun OverlayContainerPreview() {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding),
             overlay = AppTokens.colors.background.screen,
+            contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding),
             top = {
                 Spacer(modifier = Modifier.statusBarsPadding())
             },
@@ -214,6 +217,51 @@ private fun OverlayContainerPreview() {
                             style = CheckSelectableCardStyle.Medium(
                                 title = "Option ${index + 1}",
                                 description = "Scrolls under both pinned edges",
+                            ),
+                            isSelected = false,
+                            onSelect = {},
+                        )
+                    }
+                }
+            }
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun OverlayContainerBottomOnlyPreview() {
+    PreviewContainer {
+        OverlayContainer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            overlay = AppTokens.colors.background.screen,
+            contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding),
+            bottom = {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+                    content = ButtonContent.Text(text = "Primary action"),
+                    style = ButtonStyle.Primary,
+                    onClick = {},
+                )
+
+                Spacer(modifier = Modifier.navigationBarsPadding())
+            },
+            content = { padding ->
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = padding,
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                ) {
+                    items(count = 20) { index ->
+                        CheckSelectableCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            style = CheckSelectableCardStyle.Medium(
+                                title = "Option ${index + 1}",
+                                description = "Scrolls under the pinned bottom edge",
                             ),
                             isSelected = false,
                             onSelect = {},

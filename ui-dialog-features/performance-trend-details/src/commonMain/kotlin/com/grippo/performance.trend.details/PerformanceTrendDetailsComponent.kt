@@ -7,12 +7,14 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
+import com.grippo.core.state.metrics.performance.PerformanceReferenceState
 import com.grippo.toolkit.date.utils.DateRange
 
 public class PerformanceTrendDetailsComponent(
     componentContext: ComponentContext,
     range: DateRange,
     metricType: PerformanceMetricTypeState,
+    reference: PerformanceReferenceState,
     private val back: () -> Unit,
 ) : BaseComponent<PerformanceTrendDetailsDirection>(componentContext) {
 
@@ -20,6 +22,7 @@ public class PerformanceTrendDetailsComponent(
         PerformanceTrendDetailsViewModel(
             range = range,
             metricType = metricType,
+            reference = reference,
             analytics = getKoin().get(),
             trainingFeature = getKoin().get(),
             performanceTrendUseCase = getKoin().get()

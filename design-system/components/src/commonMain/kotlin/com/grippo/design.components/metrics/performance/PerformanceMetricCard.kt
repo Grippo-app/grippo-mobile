@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -14,8 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.formatters.PercentageFormatState
-import com.grippo.core.state.metrics.performance.PerformanceBaselineState
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
+import com.grippo.core.state.metrics.performance.PerformanceReferenceState
 import com.grippo.core.state.metrics.performance.PerformanceTrendStatusState
 import com.grippo.core.state.metrics.performance.stubEmptyPerformanceMetric
 import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
@@ -28,24 +28,20 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.metric_overview_performance_average
-import com.grippo.design.resources.provider.metric_overview_performance_comparison
 import com.grippo.design.resources.provider.performance_comparison_unavailable
 import com.grippo.design.resources.provider.performance_trend_details_comparison
-import com.grippo.design.resources.provider.performance_trend_details_first_workout
-import com.grippo.design.resources.provider.performance_trend_details_previous_average
 import com.grippo.design.resources.provider.performance_trend_details_value_unavailable
 import com.grippo.design.resources.provider.performance_trend_details_value_unavailable_description
-import com.grippo.design.resources.provider.performance_trend_details_zero_average
 
 @Composable
 public fun PerformanceMetricCard(
     modifier: Modifier = Modifier,
     metric: PerformanceMetricState,
+    reference: PerformanceReferenceState = PerformanceReferenceState.Average,
     presentation: MetricCardPresentation = MetricCardPresentation.Detailed,
 ) {
     if (presentation == MetricCardPresentation.Detailed) {
-        DetailedPerformanceMetric(modifier = modifier, metric = metric)
+        DetailedPerformanceMetric(modifier = modifier, metric = metric, reference = reference)
         return
     }
 
@@ -74,7 +70,7 @@ public fun PerformanceMetricCard(
         }
 
         if (metric.showsComparison()) {
-            PerformanceTrendChip(status = metric.status, baseline = PerformanceBaselineState.Average)
+            PerformanceTrendChip(status = metric.status, reference = reference)
         }
 
         if (!empty && comparisonPercentage == null) {
@@ -92,19 +88,13 @@ public fun PerformanceMetricCard(
             ) {
                 if (metric is PerformanceMetricState.Duration) {
                     Text(
-                        text = AppTokens.strings.res(
-                            Res.string.metric_overview_performance_comparison,
-                            PercentageFormatState.shortDelta(comparisonPercentage),
-                        ),
+                        text = reference.overviewComparison(PercentageFormatState.shortDelta(comparisonPercentage)),
                         style = AppTokens.typography.b12Med(),
                         color = AppTokens.colors.text.secondary,
                     )
                 } else {
                     Text(
-                        text = AppTokens.strings.res(
-                            Res.string.metric_overview_performance_average,
-                            metric.averageDisplay(),
-                        ),
+                        text = reference.overviewValue(metric.averageDisplay()),
                         style = AppTokens.typography.b12Med(),
                         color = AppTokens.colors.text.secondary,
                     )
@@ -124,6 +114,7 @@ public fun PerformanceMetricCard(
 private fun DetailedPerformanceMetric(
     modifier: Modifier = Modifier,
     metric: PerformanceMetricState,
+    reference: PerformanceReferenceState,
 ) {
     val isAvailable = metric.chartValue() != null
     val comparison = metric.currentVsAveragePercentage?.takeIf { it.isFinite() }
@@ -160,10 +151,7 @@ private fun DetailedPerformanceMetric(
             )
         } else if (metric.hasAverage()) {
             Text(
-                text = AppTokens.strings.res(
-                    Res.string.performance_trend_details_previous_average,
-                    metric.averageDisplay(),
-                ),
+                text = reference.detailedValue(metric.averageDisplay()),
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,
             )
@@ -174,14 +162,14 @@ private fun DetailedPerformanceMetric(
                         PercentageFormatState.shortDelta(comparison),
                     )
                 } else {
-                    AppTokens.strings.res(Res.string.performance_trend_details_zero_average)
+                    reference.zeroValueNotice()
                 },
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,
             )
         } else {
             Text(
-                text = AppTokens.strings.res(Res.string.performance_trend_details_first_workout),
+                text = reference.missingValueNotice(),
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,
             )
@@ -278,7 +266,7 @@ private fun PerformanceMetricCardWithoutComparisonPreview() {
 
 @AppPreview
 @Composable
-private fun PerformanceMetricCardRecordAfterZeroBaselinePreview() {
+private fun PerformanceMetricCardRecordAfterZeroReferencePreview() {
     PreviewContainer {
         val metric = stubPerformanceMetrics().filterIsInstance<PerformanceMetricState.Volume>().first()
         PerformanceMetricCard(
@@ -301,6 +289,23 @@ private fun PerformanceMetricCardDurationComparisonPreview() {
             presentation = MetricCardPresentation.Overview,
         )
         PerformanceMetricCard(metric = metric)
+    }
+}
+
+@AppPreview
+@Composable
+private fun PerformanceMetricCardPreviousReferencePreview() {
+    PreviewContainer {
+        val metrics = stubPerformanceMetrics()
+        PerformanceMetricCard(
+            metric = metrics.filterIsInstance<PerformanceMetricState.Volume>().first(),
+            reference = PerformanceReferenceState.Previous,
+            presentation = MetricCardPresentation.Overview,
+        )
+        PerformanceMetricCard(
+            metric = metrics.filterIsInstance<PerformanceMetricState.Volume>().first(),
+            reference = PerformanceReferenceState.Previous,
+        )
     }
 }
 

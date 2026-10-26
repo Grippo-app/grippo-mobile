@@ -45,7 +45,7 @@ public sealed interface TrainingEvent {
         public data object StreakOpened : Completed
         public data object GoalOpened : Completed
         public data object AddGoalClicked : Completed
-        public data object BaselineSelected : Completed
+        public data object ReferenceSelected : Completed
         public data object RecordOpened : Completed
         public data object ShareClicked : Completed
         public data object DismissRequested : Completed

@@ -5,6 +5,7 @@ import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.menu.TrainingMenu
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
+import com.grippo.core.state.metrics.performance.PerformanceReferenceState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import com.grippo.core.state.settings.LanguageEnumState
@@ -15,8 +16,8 @@ import com.grippo.dialog.api.DialogController.Session
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateRangeKind
-import kotlin.time.Duration
 import kotlinx.datetime.LocalDateTime
+import kotlin.time.Duration
 
 public sealed class DialogConfig(
     public open val onDismiss: (() -> Unit)? = null,
@@ -33,7 +34,7 @@ public sealed class DialogConfig(
             is MuscleLoadingDetails -> other is MuscleLoadingDetails && range == other.range
             is TrainingStreakDetails -> other is TrainingStreakDetails && range == other.range
             is PerformanceTrendDetails -> other is PerformanceTrendDetails &&
-                range == other.range && metricType == other.metricType
+                range == other.range && metricType == other.metricType && reference == other.reference
             is TrainingGoalDetails -> other is TrainingGoalDetails && range == other.range
             is Iteration -> other is Iteration && initial == other.initial && number == other.number &&
                 example == other.example && focus == other.focus && suggestions == other.suggestions &&
@@ -107,6 +108,7 @@ public sealed class DialogConfig(
         public override val title: UiText,
         val range: DateRange,
         val metricType: PerformanceMetricTypeState,
+        val reference: PerformanceReferenceState,
     ) : DialogConfig()
 
     public data class TrainingGoalDetails(

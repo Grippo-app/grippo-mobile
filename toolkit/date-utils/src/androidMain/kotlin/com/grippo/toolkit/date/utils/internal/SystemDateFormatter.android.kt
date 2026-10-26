@@ -14,26 +14,26 @@ import java.util.Locale
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 
-internal actual class SystemDateFormatter actual constructor() : DateFormatter {
-    actual override fun format(value: LocalDateTime, pattern: String, localeTag: String?): String? {
+internal actual class SystemDateFormatter actual constructor() {
+    actual fun format(value: LocalDateTime, pattern: String, localeTag: String?): String? {
         val loc = localeTag?.let(Locale::forLanguageTag) ?: Locale.getDefault()
         val fmt = DateTimeFormatter.ofPattern(pattern, loc)
         return fmt.format(value.toJavaLocalDateTime())
     }
 
-    actual override fun format(value: LocalDate, pattern: String, localeTag: String?): String? {
+    actual fun format(value: LocalDate, pattern: String, localeTag: String?): String? {
         val loc = localeTag?.let(Locale::forLanguageTag) ?: Locale.getDefault()
         val fmt = DateTimeFormatter.ofPattern(pattern, loc)
         return fmt.format(value.toJavaLocalDate())
     }
 
-    actual override fun format(value: LocalTime, pattern: String, localeTag: String?): String? {
+    actual fun format(value: LocalTime, pattern: String, localeTag: String?): String? {
         val loc = localeTag?.let(Locale::forLanguageTag) ?: Locale.getDefault()
         val fmt = DateTimeFormatter.ofPattern(pattern, loc)
         return fmt.format(value.toJavaLocalTime())
     }
 
-    actual override fun format(duration: Duration, localeTag: String?): String? {
+    actual fun format(duration: Duration, localeTag: String?): String? {
         val loc = localeTag?.let(Locale::forLanguageTag) ?: Locale.getDefault()
         val absolute = duration.toJavaDuration().abs()
         val isNegative = duration.isNegative()

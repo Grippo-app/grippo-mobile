@@ -33,6 +33,9 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.icons.Trophy
+import com.grippo.design.resources.provider.joined_pair
+import com.grippo.design.resources.provider.labeled_value
+import com.grippo.design.resources.provider.listed_pair
 import com.grippo.design.resources.provider.training_records_description
 import com.grippo.design.resources.provider.training_records_title
 import kotlinx.collections.immutable.ImmutableList
@@ -99,9 +102,15 @@ private fun TrainingRecordRow(
     record: TrainingRecordState,
     onClick: () -> Unit,
 ) {
-    val kinds = record.achievements.map { achievement -> "${achievement.text().text()} ${achievement.totalValue()}" }
-    val kindsLine = kinds.joinToString(separator = " · ")
-    val spokenKinds = AnnotatedString(kinds.joinToString(separator = ", "))
+    val kinds = record.achievements.map { achievement ->
+        AppTokens.strings.res(Res.string.labeled_value, achievement.text().text(), achievement.spacedValue())
+    }
+    val kindsLine = kinds
+        .reduceOrNull { line, kind -> AppTokens.strings.res(Res.string.joined_pair, line, kind) }
+        .orEmpty()
+    val spokenKinds = AnnotatedString(
+        kinds.reduceOrNull { line, kind -> AppTokens.strings.res(Res.string.listed_pair, line, kind) }.orEmpty(),
+    )
 
     Row(
         modifier = modifier

@@ -1,6 +1,8 @@
 package com.grippo.toolkit.date.utils
 
 import com.grippo.toolkit.date.utils.internal.DayTime
+import com.grippo.toolkit.date.utils.internal.SystemDateFormatter
+import com.grippo.toolkit.localization.AppLocale
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -22,6 +24,7 @@ import kotlin.time.Instant
 public object DateTimeUtils {
 
     private val timeZone: TimeZone = TimeZone.currentSystemDefault()
+    private val formatter: SystemDateFormatter = SystemDateFormatter()
 
     public fun now(): LocalDateTime {
         return Clock.System.now().toLocalDateTime(timeZone)
@@ -157,21 +160,21 @@ public object DateTimeUtils {
 
     @OptIn(FormatStringsInDatetimeFormats::class)
     public fun format(value: LocalDateTime, format: DateFormat): String {
-        return DateFormatting.current.format(value, format.pattern, null) ?: "-"
+        return formatter.format(value, format.pattern, AppLocale.current()) ?: "-"
     }
 
     @OptIn(FormatStringsInDatetimeFormats::class)
     public fun format(value: LocalTime, format: DateFormat.TimeOnly): String {
-        return DateFormatting.current.format(value, format.pattern, null) ?: "-"
+        return formatter.format(value, format.pattern, AppLocale.current()) ?: "-"
     }
 
     @OptIn(FormatStringsInDatetimeFormats::class)
     public fun format(value: LocalDate, format: DateFormat.DateOnly): String {
-        return DateFormatting.current.format(value, format.pattern, null) ?: "-"
+        return formatter.format(value, format.pattern, AppLocale.current()) ?: "-"
     }
 
     public fun format(duration: Duration): String {
-        return DateFormatting.current.format(duration) ?: "-"
+        return formatter.format(duration, AppLocale.current()) ?: "-"
     }
 
     public fun ago(value: LocalDateTime): Duration {

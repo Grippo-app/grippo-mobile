@@ -28,6 +28,7 @@
     <string name="metric_overview_streak_pattern_pattern">Dias de treino: %1$d · Dias por ciclo: %2$d</string>
     <string name="metric_overview_performance_average">Média anterior: %1$s</string>
     <string name="metric_overview_performance_comparison">%1$s em relação à média anterior</string>
+    <string name="metric_overview_performance_comparison_previous">%1$s em relação ao treino anterior</string>
     <string name="metric_overview_duration">Tempo de treino</string>
     <string name="metric_overview_volume">Peso levantado</string>
     <string name="metric_overview_density">Peso por minuto</string>
@@ -72,6 +73,9 @@
     <string name="sets_value">Séries (%1$s)</string>
     <string name="percent">%</string>
     <string name="joined_pair">%1$s · %2$s</string>
+    <string name="value_transition">%1$s → %2$s</string>
+    <string name="listed_pair">%1$s, %2$s</string>
+    <string name="labeled_value">%1$s %2$s</string>
     <string name="selected">Selecionado</string>
     <string name="cm">cm</string>
     <string name="apply_btn">Aplicar</string>
@@ -873,10 +877,8 @@
     <string name="exercise_history_previous_set_date">Séries anteriores · %1$s</string>
     <string name="exercise_history_chart_unavailable">Gráfico indisponível para estes valores de volume</string>
     <string name="exercise_history_set_result">%1$s × %2$s</string>
-    <string name="exercise_history_previous_short">%1$s · %2$s</string>
     <string name="exercise_history_vs_date">vs %1$s</string>
     <string name="training_streak_current_progress">Último período: %1$d / %2$d dias ativos</string>
-    <string name="training_streak_growth_headline">%1$s → %2$s</string>
     <string name="training_streak_growth_extended">Sequência mantida e ampliada</string>
     <string name="training_streak_growth_kept">Ritmo mantido</string>
     <string name="training_streak_growth_reset">Sequência reiniciada</string>
@@ -887,8 +889,8 @@
     <string name="performance_comparison_title">Antes → depois</string>
     <string name="performance_comparison_first_title">Este treino</string>
     <string name="performance_growth_before">Antes: %1$s</string>
-    <string name="performance_baseline_average">vs média</string>
-    <string name="performance_baseline_previous">vs último treino</string>
+    <string name="performance_reference_average">vs média</string>
+    <string name="performance_reference_previous">vs último treino</string>
     <string name="training_records_title">Recordes pessoais</string>
     <string name="training_records_description">Melhores marcas de todos os tempos alcançadas neste treino.</string>
     <string name="weekly_volume_title">Esta semana</string>
@@ -914,7 +916,6 @@
     <string name="digest_unavailable">—</string>
     <string name="digest_zero_duration">0 min</string>
     <string name="goal_card_status_not_evaluated">Ainda não avaliado</string>
-    <string name="goal_growth_score">%1$s → %2$s</string>
     <string name="goal_details_analysis_period">Analisado: %1$s</string>
     <string name="goal_details_analysis_evidence">%1$d dias · %2$d séries registradas</string>
     <string name="goal_details_analysis_excluded">Séries excluídas por registros inválidos ou incompletos: %1$d</string>
@@ -930,6 +931,7 @@
     <string name="muscle_load_unassigned_sets">Séries registradas com participação muscular desconhecida: %1$d.</string>
     <string name="performance_history_scope">O gráfico conecta os valores disponíveis de até 10 treinos mais recentes.</string>
     <string name="performance_trend_details_comparison_scope">As comparações usam a média de todos os treinos anteriores com dados no período selecionado.</string>
+    <string name="performance_trend_details_comparison_scope_previous">As comparações usam o treino anterior no período selecionado.</string>
     <string name="muscle_load_unmeasured_volume_sets">Séries com dados de carga incompletos: %1$d. As proporções musculares usam as séries registradas; o volume inclui apenas séries com medidas completas.</string>
     <string name="goal_card_limited_data">Dados limitados</string>
     <string name="available_sets_label">Séries disponíveis</string>
@@ -949,9 +951,12 @@
 
     <string name="performance_trend_details_latest">Último treino</string>
     <string name="performance_trend_details_previous_average">Média anterior: %1$s</string>
+    <string name="performance_previous_value">Treino anterior: %1$s</string>
     <string name="performance_trend_details_comparison">Variação: %1$s</string>
     <string name="performance_trend_details_first_workout">A comparação precisa de um treino anterior com dados neste período.</string>
+    <string name="performance_trend_details_no_previous">A comparação precisa de dados do treino anterior neste período.</string>
     <string name="performance_trend_details_zero_average">A média anterior é zero, então não é possível calcular a variação percentual.</string>
+    <string name="performance_trend_details_zero_previous">O valor do treino anterior é zero, então não é possível calcular a variação percentual.</string>
     <string name="performance_trend_details_value_unavailable">Valor indisponível</string>
     <string name="performance_trend_details_value_unavailable_description">Este treino não tem dados suficientes para calcular este indicador.</string>
     <string name="performance_trend_details_recent_workouts">Treinos recentes</string>

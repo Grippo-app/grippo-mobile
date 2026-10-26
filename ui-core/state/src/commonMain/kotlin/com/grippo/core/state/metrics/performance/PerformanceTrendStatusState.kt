@@ -22,21 +22,21 @@ public enum class PerformanceTrendStatusState {
     Declined;
 
     @Composable
-    public fun label(baseline: PerformanceBaselineState): String? = when (this) {
+    public fun label(reference: PerformanceReferenceState): String? = when (this) {
         Record -> AppTokens.strings.res(Res.string.performance_status_record)
-        Improved -> when (baseline) {
-            PerformanceBaselineState.Average -> AppTokens.strings.res(Res.string.performance_status_improved)
-            PerformanceBaselineState.Previous -> AppTokens.strings.res(Res.string.performance_status_improved_previous)
+        Improved -> when (reference) {
+            PerformanceReferenceState.Average -> AppTokens.strings.res(Res.string.performance_status_improved)
+            PerformanceReferenceState.Previous -> AppTokens.strings.res(Res.string.performance_status_improved_previous)
         }
 
-        Stable -> when (baseline) {
-            PerformanceBaselineState.Average -> AppTokens.strings.res(Res.string.performance_status_stable)
-            PerformanceBaselineState.Previous -> AppTokens.strings.res(Res.string.performance_status_stable_previous)
+        Stable -> when (reference) {
+            PerformanceReferenceState.Average -> AppTokens.strings.res(Res.string.performance_status_stable)
+            PerformanceReferenceState.Previous -> AppTokens.strings.res(Res.string.performance_status_stable_previous)
         }
 
-        Declined -> when (baseline) {
-            PerformanceBaselineState.Average -> AppTokens.strings.res(Res.string.performance_status_declined)
-            PerformanceBaselineState.Previous -> AppTokens.strings.res(Res.string.performance_status_declined_previous)
+        Declined -> when (reference) {
+            PerformanceReferenceState.Average -> AppTokens.strings.res(Res.string.performance_status_declined)
+            PerformanceReferenceState.Previous -> AppTokens.strings.res(Res.string.performance_status_declined_previous)
         }
 
         Empty -> null

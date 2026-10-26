@@ -58,22 +58,21 @@ it. A new supported dictionary member with unchanged fields does not itself
 require a DTO shape or Room schema change. Preserve existing unknown-value and
 incomplete-response handling under the mapper and data-layer rules.
 
-This handling also affects rollout. A build with the catalog exception in
-[operation outcomes](../../data-layer/references/operation-outcomes.md#operation-outcomes-and-cache-reconciliation-canonical)
-stores a new type's rows from `getEquipments` and hides them during domain
-promotion, so Splash completes and exercise-example snapshots written after that
-refresh find their parents; the equipment appears only after an app update that adds the type.
-Until then, hidden equipment is missing from every domain projection on that build:
+This handling also affects rollout. Under the catalog exception in
+[operation outcomes](../../data-layer/references/operation-outcomes.md#operation-outcomes-and-cache-reconciliation-canonical),
+a build hides equipment whose type it does not know until an app update adds the
+type. Until then, on that build:
 
 - an example whose only equipment is hidden shows the no-equipment weight hint
   (`ExerciseExampleState.hint`);
-- the user cannot select or exclude it, and the example filters
-  (`UserExerciseExamplesUseCase`, `GeneratePresetTrainingUseCase`) ignore an
-  exclusion of it made from a newer build;
+- the user cannot select or exclude hidden equipment; for an item whose own type is
+  unknown, the example filters (`UserExerciseExamplesUseCase`,
+  `GeneratePresetTrainingUseCase`) also ignore an exclusion made from a newer build,
+  while a known-type item hidden with its unknown group keeps its exclusion;
 - saving the selection (`ProfileEquipmentsViewModel.onApply` ->
   `setExcludedEquipments`) sends only visible IDs, and the backend replaces the
-  whole set, so that exclusion is removed for the user. This is an accepted
-  rollout risk.
+  whole set, so a hidden item's exclusion is removed for the user. This is an
+  accepted rollout risk.
 
 Store and TestFlight builds without the exception react differently; inspect
 `getEquipments` and `SplashViewModel` at each such build's commit. A build whose

@@ -10,13 +10,13 @@ import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.AppColor
-import kotlin.math.roundToInt
-import kotlin.time.Duration as KotlinDuration
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.DurationUnit
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.DurationUnit
+import kotlin.time.Duration as KotlinDuration
 
 @Immutable
 public sealed interface PerformanceMetricState {
@@ -34,10 +34,10 @@ public sealed interface PerformanceMetricState {
         is Intensity -> average != null
     }
 
-    public fun hasComparison(): Boolean =
+    private fun hasComparison(): Boolean =
         currentVsAveragePercentage != null || status == PerformanceTrendStatusState.Record
 
-    public fun votes(): Boolean = !isEmpty() && this !is Duration
+    private fun votes(): Boolean = !isEmpty() && this !is Duration
 
     public fun showsComparison(): Boolean = votes() && hasComparison()
 
@@ -259,7 +259,7 @@ public fun stubEmptyPerformanceMetric(): PerformanceMetricState =
 public fun stubPerformanceMetricsByType(): ImmutableList<PerformanceMetricState> =
     stubPerformanceMetrics().distinctBy { it.type }.toPersistentList()
 
-public fun stubPerformanceMetricsWithoutBaseline(): ImmutableList<PerformanceMetricState> =
+public fun stubPerformanceMetricsWithoutReference(): ImmutableList<PerformanceMetricState> =
     stubPerformanceMetricsByType().map { metric ->
         when (metric) {
             is PerformanceMetricState.Duration -> metric.copy(

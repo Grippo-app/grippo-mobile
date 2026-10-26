@@ -20,8 +20,8 @@ import platform.Foundation.currentLocale
 import platform.Foundation.localTimeZone
 import kotlin.time.Duration
 
-internal actual class SystemDateFormatter actual constructor() : DateFormatter {
-    actual override fun format(value: LocalDateTime, pattern: String, localeTag: String?): String? {
+internal actual class SystemDateFormatter actual constructor() {
+    actual fun format(value: LocalDateTime, pattern: String, localeTag: String?): String? {
         val formatter = NSDateFormatter().apply {
             locale = localeTag?.let { NSLocale(localeIdentifier = it) } ?: NSLocale.currentLocale
             calendar = NSCalendar.calendarWithIdentifier(NSCalendarIdentifierGregorian)
@@ -32,7 +32,7 @@ internal actual class SystemDateFormatter actual constructor() : DateFormatter {
         return value.toNSDate()?.let { formatter.stringFromDate(it) }
     }
 
-    actual override fun format(
+    actual fun format(
         value: LocalDate,
         pattern: String,
         localeTag: String?
@@ -47,7 +47,7 @@ internal actual class SystemDateFormatter actual constructor() : DateFormatter {
         return value.toNSDateAtNoon()?.let { formatter.stringFromDate(it) }
     }
 
-    actual override fun format(value: LocalTime, pattern: String, localeTag: String?): String? {
+    actual fun format(value: LocalTime, pattern: String, localeTag: String?): String? {
         val formatter = NSDateFormatter().apply {
             locale = localeTag?.let { NSLocale(localeIdentifier = it) } ?: NSLocale.currentLocale
             calendar = NSCalendar.calendarWithIdentifier(NSCalendarIdentifierGregorian)
@@ -58,7 +58,7 @@ internal actual class SystemDateFormatter actual constructor() : DateFormatter {
         return value.toNSDateOnReferenceDate()?.let { formatter.stringFromDate(it) }
     }
 
-    actual override fun format(duration: Duration, localeTag: String?): String? {
+    actual fun format(duration: Duration, localeTag: String?): String? {
         val isNegative = duration.isNegative()
         val absoluteSeconds = duration.absoluteValue.inWholeSeconds
         val localeValue =

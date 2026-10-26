@@ -30,7 +30,6 @@ kotlin {
         implementation(projects.toolkit.logger)
         implementation(projects.toolkit.connectivity)
         implementation(projects.toolkit.serialization)
-        implementation(projects.toolkit.dateUtils)
         implementation(projects.toolkit.imageLoader)
         implementation(projects.toolkit.linkOpener)
         implementation(projects.toolkit.notificationManager)

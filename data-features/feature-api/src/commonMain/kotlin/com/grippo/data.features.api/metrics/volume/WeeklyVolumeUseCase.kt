@@ -35,17 +35,15 @@ public class WeeklyVolumeUseCase {
         val thisWeek = measured.filter { training ->
             training.createdAt >= weekRange.from && training.createdAt <= weekRange.to
         }
-        val pastWeekVolumes = measured
+        val pastVolumes = measured
             .filter { training -> training.createdAt.date in typicalStart..<weekStart }
-            .groupBy { training -> DateTimeUtils.startOfIsoWeek(training.createdAt.date) }
-            .values
-            .map { week -> week.sumOf { training -> training.volume.toDouble() } }
+            .map { training -> training.volume.toDouble() }
 
         return WeeklyVolume(
             weekRange = weekRange,
             currentVolume = thisWeek.sumOf { training -> training.volume.toDouble() }.toFloat(),
             trainingsThisWeek = thisWeek.size,
-            typicalVolume = pastWeekVolumes.takeIf { it.isNotEmpty() }?.average()?.toFloat(),
+            typicalVolume = pastVolumes.takeIf { it.isNotEmpty() }?.let { it.sum() / TYPICAL_WEEKS }?.toFloat(),
         )
     }
 

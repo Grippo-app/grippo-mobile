@@ -6,5 +6,5 @@ internal expect object SystemLocale {
     val current: String
         @Composable get
     fun current(): String
-    fun apply(tag: String?)
+    fun apply(tag: String)
 }

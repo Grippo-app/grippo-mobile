@@ -46,14 +46,14 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import com.grippo.core.state.formatters.PercentageFormatState
-import com.grippo.core.state.metrics.performance.PerformanceBaselineState
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
+import com.grippo.core.state.metrics.performance.PerformanceReferenceState
 import com.grippo.core.state.metrics.performance.PerformanceTrendStatusState
 import com.grippo.core.state.metrics.performance.stubEmptyPerformanceMetrics
 import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
 import com.grippo.core.state.metrics.performance.stubPerformanceMetricsByType
-import com.grippo.core.state.metrics.performance.stubPerformanceMetricsWithoutBaseline
+import com.grippo.core.state.metrics.performance.stubPerformanceMetricsWithoutReference
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
@@ -100,17 +100,17 @@ private const val GROWTH_CROSSFADE_LABEL = "PerformanceGrowthCrossfade"
 public fun PerformanceComparisonCard(
     modifier: Modifier = Modifier,
     metrics: ImmutableList<PerformanceMetricState>,
-    baseline: PerformanceBaselineState,
-    onBaselineSelect: (PerformanceBaselineState) -> Unit,
+    reference: PerformanceReferenceState,
+    onReferenceSelect: (PerformanceReferenceState) -> Unit,
     onMetricClick: (PerformanceMetricTypeState) -> Unit,
 ) {
     val orderedMetrics = remember(metrics) {
         comparisonDisplayOrder.mapNotNull { type -> metrics.firstOrNull { it.type == type } }
     }
     val hasValues = orderedMetrics.any { !it.isEmpty() }
-    val hasBaseline = orderedMetrics.any { it.hasAverage() }
-    val baselineItems = remember {
-        PerformanceBaselineState.entries.map { entry -> entry to entry.labelText() }.toPersistentList()
+    val hasReference = orderedMetrics.any { it.hasAverage() }
+    val referenceItems = remember {
+        PerformanceReferenceState.entries.map { entry -> entry to entry.labelText() }.toPersistentList()
     }
     val nameLineHeight = rememberTextHeight(style = AppTokens.typography.b13Semi())
 
@@ -124,7 +124,7 @@ public fun PerformanceComparisonCard(
     ) {
         Text(
             text = AppTokens.strings.res(
-                if (hasValues && !hasBaseline) {
+                if (hasValues && !hasReference) {
                     Res.string.performance_comparison_first_title
                 } else {
                     Res.string.performance_comparison_title
@@ -143,13 +143,13 @@ public fun PerformanceComparisonCard(
             return@MetricSectionPanel
         }
 
-        if (hasBaseline) {
+        if (hasReference) {
             Segment(
                 modifier = Modifier.fillMaxWidth(),
-                items = baselineItems,
+                items = referenceItems,
                 style = SegmentStyle.Outline,
-                selected = baseline,
-                onSelect = onBaselineSelect,
+                selected = reference,
+                onSelect = onReferenceSelect,
                 segmentWidth = SegmentWidth.EqualFill,
             )
         }
@@ -164,7 +164,7 @@ public fun PerformanceComparisonCard(
                     PerformanceGrowthBlock(
                         modifier = Modifier.fillMaxWidth(),
                         metric = metric,
-                        baseline = baseline,
+                        reference = reference,
                         nameLineHeight = nameLineHeight,
                         reveal = reveal,
                         entranceDelayMillis = index * GROWTH_REVEAL_STAGGER_MS,
@@ -180,7 +180,7 @@ public fun PerformanceComparisonCard(
 private fun PerformanceGrowthBlock(
     modifier: Modifier = Modifier,
     metric: PerformanceMetricState,
-    baseline: PerformanceBaselineState,
+    reference: PerformanceReferenceState,
     nameLineHeight: Dp,
     reveal: Transition<Boolean>,
     entranceDelayMillis: Int,
@@ -189,8 +189,8 @@ private fun PerformanceGrowthBlock(
     val current = metric.chartValue()
     val average = metric.averageChartValue()
     val showsComparison = metric.showsComparison()
-    // The baseline travels with the status, so a leaving chip keeps the words it was measured in.
-    val statusChip = (metric.status to baseline).takeIf { showsComparison }
+    // The reference travels with the status, so a leaving chip keeps the words it was measured in.
+    val statusChip = (metric.status to reference).takeIf { showsComparison }
     val delta = metric.currentVsAveragePercentage?.takeIf { showsComparison }
 
     val mood = metric.indicatorColors()
@@ -271,8 +271,8 @@ private fun PerformanceGrowthBlock(
                     }
                 }
                 GrowthOptionalPart(value = statusChip) { shownChip ->
-                    GrowthCrossfade(targetState = shownChip) { (status, statusBaseline) ->
-                        PerformanceTrendChip(status = status, baseline = statusBaseline)
+                    GrowthCrossfade(targetState = shownChip) { (status, statusReference) ->
+                        PerformanceTrendChip(status = status, reference = statusReference)
                     }
                 }
             }
@@ -539,8 +539,8 @@ private fun PerformanceComparisonCardPreview() {
         PerformanceComparisonCard(
             modifier = Modifier.fillMaxWidth(),
             metrics = previewMixedMetrics(),
-            baseline = PerformanceBaselineState.Average,
-            onBaselineSelect = {},
+            reference = PerformanceReferenceState.Average,
+            onReferenceSelect = {},
             onMetricClick = {},
         )
     }
@@ -548,13 +548,13 @@ private fun PerformanceComparisonCardPreview() {
 
 @AppPreview
 @Composable
-private fun PerformanceComparisonCardPreviousBaselinePreview() {
+private fun PerformanceComparisonCardPreviousReferencePreview() {
     PreviewContainer {
         PerformanceComparisonCard(
             modifier = Modifier.fillMaxWidth(),
             metrics = previewPreviousMetrics(),
-            baseline = PerformanceBaselineState.Previous,
-            onBaselineSelect = {},
+            reference = PerformanceReferenceState.Previous,
+            onReferenceSelect = {},
             onMetricClick = {},
         )
     }
@@ -606,14 +606,14 @@ private fun PerformanceComparisonCardFarBelowBestPreview() {
         PerformanceComparisonCard(
             modifier = Modifier.fillMaxWidth(),
             metrics = previewFarBelowBestMetrics(),
-            baseline = PerformanceBaselineState.Average,
-            onBaselineSelect = {},
+            reference = PerformanceReferenceState.Average,
+            onReferenceSelect = {},
             onMetricClick = {},
         )
     }
 }
 
-private fun previewZeroBaselineMetrics(): ImmutableList<PerformanceMetricState> =
+private fun previewZeroReferenceMetrics(): ImmutableList<PerformanceMetricState> =
     stubPerformanceMetricsByType().map { metric ->
         when (metric) {
             is PerformanceMetricState.Volume -> metric.copy(
@@ -644,13 +644,13 @@ private fun previewZeroBaselineMetrics(): ImmutableList<PerformanceMetricState> 
 
 @AppPreview
 @Composable
-private fun PerformanceComparisonCardZeroBaselinePreview() {
+private fun PerformanceComparisonCardZeroReferencePreview() {
     PreviewContainer {
         PerformanceComparisonCard(
             modifier = Modifier.fillMaxWidth(),
-            metrics = previewZeroBaselineMetrics(),
-            baseline = PerformanceBaselineState.Average,
-            onBaselineSelect = {},
+            metrics = previewZeroReferenceMetrics(),
+            reference = PerformanceReferenceState.Average,
+            onReferenceSelect = {},
             onMetricClick = {},
         )
     }
@@ -662,9 +662,9 @@ private fun PerformanceComparisonCardFirstWorkoutPreview() {
     PreviewContainer {
         PerformanceComparisonCard(
             modifier = Modifier.fillMaxWidth(),
-            metrics = stubPerformanceMetricsWithoutBaseline(),
-            baseline = PerformanceBaselineState.Average,
-            onBaselineSelect = {},
+            metrics = stubPerformanceMetricsWithoutReference(),
+            reference = PerformanceReferenceState.Average,
+            onReferenceSelect = {},
             onMetricClick = {},
         )
     }
@@ -677,8 +677,8 @@ private fun PerformanceComparisonCardEmptyPreview() {
         PerformanceComparisonCard(
             modifier = Modifier.fillMaxWidth(),
             metrics = stubEmptyPerformanceMetrics(),
-            baseline = PerformanceBaselineState.Average,
-            onBaselineSelect = {},
+            reference = PerformanceReferenceState.Average,
+            onReferenceSelect = {},
             onMetricClick = {},
         )
     }
@@ -701,8 +701,8 @@ private fun PerformanceComparisonCardEmptyMetricPreview() {
                     metric
                 }
             }.toPersistentList(),
-            baseline = PerformanceBaselineState.Average,
-            onBaselineSelect = {},
+            reference = PerformanceReferenceState.Average,
+            onReferenceSelect = {},
             onMetricClick = {},
         )
     }
@@ -734,8 +734,8 @@ private fun PerformanceComparisonCardLargeAndFractionalPreview() {
                 ),
                 emptyDensity,
             ),
-            baseline = PerformanceBaselineState.Average,
-            onBaselineSelect = {},
+            reference = PerformanceReferenceState.Average,
+            onReferenceSelect = {},
             onMetricClick = {},
         )
     }

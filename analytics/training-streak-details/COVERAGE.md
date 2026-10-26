@@ -66,7 +66,7 @@ No feature storage, serialization plugin or platform lifecycle bridge is introdu
 The existing WhileActive subscription owns the date flow; it emits on collection
 and each local midnight. Reopening or reactivation recalculates with fresh time;
 the dialog range itself stays fixed while its final day becomes completed.
-Range captions and timeline dates use DateRangeFormatState.short in composition,
+Range captions and timeline dates use DateRangeFormatState.shortStartEnd in composition,
 so the current locale rebuilds text without changing the runtime date bounds.
 
 ## Availability and content

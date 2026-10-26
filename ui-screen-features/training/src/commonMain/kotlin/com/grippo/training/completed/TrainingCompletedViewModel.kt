@@ -9,8 +9,8 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.metrics.engagement.TrainingStreakState
-import com.grippo.core.state.metrics.performance.PerformanceBaselineState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
+import com.grippo.core.state.metrics.performance.PerformanceReferenceState
 import com.grippo.core.state.metrics.performance.PerformanceVerdictState
 import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.core.state.stage.StageState
@@ -148,10 +148,10 @@ internal class TrainingCompletedViewModel(
         combine(
             savedPeriods,
             comparisonPeriods,
-            observeBaseline(),
+            observeReference(),
             savedTrainings.filterNotNull(),
-        ) { period, comparisonPeriod, baseline, saved ->
-            PeriodBaseline(saved = saved, period = period, comparisonPeriod = comparisonPeriod, baseline = baseline)
+        ) { period, comparisonPeriod, reference, saved ->
+            PeriodReference(saved = saved, period = period, comparisonPeriod = comparisonPeriod, reference = reference)
         }
             .distinctUntilChanged()
             .flatMapLatest(::observePeriodTrainings)
@@ -253,13 +253,13 @@ internal class TrainingCompletedViewModel(
             .map { kind -> DateRangeFormatState.of(kind = kind, anchor = saved.createdAt.date) }
     }
 
-    private fun observeBaseline(): Flow<PerformanceBaselineState> {
+    private fun observeReference(): Flow<PerformanceReferenceState> {
         return state
-            .map { it.baseline }
+            .map { it.reference }
             .distinctUntilChanged()
     }
 
-    private fun observePeriodTrainings(value: PeriodBaseline): Flow<PeriodTrainings> {
+    private fun observePeriodTrainings(value: PeriodReference): Flow<PeriodTrainings> {
         val comparisonRange = value.comparisonPeriod.value ?: return emptyFlow()
 
         val periodTrainings = trainingFeature.observeTrainings(start = value.period.from, end = value.period.to)
@@ -363,15 +363,15 @@ internal class TrainingCompletedViewModel(
     private fun provideTrainings(value: PeriodTrainings) {
         val (source, periodTrainings, comparisonTrainings) = value
 
-        val (saved, period, comparisonPeriod, baseline) = source
+        val (saved, period, comparisonPeriod, reference) = source
 
-        val domainBaseline = baseline.toDomain()
+        val domainReference = reference.toDomain()
 
         val metrics = performanceTrendUseCase
-            .fromTraining(training = saved, periodTrainings = comparisonTrainings, baseline = domainBaseline)
+            .fromTraining(training = saved, periodTrainings = comparisonTrainings, reference = domainReference)
             .toState()
 
-        val performance = PerformanceComparisonState(metrics = metrics, baseline = baseline, period = comparisonPeriod)
+        val performance = PerformanceComparisonState(metrics = metrics, reference = reference, period = comparisonPeriod)
 
         val verdict = PerformanceVerdictState.of(metrics)
 
@@ -515,12 +515,12 @@ internal class TrainingCompletedViewModel(
         dialogController.open(dialog)
     }
 
-    override fun onBaselineSelect(baseline: PerformanceBaselineState) {
-        if (state.value.baseline == baseline) return
+    override fun onReferenceSelect(reference: PerformanceReferenceState) {
+        if (state.value.reference == reference) return
 
-        analytics.trackEvent(event = TrainingEvent.Completed.BaselineSelected)
+        analytics.trackEvent(event = TrainingEvent.Completed.ReferenceSelected)
 
-        update { it.copy(baseline = baseline) }
+        update { it.copy(reference = reference) }
     }
 
     override fun onMetricClick(type: PerformanceMetricTypeState) {
@@ -530,7 +530,7 @@ internal class TrainingCompletedViewModel(
 
         analytics.trackEvent(event = TrainingEvent.Completed.MetricOpened)
 
-        val rangeLabel = if (performance.isOver(state.value.range.value)) state.value.range.label() else null
+        val rangeLabel = performance.presetLabel(state.value.range)
 
         val metricLabel = type.labelText()
 
@@ -547,6 +547,7 @@ internal class TrainingCompletedViewModel(
             title = title,
             range = range,
             metricType = type,
+            reference = performance.reference,
         )
 
         dialogController.open(dialog)
@@ -593,15 +594,15 @@ internal class TrainingCompletedViewModel(
         navigateTo(TrainingCompletedDirection.Back)
     }
 
-    private data class PeriodBaseline(
+    private data class PeriodReference(
         val saved: Training,
         val period: DateRange,
         val comparisonPeriod: DateRangeFormatState,
-        val baseline: PerformanceBaselineState,
+        val reference: PerformanceReferenceState,
     )
 
     private data class PeriodTrainings(
-        val source: PeriodBaseline,
+        val source: PeriodReference,
         val periodTrainings: List<Training>,
         val comparisonTrainings: List<Training>,
     )

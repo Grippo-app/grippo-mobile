@@ -1,7 +1,7 @@
 package com.grippo.data.features.api.metrics.performance
 
-import com.grippo.data.features.api.metrics.performance.models.PerformanceBaseline
 import com.grippo.data.features.api.metrics.performance.models.PerformanceMetric
+import com.grippo.data.features.api.metrics.performance.models.PerformanceReference
 import com.grippo.data.features.api.metrics.performance.models.PerformanceTrendStatus
 import com.grippo.data.features.api.training.models.Training
 import kotlin.math.roundToInt
@@ -19,35 +19,35 @@ public class PerformanceTrendUseCase {
 
     public fun fromTrainings(
         trainings: List<Training>,
-        baseline: PerformanceBaseline = PerformanceBaseline.Average,
+        reference: PerformanceReference = PerformanceReference.Average,
     ): List<PerformanceMetric> {
         val sorted = trainings.sortedWith(trainingOrder)
 
-        return metricsOf(trainings = sorted, baseline = baseline)
+        return metricsOf(trainings = sorted, reference = reference)
     }
 
     public fun fromTraining(
         training: Training,
         periodTrainings: List<Training>,
-        baseline: PerformanceBaseline = PerformanceBaseline.Average,
+        reference: PerformanceReference,
     ): List<PerformanceMetric> {
         val history = periodTrainings
             .filter { trainingOrder.compare(it, training) < 0 }
             .sortedWith(trainingOrder)
 
-        return metricsOf(trainings = history + training, baseline = baseline)
+        return metricsOf(trainings = history + training, reference = reference)
     }
 
     private fun metricsOf(
         trainings: List<Training>,
-        baseline: PerformanceBaseline,
+        reference: PerformanceReference,
     ): List<PerformanceMetric> {
         return listOf(
-            densityMetric(trainings = trainings, baseline = baseline),
-            volumeMetric(trainings = trainings, baseline = baseline),
-            repetitionsMetric(trainings = trainings, baseline = baseline),
-            intensityMetric(trainings = trainings, baseline = baseline),
-            durationMetricNeutral(trainings = trainings, baseline = baseline),
+            densityMetric(trainings = trainings, reference = reference),
+            volumeMetric(trainings = trainings, reference = reference),
+            repetitionsMetric(trainings = trainings, reference = reference),
+            intensityMetric(trainings = trainings, reference = reference),
+            durationMetricNeutral(trainings = trainings, reference = reference),
         )
     }
 
@@ -61,7 +61,7 @@ public class PerformanceTrendUseCase {
 
     private fun computeStats(
         trainings: List<Training>,
-        baseline: PerformanceBaseline,
+        reference: PerformanceReference,
         valueOf: (Training) -> Double?,
     ): MetricStats {
         val validValueOf: (Training) -> Double? = { training ->
@@ -70,12 +70,12 @@ public class PerformanceTrendUseCase {
         val previous = trainings.dropLast(1)
         val current = trainings.lastOrNull()?.let(validValueOf)
         val previousValues = previous.mapNotNull(validValueOf)
-        val baselineValues = baselineValues(
+        val referenceValues = referenceValues(
             previous = previous,
-            baseline = baseline,
+            reference = reference,
             valueOf = validValueOf,
         )
-        val average = baselineValues.takeIf { it.isNotEmpty() }?.average()
+        val average = referenceValues.takeIf { it.isNotEmpty() }?.average()
         val previousBest = previousValues.maxOrNull()
         val best = (previousValues + listOfNotNull(current)).maxOrNull()
         val comparisonPercent = if (current != null && average != null) {
@@ -86,11 +86,11 @@ public class PerformanceTrendUseCase {
         val status = when {
             current == null -> PerformanceTrendStatus.Empty
             previousBest == null -> PerformanceTrendStatus.Stable
-            baseline == PerformanceBaseline.Average && current > previousBest -> PerformanceTrendStatus.Record
+            reference == PerformanceReference.Average && current > previousBest -> PerformanceTrendStatus.Record
             comparisonPercent == null -> PerformanceTrendStatus.Stable
             else -> statusFromComparison(
                 comparisonPercent = comparisonPercent,
-                thresholdPercent = dynamicThresholdPercent(baselineValues),
+                thresholdPercent = dynamicThresholdPercent(referenceValues),
             )
         }
 
@@ -103,14 +103,14 @@ public class PerformanceTrendUseCase {
         )
     }
 
-    private fun <T : Any> baselineValues(
+    private fun <T : Any> referenceValues(
         previous: List<Training>,
-        baseline: PerformanceBaseline,
+        reference: PerformanceReference,
         valueOf: (Training) -> T?,
     ): List<T> {
-        return when (baseline) {
-            PerformanceBaseline.Average -> previous.mapNotNull(valueOf)
-            PerformanceBaseline.Previous -> listOfNotNull(previous.lastOrNull()?.let(valueOf))
+        return when (reference) {
+            PerformanceReference.Average -> previous.mapNotNull(valueOf)
+            PerformanceReference.Previous -> listOfNotNull(previous.lastOrNull()?.let(valueOf))
         }
     }
 
@@ -125,16 +125,16 @@ public class PerformanceTrendUseCase {
         return ((current - average) / average) * 100.0
     }
 
-    private fun dynamicThresholdPercent(baselineValues: List<Double>): Double {
-        if (baselineValues.size < 2) {
+    private fun dynamicThresholdPercent(referenceValues: List<Double>): Double {
+        if (referenceValues.size < 2) {
             return MIN_COMPARISON_PERCENT
         }
 
-        val mean = baselineValues.average()
-        val variance = baselineValues.sumOf { value ->
+        val mean = referenceValues.average()
+        val variance = referenceValues.sumOf { value ->
             val difference = value - mean
             difference * difference
-        } / (baselineValues.size - 1)
+        } / (referenceValues.size - 1)
         val variationPercent = 2.0 * sqrt(variance) / mean * 100.0
         return maxOf(MIN_COMPARISON_PERCENT, variationPercent)
     }
@@ -152,9 +152,9 @@ public class PerformanceTrendUseCase {
 
     private fun volumeMetric(
         trainings: List<Training>,
-        baseline: PerformanceBaseline,
+        reference: PerformanceReference,
     ): PerformanceMetric.VolumeMetric {
-        val stats = computeStats(trainings = trainings, baseline = baseline) { it.volume.toDouble() }
+        val stats = computeStats(trainings = trainings, reference = reference) { it.volume.toDouble() }
         return PerformanceMetric.VolumeMetric(
             currentVsAveragePercentage = stats.currentVsAveragePercent,
             current = stats.current?.toFloat(),
@@ -178,9 +178,9 @@ public class PerformanceTrendUseCase {
 
     private fun densityMetric(
         trainings: List<Training>,
-        baseline: PerformanceBaseline,
+        reference: PerformanceReference,
     ): PerformanceMetric.DensityMetric {
-        val stats = computeStats(trainings = trainings, baseline = baseline, valueOf = ::densityOf)
+        val stats = computeStats(trainings = trainings, reference = reference, valueOf = ::densityOf)
         return PerformanceMetric.DensityMetric(
             currentVsAveragePercentage = stats.currentVsAveragePercent,
             current = stats.current?.toFloat(),
@@ -192,9 +192,9 @@ public class PerformanceTrendUseCase {
 
     private fun repetitionsMetric(
         trainings: List<Training>,
-        baseline: PerformanceBaseline,
+        reference: PerformanceReference,
     ): PerformanceMetric.RepetitionsMetric {
-        val stats = computeStats(trainings = trainings, baseline = baseline) { it.repetitions.toDouble() }
+        val stats = computeStats(trainings = trainings, reference = reference) { it.repetitions.toDouble() }
         return PerformanceMetric.RepetitionsMetric(
             currentVsAveragePercentage = stats.currentVsAveragePercent,
             current = stats.current?.roundToInt(),
@@ -206,9 +206,9 @@ public class PerformanceTrendUseCase {
 
     private fun intensityMetric(
         trainings: List<Training>,
-        baseline: PerformanceBaseline,
+        reference: PerformanceReference,
     ): PerformanceMetric.IntensityMetric {
-        val stats = computeStats(trainings = trainings, baseline = baseline) { it.intensity.toDouble() }
+        val stats = computeStats(trainings = trainings, reference = reference) { it.intensity.toDouble() }
         return PerformanceMetric.IntensityMetric(
             currentVsAveragePercentage = stats.currentVsAveragePercent,
             current = stats.current?.toFloat(),
@@ -224,17 +224,17 @@ public class PerformanceTrendUseCase {
 
     private fun durationMetricNeutral(
         trainings: List<Training>,
-        baseline: PerformanceBaseline,
+        reference: PerformanceReference,
     ): PerformanceMetric.DurationMetric {
         val previous = trainings.dropLast(1)
         val current = trainings.lastOrNull()?.let(::validDuration)
         val previousValues = previous.mapNotNull(::validDuration)
-        val baselineValues = baselineValues(
+        val referenceValues = referenceValues(
             previous = previous,
-            baseline = baseline,
+            reference = reference,
             valueOf = ::validDuration,
         )
-        val averageMinutes = baselineValues
+        val averageMinutes = referenceValues
             .takeIf { it.isNotEmpty() }
             ?.map { it.toDouble(DurationUnit.MINUTES) }
             ?.average()

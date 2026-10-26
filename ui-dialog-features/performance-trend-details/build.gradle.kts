@@ -16,6 +16,7 @@ kotlin {
         implementation(projects.uiCore.state)
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataMappers.domainToState)
+        implementation(projects.dataMappers.stateToDomain)
 
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)

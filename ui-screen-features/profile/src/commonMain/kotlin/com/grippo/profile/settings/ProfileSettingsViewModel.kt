@@ -61,6 +61,12 @@ internal class ProfileSettingsViewModel(
             .safeLaunch(processing = Processing.Infinity, onError = ::observeAnalyticsConsent)
     }
 
+    private fun currentLanguage(): LanguageEnumState {
+        val localeTag = AppLocale.current()
+
+        return LanguageEnumState.of(localeTag)
+    }
+
     override fun onAnalyticsConsentChange(granted: Boolean) {
         val current = state.value.analyticsConsent ?: return
         if (current == granted || ProfileSettingsLoader.AnalyticsConsent in loaders.value) return
@@ -83,13 +89,11 @@ internal class ProfileSettingsViewModel(
             onResult = { value ->
                 analytics.trackEvent(ProfileEvent.Settings.LanguageConfirmed)
 
-                if (value != currentLanguage()) {
-                    val language = value.toDomain()
+                val language = value.toDomain()
 
-                    safeLaunch {
-                        analytics.trackOperation(ProfileOperation.SaveLanguage) {
-                            localSettingsFeature.setLanguage(language)
-                        }
+                safeLaunch {
+                    analytics.trackOperation(ProfileOperation.SaveLanguage) {
+                        localSettingsFeature.setLanguage(language)
                     }
                 }
             },
@@ -121,11 +125,5 @@ internal class ProfileSettingsViewModel(
                 }
             })
         dialogController.open(config)
-    }
-
-    private fun currentLanguage(): LanguageEnumState {
-        val localeTag = AppLocale.current()
-
-        return LanguageEnumState.of(localeTag)
     }
 }

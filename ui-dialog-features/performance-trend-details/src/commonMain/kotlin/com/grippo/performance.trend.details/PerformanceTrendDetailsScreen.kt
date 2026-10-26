@@ -25,6 +25,7 @@ import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
+import com.grippo.core.state.metrics.performance.PerformanceReferenceState
 import com.grippo.core.state.metrics.performance.PerformanceTrendHistoryEntry
 import com.grippo.core.state.metrics.performance.PerformanceTrendStatusState
 import com.grippo.core.state.metrics.performance.stubEmptyPerformanceMetric
@@ -175,6 +176,7 @@ private fun PerformanceTrendDetailsContent(
                                 PerformanceMetricCard(
                                     modifier = Modifier.fillMaxWidth(),
                                     metric = latest.metric,
+                                    reference = state.reference,
                                 )
                             }
                         }
@@ -231,6 +233,7 @@ private fun PerformanceTrendDetailsContent(
                                 .fillMaxWidth()
                                 .padding(top = AppTokens.dp.contentPadding.block),
                             metricType = state.metricType,
+                            reference = state.reference,
                             showChartScope = hasChart,
                             isExpanded = isExpanded,
                             onToggle = onToggleExplanation,
@@ -248,12 +251,14 @@ private fun PerformanceTrendDetailsContent(
 private fun performanceDetailsPreviewState(
     history: ImmutableList<PerformanceTrendHistoryEntry>? = stubPerformanceTrendHistory(),
     metricType: PerformanceMetricTypeState = PerformanceMetricTypeState.Volume,
+    reference: PerformanceReferenceState = PerformanceReferenceState.Average,
 ): PerformanceTrendDetailsDialogState = PerformanceTrendDetailsDialogState(
     range = DateRangeFormatState.of(
         from = LocalDateTime(2026, 10, 11, 0, 0),
         to = LocalDateTime(2026, 10, 17, 23, 59),
     ),
     metricType = metricType,
+    reference = reference,
     history = history,
 )
 
@@ -277,6 +282,23 @@ private fun PopulatedPreview() {
             loaders = persistentSetOf(),
             contract = PerformanceTrendDetailsContract.Empty,
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun PreviousReferencePreview() {
+    PreviewContainer {
+        val state = performanceDetailsPreviewState(reference = PerformanceReferenceState.Previous)
+        BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+            DialogRangeHeader(text = state.range.shortStartEnd())
+            PerformanceTrendDetailsContent(
+                modifier = Modifier.fillMaxWidth().weight(1f, false),
+                state = state,
+                isExpanded = true,
+                onToggleExplanation = {},
+            )
+        }
     }
 }
 

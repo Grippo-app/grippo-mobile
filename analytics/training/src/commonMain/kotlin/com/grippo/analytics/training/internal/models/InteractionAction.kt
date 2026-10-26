@@ -38,7 +38,7 @@ internal enum class InteractionAction {
     CompletedStreakOpened,
     CompletedGoalOpened,
     CompletedAddGoalClicked,
-    CompletedBaselineSelected,
+    CompletedReferenceSelected,
     CompletedRecordOpened,
     CompletedShareClicked,
     CompletedDismissRequested,

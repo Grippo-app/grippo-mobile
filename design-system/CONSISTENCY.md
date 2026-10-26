@@ -460,7 +460,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   not drawn as a placeholder dash: the part that would hold it is omitted.
   Every weight on
   this screen carries a space before its unit through the `shortTotal`/`shortAverage`
-  family ("400 kg"): hero facts, growth card, records (`AchievementState.totalValue()`)
+  family ("400 kg"): hero facts, growth card, records (`AchievementState.spacedValue()`)
   and the weekly card alike; the compact `short()` form ("400kg") stays with
   set-level values and the other screens that use it. The screen then
   reads top-down without extra section headings, each card owning its title, in
@@ -1048,7 +1048,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   tonnage, max repetitions, peak intensity) separated by `ContentDivider`: a
   `SMALL` (32 dp) `ExerciseExampleImage`, the `b13Semi` `text.primary` exercise
   name once, over one plain `b11Med` `text.secondary` line listing every kind with
-  its value - `AchievementState.text()` and `totalValue()` (spaced weights such as
+  its value - `AchievementState.text()` and `spacedValue()` (spaced weights such as
   "92.5 kg", repetitions as "x14"; `AchievementState.value()` keeps the compact form
   for exercise details), the kinds joined by " · " ("Best weight 22.5 kg · Best
   tonnage 380 kg · Max repetitions x10 · Peak intensity 21.1 kg") and wrapping
@@ -1185,13 +1185,16 @@ and Latin text in both themes; each role keeps its existing size and line height
   after the toolbar. The range header owns the single gap before its body;
   muscle detail controls likewise keep one `content` gap before their scrolling content.
   Other sheet bodies start once at `dialog.top`.
-- Date ranges are written by `DateRangeFormatState` (`shortStartEnd()` and `display` give
-  the same text): both ends in the period kind's date format joined by an en dash
+- Date ranges are written by `DateRangeFormatState` (`shortStartEnd()` renders in the
+  current language; `display` has the same format but is fixed when the state is
+  built): both ends in the period kind's date format joined by an en dash
   ("28 Apr – 27 May", "28 апр. – 27 мая", "28 квіт. – 27 трав.",
-  "28 abr. – 27 mai."). A one-day period prints one date ("27 травня"). Dialog
-  range headers, the weekly card header, streak timeline ranges, period picker
-  rows and the goal card's "Analyzed" line use it (its analysis window is a custom
-  range, so it always carries the year: "28 Apr 2026 – 27 May 2026"); chart week
+  "28 abr. – 27 mai."). A Daily period prints one date ("27 травня"); a one-day
+  custom range prints one date with its year ("27 трав. 2026"). Dialog range
+  headers, the weekly card header, streak timeline ranges, period picker rows and
+  the goal card's "Analyzed" line use it (streak timeline ranges and the analysis
+  window are custom ranges, so they always carry the year:
+  "28 Apr 2026 – 27 May 2026"); chart week
   labels, built in the domain layer, keep their own single-line "6 Oct – 12 Oct".
   Days carry no leading zero and dates with a year are day-first in every locale
   ("5 Oct", "5 October", "26 Oct 2026").
