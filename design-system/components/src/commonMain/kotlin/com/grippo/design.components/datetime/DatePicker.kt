@@ -114,7 +114,7 @@ private fun DatePickerPreview() {
     PreviewContainer {
         DatePicker(
             value = LocalDateTime(2026, 1, 15, 12, 0),
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
             enabled = true,
             onSelect = {},
             onNext = {},
@@ -123,7 +123,7 @@ private fun DatePickerPreview() {
 
         DatePicker(
             value = LocalDateTime(2026, 1, 15, 12, 0),
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
             enabled = false,
             onSelect = {},
             onNext = {},

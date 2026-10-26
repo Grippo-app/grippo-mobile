@@ -23,12 +23,12 @@ public fun stubGoal(): GoalState {
         target = DateTimeFormatState.of(
             value = DateTimeUtils.now(),
             range = DateTimeUtils.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy
+            format = DateFormat.DateOnly.DateDdMmmYyyy
         ),
         createdAt = DateTimeFormatState.of(
             value = DateTimeUtils.now(),
             range = DateTimeUtils.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy
+            format = DateFormat.DateOnly.DateDdMmmYyyy
         ),
         personalizations = PersonalizationKeyEnumState.entries.shuffled().take(3).toPersistentList()
     )

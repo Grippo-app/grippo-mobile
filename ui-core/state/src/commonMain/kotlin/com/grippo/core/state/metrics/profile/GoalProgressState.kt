@@ -159,18 +159,18 @@ public fun stubGoalProgress(
             createdAt = DateTimeFormatState.of(
                 value = start.atTime(now.time),
                 range = DateTimeUtils.infinity(),
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
+                format = DateFormat.DateOnly.DateDdMmmYyyy,
             ),
             target = DateTimeFormatState.of(
                 value = target.atTime(now.time),
                 range = DateTimeUtils.infinity(),
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
+                format = DateFormat.DateOnly.DateDdMmmYyyy,
             ),
         ),
         now = DateTimeFormatState.of(
             value = now,
             range = DateTimeUtils.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
         ),
         score = score,
         strengthShare = strengthShare,

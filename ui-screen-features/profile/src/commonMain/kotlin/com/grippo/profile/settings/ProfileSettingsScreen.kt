@@ -17,10 +17,12 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.profile.stubUser
+import com.grippo.core.state.settings.LanguageEnumState
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.menu.MenuActionRow
 import com.grippo.design.components.menu.MenuSection
+import com.grippo.design.components.menu.MenuValueRow
 import com.grippo.design.components.selectors.Toggle
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
@@ -33,13 +35,16 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.analytics_consent_description
 import com.grippo.design.resources.provider.analytics_consent_title
+import com.grippo.design.resources.provider.app_language
 import com.grippo.design.resources.provider.delete_account
+import com.grippo.design.resources.provider.icons.Globe
 import com.grippo.design.resources.provider.icons.Lock
 import com.grippo.design.resources.provider.icons.Logout
 import com.grippo.design.resources.provider.icons.Trash
 import com.grippo.design.resources.provider.logout_btn
 import com.grippo.design.resources.provider.profile_account
 import com.grippo.design.resources.provider.profile_settings_delete_description
+import com.grippo.design.resources.provider.profile_settings_language_title
 import com.grippo.design.resources.provider.profile_settings_logout_description
 import com.grippo.design.resources.provider.profile_settings_privacy_title
 import kotlinx.collections.immutable.ImmutableSet
@@ -77,6 +82,20 @@ internal fun ProfileSettingsScreen(
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+        MenuSection(
+            title = AppTokens.strings.res(Res.string.profile_settings_language_title),
+            icon = AppTokens.icons.Globe,
+        ) {
+            MenuValueRow(
+                title = AppTokens.strings.res(Res.string.app_language),
+                value = LanguageEnumState.current().title(),
+                showDivider = false,
+                onClick = contract::onLanguageClick,
+            )
+        }
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         MenuSection(
             title = AppTokens.strings.res(Res.string.profile_settings_privacy_title),

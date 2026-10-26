@@ -43,6 +43,8 @@ public sealed interface ProfileEvent {
     }
 
     public sealed interface Settings : ProfileEvent {
+        public data object LanguageOpened : Settings
+        public data object LanguageConfirmed : Settings
         public data object Logout : Settings
         public data object DeleteOpened : Settings
         public data object DeleteConfirmed : Settings

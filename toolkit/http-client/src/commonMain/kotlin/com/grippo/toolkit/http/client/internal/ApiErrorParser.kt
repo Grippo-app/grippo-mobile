@@ -19,11 +19,7 @@ internal class ApiErrorParser(private val json: Json) {
         private const val DEFAULT_ERROR = "Something went wrong. Please try again."
     }
 
-    data class ParsedError(
-        val title: String,
-        val description: String?,
-        val details: List<String> = emptyList(),
-    )
+    data class ParsedError(val title: String, val description: String?)
 
     fun parseDetailedMessage(rawBody: String?, status: Int?): ParsedError {
         if (rawBody.isNullOrBlank()) {
@@ -37,19 +33,10 @@ internal class ApiErrorParser(private val json: Json) {
             val element = json.parseToJsonElement(rawBody)
 
             if (element is JsonObject) {
-                val messageElement = element["message"]
-                if (messageElement is JsonArray) {
-                    return ParsedError(
-                        title = getFallbackMessage(status),
-                        description = null,
-                        details = messagesOf(messageElement),
-                    )
-                }
-
-                val message = textOf(messageElement)
-                val error = textOf(element["error"])
-                val reason = textOf(element["reason"])
-                val description = textOf(element["description"])
+                val message = element["message"]?.jsonPrimitive?.contentOrNull
+                val error = element["error"]?.jsonPrimitive?.contentOrNull
+                val reason = element["reason"]?.jsonPrimitive?.contentOrNull
+                val description = element["description"]?.jsonPrimitive?.contentOrNull
 
                 val main = message ?: description ?: reason
                 val secondary = error
@@ -112,17 +99,6 @@ internal class ApiErrorParser(private val json: Json) {
             in 500..599 -> getDefaultServerErrorMessage(status)
             else -> DEFAULT_ERROR
         }
-    }
-
-    private fun textOf(element: JsonElement?): String? {
-        return (element as? JsonPrimitive)?.contentOrNull
-    }
-
-    private fun messagesOf(messages: JsonArray): List<String> {
-        return messages
-            .mapNotNull(::textOf)
-            .filter { it.isNotBlank() }
-            .distinct()
     }
 
     private fun extractMessagesRecursive(

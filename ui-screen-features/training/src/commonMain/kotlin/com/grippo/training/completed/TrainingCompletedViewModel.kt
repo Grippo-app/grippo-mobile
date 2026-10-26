@@ -16,7 +16,6 @@ import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
-import com.grippo.data.features.api.exercise.example.RefreshExerciseExamplesUseCase
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.goal.models.Goal
@@ -86,7 +85,6 @@ internal class TrainingCompletedViewModel(
     private val goalFeature: GoalFeature,
     private val setTrainingUseCase: SetTrainingUseCase,
     private val updateTrainingUseCase: UpdateTrainingUseCase,
-    private val refreshExerciseExamplesUseCase: RefreshExerciseExamplesUseCase,
     private val trainingTotalUseCase: TrainingTotalUseCase,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
     private val performanceTrendUseCase: PerformanceTrendUseCase,
@@ -328,7 +326,7 @@ internal class TrainingCompletedViewModel(
 
     private suspend fun refreshExamples() {
         analytics.trackOperation(operation = TrainingOperation.RefreshExamples) {
-            refreshExerciseExamplesUseCase.execute()
+            exerciseExampleFeature.getExerciseExamples()
         }
     }
 

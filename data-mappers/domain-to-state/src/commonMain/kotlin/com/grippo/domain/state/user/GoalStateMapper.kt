@@ -14,12 +14,12 @@ public fun Goal.toState(): GoalState {
         target = DateTimeFormatState.of(
             value = target,
             range = DateRangePresets.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy
+            format = DateFormat.DateOnly.DateDdMmmYyyy
         ),
         createdAt = DateTimeFormatState.of(
             value = createdAt,
             range = DateRangePresets.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy
+            format = DateFormat.DateOnly.DateDdMmmYyyy
         ),
         personalizations = personalizations.map { it.toState() }.toPersistentList(),
     )

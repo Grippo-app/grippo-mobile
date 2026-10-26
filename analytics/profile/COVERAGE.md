@@ -93,8 +93,10 @@ requires an active user ID; goal and weight-history mutations additionally requi
 the cached active user before their remote writes. Goal absence remains a Boolean
 read outcome, while goal writes return Unit.
 Nonnull goals must map without losing required enum/personalization data before
-cache writes. Equipment/muscle catalogs reject invalid domain rows, wrong group
-ownership and duplicate primary IDs before replacing their snapshots.
+cache writes. Equipment/muscle catalogs reject missing fields, wrong group
+ownership and duplicate primary IDs before replacing their snapshots; rows with a
+type key unknown to this app version are stored and hidden from the domain, so the
+selection screens never list them.
 
 Settings consent control: the project `Toggle` (AppTokens colors, accessible label,
 scrollable Settings content, title and description in EN/UK/RU; `enabled` (default true, so existing callers are unchanged) and

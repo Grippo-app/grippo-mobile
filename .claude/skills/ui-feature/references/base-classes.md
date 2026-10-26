@@ -48,7 +48,6 @@ protected fun safeLaunch(
     loader: LOADER? = null,
     onError: (() -> Unit) = {},
     mapError: (Throwable) -> Throwable = { it },
-    isUserCaused: (Throwable) -> Boolean = { false },
     block: suspend CoroutineScope.() -> Unit,
 ): Job
 protected fun <T> Flow<T>.safeLaunch(
@@ -56,7 +55,6 @@ protected fun <T> Flow<T>.safeLaunch(
     processing: Processing = Processing.WhileActive,
     onError: (() -> Unit) = {},
     mapError: (Throwable) -> Throwable = { it },
-    isUserCaused: (Throwable) -> Boolean = { false },
 ): Job
 
 override fun onDestroy()

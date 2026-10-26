@@ -65,6 +65,12 @@ internal object ProfileEventMatrix {
             event.selected,
             event.selectedCount,
         )
+        ProfileEvent.Settings.LanguageOpened -> pickerOpened(ProfileScreen.Settings, InputField.Language)
+        ProfileEvent.Settings.LanguageConfirmed -> pickerConfirmed(
+            ProfileScreen.Settings,
+            InputField.Language,
+            InputStatus.Valid,
+        )
         ProfileEvent.Settings.Logout -> clicked(ProfileScreen.Settings, InteractionAction.Logout)
         ProfileEvent.Settings.DeleteOpened -> clicked(ProfileScreen.Settings, InteractionAction.DeleteOpened)
         ProfileEvent.Settings.DeleteConfirmed -> clicked(ProfileScreen.Settings, InteractionAction.DeleteConfirmed)

@@ -29,8 +29,6 @@ import com.grippo.design.resources.provider.goal_details_analysis_period
 import com.grippo.design.resources.provider.metric_overview_goal_analyzed
 import com.grippo.design.resources.provider.metric_overview_goal_score
 import com.grippo.design.resources.provider.percent
-import com.grippo.toolkit.date.utils.DateCompose
-import com.grippo.toolkit.date.utils.DateFormat
 
 @Composable
 internal fun GoalCardAssessment(
@@ -119,22 +117,14 @@ private fun GoalAnalysisSummary(
     modifier: Modifier = Modifier,
     value: GoalProgressState,
 ) {
-    val range = value.evidence.range.value
+    val range = value.evidence.range
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
     ) {
-        if (range != null) {
-            val from = DateCompose.rememberFormat(
-                value = range.from,
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
-            )
-            val to = DateCompose.rememberFormat(
-                value = range.to,
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
-            )
+        if (range.value != null) {
             Text(
-                text = AppTokens.strings.res(Res.string.goal_details_analysis_period, from, to),
+                text = AppTokens.strings.res(Res.string.goal_details_analysis_period, range.short()),
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,
             )

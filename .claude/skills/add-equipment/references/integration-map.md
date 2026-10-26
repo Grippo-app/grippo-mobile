@@ -61,8 +61,8 @@ incomplete-response handling under the mapper and data-layer rules.
 This handling also affects rollout. A build with the catalog exception in
 [operation outcomes](../../data-layer/references/operation-outcomes.md#operation-outcomes-and-cache-reconciliation-canonical)
 stores a new type's rows from `getEquipments` and hides them during domain
-promotion, so Splash completes and exercise-example references keep their
-parents; the equipment appears only after an app update that adds the type.
+promotion, so Splash completes and exercise-example snapshots written after that
+refresh find their parents; the equipment appears only after an app update that adds the type.
 Until then, hidden equipment is missing from every domain projection on that build:
 
 - an example whose only equipment is hidden shows the no-equipment weight hint
@@ -72,7 +72,8 @@ Until then, hidden equipment is missing from every domain projection on that bui
   exclusion of it made from a newer build;
 - saving the selection (`ProfileEquipmentsViewModel.onApply` ->
   `setExcludedEquipments`) sends only visible IDs, and the backend replaces the
-  whole set, so that exclusion is removed for the user.
+  whole set, so that exclusion is removed for the user. This is an accepted
+  rollout risk.
 
 Store and TestFlight builds without the exception react differently; inspect
 `getEquipments` and `SplashViewModel` at each such build's commit. A build whose

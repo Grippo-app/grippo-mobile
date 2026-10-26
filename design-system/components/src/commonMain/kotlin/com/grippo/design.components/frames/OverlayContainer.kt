@@ -1,8 +1,6 @@
 package com.grippo.design.components.frames
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,19 +9,26 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.cards.selectable.CheckSelectableCard
+import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -61,6 +66,10 @@ public fun OverlayContainer(
     content: @Composable (PaddingValues) -> Unit
 ) {
     val fade = AppTokens.dp.contentPadding.block
+    val slotModifier = Modifier
+        .fillMaxWidth()
+        // Without this empty handler (as in Material's Surface), taps on an opaque slot reach the hidden content.
+        .pointerInput(Unit) {}
 
     SubcomposeLayout(modifier = modifier) { constraints ->
         val looseConstraints = constraints.copy(minWidth = 0, minHeight = 0)
@@ -71,7 +80,7 @@ public fun OverlayContainer(
         } else {
             subcompose(OverlaySlots.TOP) {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = slotModifier,
                     content = top,
                 )
             }.map { it.measure(looseConstraints) }
@@ -82,7 +91,7 @@ public fun OverlayContainer(
         } else {
             subcompose(OverlaySlots.BOTTOM) {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = slotModifier,
                     content = bottom,
                 )
             }.map { it.measure(looseConstraints) }
@@ -106,7 +115,7 @@ public fun OverlayContainer(
             emptyList()
         } else {
             subcompose(OverlaySlots.TOP_OVERLAY) {
-                EdgeOverlay(edge = OverlayEdge.Top, fade = fadePx, color = overlay)
+                EdgeOverlay(edge = OverlayEdge.Top, fadePx = fadePx, color = overlay)
             }.map { it.measure(constraints.copy(minWidth = 0, minHeight = topHeight, maxHeight = topHeight)) }
         }
 
@@ -114,7 +123,7 @@ public fun OverlayContainer(
             emptyList()
         } else {
             subcompose(OverlaySlots.BOTTOM_OVERLAY) {
-                EdgeOverlay(edge = OverlayEdge.Bottom, fade = fadePx, color = overlay)
+                EdgeOverlay(edge = OverlayEdge.Bottom, fadePx = fadePx, color = overlay)
             }.map { it.measure(constraints.copy(minWidth = 0, minHeight = bottomHeight, maxHeight = bottomHeight)) }
         }
 
@@ -140,14 +149,14 @@ public fun OverlayContainer(
 @Composable
 private fun EdgeOverlay(
     edge: OverlayEdge,
-    fade: Int,
+    fadePx: Int,
     color: Color,
 ) {
     Spacer(
         modifier = Modifier
             .fillMaxSize()
             .drawWithCache {
-                val brush = edge.brush(color = color, fadeFraction = fade / size.height)
+                val brush = edge.brush(color = color, fadeFraction = fadePx / size.height)
 
                 onDrawBehind { drawRect(brush = brush) }
             },
@@ -159,22 +168,19 @@ private fun EdgeOverlay(
 private fun OverlayContainerPreview() {
     PreviewContainer {
         OverlayContainer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding),
             overlay = AppTokens.colors.background.screen,
             top = {
-                Text(
-                    modifier = Modifier.padding(
-                        start = AppTokens.dp.contentPadding.content,
-                        end = AppTokens.dp.contentPadding.content,
-                        top = AppTokens.dp.contentPadding.content,
-                    ),
-                    text = "Top content",
-                    color = AppTokens.colors.text.primary,
-                    style = AppTokens.typography.h5(),
-                )
+                Spacer(modifier = Modifier.statusBarsPadding())
             },
             bottom = {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
                     verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
                 ) {
                     Button(
@@ -190,19 +196,29 @@ private fun OverlayContainerPreview() {
                         onClick = {},
                     )
                 }
+
+                Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
+                Spacer(modifier = Modifier.navigationBarsPadding())
             },
             content = { padding ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(AppTokens.colors.background.dialog)
-                        .padding(padding)
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    state = rememberLazyListState(initialFirstVisibleItemIndex = 2),
+                    contentPadding = padding,
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
                 ) {
-                    Text(
-                        text = "Main content between pinned edges",
-                        color = AppTokens.colors.text.primary,
-                        style = AppTokens.typography.b14Med(),
-                    )
+                    items(count = 20) { index ->
+                        CheckSelectableCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            style = CheckSelectableCardStyle.Medium(
+                                title = "Option ${index + 1}",
+                                description = "Scrolls under both pinned edges",
+                            ),
+                            isSelected = false,
+                            onSelect = {},
+                        )
+                    }
                 }
             }
         )

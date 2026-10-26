@@ -268,7 +268,7 @@ private fun PopulatedPreview() {
                 endDate = DateTimeFormatState.of(
                     value = LocalDateTime(2026, 10, 17 - index / 2, if (index % 2 == 0) 18 else 9, 0),
                     range = DateRangePresets.infinity(),
-                    format = DateFormat.DateOnly.DateMmmDdYyyy,
+                    format = DateFormat.DateOnly.DateDdMmmYyyy,
                 ),
             )
         }.toPersistentList()
@@ -341,7 +341,7 @@ private fun TwoSameDayWorkoutsPreview() {
                         endDate = DateTimeFormatState.of(
                             value = LocalDateTime(2026, 10, 15, 8, 30),
                             range = DateRangePresets.infinity(),
-                            format = DateFormat.DateOnly.DateMmmDdYyyy,
+                            format = DateFormat.DateOnly.DateDdMmmYyyy,
                         ),
                     ),
                 ),
@@ -410,7 +410,7 @@ private fun SameDayWorkoutsPreview() {
                         endDate = DateTimeFormatState.of(
                             value = LocalDateTime(2026, 10, 15, 8, 30),
                             range = DateRangePresets.infinity(),
-                            format = DateFormat.DateOnly.DateMmmDdYyyy,
+                            format = DateFormat.DateOnly.DateDdMmmYyyy,
                         ),
                     ),
                     history[2],

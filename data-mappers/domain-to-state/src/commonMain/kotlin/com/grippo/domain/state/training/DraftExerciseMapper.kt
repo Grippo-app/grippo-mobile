@@ -25,7 +25,7 @@ public fun DraftExercise.toState(
         createdAt = DateTimeFormatState.of(
             value = createdAt,
             range = DateRangePresets.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy
+            format = DateFormat.DateOnly.DateDdMmmYyyy
         ),
         total = TrainingTotalState(
             volume = VolumeFormatState.Empty(),

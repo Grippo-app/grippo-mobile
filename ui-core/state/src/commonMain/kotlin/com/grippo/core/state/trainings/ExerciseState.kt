@@ -72,7 +72,7 @@ public fun stubExercise(): ExerciseState = ExerciseState(
     createdAt = DateTimeFormatState.of(
         value = DateTimeUtils.now(),
         range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy
+        format = DateFormat.DateOnly.DateDdMmmYyyy
     )
 )
 
@@ -144,7 +144,7 @@ private fun stubExerciseHistoryEntry(
     createdAt = DateTimeFormatState.of(
         value = LocalDateTime(year = 2026, month = 10, day = day, hour = 18, minute = 0),
         range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
+        format = DateFormat.DateOnly.DateDdMmmYyyy,
     ),
     total = TrainingTotalState(
         volume = VolumeFormatState.of(volume),

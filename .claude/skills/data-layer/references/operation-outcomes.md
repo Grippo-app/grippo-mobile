@@ -61,6 +61,14 @@ A successful return establishes the complete operation outcome, not just an acce
   Missing fields, duplicate IDs and wrong parents still make that response incomplete. Store
   and TestFlight builds without this exception and the user-visible effects of hiding are
   described in the [equipment integration map](../../add-equipment/references/integration-map.md#mobile-touchpoints).
+  For muscles: a hidden muscle drops out of exercise-example bundles, so an example's load is
+  shared among its visible muscles; the user cannot select or exclude it, the example filters
+  ignore an exclusion of it made from a newer build, and saving the muscle selection
+  (`ProfileMusclesViewModel.onApply`) removes that exclusion because the backend replaces the
+  whole set, an accepted rollout risk. Builds that reject an unknown muscle type keep retrying
+  Splash, and builds that refresh catalogs only before sign-in fail a signed-in user's
+  exercise-example refresh on the missing bundle parent, so a new muscle type needs the same
+  compatibility decision as a new equipment type.
   Required children must belong to the enclosing parent; primary IDs must be unique across
   each table's snapshot. Row-count equality alone does not establish completeness.
   Observations that depend on separately refreshed catalogs retain their explicit availability

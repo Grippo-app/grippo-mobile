@@ -118,7 +118,7 @@ private fun exerciseVolumeHistoryPreview(vararg volumes: Float): ImmutableList<E
                 minute = 0,
             ),
             range = DateRangePresets.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
         )
         exercise.copy(
             id = "exercise-history-$index",

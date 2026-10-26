@@ -50,7 +50,7 @@ public class PerformanceTrendDetailsViewModel(
                 endDate = DateTimeFormatState.of(
                     value = training.createdAt,
                     range = DateRangePresets.infinity(),
-                    format = DateFormat.DateOnly.DateMmmDdYyyy,
+                    format = DateFormat.DateOnly.DateDdMmmYyyy,
                 ),
                 metric = metric,
             )

@@ -107,8 +107,7 @@ Ten typed operations decorate complete throwing Feature/UseCase/toolkit calls in
   State immediately after the whole UseCase succeeds. The written duration is
   computed at save time from the route `startAt`. A failure after the server write does not establish
   that the write was rolled back; no automatic retry is introduced.
-- RefreshExamples: `RefreshExerciseExamplesUseCase.execute()` (muscles, equipment, then the
-  exercise-example snapshot that references them) once per Completed screen instance after the saved ID
+- RefreshExamples: `getExerciseExamples()` once per Completed screen instance after the saved ID
   exists, in its own `take(1)` chain under `Processing.Infinity` outside the SaveTraining
   loader, so a catalog failure reaches the standard error pipeline without closing the
   screen or holding the saving skeleton. It starts with the saved-ID commit,

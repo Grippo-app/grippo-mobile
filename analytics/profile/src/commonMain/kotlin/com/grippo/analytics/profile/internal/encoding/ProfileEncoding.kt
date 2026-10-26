@@ -59,6 +59,7 @@ internal object ProfileEncoding {
         ProfileOperation.SaveExperience -> "save_experience"
         ProfileOperation.SaveMuscles -> "save_muscles"
         ProfileOperation.SaveEquipments -> "save_equipments"
+        ProfileOperation.SaveLanguage -> "save_language"
         ProfileOperation.Logout -> "logout"
         ProfileOperation.DeleteAccount -> "delete_account"
     }
@@ -79,6 +80,7 @@ internal object ProfileEncoding {
         InputField.Primary -> "primary"
         InputField.Secondary -> "secondary"
         InputField.TargetDate -> "target_date"
+        InputField.Language -> "language"
     }
 
     fun code(value: InputStatus): String = when (value) {

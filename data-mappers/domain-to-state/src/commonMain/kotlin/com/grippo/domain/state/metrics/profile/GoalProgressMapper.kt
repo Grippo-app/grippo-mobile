@@ -26,7 +26,7 @@ public fun GoalAdherence.toState(now: LocalDateTime): GoalProgressState {
         sessionCount = sessionCount,
         findings = findings.map { it.toState() }.toPersistentList(),
         evidence = GoalAnalysisEvidenceState(
-            range = analysisRange?.let(DateRangeFormatState::of) ?: DateRangeFormatState.Empty(),
+            range = DateRangeFormatState.of(from = analysisRange?.from, to = analysisRange?.to),
             setCount = setCount,
             excludedSetCount = excludedSetCount,
             missingMetadataSetCount = missingMetadataSetCount,

@@ -62,13 +62,13 @@ public fun EstimatedOneRepMaxCard(
         val valueLabels = entries.associate { entry ->
             entry.value to VolumeFormatState.shortTotal(entry.value)
         }
-        val date = DateCompose.rememberFormat(value = latest.start, format = DateFormat.DateOnly.DateMmmDdYyyy)
+        val date = DateCompose.rememberFormat(value = latest.start, format = DateFormat.DateOnly.DateDdMmmYyyy)
         val time = DateCompose.rememberFormat(value = latest.start, format = DateFormat.TimeOnly.Time24hHm)
         val origin = entries.first().start
         val points = entries.map { entry ->
             val pointDate = DateCompose.rememberFormat(
                 value = entry.start,
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
+                format = DateFormat.DateOnly.DateDdMmmYyyy,
             )
             val pointTime = DateCompose.rememberFormat(value = entry.start, format = DateFormat.TimeOnly.Time24hHm)
             val days = origin.date.daysUntil(entry.start.date)

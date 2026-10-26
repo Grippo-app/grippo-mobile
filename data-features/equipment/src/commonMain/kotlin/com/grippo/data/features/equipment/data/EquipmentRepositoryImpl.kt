@@ -7,7 +7,6 @@ import com.grippo.dto.entity.equipment.toEntities
 import com.grippo.entity.domain.equipment.toDomain
 import com.grippo.services.backend.GrippoApi
 import com.grippo.services.database.dao.EquipmentDao
-import com.grippo.services.database.models.EquipmentGroupWithEquipments
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
@@ -41,15 +40,6 @@ internal class EquipmentRepositoryImpl(
             }
         ) {
             throw AppError.Network.IncompleteResponse()
-        }
-        val equipmentsByGroup = equipments.groupBy { it.equipmentGroupId }
-        for (group in groups) {
-            val groupEquipments = equipmentsByGroup[group.id].orEmpty()
-            val pack = EquipmentGroupWithEquipments(group = group, equipments = groupEquipments)
-            val domain = pack.toDomain() ?: throw AppError.Network.IncompleteResponse()
-            if (domain.equipments.size != groupEquipments.size) {
-                throw AppError.Network.IncompleteResponse()
-            }
         }
         equipmentDao.insertOrUpdate(groups, equipments)
     }
