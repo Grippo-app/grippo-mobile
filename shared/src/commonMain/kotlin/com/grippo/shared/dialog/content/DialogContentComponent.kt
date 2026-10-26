@@ -31,6 +31,7 @@ import com.grippo.exercise.example.exerciseexample.ExerciseExampleDetailsCompone
 import com.grippo.goal.setup.suggestion.GoalSetupSuggestionComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
+import com.grippo.language.picker.LanguagePickerComponent
 import com.grippo.menu.picker.MenuPickerComponent
 import com.grippo.month.picker.MonthPickerComponent
 import com.grippo.muscle.loading.details.MuscleLoadingDetailsComponent
@@ -261,6 +262,15 @@ internal class DialogContentComponent(
                 )
             )
 
+            is DialogConfig.LanguagePicker -> Child.LanguagePicker(
+                LanguagePickerComponent(
+                    componentContext = context,
+                    initial = router.initial,
+                    onResult = { language -> dialogNavigation.finish { router.onResult.invoke(language) } },
+                    back = { dialogNavigation.finish(null) }
+                )
+            )
+
             is DialogConfig.GoalSetupSuggestion -> Child.GoalSetupSuggestion(
                 GoalSetupSuggestionComponent(
                     componentContext = context,
@@ -401,6 +411,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class SecondaryGoalPicker(override val component: SecondaryGoalPickerComponent) :
+            Child(component)
+
+        data class LanguagePicker(override val component: LanguagePickerComponent) :
             Child(component)
 
         data class GoalSetupSuggestion(override val component: GoalSetupSuggestionComponent) :

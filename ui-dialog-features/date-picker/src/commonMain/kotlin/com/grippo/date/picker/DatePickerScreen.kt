@@ -140,7 +140,7 @@ private fun DatePickerPreview(value: LocalDateTime?) {
                     value = DateTimeFormatState.of(
                         value = value,
                         range = limitations,
-                        format = DateFormat.DateOnly.DateMmmDdYyyy,
+                        format = DateFormat.DateOnly.DateDdMmmYyyy,
                     ),
                     limitations = limitations,
                 ),
