@@ -418,23 +418,24 @@ and Latin text in both themes; each role keeps its existing size and line height
   workout is compared with the same kind of period around its own date (a rolling
   preset ends on that day, a calendar preset is the week, month or year containing
   it). The period label is the preset name ("30 days") whenever that comparison
-  period is the current Home period and otherwise its end date through
-  `training_recap_period_as_of` ("as of 27 May", "на 27 мая", "на 27 трав.",
-  "até 27 mai."): a range
-  does not fit the uk `Average` line ("середнього · 28 жовт. – 27 лист." is
+  period is the current Home period (none for Infinity, which has no preset name)
+  and otherwise its end date through `training_recap_period_as_of` ("as of 27 May",
+  "на 27 мая", "на 27 трав.", "até 27 mai."; `PerformanceComparisonState.periodLabel()`
+  owns this choice for the hero and `presetLabel()` the same choice for the trend
+  sheet title): a range does not fit the uk `Average` line ("середнього · 28 жовт. – 27 лист." is
   ≈216 dp against the ≈200 dp column). The workout's own
   facts step down to
   `h3` with `b11Med` labels. The description lives on the types:
-  `PerformanceVerdictState.summary(metrics, baseline)` gives
+  `PerformanceVerdictState.summary(metrics, reference)` gives
   `training_recap_first_description` for a first workout ("The baseline for your
   next workouts", "База для следующих тренировок", "Основа для наступних
   тренувань", "Base para seus próximos treinos", "Base para os seus próximos
   treinos": short enough to keep two lines with the period label) and otherwise
-  `PerformanceBaselineState.comparedSummary(improved, compared)`, which names the
-  selected baseline: `training_recap_compared` ("N of M metrics above your
+  `PerformanceReferenceState.comparedSummary(improved, compared)`, which names the
+  selected reference: `training_recap_compared` ("N of M metrics above your
   average") under `Average`, `training_recap_compared_previous` ("… above last
   time", "… выше прошлой", "… вище минулого", "… acima do anterior") under
-  `Previous`, each shorter than its locale's Average line so a baseline switch never
+  `Previous`, each shorter than its locale's Average line so a reference switch never
   adds a line to the hero and moves the segment under the finger. Both are plurals
   on M, the compared count, in every locale ("1 of 1 metric", "2 з 4 показників",
   "1 из 1 показателя").
@@ -445,8 +446,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   `showsComparison()` reads as `FirstWorkout`, never as a Stable "0 of 0". The hero is pure content - the caller
   captures it as the shared image, so it holds no controls; Share sits in the
   bottom actions under Done, and the screen has no Statistics entry. The hero takes a sealed `TrainingRecapHeroStyle`:
-  `Resolved(verdict, baseline, description)` once the period is known (the hero
-  words the title as `PerformanceVerdictState.title(baseline)` for the baseline the
+  `Resolved(verdict, reference, description)` once the period is known (the hero
+  words the title as `PerformanceVerdictState.title(reference)` for the reference the
   metrics were measured against, so a title can never disagree with its verdict),
   `Pending` while the
   verdict is still being computed - it then renders the facts for real and holds
@@ -466,8 +467,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   reads top-down without extra section headings, each card owning its title, in
   this order: hero → `TrainingRecordsCard` (or its skeleton while
   the `LoadRecords` loader runs; hidden once they resolve empty) →
-  `PerformanceComparisonCard` growth card (or its skeleton; its baseline segment
-  appears only with a baseline) → `WeeklyVolumeCard` (or its skeleton) →
+  `PerformanceComparisonCard` growth card (or its skeleton; its reference segment
+  appears only with an earlier value) → `WeeklyVolumeCard` (or its skeleton) →
   `TrainingStreakCardStyle.Growth` → `GoalCardStyle.Growth` when a goal exists →
   `MuscleLoadingCardStyle.Session` for this workout's own muscle load. No exercise
   spotlights, no exercise rows and no table-like summary card remain on this
@@ -479,8 +480,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   ends a running entrance and drops a running verdict crossfade) and captures it
   once the settled hero has been drawn, so the shared image always shows the final
   art of its current verdict. A
-  period-best verdict or the first non-empty records load fires the shared
-  `KonfettiParade` once per screen instance; a started parade never re-arms. While
+  period-best verdict over the current Home period or the first non-empty records
+  load fires the shared `KonfettiParade` once per screen instance; a started parade
+  never re-arms. While
   saving, the same order renders as skeletons (`TrainingCompletedSkeleton`,
   whose list root carries the single loading node):
   `TrainingRecapHeroSkeleton` with static text bones on the hero's warm surface,
@@ -541,11 +543,11 @@ and Latin text in both themes; each role keeps its existing size and line height
   period so it never reads like the all-time "Personal records" card. The Stable
   verdict speaks of the user's level ("Right on your level", "На своём уровне",
   "На своєму рівні", "No seu nível"), leaving rhythm to the streak card. The Improved
-  title names the selected baseline like the description: `training_recap_verdict_improved`
+  title names the selected reference like the description: `training_recap_verdict_improved`
   ("Stronger than usual") under `Average`, `training_recap_verdict_improved_previous`
   under `Previous` ("Stronger than last time", "Сильнее прошлой", "Сильніше за
   минуле", "Mais forte que o último" in both Portuguese bundles, agreeing with the
-  workout noun of the segment and chips). Because a baseline switch can also change
+  workout noun of the segment and chips). Because a reference switch can also change
   the verdict itself (Stable → Improved), the text column beside the illustration
   slot (≈200 dp at the 412 dp viewport: 412 minus the two 36 dp sides, the `content`
   row gap and the 128 dp slot) holds every title in at most two `h2` lines, and the
@@ -555,7 +557,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   "звичний", and pt Average "Mais forte que o normal", where "habitual" would wrap,
   stay short for this); a Record never occurs under
   `Previous`, and the Record,
-  Stable, Declined and FirstWorkout titles name no baseline. Facts form one
+  Stable, Declined and FirstWorkout titles name no reference. Facts form one
   row of three equal-width columns: workout time, weight lifted and the set count
   (plain `sets`). The hero carries no buttons, because the shared image captures
   the hero layer, and its verdict title carries `heading()` semantics as the
@@ -566,8 +568,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   "65 min", `VolumeFormatState.shortTotal` "500 kg"). Fact values are `h3`
   `text.primary` with `b11Med` `text.secondary` labels; a missing workout time or
   weight omits that fact (the remaining facts share the row) and zero sets dims to
-  `text.tertiary`. Each fact is one accessibility node read label first
-  ("Workout time, 65 min").
+  `text.tertiary`. Each fact is one accessibility node read label first through
+  `listed_pair` ("Workout time, 65 min").
   `TrainingRecapHeroSkeleton` lives beside the hero on the same warm surface:
   the title and description bones shared with `Pending` and one row of
   three fact bones (`h3` value at `skeleton.line.medium`, `b11Med` label at
@@ -661,7 +663,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   one node per loading region, on the host root or on each section skeleton that
   loads on its own. A shared card's loading
   geometry lives beside the card as its `*CardSkeleton`
-  (`PerformanceComparisonCardSkeleton` sized to the baseline segment and the four
+  (`PerformanceComparisonCardSkeleton` sized to the reference segment and the four
   growth blocks with stacked bars; `TrainingStreakCardSkeleton(style)` and
   `MuscleLoadingCardSkeleton(style)` accept only the styles a loading host shows,
   every `TrainingStreakCardStyle` and `MuscleLoadingCardStyle.Loadable` (Overview,
@@ -846,10 +848,15 @@ and Latin text in both themes; each role keeps its existing size and line height
   MetricSectionPanel summary. The existing metric icon uses `icon.secondary` beside
   a neutral `h4` value. Home card headings and the host title share the friendly
   metric name owned by `PerformanceMetricTypeState.label()` / `labelText()`.
-  Earlier average and signed change use secondary `b12Med`; the average label names
-  the comparison baseline once and the adjacent delta uses a short change label.
-  Detailed summaries omit status chips and best-value repetitions; missing current
-  data, missing earlier data and a zero earlier average have distinct quiet copy.
+  The earlier value and signed change use secondary `b12Med`; the value label names
+  the comparison reference once ("Earlier average: X" under `Average`, "Previous
+  workout: X" under `Previous`, from `PerformanceReferenceState.detailedValue()`)
+  and the adjacent delta uses a short change label. The sheet takes the reference
+  from its caller: Home always passes `Average`, the completed-workout screen its
+  selected one, so a row read against the last workout opens a history measured the
+  same way. Detailed summaries omit status chips and best-value repetitions; missing
+  current data, missing earlier data and a zero earlier value have distinct quiet
+  copy for each reference (`missingValueNotice()`, `zeroValueNotice()`).
   Home Overview retains its title/chevron, statuses, comparisons and paired
   intrinsic-height rows; for an empty metric it shows the Detailed card's
   `performance_trend_details_value_unavailable` copy as one secondary `b12Med`
@@ -863,15 +870,16 @@ and Latin text in both themes; each role keeps its existing size and line height
   A single session has no history section.
   A Tertiary calculation disclosure follows the content, initially collapsed with
   coordinated expand/shrink and fade. Metric definitions and their limits use
-  secondary `b13Med`; chart scope and one shared comparison rule use `b12Med`.
+  secondary `b13Med`; chart scope and one comparison rule worded for the passed
+  reference (`PerformanceReferenceState.comparisonScope()`) use `b12Med`.
   The chart-scope sentence appears only with a rendered chart; the comparison rule
   remains available in the disclosure even when there are too few chart points.
 - The completed-workout "Before → after" growth card (`PerformanceComparisonCard`)
   is one Large MetricSectionPanel with the `h5` `performance_comparison_title`
-  (`performance_comparison_first_title` when it has values but no baseline) and no
+  (`performance_comparison_first_title` when it has values but no earlier value) and no
   description, then an Outline `Segment` (`SegmentWidth.EqualFill`) that
-  chooses the baseline - `PerformanceBaselineState.Average` "vs average" or
-  `Previous` "vs last workout" (labels from `PerformanceBaselineState.labelText()`)
+  chooses the reference - `PerformanceReferenceState.Average` "vs average" or
+  `Previous` "vs last workout" (labels from `PerformanceReferenceState.labelText()`)
   - and then growth blocks in the fixed order Volume, Repetitions, Intensity,
   Density separated by `ContentDivider`. Duration is not a row here: it never votes
   and the hero already states the workout time, so every row carries a status and
@@ -882,20 +890,20 @@ and Latin text in both themes; each role keeps its existing size and line height
   ru "к среднему / к прошлому разу" ("к прошлой тренировке" wraps), pt
   "vs média / vs último treino" - and a new or changed label is checked against
   that width. The "Before: X" sub-line keeps
-  its wording under both baselines; the metrics already carry the matching before
+  its wording under both references; the metrics already carry the matching before
   value, the caller owns the selection and the card never recomputes it. Under
   `Average` a status has to clear the period's noise band (at least 5 %, wider
   when earlier sessions vary); under `Previous` a single earlier value has no
   spread, so a fixed ±5 % band decides it. The segment renders only when some
-  metric `hasAverage()` - an earlier value exists under the selected baseline,
+  metric `hasAverage()` - an earlier value exists under the selected reference,
   zero included - and a block's "Before" line and its bar pair only when its own
-  metric has one. Earlier values exist under both baselines as soon as the period
+  metric has one. Earlier values exist under both references as soon as the period
   has an earlier workout, so a switch never removes the selector and the user can
   always switch back. The hero reads `FirstWorkout` on a different predicate - no
   metric `showsComparison()` - and the two agree in practice, not by definition:
   every saved workout has at least one set with repetitions, so an earlier
-  workout always gives Repetitions a nonzero baseline and a comparison under
-  either baseline. With an earlier workout the card shows its selector and the
+  workout always gives Repetitions a nonzero earlier value and a comparison under
+  either reference. With an earlier workout the card shows its selector and the
   hero a real verdict; without one the card is titled
   `performance_comparison_first_title` ("This workout") and shows its blocks
   without a selector, bars or a note of its own, because the hero explains the
@@ -913,18 +921,19 @@ and Latin text in both themes; each role keeps its existing size and line height
   sub-line (omitted without an average) and, for every metric that
   `showsComparison()` (it votes and `hasComparison()`: a percentage change, or a
   period best, which needs none), the status chip (`PerformanceTrendChip`, worded
-  for the selected baseline through `PerformanceTrendStatusState.label(baseline)`:
+  for the selected reference through `PerformanceTrendStatusState.label(reference)`:
   "Above usual / Within usual range / Below usual" under `Average`, "Above last
   workout / Like last workout / Below last workout" under `Previous`, and "Period
   best" in either - a Record is never produced against the previous workout, and
   no preview pairs the two;
   Home's Overview `PerformanceMetricCard` shows its chip on the same
-  `showsComparison()` and passes `PerformanceBaselineState.Average` to the same
-  `label(baseline)`, and the detailed summary shows no chip) under that
+  `showsComparison()` with the card's default `PerformanceReferenceState.Average`
+  reference through the same `label(reference)`, and the detailed summary shows no
+  chip) under that
   sub-line in the left column; the right column holds the `h5` `text.primary`
   value that counts from the average to this workout through `displayValue()`
   with the `b12Semi` signed change in `text.secondary` beneath it whenever a
-  percentage exists, Record included (a period best over a zero baseline keeps its
+  percentage exists, Record included (a period best over a zero earlier value keeps its
   chip without a change): the chip and the bars already carry the status, so the
   number stays quiet and a Declined row does not repeat the decline accent three
   times. The `PerformanceComparisonCardSkeleton` sizes its four blocks with the
@@ -933,7 +942,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   `contentPadding.text` gap, shown only for a metric with a value and a before
   value (a row without one carries no bars), read top to bottom like
   "Before → after": the top
-  "before" bar is a `charts.indicator.before` fill to the baseline - a neutral
+  "before" bar is a `charts.indicator.before` fill to the earlier value - a neutral
   visible on the card yet quieter than the muted "after" fill, on the muted track
   (WCAG contrast against `background.card`: Light NeutralLight.N400 2.3:1 beside
   muted N500 4.8:1; Dark NeutralDark.N450 1.75:1, 1.5:1 on its track, beside muted
@@ -958,10 +967,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   (false → true) staggers the blocks, 120 ms each. The delay comes from the
   transition's states (the current state still behind the target), not from its
   segment, which keeps reading false → true after the entrance settles, so any
-  later target change, such as a baseline switch, moves every block at once
+  later target change, such as a reference switch, moves every block at once
   without delay on a short 250 ms FastOutSlowIn tween: the after bar's fill, track
-  and length (its pair's scale moves with the baseline) and the before bar. The
-  current value does not depend on the baseline and stays put. The parts a switch
+  and length (its pair's scale moves with the reference) and the before bar. The
+  current value does not depend on the reference and stays put. The parts a switch
   adds or drops - the "Before" line and the bar pair with the earlier value, the
   chip and the signed change with the comparison - are `AnimatedVisibility` parts
   (`expandVertically` + `fadeIn` from the top, `shrinkVertically` + `fadeOut`
@@ -972,13 +981,13 @@ and Latin text in both themes; each role keeps its existing size and line height
   retargets with the transition's spring. Each part carries its own gap
   (`contentPadding.text` for the text parts, `subContent` for the bar pair, whose
   two bars stay `text` apart), so the gap animates with it, and a leaving part keeps
-  its last values (a chip keeps the baseline
+  its last values (a chip keeps the reference
   wording it was measured in) until it is gone; the block's height follows the
   parts, so nothing is clipped at the old height and nothing jumps. Only the
   value text reads the animated number every frame; the bars read their animated
   values while drawing. Motion never gates the block's press target.
   An empty metric shows no value and no bars (a full "before" over an empty
-  track would read as a drop to zero); without any baseline the rows show their
+  track would read as a drop to zero); without any earlier value the rows show their
   values without bars under the first-workout title; without any values the title
   is followed by one secondary `b13Med` empty note and no blocks.
 - `TrainingStreakCardStyle.Growth(previous)` is the completed-workout streak: the
@@ -991,7 +1000,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   flame keeps the mood colors (`mood.indicatorColors()`) like Overview and Detailed;
   a change is one fact in one color, so only the current length carries the
   direction. When the previous length differs the outcome line
-  joins the outcome text and `training_streak_growth_headline` through
+  joins the outcome text and `value_transition` through
   `joined_pair` ("Streak extended · 4 → 5"), the previous length in the line's
   `text.secondary` and the current one in the direction color
   (`semantic.success` after growth, `semantic.decline` after a drop), like the goal
@@ -1015,7 +1024,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   `goal_course_title`, `h5` goal label, decorative chevron), an `h3` score line -
   the numbers in `h3`, one step below the hero's `h2` heading so the score does not
   compete with it, the percent signs and the arrow in secondary `b14Med` - that
-  becomes `goal_growth_score` ("68% → 76%") when the
+  becomes `value_transition` ("68% → 76%") when the
   previous score differs, the previous score in `text.secondary` beside the
   current one, stated from the first frame while only the current score
   fades in over 900 ms (saveable reveal, once per screen instance) and the bar fills
@@ -1050,7 +1059,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   name once, over one plain `b11Med` `text.secondary` line listing every kind with
   its value - `AchievementState.text()` and `spacedValue()` (spaced weights such as
   "92.5 kg", repetitions as "x14"; `AchievementState.value()` keeps the compact form
-  for exercise details), the kinds joined by " · " ("Best weight 22.5 kg · Best
+  for exercise details), each kind joined to its value by `labeled_value` and the
+  kinds by `joined_pair` ("Best weight 22.5 kg · Best
   tonnage 380 kg · Max repetitions x10 · Peak intensity 21.1 kg") and wrapping
   without truncation (at most four kinds; an ellipsis would hide a record) - then
   one decorative
@@ -1059,7 +1069,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   light: no nested cells, chips or per-kind value columns. Each row owns one
   `scalableClick` to its exercise example (`onRecordClick(exerciseExample.id)`)
   with `subContent` vertical padding; its spoken text reads the name, then every
-  kind in full with commas instead of the dots. The caller shows the card only when
+  kind in full, joined by `listed_pair` commas instead of the dots. The caller shows
+  the card only when
   records exist; records are evidence, not selection, so the row carries no orange.
 - `WeeklyVolumeCard` is the "This week" tonnage card: a Large MetricSectionPanel
   whose header row pairs the `h5` `weekly_volume_title` with the `b12Med`
@@ -1068,6 +1079,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   values through `VolumeFormatState.shortTotal`), renders as one `AnnotatedString`
   on one baseline: the current tonnage in `h3` `text.primary` and the rest of the
   sentence in `b12Med` `text.secondary`, wherever the locale places the value.
+  The typical week is the tonnage of the four complete weeks before this one
+  divided by four, so a week without training counts as zero.
   Without a typical week - no training in the recent weeks before this one - the
   `h3` tonnage stands alone and `weekly_volume_no_typical` ("No recent weeks to
   compare with yet.") follows; a
@@ -1195,7 +1208,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   the goal card's "Analyzed" line use it (streak timeline ranges and the analysis
   window are custom ranges, so they always carry the year:
   "28 Apr 2026 – 27 May 2026"); chart week
-  labels, built in the domain layer, keep their own single-line "6 Oct – 12 Oct".
+  labels, built in the domain layer, keep their own "6 Oct – 12 Oct".
   Days carry no leading zero and dates with a year are day-first in every locale
   ("5 Oct", "5 October", "26 Oct 2026").
 - Open dialog sections use headings and spacing rather than decorative dividers.

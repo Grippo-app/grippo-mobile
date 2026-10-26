@@ -85,7 +85,6 @@ import com.grippo.design.resources.provider.share
 import com.grippo.design.resources.provider.training_completed_details_unavailable
 import com.grippo.design.resources.provider.training_completed_done
 import com.grippo.design.resources.provider.training_completed_result_unavailable
-import com.grippo.design.resources.provider.training_recap_period_as_of
 import com.grippo.toolkit.date.utils.DateRangeKind
 import com.grippo.training.completed.components.TrainingCompletedSkeleton
 import kotlinx.collections.immutable.ImmutableSet
@@ -395,8 +394,7 @@ private fun trainingCompletedHeroStyle(state: TrainingCompletedState): TrainingR
 
     val verdict = PerformanceVerdictState.of(performance.metrics)
     val summary = verdict.summary(metrics = performance.metrics, reference = performance.reference)
-    val rangeLabel = performance.presetLabel(state.range)?.text()
-        ?: performance.period.shortEnd()?.let { AppTokens.strings.res(Res.string.training_recap_period_as_of, it) }
+    val rangeLabel = performance.periodLabel(state.range)
     val description = if (rangeLabel == null) {
         summary
     } else {

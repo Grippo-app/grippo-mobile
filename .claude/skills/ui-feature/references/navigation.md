@@ -277,7 +277,7 @@ private fun RootComponent.Child.animator(): StackAnimator = when (this) {
 }
 ```
 
-The dialog overlay is **not** rendered inside `RootScreen`. `RootComponent.Render()` reads `AppTheme.current`/`AppLocale.current` and calls `RootScreen(...)` and `dialogComponent.Render()` as siblings inside `AppTheme { ... }`. The Android shell keeps the system splash until `AppLocale.isResolved` (the stored app language is applied); iOS starts in the persisted `AppleLanguages` language:
+The dialog overlay is **not** rendered inside `RootScreen`. `RootComponent.Render()` reads `AppTheme.current`/`AppLocale.current` and calls `RootScreen(...)` and `dialogComponent.Render()` as siblings inside `AppTheme { ... }`. The Android shell keeps the system splash until `AppLocale.isResolved` (the stored app language was read and applied, or the read failed and the system locale is kept); iOS starts in the persisted `AppleLanguages` language:
 
 ```kotlin
 AppTheme(darkTheme = systemIsDark, localeTag = localeTag) {

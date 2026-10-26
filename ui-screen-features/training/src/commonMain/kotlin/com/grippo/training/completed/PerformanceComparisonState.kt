@@ -1,10 +1,14 @@
 package com.grippo.training.completed
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceReferenceState
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.training_recap_period_as_of
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableList
 
@@ -17,4 +21,10 @@ internal data class PerformanceComparisonState(
     fun isOver(range: DateRange?): Boolean = range != null && period.value == range
 
     fun presetLabel(range: DateRangeFormatState): UiText? = if (isOver(range.value)) range.label() else null
+
+    @Composable
+    fun periodLabel(range: DateRangeFormatState): String? = when {
+        isOver(range.value) -> presetLabel(range)?.text()
+        else -> period.shortEnd()?.let { AppTokens.strings.res(Res.string.training_recap_period_as_of, it) }
+    }
 }
