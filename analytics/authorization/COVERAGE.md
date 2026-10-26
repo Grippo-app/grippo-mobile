@@ -25,11 +25,9 @@ visible-screen context and correlate outcomes by `operation_id`; the typed catal
   `getUser()` call, once per invocation. It therefore runs only after
   onboarding has been shown and a token exists; no-session catalog fetches are not
   SessionCheck operations.
-- `AuthRouter.Onboarding` is a payload-free serializable object with its original
-  serial name and `@JsonIgnoreUnknownKeys`, which ignores the obsolete destination
-  field of an intermediate development route; no destination enum, generic
-  Continue or cross-leaf dispatcher exists. Onboarding is the one-time first
-  screen: Get started and Back both continue to Login through
+- `AuthRouter.Onboarding` is a payload-free serializable object; no destination
+  enum, generic Continue or cross-leaf dispatcher exists. Onboarding is the
+  one-time first screen: Get started and Back both continue to Login through
   `AuthViewModel.toAuthProcess` → `AuthDirection.AuthProcess`, which AuthComponent
   handles with `replaceAll(AuthRouter.AuthProcess())` instead of pushing the
   placeholder into Back history. A restored Onboarding
@@ -239,7 +237,7 @@ modes, and that transport change adds no screen, preserved input or payload.
 | OnboardingViewModel / OnboardingState | `analyticsConsent: Boolean?` | Rebuild | `observeAnalyticsConsent()` with Processing.Infinity; no DRAFT, State not serializable | Null while pending; switch checked unless false, enabled only with a known source and no loaders; accepted toggles commit immediately, so no unfinished draft exists; a failed source read clears the presentation to null before the retry and disables dependent controls; a failed write retains the actual stored value |
 | OnboardingViewModel | Shown flag read in preparation | Rebuild | `observeOnboardingShown().first()` | A restored route re-runs preparation; writes are skipped when already shown; the screen stays interactive |
 | Onboarding | `Preparation`/`AnalyticsConsent` loaders, error and Back sessions | Runtime only | OnboardingLoader | Not archived |
-| LoginComponent / LoginState | `email: EmailFormatState` (display and value, including invalid/empty) | Preserve | `DRAFT = PersistenceKey("LoginDraft", LoginState.serializer())`; `@JsonIgnoreUnknownKeys` on LoginState | `restoreState(DRAFT) ?: LoginState()` (non-null); `saveState` in init; the removed consent presentation is not archived and old drafts remain readable |
+| LoginComponent / LoginState | `email: EmailFormatState` (display and value, including invalid/empty) | Preserve | `DRAFT = PersistenceKey("LoginDraft", LoginState.serializer())` | `restoreState(DRAFT) ?: LoginState()` (non-null); `saveState` in init |
 | LoginState | `password` | Runtime only (secret) | `@Transient`, default Empty | Excluded from the archive; fresh restore starts empty |
 | LoginState | `isGoogleLoginAvailable`, `isAppleLoginAvailable` | Rebuild | `@Transient`; recomputed from the providers' `isSupported` in the VM constructor | Overrides any restored value |
 | RegistrationComponent / RegistrationState | `email` | Preserve | `DRAFT = PersistenceKey("RegistrationDraft", RegistrationState.serializer())` | `restoreState(DRAFT) ?: RegistrationState(email = EmailFormatState.of(seed))`: a saved draft wins over the route seed |
@@ -254,7 +252,7 @@ modes, and that transport change adds no screen, preserved input or payload.
 | MissingEquipmentsComponent / MissingEquipmentsState | `selectedEquipmentIds`, `knownEquipmentIds`, `selectedGroupId` | Preserve | `DRAFT = PersistenceKey("MissingEquipmentsDraft", MissingEquipmentsState.serializer())` | A nonempty flattened equipment catalog keeps selected known IDs, selects new IDs, drops absent IDs and re-validates the group; empty flattened catalogs update only suggestions, preserving known/selected IDs and the selected group; Next sends known minus selected |
 | MissingEquipmentsState | `suggestions` | Rebuild | `@Transient`; `observeEquipments()` | Re-subscribed in init |
 | ProfileCompletedComponent | Name/weight/height/experience/exclusion inputs | Rebuild from parent | Constructor arguments from ProfileCreationState; no DRAFT; data-object State | A fresh VM re-runs CreateProfile from init, including after restoration; the `ProfileCreation` loader is runtime only |
-| AuthComponent stack | `AuthRouter` (Splash, Onboarding, AuthProcess(flowId), ProfileCreation) | Preserve (navigation) | `childStack(serializer = AuthRouter.serializer(), key = "AuthComponent")`; Onboarding and AuthProcess carry `@JsonIgnoreUnknownKeys`; `flowId` is `@EncodeDefault` | Initial stack from `RootRouter.Auth(value)`; mutated only by replaceAll; the AuthProcess serializer ignores the obsolete `entryPoint` field of older archives |
+| AuthComponent stack | `AuthRouter` (Splash, Onboarding, AuthProcess(flowId), ProfileCreation) | Preserve (navigation) | `childStack(serializer = AuthRouter.serializer(), key = "AuthComponent")`; `flowId` is `@EncodeDefault` | Initial stack from `RootRouter.Auth(value)`; mutated only by replaceAll |
 | AuthProcessComponent stack | `AuthProcessRouter` (Login, Registration(email)) | Preserve (navigation plus nonsecret seed) | `AuthProcessRouter.serializer()`, key `AuthProcessComponent` | Initial Login; Registration pushed with the email seed |
 | ProfileCreationComponent stack | `ProfileCreationRouter` (five objects) | Preserve (navigation) | `ProfileCreationRouter.serializer()`, key `ProfileCreationComponent` | Initial User; push/pop |
 | RootComponent stack | `RootRouter.Auth(AuthRouter)` | Preserve (navigation) | `RootRouter.serializer()`, key `RootComponent` | Initial `Auth(AuthRouter.Splash)` |
@@ -339,7 +337,6 @@ started; a saved Onboarding route; logged-in startup; Back from onboarding;
 read/write errors and dialog dismissal; logout/delete retention of
 `onboarding_shown` and `analytics_consent`; login providers and provider
 cancellation; queued deep links; small/large-font CTA and insets on both
-platforms; device archive roundtrip for the seven drafts, including an older
-archive with the obsolete `entryPoint` or destination fields; payload delivery;
+platforms; device archive roundtrip for the seven drafts; payload delivery;
 lifecycle timing of Initial/Restore presentations; reporting-failure injection.
 Source checks do not prove runtime behavior.

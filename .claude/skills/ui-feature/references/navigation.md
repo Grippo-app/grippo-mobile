@@ -57,7 +57,7 @@ public sealed class RootRouter : BaseRouter {
 }
 ```
 
-Nested routers (inspect the files for annotations such as `@JsonIgnoreUnknownKeys`):
+Nested routers (inspect the files for annotations such as `@EncodeDefault`):
 `AuthRouter` = `Splash`, `Onboarding`, `AuthProcess(flowId: FlowId = FlowId.create())`
 (a data class — construct it as `AuthRouter.AuthProcess()`), `ProfileCreation`;
 `ProfileRouter` = `Menu`, `Equipments`, `Muscles`, `Body`, `Experience`, `Settings`,

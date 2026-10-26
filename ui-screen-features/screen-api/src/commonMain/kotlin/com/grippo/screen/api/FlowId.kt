@@ -1,12 +1,9 @@
 package com.grippo.screen.api
 
 import kotlin.uuid.Uuid
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-// Preserve the former serializer name for saved navigation state.
-@SerialName("com.grippo.toolkit.analytics.context.FlowId")
 public data class FlowId(public val value: String) {
     init {
         require(value.matches(VALID_ID))

@@ -7,11 +7,9 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 
 @Immutable
 @Serializable
-@JsonIgnoreUnknownKeys
 internal data class ProfileEquipmentsState(
     @Transient
     val suggestions: ImmutableList<EquipmentGroupState> = persistentListOf(),

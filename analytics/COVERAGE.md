@@ -127,9 +127,8 @@ is introduced.
 Unused FlowContext/EntryPoint/toolkit FlowId and Action/Back/External reasons are
 removed from the API. Unused attribution names remain reserved against accidental
 custom reuse. The distinct screen-api FlowId remains necessary for route
-identity/archive compatibility and is unchanged. No built-in dialog view schema
-exists; dialogs have no view or close tracking, and this contract adds no dialog
-view API.
+identity. No built-in dialog view schema exists; dialogs have no view or close
+tracking, and this contract adds no dialog view API.
 
 Typed screen/dialog dismissal observations and internal actions consistently use
 DismissRequested. Their wire event names/action codes use dismiss_requested, including
@@ -192,9 +191,8 @@ in 29 event files (42 variants) plus the common ControlAction, encoded as 26
 `<feature>_dismiss_requested` schema names, four prefixed `training_interaction`
 action codes and the bare `dismiss_requested` action code of the auth/profile
 control schemas; 18 `DRAFT = PersistenceKey(...)` owners (eleven with a non-null
-`?:` fallback, seven passing a nullable initial state); eight
-`@JsonIgnoreUnknownKeys` usages in seven files. Event-name prefixes do not map
-one-to-one to modules (`profile_operation_*` lives in authorization,
+`?:` fallback, seven passing a nullable initial state). Event-name prefixes do
+not map one-to-one to modules (`profile_operation_*` lives in authorization,
 `exercise_example_details_clicked` in exercise), but names remain unique.
 
 Cross-feature source checks for the previous contract audit (2026-10-14): all 182
@@ -216,11 +214,11 @@ navigation attribution while preserving business results, errors and
 cancellation. No raw credential/body/entity/error fields or obsolete
 Back/provenance API facts were found. Generated Koin output confirms the
 MainAnalytics/DebugAnalytics bindings and the unique main_analytics catalog; the
-screen-api route FlowId/archive identity is preserved. Consent
-revision/queue/configuration checks, stale presentation close and worker
-cancellation/error boundaries were inspected in real source; EN/UK/RU XML
-resources and the disabled Android/iOS SDK defaults were inspected. Literal
-schema/context parameter budgets and `git diff --check` passed.
+screen-api route FlowId is preserved. Consent revision/queue/configuration
+checks, stale presentation close and worker cancellation/error boundaries were
+inspected in real source; EN/UK/RU XML resources and the disabled Android/iOS
+SDK defaults were inspected. Literal schema/context parameter budgets and
+`git diff --check` passed.
 
 Builds for that revision: `:shared:compileAndroidMain
 :shared:assembleSharedDebugXCFramework` passed offline without configuration

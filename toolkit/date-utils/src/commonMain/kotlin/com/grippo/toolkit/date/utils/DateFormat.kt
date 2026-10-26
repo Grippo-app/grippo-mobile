@@ -31,7 +31,7 @@ public sealed interface DateFormat {
         @Immutable
         @Serializable
         public data object MmmYyyy : DateOnly {
-            override val pattern: String = "MMM yyyy"
+            override val pattern: String = "LLL yyyy"
         }
 
         @Immutable

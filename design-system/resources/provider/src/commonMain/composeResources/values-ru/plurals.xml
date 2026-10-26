@@ -18,4 +18,16 @@
         <item quantity="many">%1$d из %2$d показателей выше прошлой</item>
         <item quantity="other">%1$d из %2$d показателя выше прошлой</item>
     </plurals>
+    <plurals name="goal_details_analysis_days">
+        <item quantity="one">%1$d дн.</item>
+        <item quantity="few">%1$d дн.</item>
+        <item quantity="many">%1$d дн.</item>
+        <item quantity="other">%1$d дн.</item>
+    </plurals>
+    <plurals name="goal_details_analysis_sets">
+        <item quantity="one">%1$d записанный подход</item>
+        <item quantity="few">%1$d записанных подхода</item>
+        <item quantity="many">%1$d записанных подходов</item>
+        <item quantity="other">%1$d записанного подхода</item>
+    </plurals>
 </resources>

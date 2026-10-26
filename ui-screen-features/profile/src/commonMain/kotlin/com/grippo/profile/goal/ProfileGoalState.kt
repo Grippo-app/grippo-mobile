@@ -15,11 +15,9 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.DatePeriod
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 
 @Immutable
 @Serializable
-@JsonIgnoreUnknownKeys
 internal data class ProfileGoalState(
     val selectedPrimary: GoalPrimaryGoalEnumState? = null,
     val selectedSecondary: GoalSecondaryGoalEnumState? = null,

@@ -12,4 +12,12 @@
         <item quantity="one">%1$d of %2$d metric above last time</item>
         <item quantity="other">%1$d of %2$d metrics above last time</item>
     </plurals>
+    <plurals name="goal_details_analysis_days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <plurals name="goal_details_analysis_sets">
+        <item quantity="one">%1$d recorded set</item>
+        <item quantity="other">%1$d recorded sets</item>
+    </plurals>
 </resources>

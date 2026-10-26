@@ -123,7 +123,7 @@ private fun DailyTimelineItem(
                 Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.subContent))
 
                 Text(
-                    text = "$start - ${value.createAt.display}",
+                    text = "$start – ${value.createAt.display}",
                     style = AppTokens.typography.b14Semi(),
                     color = AppTokens.colors.text.primary,
                 )

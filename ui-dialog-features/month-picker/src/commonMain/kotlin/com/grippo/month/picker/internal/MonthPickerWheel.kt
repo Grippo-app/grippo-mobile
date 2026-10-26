@@ -89,7 +89,7 @@ internal fun MonthWheelPicker(
             val template = remember(month, selectedYear) {
                 LocalDateTime(selectedYear, month, 1, 0, 0)
             }
-            val monthName = rememberFormat(value = template, format = DateFormat.DateOnly.MonthFull)
+            val monthName = rememberFormat(value = template, format = DateFormat.DateOnly.MonthFullStandalone)
             WheelItemRow(text = monthName, isValid = valid)
         },
         listState = monthState

@@ -479,17 +479,8 @@ public data object AppDp {
     }
 
     public data object Training {
-        val radius: Dp = AppDp.radius.medium
-        val horizontalPadding: Dp = padding.medium
-        val verticalPadding: Dp = padding.small
-        val textSpacing: Dp = padding.tiny
         public val exerciseLoadTypeIcon: Dp = 20.dp
-        val startTraining: StartTraining = StartTraining
         public val recap: Recap = Recap
-
-        public data object StartTraining {
-            val icon: Dp = AppDp.icon.medium
-        }
 
         public data object Recap {
             public val backdrop: Backdrop = Backdrop

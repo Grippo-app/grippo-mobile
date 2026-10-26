@@ -5,11 +5,9 @@ import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.core.state.formatters.PasswordFormatState
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 
 @Immutable
 @Serializable
-@JsonIgnoreUnknownKeys
 internal data class LoginState(
     val email: EmailFormatState = EmailFormatState.Empty(),
     @Transient

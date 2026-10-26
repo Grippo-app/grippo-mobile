@@ -114,7 +114,6 @@
     <string name="training_recap_verdict_first">O seu ponto de partida</string>
     <string name="training_recap_first_description">Base para os seus próximos treinos</string>
     <string name="training_recap_period_as_of">até %1$s</string>
-    <string name="total">Total</string>
     <string name="per_group">Por grupo</string>
     <string name="per_muscle">Por músculo</string>
     <string name="add_set_btn">Adicionar série</string>
@@ -916,7 +915,6 @@
     <string name="digest_zero_duration">0 min</string>
     <string name="goal_card_status_not_evaluated">Ainda não avaliado</string>
     <string name="goal_details_analysis_period">Analisado: %1$s</string>
-    <string name="goal_details_analysis_evidence">%1$d dias · %2$d séries registadas</string>
     <string name="goal_details_analysis_excluded">Séries excluídas por registos inválidos ou incompletos: %1$d</string>
     <string name="goal_details_analysis_missing_metadata">Diagnóstico muscular indisponível: faltam dados de exercícios para %1$d séries.</string>
     <string name="goal_details_analysis_unavailable">O período selecionado não se sobrepõe ao histórico do objetivo disponível hoje.</string>
