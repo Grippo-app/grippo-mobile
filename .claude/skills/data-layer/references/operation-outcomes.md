@@ -63,13 +63,19 @@ A successful return establishes the complete operation outcome, not just an acce
   and TestFlight builds without this exception and the user-visible effects of hiding are
   described in the [equipment integration map](../../add-equipment/references/integration-map.md#mobile-touchpoints).
   For muscles: a hidden muscle drops out of exercise-example bundles, so an example's load is
-  shared among its visible muscles; the user cannot select or exclude it, the example filters
-  ignore an exclusion of it made from a newer build, and saving the muscle selection
-  (`ProfileMusclesViewModel.onApply`) removes that exclusion because the backend replaces the
-  whole set, an accepted rollout risk. Builds that reject an unknown muscle type keep retrying
+  shared among its visible muscles; the user cannot select or exclude it; for a muscle whose
+  own type is unknown the example filters also ignore an exclusion made from a newer build,
+  while a known-type muscle hidden with its unknown group keeps its exclusion; and saving the
+  muscle selection (`ProfileMusclesViewModel.onApply`) removes a hidden muscle's exclusion
+  because the backend replaces the whole set, an accepted rollout risk. Builds that reject an unknown muscle type keep retrying
   Splash, and builds that refresh catalogs only before sign-in fail a signed-in user's
   exercise-example refresh on the missing bundle parent, so a new muscle type needs the same
   compatibility decision as a new equipment type.
+  Splash is the only catalog refresh. A process restored straight into Home skips it, so
+  after the server adds a muscle or equipment row an exercise-example refresh fails on the
+  missing foreign-key parent (the generic error dialog and a crash report; Home's retry repeats
+  it after each dismissal) until a cold start passes Splash again. This is an accepted risk:
+  the owner adds catalog reloads where they are needed.
   Required children must belong to the enclosing parent; primary IDs must be unique across
   each table's snapshot. Row-count equality alone does not establish completeness.
   Observations that depend on separately refreshed catalogs retain their explicit availability
