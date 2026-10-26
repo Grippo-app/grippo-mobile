@@ -33,12 +33,12 @@ public fun LineIndicator(
     modifier: Modifier = Modifier,
     progress: Float,
     colors: AppColor.Charts.IndicatorColors.IndicatorColors = AppTokens.colors.charts.indicator.primary,
-    barHeight: Dp = AppTokens.dp.metrics.charts.indicator.height,
-    labelSpacing: Dp = AppTokens.dp.metrics.charts.indicator.labelSpacing,
     startLabel: (@Composable () -> Unit)? = null,
     endLabel: (@Composable () -> Unit)? = null,
     marker: (@Composable () -> Unit)? = null,
 ) {
+    val barHeight: Dp = AppTokens.dp.metrics.charts.indicator.height
+    val labelSpacing: Dp = AppTokens.dp.metrics.charts.indicator.labelSpacing
     val style = remember(colors) { colors.toStyle() }
     val hasLabels = startLabel != null || endLabel != null
     val sanitizedProgress = if (progress.isNaN()) 0f else progress.coerceIn(0f, 1f)
@@ -105,7 +105,6 @@ private fun LineIndicatorPreview() {
         LineIndicator(
             progress = 0.5f,
             colors = AppTokens.colors.charts.indicator.info,
-            barHeight = 10.dp,
             marker = {
                 Text(
                     text = "🔥",
@@ -152,7 +151,6 @@ private fun LineIndicatorPreview() {
             modifier = Modifier.fillMaxWidth(),
             progress = 0.72f,
             colors = AppTokens.colors.charts.indicator.warning,
-            barHeight = 10.dp,
             startLabel = {
                 Text(
                     text = "0 kg",

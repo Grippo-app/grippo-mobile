@@ -19,14 +19,14 @@ internal fun ProgressChart(
     data: ProgressData
 ) {
     val charts = AppTokens.colors.charts
-    val valueLabels = data.items.map { entry ->
+    val valueLabels = data.items.associate { entry ->
         val label = if (entry.value.isFinite() && entry.value in 0f..100f) {
             PercentageFormatState.shortShare(entry.value)
         } else {
             "—"
         }
         entry.value to label
-    }.toMap()
+    }
 
     val style = ProgressStyle(
         layout = ProgressStyle.Layout(

@@ -288,7 +288,7 @@ public data object AppDp {
             }
 
             public data object Indicator {
-                val height: Dp = 6.dp
+                val height: Dp = 8.dp
                 val labelSpacing: Dp = 6.dp
             }
         }
