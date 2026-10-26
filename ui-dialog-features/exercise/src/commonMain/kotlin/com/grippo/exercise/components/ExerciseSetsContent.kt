@@ -331,7 +331,7 @@ private fun ExerciseSetsContentWithPreviousPreview() {
         createdAt = DateTimeFormatState.of(
             value = LocalDateTime(year = 2026, month = 10, day = 7, hour = 18, minute = 0),
             range = DateRangePresets.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
         ),
         iterations = persistentListOf(
             iteration.copy(id = "previous-set", externalWeight = VolumeFormatState.of(80f)),
@@ -359,7 +359,7 @@ private fun ExerciseSetsContentChangedAssistanceAndPartialPreviousPreview() {
         createdAt = DateTimeFormatState.of(
             value = LocalDateTime(year = 2026, month = 10, day = 7, hour = 18, minute = 0),
             range = DateRangePresets.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
         ),
         iterations = persistentListOf(
             iteration.copy(id = "assisted-previous", assistWeight = VolumeFormatState.of(20f)),

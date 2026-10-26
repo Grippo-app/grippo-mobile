@@ -26,8 +26,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.custom
 import com.grippo.design.resources.provider.period_picker_title
-import com.grippo.toolkit.date.utils.DateCompose
-import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateRangeKind
 import kotlinx.collections.immutable.ImmutableSet
@@ -59,28 +57,11 @@ internal fun PeriodPickerScreen(
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
             ) {
                 items(state.suggestions, key = { it.kind.name }) { item ->
-                    val range = item.value
-                    val description = if (range != null) {
-                        val from = DateCompose.rememberFormat(
-                            value = range.from.date,
-                            format = DateFormat.DateOnly.DateDdMmm,
-                            contextual = false,
-                        )
-                        val to = DateCompose.rememberFormat(
-                            value = range.to.date,
-                            format = DateFormat.DateOnly.DateDdMmm,
-                            contextual = false,
-                        )
-                        "$from - $to"
-                    } else {
-                        item.display
-                    }
-
                     CheckSelectableCard(
                         modifier = Modifier.fillMaxWidth(),
                         style = CheckSelectableCardStyle.Medium(
                             title = item.label()?.text() ?: AppTokens.strings.res(Res.string.custom),
-                            description = description,
+                            description = item.short(),
                         ),
                         isSelected = state.value.kind == item.kind,
                         onSelect = { contract.onSelectRange(item.kind) }

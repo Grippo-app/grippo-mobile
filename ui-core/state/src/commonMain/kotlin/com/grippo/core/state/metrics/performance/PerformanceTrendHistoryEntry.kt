@@ -24,7 +24,7 @@ public fun stubPerformanceTrendHistory(): ImmutableList<PerformanceTrendHistoryE
             endDate = DateTimeFormatState.of(
                 value = LocalDateTime(2026, 10, 15 - index, 10, 0),
                 range = DateRangePresets.infinity(),
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
+                format = DateFormat.DateOnly.DateDdMmmYyyy,
             ),
             metric = metric.copy(current = value),
         )

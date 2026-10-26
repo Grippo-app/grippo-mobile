@@ -264,7 +264,7 @@ private fun timelinePreviewTraining(id: String, createdAt: LocalDateTime): Train
         createdAt = DateTimeFormatState.of(
             value = createdAt,
             range = DateRangePresets.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
         ),
         duration = DurationFormatState.of(45.minutes),
         exercises = persistentListOf(

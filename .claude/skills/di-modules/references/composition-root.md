@@ -25,6 +25,9 @@ before relying on a detail below.
   `messaging: MessagingBootstrap`. Its `init` observes `LocalSettingsFeature.observeAnalyticsConsent()`
   (`distinctUntilChanged`, `retryWhen` with a growing delay that reports `Denied` meanwhile) and
   calls `updateCollection(Granted|Denied)` on the analytics core for the application lifetime.
+  It also maps `observeLanguage()` to the language key (`distinctUntilChanged`) into
+  `AppLocale.update`; on a read failure it calls `AppLocale.update(null)` while the locale is
+  still unresolved, then retries with the same growing delay.
 - Android: `androidApp/src/main/java/com/grippo/android/App.kt` calls
   `Koin.init { androidContext(this@App); androidLogger() }`, then
   `bootstrap.analytics.attachSink(...)`, `bootstrap.crashReporting.attachSink(...)` and

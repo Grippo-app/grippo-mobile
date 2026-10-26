@@ -239,7 +239,7 @@ private fun exerciseHistoryPreview(): TrainingExerciseState {
     val date = DateTimeFormatState.of(
         value = LocalDateTime(year = 2026, monthNumber = 10, dayOfMonth = 14, hour = 18, minute = 30),
         range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
+        format = DateFormat.DateOnly.DateDdMmmYyyy,
     )
 
     return exercise.copy(
@@ -339,7 +339,7 @@ private fun exerciseWithPreviousPreview(): ExerciseState.Available {
         createdAt = DateTimeFormatState.of(
             value = LocalDateTime(year = 2026, monthNumber = 10, dayOfMonth = 7, hour = 18, minute = 30),
             range = DateRangePresets.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
         ),
         iterations = persistentListOf(
             previewIteration(id = "previous-set-1", external = 75f, repetitions = 8),

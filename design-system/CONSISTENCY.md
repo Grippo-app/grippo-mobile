@@ -419,7 +419,11 @@ and Latin text in both themes; each role keeps its existing size and line height
   workout is compared with the same kind of period around its own date (a rolling
   preset ends on that day, a calendar preset is the week, month or year containing
   it). The period label is the preset name ("30 days") whenever that comparison
-  period is the current Home period and its dates otherwise. The workout's own
+  period is the current Home period and otherwise its end date through
+  `training_recap_period_as_of` ("as of 27 May", "на 27 мая", "на 27 трав.",
+  "até 27 mai.", the preposition held to the date by no-break spaces): a range
+  does not fit the uk `Average` line ("середнього · 28 жовт. – 27 лист." is
+  ≈216 dp against the ≈200 dp column). The workout's own
   facts step down to
   `h3` with `b11Med` labels. The description lives on the types:
   `PerformanceVerdictState.summary(metrics, baseline)` gives
@@ -1143,11 +1147,18 @@ and Latin text in both themes; each role keeps its existing size and line height
   enabled choices. Community uses the same quiet guidance without a second hero
   title or logo; the root menu keeps its identity card in the scrolling content.
   Settings uses the Account toolbar title to match its menu entry. Signed-in
-  identity, one MenuSection containing the complete Privacy preference, and two
-  open MenuActionRow operations share one scrolling body. General introductory
-  copy and duplicate deletion headings are omitted. Each operation keeps its
-  explanation beside its verb/icon; a text-aligned divider separates Logout from
-  Delete. Account actions mutually disable during work.
+  identity, two compact MenuSections (Language, then the complete Privacy
+  preference) and two open MenuActionRow operations share one scrolling body.
+  Both sections use neutral headers (Globe, Lock) and sit `content` apart, with
+  `block` before and after the pair. Language holds one MenuValueRow whose value
+  is the endonym; the row is always populated and has no loading branch.
+  General introductory copy and duplicate deletion headings are omitted. Each
+  operation keeps its explanation beside its verb/icon; a text-aligned divider
+  separates Logout from Delete. Account actions mutually disable during work.
+- The language picker sheet starts once at `dialog.top` and lists every
+  supported language as a title-only Medium CheckSelectableCard at `subContent`
+  gaps, with the current language checked. Titles are endonyms, identical in every
+  locale, so a reader of any interface language can find their own.
 - The goal editor groups primary focus, secondary goal and target date in one
   cohesive summary/editing card using `menu.radius/contentPadding/borderWidth`,
   `background.card` and `border.default`. The leading focus has a secondary
@@ -1178,6 +1189,19 @@ and Latin text in both themes; each role keeps its existing size and line height
   after the toolbar. The range header owns the single gap before its body;
   muscle detail controls likewise keep one `content` gap before their scrolling content.
   Other sheet bodies start once at `dialog.top`.
+- Date ranges are written by `DateRangeFormatState` (`short()` and `display` give
+  the same text): both ends in the period kind's date format, an en dash with a
+  no-break space before it and a plain space after it, and no-break spaces inside
+  each date ("28 Apr – 27 May", "28 апр. – 27 мая", "28 квіт. – 27 трав.",
+  "28 abr. – 27 mai."), so a wrap never splits a date or starts a line with the
+  dash; the only break is after the dash (a fully glued range would force a break
+  inside a word). A one-day period prints one glued date ("27 травня"). Dialog
+  range headers, the weekly card header, streak timeline ranges, period picker
+  rows and the goal card's "Analyzed" line use it (its analysis window is a custom
+  range, so it always carries the year: "28 Apr 2026 – 27 May 2026"); chart week
+  labels, built in the domain layer, keep their own single-line "6 Oct – 12 Oct".
+  Days carry no leading zero and dates with a year are day-first in every locale
+  ("5 Oct", "5 October", "26 Oct 2026").
 - Open dialog sections use headings and spacing rather than decorative dividers.
   Statistics' muscle breakdown uses the same `h4` heading and `content` gap as
   other detail sections; expanded goal evidence has no leading rule. Dividers

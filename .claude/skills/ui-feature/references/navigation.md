@@ -277,16 +277,16 @@ private fun RootComponent.Child.animator(): StackAnimator = when (this) {
 }
 ```
 
-The dialog overlay is **not** rendered inside `RootScreen`. `RootComponent.Render()` reads `AppTheme.current`/`AppLocale.current`, installs locale-aware date formatting, then calls `RootScreen(...)` and `dialogComponent.Render()` as siblings inside `AppTheme { ... }`:
+The dialog overlay is **not** rendered inside `RootScreen`. `RootComponent.Render()` reads `AppTheme.current`/`AppLocale.current` and, once `AppLocale.isResolved`, calls `RootScreen(...)` and `dialogComponent.Render()` as siblings inside `AppTheme { ... }`; until then it renders a plain screen-background placeholder:
 
 ```kotlin
-LaunchedEffect(systemLocaleTag) {
-    DateFormatting.install(systemLocaleTag)
-}
-
-AppTheme(darkTheme = systemIsDark, localeTag = systemLocaleTag) {
-    RootScreen(this, state.value, loaders.value, viewModel)
-    dialogComponent.Render()
+AppTheme(darkTheme = systemIsDark, localeTag = localeTag) {
+    if (AppLocale.isResolved) {
+        RootScreen(this, state.value, loaders.value, viewModel)
+        dialogComponent.Render()
+    } else {
+        // plain full-size Box on AppTokens.colors.background.screen
+    }
 }
 ```
 

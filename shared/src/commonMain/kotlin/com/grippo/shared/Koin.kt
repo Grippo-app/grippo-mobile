@@ -14,6 +14,7 @@ import com.grippo.analytics.goal.setup.suggestion.GoalSetupSuggestionAnalyticsMo
 import com.grippo.analytics.height.picker.HeightPickerAnalyticsModule
 import com.grippo.analytics.home.HomeAnalyticsModule
 import com.grippo.analytics.iteration.picker.IterationPickerAnalyticsModule
+import com.grippo.analytics.language.picker.LanguagePickerAnalyticsModule
 import com.grippo.analytics.main.MainAnalyticsModule
 import com.grippo.analytics.menu.picker.MenuPickerAnalyticsModule
 import com.grippo.analytics.month.picker.MonthPickerAnalyticsModule
@@ -61,6 +62,7 @@ import com.grippo.toolkit.http.client.HttpModule
 import com.grippo.toolkit.image.loader.ImageLoaderModule
 import com.grippo.toolkit.link.opener.LinkOpenerModule
 import com.grippo.toolkit.local.notification.NotificationManagerModule
+import com.grippo.toolkit.localization.LocalizationModule
 import com.grippo.toolkit.messaging.core.MessagingModule
 import com.grippo.toolkit.permission.PermissionManagerModule
 import com.grippo.toolkit.serialization.SerializationModule
@@ -86,6 +88,7 @@ public object Koin {
                 IterationPickerAnalyticsModule().module,
                 MonthPickerAnalyticsModule().module,
                 PeriodPickerAnalyticsModule().module,
+                LanguagePickerAnalyticsModule().module,
                 MenuPickerAnalyticsModule().module,
                 SecondaryGoalPickerAnalyticsModule().module,
                 PrimaryGoalPickerAnalyticsModule().module,
@@ -110,6 +113,7 @@ public object Koin {
                 CrashReportingModule().module,
                 MessagingModule().module,
                 ContextModule().module,
+                LocalizationModule().module,
                 DatabaseModule().module,
                 DataStoreModule().module,
                 BackendModule().module,

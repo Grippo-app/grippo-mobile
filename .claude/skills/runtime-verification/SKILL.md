@@ -96,7 +96,8 @@ adb -s "<emulator-serial>" logcat -d -v time | rg "System.out|AndroidRuntime|gri
   screen (`:ui-screen-features:debug`, reachable through `RootRouter.Debug`) shows
   the file by category and can clear it. Prefer logcat plus the Debug screen.
 - **Locale**: change it in the emulator's system Settings; `adb` cannot set the
-  system locale without root. Record the locale used in every screenshot name.
+  system locale without root. A language saved in Profile Settings overrides the
+  system locale (`AppLocale`). Record the locale used in every screenshot name.
 
 ## iOS simulator
 

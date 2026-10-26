@@ -3,6 +3,7 @@ package com.grippo.data.features.local.settings.domain
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
 import com.grippo.data.features.api.local.settings.models.AnalyticsConsent
 import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
+import com.grippo.data.features.api.local.settings.models.Language
 import com.grippo.data.features.api.local.settings.models.Range
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDateTime
@@ -51,6 +52,14 @@ internal class LocalSettingsFeatureImpl(
 
     override suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Unit {
         return repository.setHomeWelcomeStatus(value)
+    }
+
+    override fun observeLanguage(): Flow<Language?> {
+        return repository.observeLanguage()
+    }
+
+    override suspend fun setLanguage(value: Language): Unit {
+        return repository.setLanguage(value)
     }
 
     override suspend fun clearUserSettings(): Unit {

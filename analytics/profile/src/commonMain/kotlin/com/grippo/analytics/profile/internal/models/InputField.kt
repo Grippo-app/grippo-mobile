@@ -6,4 +6,5 @@ internal enum class InputField {
     Primary,
     Secondary,
     TargetDate,
+    Language,
 }

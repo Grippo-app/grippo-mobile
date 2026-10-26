@@ -108,6 +108,7 @@ include(":ui-dialog-features:period-picker")
 include(":ui-dialog-features:primary-goal-picker")
 include(":ui-dialog-features:secondary-goal-picker")
 include(":ui-dialog-features:goal-setup-suggestion")
+include(":ui-dialog-features:language-picker")
 
 include(":toolkit:context")
 include(":toolkit:localization")
@@ -176,5 +177,6 @@ include(":analytics:statistics")
 
 include(":analytics:month-picker")
 include(":analytics:period-picker")
+include(":analytics:language-picker")
 
 include(":analytics:muscle-loading-details")

@@ -110,6 +110,7 @@
     <string name="training_recap_verdict_declined">Легке тренування</string>
     <string name="training_recap_verdict_first">Точка відліку</string>
     <string name="training_recap_first_description">Основа для наступних тренувань</string>
+    <string name="training_recap_period_as_of">на&#160;%1$s</string>
     <string name="total">Всього</string>
     <string name="per_group">По групам</string>
     <string name="per_muscle">По м’язах</string>
@@ -803,9 +804,16 @@
     <string name="profile_account">Акаунт</string>
     <string name="profile_settings_signed_in_as">Активний акаунт</string>
     <string name="profile_settings_identity_unavailable">Дані акаунта зараз недоступні.</string>
+    <string name="profile_settings_language_title">Мова</string>
     <string name="profile_settings_privacy_title">Приватність</string>
     <string name="profile_settings_logout_description">Вийди з акаунта на цьому пристрої. Збережені тренування залишаться у твоєму акаунті.</string>
     <string name="profile_settings_delete_description">Акаунт та історію тренувань буде видалено назавжди. Цю дію неможливо скасувати.</string>
+    <string name="app_language">Мова застосунку</string>
+    <string name="language_english">English</string>
+    <string name="language_ukrainian">Українська</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_portuguese_brazil">Português (Brasil)</string>
+    <string name="language_portuguese_portugal">Português (Portugal)</string>
     <string name="iteration_picker_last_time">Минулого разу · %1$s</string>
     <string name="iteration_picker_suggestions">Підказки</string>
     <string name="iteration_picker_weight_range">%1$s–1000 кг</string>
@@ -886,7 +894,7 @@
     <string name="digest_zero_duration">0 хв</string>
     <string name="goal_card_status_not_evaluated">Поки немає оцінки</string>
     <string name="goal_growth_score">%1$s → %2$s</string>
-    <string name="goal_details_analysis_period">Період аналізу: %1$s – %2$s</string>
+    <string name="goal_details_analysis_period">Період аналізу: %1$s</string>
     <string name="goal_details_analysis_evidence">%1$d дн. · %2$d записаних підходів</string>
     <string name="goal_details_analysis_excluded">Виключено підходів із помилковими або неповними даними: %1$d</string>
     <string name="goal_details_analysis_missing_metadata">Діагностика м’язів недоступна: немає даних про вправи для %1$d підходів.</string>

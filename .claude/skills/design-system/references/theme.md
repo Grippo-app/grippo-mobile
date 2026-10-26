@@ -3,15 +3,23 @@
 Read current [AppTheme](../../../../design-system/core/src/commonMain/kotlin/com/grippo/design.core/AppTheme.kt)
 and [ResourceProvider](../../../../design-system/core/src/commonMain/kotlin/com/grippo/design.core/internal/ResourceProvider.kt).
 
-The root wraps content in `AppTheme(darkTheme, localeTag, content)`; previews use
-PreviewContainer. Internal ProvideResources selects DarkColor or LightColor and
-provides AppIcon, AppTypography, AppString, AppDrawable and AppDp.
-`localeTag` is accepted but unused by that provider (`@Suppress("UNUSED_PARAMETER")`):
-it does not force resource language. Compose Resources follow the platform locale
-at runtime and the `@Preview(locale = ...)` configuration in previews; the preview
-consequence is stated once in the
-[default viewport scope](visual-consistency.md#default-viewport-scope). Inspect
-the root's DateFormatting installation when changing locale behavior.
+The root wraps content in `AppTheme(darkTheme, localeTag, content)` with
+`localeTag = AppLocale.current`, the effective tag owned by
+[toolkit localization](../../platform-build-toolkit/references/toolkit-utilities-core.md);
+previews use PreviewContainer. Internal ProvideResources selects DarkColor or
+LightColor and provides AppIcon, AppTypography, `AppString(localeTag)`, AppDrawable
+and AppDp through static CompositionLocals. `AppString` is a data class holding the
+tag, so a locale change provides a new value and recomposes the provided subtree
+without resetting its remembered state. The tag does not select the resource
+language: `AppString.res` does not read it. Composition that needs the active
+interface language reads `AppTokens.strings.localeTag`, which matches the rendered
+strings in the same frame (`LanguageEnumState.current()` in `ui-core/state`); code
+outside composition reads `AppLocale.current()`. Compose Resources follow the platform
+locale at runtime, which `AppLocale.update` applies, and the `@Preview(locale = ...)`
+configuration in previews; the preview consequence is stated once in the
+[default viewport scope](visual-consistency.md#default-viewport-scope). Date
+formatting in `toolkit/date-utils` reads `AppLocale` directly; inspect it with
+`toolkit/localization` when changing locale behavior.
 
 Consumers use AppTokens, never internal LocalApp* access. Toolkit AppTheme.current
 is the system appearance source, a different symbol from this composable.

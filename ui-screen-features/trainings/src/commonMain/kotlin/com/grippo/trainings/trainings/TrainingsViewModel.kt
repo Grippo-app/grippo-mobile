@@ -320,7 +320,7 @@ internal class TrainingsViewModel(
             is TrainingsTimelinePeriod.Daily -> DialogConfig.DatePicker(
                 title = UiText.Res(value = Res.string.select_date),
                 initial = current.date.from,
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
+                format = DateFormat.DateOnly.DateDdMmmYyyy,
                 limitations = current.limitations,
                 onResult = { date ->
                     analytics.trackEvent(event = TrainingsEvent.DateConfirmed)

@@ -214,7 +214,7 @@ private fun exercisePreviewValue(): ExerciseState {
         createdAt = DateTimeFormatState.of(
             value = LocalDateTime(2026, 10, 16, 10, 0),
             range = DateRangePresets.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
         ),
         total = TrainingTotalState(
             volume = VolumeFormatState.of(640f),

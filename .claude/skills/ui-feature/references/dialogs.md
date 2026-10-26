@@ -25,14 +25,14 @@ Both render as siblings inside `RootComponent.Render()` (not nested inside `Root
 ```kotlin
 @Composable
 override fun Render() {
-    // state/loaders collected above; systemIsDark = AppTheme.current, systemLocaleTag = AppLocale.current
-    LaunchedEffect(systemLocaleTag) {
-        DateFormatting.install(systemLocaleTag)
-    }
-
-    AppTheme(darkTheme = systemIsDark, localeTag = systemLocaleTag) {
-        RootScreen(this, state.value, loaders.value, viewModel)
-        dialogComponent.Render()       // overlays on top of the screen stack
+    // state/loaders collected above; systemIsDark = AppTheme.current, localeTag = AppLocale.current
+    AppTheme(darkTheme = systemIsDark, localeTag = localeTag) {
+        if (AppLocale.isResolved) {
+            RootScreen(this, state.value, loaders.value, viewModel)
+            dialogComponent.Render()       // overlays on top of the screen stack
+        } else {
+            // plain full-size Box on AppTokens.colors.background.screen
+        }
     }
 }
 ```

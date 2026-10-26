@@ -25,8 +25,8 @@ Current shape (verified against these files; re-inspect before relying on it):
   consent under `booleanPreferencesKey("analytics_consent")`;
   `observeAnalyticsConsent()` maps null and false to `AnalyticsConsent.Denied`,
   true to `Granted`; `setDefaultAnalyticsConsent(granted)` writes only when the
-  key is absent; `clearUserSettings()` re-applies the saved consent and
-  `onboarding_shown` values after `preferences.clear()`.
+  key is absent; `clearUserSettings()` re-applies the saved consent,
+  `onboarding_shown` and `language` values after `preferences.clear()`.
 - Onboarding lives in `:ui-screen-features:authorization`, package
   `com.grippo.authorization.onboarding` (no separate module).
   `OnboardingViewModel.prepare()` initializes consent to granted only when

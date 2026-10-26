@@ -6,6 +6,7 @@ import androidx.compose.runtime.Immutable
 internal interface ProfileSettingsContract {
     fun onAnalyticsConsentChange(granted: Boolean)
     fun onBack()
+    fun onLanguageClick()
     fun onLogoutClick()
     fun onDeleteAccount()
 
@@ -13,6 +14,7 @@ internal interface ProfileSettingsContract {
     companion object Empty : ProfileSettingsContract {
         override fun onAnalyticsConsentChange(granted: Boolean) {}
         override fun onBack() {}
+        override fun onLanguageClick() {}
         override fun onLogoutClick() {}
         override fun onDeleteAccount() {}
     }

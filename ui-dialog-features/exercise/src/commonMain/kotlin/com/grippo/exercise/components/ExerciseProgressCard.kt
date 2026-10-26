@@ -500,7 +500,7 @@ private fun progressPreviewState(historyCount: Int): ExerciseState.Available {
     val date = DateTimeFormatState.of(
         value = LocalDateTime(year = 2026, month = 10, day = 16, hour = 18, minute = 0),
         range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
+        format = DateFormat.DateOnly.DateDdMmmYyyy,
     )
     val iteration = stubPendingIteration().copy(
         id = "progress-set",
@@ -531,7 +531,7 @@ private fun progressPreviewState(historyCount: Int): ExerciseState.Available {
                     minute = 0,
                 ),
                 range = DateRangePresets.infinity(),
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
+                format = DateFormat.DateOnly.DateDdMmmYyyy,
             ),
             iterations = (0..2).map { set ->
                 iteration.copy(id = "previous-$index-$set", repetitions = RepetitionsFormatState.of(repetitions))

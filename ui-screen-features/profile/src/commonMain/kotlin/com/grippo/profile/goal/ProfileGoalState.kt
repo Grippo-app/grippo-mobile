@@ -29,7 +29,7 @@ internal data class ProfileGoalState(
         period = DatePeriod(days = MIN_GOAL_HORIZON_DAYS),
     ),
     val selectedTarget: DateTimeFormatState = DateTimeFormatState.Empty(
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
+        format = DateFormat.DateOnly.DateDdMmmYyyy,
     ),
     @Serializable(with = ImmutableListSerializer::class)
     val selectedPersonalization: ImmutableList<PersonalizationKeyEnumState> = persistentListOf(),

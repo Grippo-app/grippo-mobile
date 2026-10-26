@@ -2,6 +2,7 @@ plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
     id("compose.multiplatform.convention")
+    id("koin.annotation.convention")
 }
 
 kotlin {
@@ -10,9 +11,8 @@ kotlin {
     }
 
     sourceSets.commonMain.dependencies {
+        implementation(projects.toolkit.context)
+
         implementation(libs.compose.foundation)
-    }
-    sourceSets.androidMain.dependencies {
-        implementation(libs.androidx.appcompat)
     }
 }

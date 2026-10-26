@@ -53,6 +53,7 @@ kotlin {
         implementation(projects.analytics.iterationPicker)
         implementation(projects.analytics.monthPicker)
         implementation(projects.analytics.periodPicker)
+        implementation(projects.analytics.languagePicker)
         implementation(projects.analytics.menuPicker)
         implementation(projects.analytics.secondaryGoalPicker)
         implementation(projects.analytics.primaryGoalPicker)
@@ -135,6 +136,7 @@ kotlin {
         implementation(projects.uiDialogFeatures.primaryGoalPicker)
         implementation(projects.uiDialogFeatures.secondaryGoalPicker)
         implementation(projects.uiDialogFeatures.goalSetupSuggestion)
+        implementation(projects.uiDialogFeatures.languagePicker)
 
         implementation(libs.datetime)
         implementation(libs.immutable.collections)

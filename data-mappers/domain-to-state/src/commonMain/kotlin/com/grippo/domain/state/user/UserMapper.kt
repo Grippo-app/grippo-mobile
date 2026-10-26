@@ -18,7 +18,7 @@ public fun User.toState(): UserState {
         createdAt = DateTimeFormatState.of(
             value = createdAt,
             range = DateRangePresets.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy
+            format = DateFormat.DateOnly.DateDdMmmYyyy
         ),
         experience = experience.toState(),
         role = role.toState(),

@@ -119,7 +119,7 @@ private fun weightHistoryPreview(vararg weights: Float): ImmutableList<WeightHis
             createdAt = DateTimeFormatState.of(
                 value = LocalDateTime(2026, 10, 1 + index * index * 3, 9, 0),
                 range = DateRangePresets.infinity(),
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
+                format = DateFormat.DateOnly.DateDdMmmYyyy,
             ),
         )
     }.toImmutableList()

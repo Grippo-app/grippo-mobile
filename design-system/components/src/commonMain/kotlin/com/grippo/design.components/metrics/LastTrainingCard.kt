@@ -200,7 +200,7 @@ private fun lastTrainingPreviewValue(): TrainingState {
         createdAt = DateTimeFormatState.of(
             value = LocalDateTime(2026, 10, 10, 9, 0),
             range = DateRangePresets.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
         ),
         total = training.total.copy(volume = VolumeFormatState.of(3_240f)),
         exercises = training.exercises.mapIndexed { index, exercise ->

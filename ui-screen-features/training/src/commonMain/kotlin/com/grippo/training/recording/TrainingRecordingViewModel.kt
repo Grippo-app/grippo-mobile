@@ -472,7 +472,7 @@ internal class TrainingRecordingViewModel(
         val createdAt = DateTimeFormatState.of(
             value = now,
             range = range,
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
         )
 
         val total = TrainingTotalState(

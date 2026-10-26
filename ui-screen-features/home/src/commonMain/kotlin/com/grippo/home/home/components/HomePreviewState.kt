@@ -40,7 +40,7 @@ internal fun homePreviewState(
     val date = DateTimeFormatState.of(
         value = LocalDateTime(2026, 10, 15, 10, 0),
         range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
+        format = DateFormat.DateOnly.DateDdMmmYyyy,
     )
     val range = DateRangeFormatState.of(
         from = LocalDateTime(2026, 9, 16, 0, 0),
@@ -92,12 +92,12 @@ internal fun homePreviewState(
                 createdAt = DateTimeFormatState.of(
                     value = LocalDateTime(2026, 9, 27, 10, 0),
                     range = DateRangePresets.infinity(),
-                    format = DateFormat.DateOnly.DateMmmDdYyyy,
+                    format = DateFormat.DateOnly.DateDdMmmYyyy,
                 ),
                 target = DateTimeFormatState.of(
                     value = LocalDateTime(2026, 12, 26, 10, 0),
                     range = DateRangePresets.infinity(),
-                    format = DateFormat.DateOnly.DateMmmDdYyyy,
+                    format = DateFormat.DateOnly.DateDdMmmYyyy,
                 ),
                 personalizations = persistentListOf(),
             ),

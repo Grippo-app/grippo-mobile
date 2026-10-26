@@ -53,6 +53,14 @@ A successful return establishes the complete operation outcome, not just an acce
   malformed row makes the response incomplete. Do not overwrite a complete cache with partial
   records. Validate received objects' intrinsic enum, component and consumed date mappings
   before writing. A non-null entity is insufficient when those mappings reject its value.
+  Exception: the equipment catalog (`EquipmentRepositoryImpl.getEquipments`) stores group and
+  equipment rows whose `type` key this app version does not know, so that exercise-example
+  references keep their foreign-key parents and a build with this exception keeps working when
+  the server adds a type. The entity-to-domain mappers hide those rows; an unknown group type
+  hides the whole group from the catalog projection, including its equipment of known types.
+  Missing fields, duplicate IDs and wrong parents still make that response incomplete. Store
+  and TestFlight builds without this exception and the user-visible effects of hiding are
+  described in the [equipment integration map](../../add-equipment/references/integration-map.md#mobile-touchpoints).
   Required children must belong to the enclosing parent; primary IDs must be unique across
   each table's snapshot. Row-count equality alone does not establish completeness.
   Observations that depend on separately refreshed catalogs retain their explicit availability

@@ -7,6 +7,7 @@ import com.grippo.core.state.menu.TrainingMenu
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
+import com.grippo.core.state.settings.LanguageEnumState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
@@ -45,6 +46,7 @@ public sealed class DialogConfig(
             is PeriodPicker -> other is PeriodPicker && initial == other.initial
             is PrimaryGoalPicker -> other is PrimaryGoalPicker && initial == other.initial
             is SecondaryGoalPicker -> other is SecondaryGoalPicker && initial == other.initial
+            is LanguagePicker -> other is LanguagePicker && initial == other.initial
             is GoalSetupSuggestion -> other is GoalSetupSuggestion
             is MonthPicker -> other is MonthPicker && initial == other.initial &&
                 format == other.format && limitations == other.limitations
@@ -166,6 +168,12 @@ public sealed class DialogConfig(
         val initial: GoalSecondaryGoalEnumState?,
         override val title: UiText,
         val onResult: (value: GoalSecondaryGoalEnumState) -> Unit = {},
+    ) : DialogConfig()
+
+    public data class LanguagePicker(
+        val initial: LanguageEnumState,
+        override val title: UiText,
+        val onResult: (value: LanguageEnumState) -> Unit = {},
     ) : DialogConfig()
 
     public data class GoalSetupSuggestion(

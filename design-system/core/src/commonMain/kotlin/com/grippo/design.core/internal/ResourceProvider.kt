@@ -16,7 +16,7 @@ import com.grippo.design.resources.provider.colors.LightColor
 @Composable
 internal fun ProvideResources(
     darkTheme: Boolean,
-    @Suppress("UNUSED_PARAMETER") localeTag: String,
+    localeTag: String,
     vararg values: ProvidedValue<*>,
     content: @Composable () -> Unit,
 ) {
@@ -24,7 +24,7 @@ internal fun ProvideResources(
         LocalAppColors provides if (darkTheme) DarkColor else LightColor,
         LocalAppIcons provides AppIcon,
         LocalAppTypography provides AppTypography,
-        LocalAppStrings provides AppString,
+        LocalAppStrings provides AppString(localeTag),
         LocalAppDrawables provides AppDrawable,
         LocalAppDp provides AppDp,
         *values,

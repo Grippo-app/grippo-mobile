@@ -110,7 +110,7 @@ private fun TrainingStreakDay(
     val fullDate = if (date != null) {
         DateCompose.rememberFormat(
             value = date,
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
             contextual = false,
         )
     } else {

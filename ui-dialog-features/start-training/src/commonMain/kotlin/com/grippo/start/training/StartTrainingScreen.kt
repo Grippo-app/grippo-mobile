@@ -303,7 +303,7 @@ private fun startTrainingPreviewState(
     val createdAt = DateTimeFormatState.of(
         value = LocalDateTime(year = 2026, month = 10, day = 16, hour = 18, minute = 30),
         range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
+        format = DateFormat.DateOnly.DateDdMmmYyyy,
     )
     val regularExercises = names.mapIndexed { exerciseIndex, name ->
         val base = stubExercise()

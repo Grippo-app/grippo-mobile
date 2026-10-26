@@ -45,6 +45,11 @@ Android and iOS versions are maintained independently and may differ.
   before making any signing claim.
 - Agents may check Android release compilation when requested; they do not
   produce or upload Android store artifacts.
+- Android Crashlytics collects only from release builds:
+  `androidApp/src/debug/AndroidManifest.xml` sets
+  `firebase_crashlytics_collection_enabled` to `false`, because local debug installs
+  share `versionName`/`versionCode` with the store build and would otherwise mix into
+  its reports.
 - An iOS TestFlight request covers the workflow below. App Store review
   submission and public release require their own request.
 

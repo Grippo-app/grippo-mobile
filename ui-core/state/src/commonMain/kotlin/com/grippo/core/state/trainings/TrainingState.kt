@@ -34,7 +34,7 @@ public fun stubTraining(): TrainingState = TrainingState(
     createdAt = DateTimeFormatState.of(
         value = DateRangePresets.daily().from,
         range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy
+        format = DateFormat.DateOnly.DateDdMmmYyyy
     ),
     total = stubTotal(),
     exercises = listOf(
@@ -68,7 +68,7 @@ public fun stubTrainingSummary(): TrainingState {
         createdAt = DateTimeFormatState.of(
             value = LocalDateTime(2026, 10, 18, 12, 0),
             range = DateRangePresets.infinity(),
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
         ),
         duration = DurationFormatState.ofTotal(75.minutes),
         exercises = exercises,

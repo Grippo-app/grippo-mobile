@@ -58,12 +58,31 @@ it. A new supported dictionary member with unchanged fields does not itself
 require a DTO shape or Room schema change. Preserve existing unknown-value and
 incomplete-response handling under the mapper and data-layer rules.
 
-This handling also affects rollout: an older client that does not recognize a
-new type drops that row during domain promotion, then `getEquipments` rejects
-the refreshed catalog before writing it. Publishing a new dictionary value
-therefore requires a compatibility decision for existing clients, not only a
-backend enum edit. The [backend task](backend-task-prompt.md) owns the contents
-of the handoff for remaining server work.
+This handling also affects rollout. A build with the catalog exception in
+[operation outcomes](../../data-layer/references/operation-outcomes.md#operation-outcomes-and-cache-reconciliation-canonical)
+stores a new type's rows from `getEquipments` and hides them during domain
+promotion, so Splash completes and exercise-example references keep their
+parents; the equipment appears only after an app update that adds the type.
+Until then, hidden equipment is missing from every domain projection on that build:
+
+- an example whose only equipment is hidden shows the no-equipment weight hint
+  (`ExerciseExampleState.hint`);
+- the user cannot select or exclude it, and the example filters
+  (`UserExerciseExamplesUseCase`, `GeneratePresetTrainingUseCase`) ignore an
+  exclusion of it made from a newer build;
+- saving the selection (`ProfileEquipmentsViewModel.onApply` ->
+  `setExcludedEquipments`) sends only visible IDs, and the backend replaces the
+  whole set, so that exclusion is removed for the user.
+
+Store and TestFlight builds without the exception react differently; inspect
+`getEquipments` and `SplashViewModel` at each such build's commit. A build whose
+`getEquipments` rejects an unknown type during domain promotion keeps retrying
+Splash. A build that refreshes the catalogs only before sign-in fails a signed-in
+user's exercise-example refresh on the missing equipment parent. Publishing a new
+dictionary value therefore requires a compatibility decision for every store or
+TestFlight build still in use that lacks the exception, not only a backend enum edit. The
+[backend task](backend-task-prompt.md) owns the contents of the handoff for
+remaining server work.
 
 `stubEquipments` supplies preview data. Use a real known ID or an explicitly
 preview-only identity there; it never replaces the production catalog row.

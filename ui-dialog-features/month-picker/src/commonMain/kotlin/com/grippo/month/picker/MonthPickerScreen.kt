@@ -83,7 +83,7 @@ private fun ScreenPreview() {
                 value = DateTimeFormatState.of(
                     value = DateTimeUtils.now(),
                     range = DateRangePresets.yearly(),
-                    format = DateFormat.DateOnly.DateMmmDdYyyy
+                    format = DateFormat.DateOnly.DateDdMmmYyyy
                 ),
                 limitations = DateRangePresets.last365Days(),
             ),

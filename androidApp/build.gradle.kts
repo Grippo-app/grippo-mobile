@@ -33,6 +33,7 @@ dependencies {
     implementation(projects.toolkit.dateUtils)
     implementation(projects.toolkit.theme)
     implementation(projects.toolkit.notificationManager)
+    implementation(projects.toolkit.localization)
     implementation(projects.designSystem.core)
 
     implementation(libs.compose.foundation)

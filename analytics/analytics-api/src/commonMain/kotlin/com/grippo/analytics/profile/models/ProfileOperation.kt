@@ -11,6 +11,7 @@ public enum class ProfileOperation {
     SaveExperience,
     SaveMuscles,
     SaveEquipments,
+    SaveLanguage,
     Logout,
     DeleteAccount,
 }

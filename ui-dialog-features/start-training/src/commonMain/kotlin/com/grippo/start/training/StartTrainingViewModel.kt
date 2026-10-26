@@ -140,7 +140,7 @@ public class StartTrainingViewModel(
         val createdAt = DateTimeFormatState.of(
             value = now,
             range = range,
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
         )
 
         val cloned = source.map { cloneExercise(value = it, createdAt = createdAt) }.toPersistentList()

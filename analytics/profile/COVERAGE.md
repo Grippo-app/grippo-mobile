@@ -40,7 +40,7 @@ correlate outcomes by `operation_id`; the typed catalog is not yet in a store bu
 | `ProfileRouter.Settings` (menu Account entry) | ProfileSettingsComponent → ProfileSettingsViewModel | Settings / `profile_settings` | Typed screenPresentation |
 | `ProfileRouter.Social` (menu) | ProfileSocialComponent → ProfileSocialViewModel | Social / `profile_social` | Typed screenPresentation |
 | Profile graph, any initial `ProfileRouter` | ProfileComponent → ProfileViewModel | Default null | Child stack host; renders only the stack; no analytics dependency |
-| Height/Weight/Date/PrimaryGoal/SecondaryGoal/Confirmation dialogs | Existing dialog components/VMs | No dedicated profile presentation contract | Runtime overlays; the owning profile VM reports open and accepted result |
+| Height/Weight/Date/PrimaryGoal/SecondaryGoal/LanguagePicker/Confirmation dialogs | Existing dialog components/VMs | No dedicated profile presentation contract | Runtime overlays; the owning profile VM reports open and accepted result |
 
 All eight `ProfileScreen` values have exactly one `presentScreen` owner, and no
 other module injects ProfileAnalytics. The eight leaves resolve the stateless
@@ -63,7 +63,7 @@ synthetic menu or Back clicks.
 | Experience | Selection → Experience.Selected → `profile_experience_selected` {profile_experience = beginner/intermediate/advanced/pro}, emitted again on re-selection; Apply → {apply}; Back → {dismiss_requested} | Startup RefreshUser. SaveExperience wraps `setExperience(...)` after `selected ?: return` (before Apply) inside `safeLaunch(ApplyButton)` |
 | Muscles | Group click → Muscles.GroupSelected → `profile_control_clicked` {group_selected}; item toggle → Muscles.SelectionChanged(selected, count) → `profile_selection_changed` {selected, selected_count}; Apply → {apply}; Back → {dismiss_requested} | Startup RefreshMuscles. SaveMuscles wraps `setExcludedMuscles(all - selected)` after the nonempty-catalog guard (before Apply) |
 | Equipments | Same facts with `interaction_screen=profile_equipments` | Startup RefreshEquipments. SaveEquipments wraps `setExcludedEquipments(all - selected)` after the nonempty-catalog guard |
-| Settings | Logout click → `profile_control_clicked` {logout}; deletion confirmation open → {delete_opened}; accepted confirmation result → {delete_confirmed}; Back → {dismiss_requested}; the analytics consent toggle emits nothing; read-only account identity has no interaction/event | Logout wraps the direct-value `logoutUseCase.execute()` in `safeLaunch(LogoutButton)`; DeleteAccount wraps `deleteProfileUseCase.execute()` in `safeLaunch(DeleteAccountButton)` inside the confirmation `onResult`; both use cases call `clearUserSettings()` directly. Account action buttons mutually disable while either operation runs. Identity rebuilds from cached `observeUser()` with no new request or analytics payload. The consent write `setAnalyticsConsent(granted)` is not decorated |
+| Settings | Language row click → Settings.LanguageOpened → `profile_picker_opened` {input_field = language}; every accepted LanguagePicker result → Settings.LanguageConfirmed → `profile_picker_confirmed` {language, input_status = valid}, emitted before the unchanged-value check, so confirming the already-effective language still reports it (parameterless like the Goal Primary/Secondary confirmations); Logout click → `profile_control_clicked` {logout}; deletion confirmation open → {delete_opened}; accepted confirmation result → {delete_confirmed}; Back → {dismiss_requested}; the analytics consent toggle emits nothing; read-only account identity has no interaction/event | SaveLanguage wraps `localSettingsFeature.setLanguage(value.toDomain())` in an unloaded `safeLaunch` inside the picker `onResult`, only when the accepted value differs from the effective language (`LanguageEnumState.of(AppLocale.current())`, read when the result arrives); an unchanged confirmation starts no operation and writes nothing. The write is a local DataStore commit; the app-wide UI language switch (ApplicationBootstrap → AppLocale in `:shared`) observes that store outside this VM and is not reported here. Logout wraps the direct-value `logoutUseCase.execute()` in `safeLaunch(LogoutButton)`; DeleteAccount wraps `deleteProfileUseCase.execute()` in `safeLaunch(DeleteAccountButton)` inside the confirmation `onResult`; both use cases call `clearUserSettings()` directly. Account action buttons mutually disable while either operation runs. Identity rebuilds from cached `observeUser()` with no new request or analytics payload. The consent write `setAnalyticsConsent(granted)` is not decorated |
 | Social | Link click → Social.LinkClicked → `profile_link_clicked` {social_channel = instagram/tiktok/youtube/threads}; the synchronous any-URL-opened boolean → Social.LinkResult → `profile_link_result` {social_channel, opened}; Back → {dismiss_requested} | None; the synchronous LinkOpener fallback remains business-owned, with no artificial suspend operation |
 
 Personalization categories are grouped into routine, training preferences and recovery/limitations. Disclosure only changes presentation and deliberately emits no analytics event; the existing typed toggle observations still describe accepted selection changes. The editor introduces no analytics-facing symbol changes: events, parameters, screen hooks, operations, encoders and consent retain their contracts.
@@ -79,7 +79,7 @@ including cached/false read outcomes or an accepted Body Apply with no changed
 measurement; it does not infer a server write. Reporting exceptions are isolated
 (`trackEvent` catches Exception locally; operations rely on the toolkit decorator)
 without replacing results or business exceptions; cancellation propagates; fatal
-Errors remain fatal. All 30 ProfileEvent variants have a VM emitter and the event
+Errors remain fatal. All 32 ProfileEvent variants have a VM emitter and the event
 matrix is exhaustive.
 
 Weight-history refresh and mutation readback validate each domain row and its
@@ -120,7 +120,7 @@ payload starts with `interaction_screen`. Version-1 schemas:
 - `profile_control_clicked` [interaction_screen, interaction_action =
   dismiss_requested/apply/save/group_selected/logout/delete_opened/delete_confirmed],
   `profile_menu_selected` [.., menu_target], `profile_picker_opened` [..,
-  input_field = height/weight/primary/secondary/target_date],
+  input_field = height/weight/primary/secondary/target_date/language],
   `profile_picker_confirmed` [.., input_field, input_status = empty/invalid/valid],
   `profile_experience_selected` [.., profile_experience],
   `profile_selection_changed` and `profile_personalization_changed` [.., selected,
@@ -132,8 +132,8 @@ payload starts with `interaction_screen`. Version-1 schemas:
   `refresh_muscles`, RefreshEquipments `refresh_equipments`, RefreshWeightHistory
   `refresh_weight_history`, SaveBody `save_body`, SaveGoal `save_goal`,
   SaveExperience `save_experience`, SaveMuscles `save_muscles`, SaveEquipments
-  `save_equipments`, Logout `logout`, DeleteAccount `delete_account`; all twelve
-  have VM callers.
+  `save_equipments`, SaveLanguage `save_language`, Logout `logout`, DeleteAccount
+  `delete_account`; all thirteen have VM callers.
 
 The `profile_task` names avoid colliding with authorization's `profile_operation_*`
 event names; the parameter key `profile_operation` here and that event family are
@@ -145,6 +145,10 @@ Counts describe selected items/personalizations, not the complementary excluded
 lists. This is additive instrumentation with no historical behavioral backfill;
 the `profile_picker_confirmed` payload, fields and status values were unchanged
 by the contract follow-up that made Primary/Secondary confirmations parameterless.
+The Settings language row reuses the existing `profile_picker_opened` and
+`profile_picker_confirmed` schemas (`interaction_screen=profile_settings`) with
+the new `input_field` code `language` and the new operation code
+`save_language`; no schema was added or changed, and every schema stays version 1.
 
 ## Omissions and privacy
 
@@ -152,7 +156,13 @@ No raw measurement, date, name/email, input length, entity/group/item ID, URL,
 credential, request/response body or exception message is sent. Goal categories
 and personalization content are deliberately omitted (the latter can describe
 health and lifestyle limitations); only picker field/status and toggle
-selected/count are observed. Which fallback URL opened is not reported. No
+selected/count are observed. The selected app language is deliberately omitted
+in the same way as the Goal Primary/Secondary choices: LanguageConfirmed carries
+no language identity and always encodes `input_status=valid`, and neither the
+previous language, an unchanged confirmation nor whether the effective language
+was stored or derived from the platform locale is reported. The LanguagePicker
+sheet's own selection and dismissal facts belong to `:analytics:language-picker`,
+not to this feature. Which fallback URL opened is not reported. No
 dedicated dialog view/close/dismissal/cancel reason, error classifier,
 referrer/entry attribution, transition/funnel event or navigation-generated click
 exists. Scroll and chart gestures and internal unaccepted dialog choices have no
@@ -187,8 +197,9 @@ Consent, identity and SDK transport remain app/core-owned.
 | Equipments | `suggestions` | Rebuild | `@Transient`; `combine(observeEquipments(), observeExcludedEquipments())` | Default empty; Apply guard |
 | Muscles / Equipments | ApplyButton loader | Runtime only | None | Not archived |
 | Settings | `analyticsConsent: Boolean?` | Rebuild (durable source, no StateKeeper copy) | `observeAnalyticsConsent()` mapped to Granted, `safeLaunch(processing = Infinity, onError = ::observeAnalyticsConsent)` | Reset to null on every (re)subscription; writes commit immediately through `setAnalyticsConsent(...)`, so no unfinished draft exists; the control is disabled while null or while the AnalyticsConsent loader is active |
+| Settings | Effective app language (row value, picker `initial`, unchanged-value check) | Rebuild (durable source, no StateKeeper copy; not a State field) | The row renders `LanguageEnumState.current()`, i.e. the theme's `AppTokens.strings.localeTag`, which the root sets to `AppLocale.current`; the VM reads `LanguageEnumState.of(AppLocale.current())` when the user opens the picker and when its result arrives | The root renders nothing until AppLocale has applied the stored value, so every reader sees the resolved language, including a Settings route restored after process death before the stored value was read. If the stored value cannot be read, ApplicationBootstrap resolves to the platform locale and retries; until a retry succeeds, confirming the platform language writes nothing and the stored value then wins. The row switches in the same recomposition as the rest of the UI. Each accepted picker result commits immediately through `setLanguage`, so no unfinished draft exists |
 | Settings | `user` (read-only name/email identity) | Rebuild | `UserFeature.observeUser()` mapped through the existing domain-to-state user mapper | Default null; observes cached profile without a new request; no editable draft or StateKeeper copy; missing identity stays explicit and no identity value enters analytics |
-| Settings | Confirmation dialog; Logout/DeleteAccount/AnalyticsConsent loaders | Runtime only | DialogConfig.Confirmation built in the VM | Unsaved; the accepted result starts the operation inside `onResult` |
+| Settings | Confirmation and LanguagePicker dialogs; Logout/DeleteAccount/AnalyticsConsent loaders; the unloaded SaveLanguage job | Runtime only | DialogConfig.Confirmation and DialogConfig.LanguagePicker built in the VM | Unsaved; each accepted result starts its operation inside `onResult`; an unconfirmed picker choice is discarded with the session |
 | Social | `ProfileSocialState` | Runtime only (data object) | Link result consumed synchronously | Nothing to restore |
 | All owners | Secrets; restoration flags or caches | None | No credentials or tokens in any profile State; no `var`/`lateinit` member in any profile ViewModel; fresh-vs-restored is decided solely by `initialState == null` | Nothing to exclude |
 
@@ -207,10 +218,11 @@ picker or control callbacks.
 
 ## Verification
 
-Source gates for the current revision were reconciled against the routes, child
-factory, rendered surfaces, retained injection, foundation binding, callback
-guards, operation callers, draft keys and serializers listed above (read-only
-audit on 2026-10-15; no build was part of it). Checks recorded for the
+Source gates were reconciled against the routes, child factory, rendered
+surfaces, retained injection, foundation binding, callback guards, operation
+callers, draft keys and serializers by the read-only audit on 2026-10-15 (no
+build was part of it); the Settings language rows above were reconciled with the
+current source separately. Checks recorded for the
 implementing revisions (2026-10-13):
 
 - Full module instrumentation: source/diff review and `git diff --check` passed;
@@ -259,4 +271,13 @@ confirm selections plus final save arguments, including empty and invalid Body
 formats, accepted picker results, an empty first catalog emission, changed
 catalogs, a delayed first user observation and pause/resume beyond the foundation
 disconnect grace; confirm toolbar/system Back reports once and pops once, and
-re-entry after pop initializes from current business data.
+re-entry after pop initializes from current business data. For the language row:
+open the picker with the effective language preselected, confirm a different
+language (one picker_opened, one picker_confirmed, one save_language operation,
+the row value and the UI switching without restart, except date text that a
+ViewModel pre-formatted into State, which keeps the old language until its data
+re-emits — an accepted limitation) and the same language
+(picker_confirmed without an operation or write), dismiss without a result (no
+confirmation), the first frame on a fresh install with nothing stored, and the
+row after process-death restoration of the Settings route with a stored
+language that differs from the system locale.

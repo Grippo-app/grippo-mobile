@@ -30,8 +30,10 @@ on a detail below.
 
 ## Shared validator (`toolkit/http-client/.../internal/ResponseValidator.kt`)
 
-- `validateResponse`: 2xx passes; 4xx throws `AppError.Network.Expected(keys, title, description)`
-  parsed from the body by `ApiErrorParser`; 5xx throws `AppError.Network.Unexpected` with the
+- `validateResponse`: 2xx passes; 4xx throws `AppError.Network.Expected(statusCode, keys, title, description, details)`
+  parsed from the body by `ApiErrorParser`. A string `message` becomes the title; a NestJS validation
+  400 sends `message` as an array of strings, which keeps the status-based title for the dialog and
+  becomes `details`, appended only to the exception message for logs and crash reports; 5xx throws `AppError.Network.Unexpected` with the
   default server message; any other status throws `AppError.Network.Unexpected("Unexpected HTTP code: N")`.
 - `handleResponseExceptionWithRequest`: rethrows non-`Exception` throwables and cancellation;
   passes an `AppError` through; maps `HttpRequestTimeoutException` to `AppError.Network.Timeout`,

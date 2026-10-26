@@ -2,6 +2,7 @@ package com.grippo.data.features.api.local.settings
 
 import com.grippo.data.features.api.local.settings.models.AnalyticsConsent
 import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
+import com.grippo.data.features.api.local.settings.models.Language
 import com.grippo.data.features.api.local.settings.models.Range
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDateTime
@@ -23,6 +24,9 @@ public interface LocalSettingsFeature {
 
     public fun observeHomeWelcomeStatus(): Flow<HomeWelcomeStatus>
     public suspend fun setHomeWelcomeStatus(value: HomeWelcomeStatus): Unit
+
+    public fun observeLanguage(): Flow<Language?>
+    public suspend fun setLanguage(value: Language): Unit
 
     public suspend fun clearUserSettings(): Unit
 }

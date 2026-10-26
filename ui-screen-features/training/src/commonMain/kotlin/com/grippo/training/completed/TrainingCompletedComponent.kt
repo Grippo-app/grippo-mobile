@@ -32,6 +32,7 @@ internal class TrainingCompletedComponent(
             goalFeature = getKoin().get(),
             setTrainingUseCase = getKoin().get(),
             updateTrainingUseCase = getKoin().get(),
+            refreshExerciseExamplesUseCase = getKoin().get(),
             trainingTotalUseCase = getKoin().get(),
             muscleLoadingSummaryUseCase = getKoin().get(),
             performanceTrendUseCase = getKoin().get(),

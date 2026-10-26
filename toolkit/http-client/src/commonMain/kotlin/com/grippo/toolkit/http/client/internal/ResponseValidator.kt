@@ -32,9 +32,11 @@ internal fun HttpClientConfig<*>.responseValidator(
             in 400..499 -> {
                 val parsed = apiErrorParser.parseDetailedMessage(rawBody = rawBody, status = statusCode)
                 throw AppError.Network.Expected(
+                    statusCode = statusCode,
                     keys = apiErrorParser.parseKeys(rawBody),
                     title = parsed.title,
                     description = parsed.description,
+                    details = parsed.details,
                     cause = bodyReadFailure,
                 )
             }

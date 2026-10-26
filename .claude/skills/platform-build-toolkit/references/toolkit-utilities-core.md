@@ -12,7 +12,12 @@ Inspect the affected `toolkit/<module>/` implementation and direct consumers.
   File-sink initialization, formatting and writes are best effort: ordinary failures cannot replace
   the business error being reported or prevent its crash/UI pipeline. Preserve cancellation and
   fatal errors; keep this isolation in the sink rather than adding consumer catches.
-- `localization` owns locale access (`AppLocale`).
+- `localization` owns locale access and the app-level language override (`AppLocale`).
+  `current` (composable) and `current()` return the tag last passed to `update` or else the
+  system locale; `isResolved` becomes true at the first `update(tag)`. `update` applies the tag
+  to the platform through internal `SystemLocale`: Android `Locale.setDefault`, re-applied from
+  the Application callbacks registered by the eager `LocalizationModule`; iOS the
+  `AppleLanguages` user default.
 - `number-utils` owns pure numeric representation with explicit separator inputs.
   Inspect `NumberFormatting.kt` and its callers before adding another numeric helper.
   Keep stateless transformations as top-level functions, independent of Compose,

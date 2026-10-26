@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.grippo.data.features.api.local.settings.models.AnalyticsConsent
 import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
+import com.grippo.data.features.api.local.settings.models.Language
 import com.grippo.data.features.api.local.settings.models.Range
 import com.grippo.data.features.local.settings.domain.LocalSettingsRepository
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -26,6 +27,7 @@ internal class LocalSettingsRepositoryImpl(
         val RangeKey = stringPreferencesKey("range")
         val LastGoalSuggestionShownAtKey = stringPreferencesKey("last_goal_suggestion_shown_at")
         val HomeWelcomeStatusKey = stringPreferencesKey("home_welcome_status")
+        val LanguageKey = stringPreferencesKey("language")
 
         val DefaultRange = Range.LAST_30_DAYS
     }
@@ -104,13 +106,33 @@ internal class LocalSettingsRepositoryImpl(
         }
     }
 
-    override suspend fun clearUserSettings(): Unit {
+    override fun observeLanguage(): Flow<Language?> {
+        return dataStore.data.map { preferences ->
+            Language.of(preferences[LanguageKey])
+        }
+    }
+
+    override suspend fun setLanguage(value: Language): Unit {
+        dataStore.edit { preferences ->
+            preferences[LanguageKey] = value.key
+        }
+    }
+
+    override suspend fun clearUserSettings() {
         dataStore.edit { preferences ->
             val consent = preferences[AnalyticsConsentKey]
             val onboardingShown = preferences[OnboardingShownKey]
+            val language = preferences[LanguageKey]
             preferences.clear()
-            if (consent != null) preferences[AnalyticsConsentKey] = consent
-            if (onboardingShown != null) preferences[OnboardingShownKey] = onboardingShown
+            if (consent != null) {
+                preferences[AnalyticsConsentKey] = consent
+            }
+            if (onboardingShown != null) {
+                preferences[OnboardingShownKey] = onboardingShown
+            }
+            if (language != null) {
+                preferences[LanguageKey] = language
+            }
         }
     }
 }

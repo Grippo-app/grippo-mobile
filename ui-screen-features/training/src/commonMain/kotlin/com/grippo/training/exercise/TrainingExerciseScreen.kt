@@ -363,7 +363,7 @@ private fun trainingExercisePreviewState(): TrainingExerciseState {
             createdAt = DateTimeFormatState.of(
                 value = LocalDateTime(year = 2026, month = 10, day = 16, hour = 12, minute = 0),
                 range = DateRangePresets.infinity(),
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
+                format = DateFormat.DateOnly.DateDdMmmYyyy,
             ),
         ),
         exerciseExample = exerciseExample,

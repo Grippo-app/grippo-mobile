@@ -285,7 +285,7 @@ private fun previewExercise(
     val createdAt = DateTimeFormatState.of(
         value = previewStartAt,
         range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy,
+        format = DateFormat.DateOnly.DateDdMmmYyyy,
     )
     val iterations = List(sets) { index ->
         val weight = weights.getOrNull(index)

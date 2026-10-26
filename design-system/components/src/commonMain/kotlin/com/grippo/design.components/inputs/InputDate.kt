@@ -57,13 +57,13 @@ private fun InputDatePreview() {
                     from = LocalDateTime(2026, 1, 1, 0, 0),
                     to = LocalDateTime(2026, 12, 31, 23, 59),
                 ),
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
+                format = DateFormat.DateOnly.DateDdMmmYyyy,
             ),
             onClick = {}
         )
 
         InputDate(
-            value = DateTimeFormatState.Empty(format = DateFormat.DateOnly.DateMmmDdYyyy),
+            value = DateTimeFormatState.Empty(format = DateFormat.DateOnly.DateDdMmmYyyy),
             onClick = {}
         )
 
@@ -74,7 +74,7 @@ private fun InputDatePreview() {
                     from = LocalDateTime(2026, 1, 1, 0, 0),
                     to = LocalDateTime(2026, 12, 31, 23, 59),
                 ),
-                format = DateFormat.DateOnly.DateMmmDdYyyy,
+                format = DateFormat.DateOnly.DateDdMmmYyyy,
             ),
             onClick = {},
         )

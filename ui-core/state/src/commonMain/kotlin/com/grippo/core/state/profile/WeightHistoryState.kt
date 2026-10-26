@@ -30,6 +30,6 @@ public fun stubWeightHistory(): WeightHistoryState = WeightHistoryState(
     createdAt = DateTimeFormatState.of(
         value = DateTimeUtils.now(),
         range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy
+        format = DateFormat.DateOnly.DateDdMmmYyyy
     )
 )

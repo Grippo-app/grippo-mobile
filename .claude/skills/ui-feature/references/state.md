@@ -85,7 +85,7 @@ owns both `of` input factories and `ofTotal` for recorded tonnage. A generic
 
 ### Usage
 
-State: `val weight: WeightFormatState = WeightFormatState.Empty()`, `val due: DateFormatState = DateFormatState.Empty(format = DateFormat.DateOnly.DateMmmDdYyyy)`.
+State: `val weight: WeightFormatState = WeightFormatState.Empty()`, `val due: DateFormatState = DateFormatState.Empty(format = DateFormat.DateOnly.DateDdMmmYyyy)`.
 
 ViewModel: `update { it.copy(weight = WeightFormatState.of(raw)) }`; read the parsed value via `(state.value.weight as? WeightFormatState.Valid)?.value ?: return` (the `as? Valid` cast is canonical; no-op if not valid).
 

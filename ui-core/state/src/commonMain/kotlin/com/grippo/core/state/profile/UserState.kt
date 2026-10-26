@@ -35,7 +35,7 @@ public fun stubUser(): UserState = UserState(
     createdAt = DateTimeFormatState.of(
         value = DateRangePresets.daily().from,
         range = DateRangePresets.infinity(),
-        format = DateFormat.DateOnly.DateMmmDdYyyy
+        format = DateFormat.DateOnly.DateDdMmmYyyy
     ),
     experience = ExperienceEnumState.ADVANCED,
     role = RoleEnumState.ADMIN,

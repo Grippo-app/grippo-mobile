@@ -499,7 +499,7 @@ private fun profileGoalPreviewState(): ProfileGoalState {
         selectedTarget = DateTimeFormatState.of(
             value = LocalDateTime(2027, 1, 15, 0, 0),
             range = range,
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
+            format = DateFormat.DateOnly.DateDdMmmYyyy,
         ),
         selectedPersonalization = persistentListOf(
             PersonalizationKeyEnumState.MODERATE_FREQUENCY,
@@ -533,7 +533,7 @@ private fun ProfileGoalScreenEmptyPreview() {
             state = profileGoalPreviewState().copy(
                 selectedPrimary = null,
                 selectedSecondary = null,
-                selectedTarget = DateTimeFormatState.Empty(format = DateFormat.DateOnly.DateMmmDdYyyy),
+                selectedTarget = DateTimeFormatState.Empty(format = DateFormat.DateOnly.DateDdMmmYyyy),
                 selectedPersonalization = persistentListOf(),
             ),
             loaders = persistentSetOf(),
