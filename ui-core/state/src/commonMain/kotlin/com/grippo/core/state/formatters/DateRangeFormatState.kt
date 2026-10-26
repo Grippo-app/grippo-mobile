@@ -61,7 +61,14 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
             return from
         }
         val to = DateCompose.rememberFormat(value = range.to, format = format)
-        return "$from - $to"
+        return DateRangeFormatter.join(from = from, to = to)
+    }
+
+    @Composable
+    public fun shortEnd(): String? {
+        val range = value ?: return null
+        val format = DateRangeFormatter.dateFormat(kind)
+        return DateCompose.rememberFormat(value = range.to, format = format)
     }
 
     public fun label(): UiText? = when (kind) {
@@ -144,6 +151,8 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
     }
 
     private object DateRangeFormatter {
+        private const val RANGE_DASH = '\u2013'
+
         fun format(value: DateRange, kind: DateRangeKind): String {
             val format = dateFormat(kind)
             val from = DateTimeUtils.format(value = value.from, format = format)
@@ -151,7 +160,11 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
                 return from
             }
             val to = DateTimeUtils.format(value = value.to, format = format)
-            return "$from - $to"
+            return join(from = from, to = to)
+        }
+
+        fun join(from: String, to: String): String {
+            return "$from $RANGE_DASH $to"
         }
 
         fun dateFormat(kind: DateRangeKind): DateFormat.DateOnly = when (kind) {
@@ -164,10 +177,9 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
             DateRangeKind.Last60Days -> DateFormat.DateOnly.DateDdMmm
 
             DateRangeKind.Last365Days,
-            DateRangeKind.Yearly -> DateFormat.DateOnly.DateMmmDdYyyy
-
+            DateRangeKind.Yearly,
             DateRangeKind.Custom,
-            DateRangeKind.Infinity -> DateFormat.DateOnly.DateMmmDdYyyy
+            DateRangeKind.Infinity -> DateFormat.DateOnly.DateDdMmmYyyy
         }
 
         fun isSingleDate(value: DateRange, kind: DateRangeKind): Boolean =
