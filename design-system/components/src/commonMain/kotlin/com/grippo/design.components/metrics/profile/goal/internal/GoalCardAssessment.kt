@@ -24,10 +24,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_card_limited_data
 import com.grippo.design.resources.provider.goal_course_title
-import com.grippo.design.resources.provider.goal_details_analysis_days
 import com.grippo.design.resources.provider.goal_details_analysis_period
-import com.grippo.design.resources.provider.goal_details_analysis_sets
-import com.grippo.design.resources.provider.joined_pair
 import com.grippo.design.resources.provider.metric_overview_goal_analyzed
 import com.grippo.design.resources.provider.metric_overview_goal_score
 import com.grippo.design.resources.provider.percent
@@ -120,16 +117,6 @@ private fun GoalAnalysisSummary(
     value: GoalProgressState,
 ) {
     val range = value.evidence.range
-    val daysLabel = AppTokens.strings.res(
-        Res.plurals.goal_details_analysis_days,
-        value.evidence.days,
-        value.evidence.days,
-    )
-    val setsLabel = AppTokens.strings.res(
-        Res.plurals.goal_details_analysis_sets,
-        value.evidence.setCount,
-        value.evidence.setCount,
-    )
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
@@ -147,7 +134,7 @@ private fun GoalAnalysisSummary(
             color = AppTokens.colors.text.secondary,
         )
         Text(
-            text = AppTokens.strings.res(Res.string.joined_pair, daysLabel, setsLabel),
+            text = value.evidence.summaryLine(),
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.secondary,
         )
