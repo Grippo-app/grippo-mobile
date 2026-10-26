@@ -65,7 +65,12 @@ public fun MenuSection(
                 color = borderColor,
                 shape = shape,
             )
-            .padding(AppTokens.dp.menu.contentPadding),
+            // Menu rows end on their own min-height slack; other content brings its bottom padding.
+            .padding(
+                start = AppTokens.dp.menu.contentPadding,
+                top = AppTokens.dp.menu.contentPadding,
+                end = AppTokens.dp.menu.contentPadding,
+            ),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

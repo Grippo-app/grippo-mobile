@@ -318,8 +318,9 @@ the slot column's `navigationBarsPadding()`); the container's fade gap takes
 the place of `dialog.bottom` below the content. A pinned action comes first in
 the slot with `dialog.bottom` below it (a trailing
 `Spacer(AppTokens.dp.dialog.bottom)` or the action column's bottom padding).
-Content then scrolls under the bottom fade and the opaque navigation-bar band
-instead of stopping above them; never
+Content then scrolls under the container's bottom overlay edge (see
+[OverlayContainer](../../design-system/references/components.md)) instead of
+stopping above it; never
 `navigationBarsPadding()` on the scroll container itself. Reference:
 `ExerciseExampleDetailsScreen.kt`. Include an `@AppPreview private fun
 ...Preview()` wrapped in `PreviewContainer { ... }` with `Contract.Empty`. Pick a

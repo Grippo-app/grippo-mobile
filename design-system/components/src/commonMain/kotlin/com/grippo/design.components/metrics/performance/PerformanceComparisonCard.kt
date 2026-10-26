@@ -42,8 +42,11 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
@@ -64,16 +67,20 @@ import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.components.skeleton.SkeletonPanel
 import com.grippo.design.components.skeleton.SkeletonPanelStyle
+import com.grippo.design.components.utils.ValueSlot
+import com.grippo.design.components.utils.buildValueSlotString
 import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.ArrowRight
+import com.grippo.design.resources.provider.performance_comparison_after
+import com.grippo.design.resources.provider.performance_comparison_before
 import com.grippo.design.resources.provider.performance_comparison_empty
 import com.grippo.design.resources.provider.performance_comparison_first_title
-import com.grippo.design.resources.provider.performance_comparison_title
 import com.grippo.design.resources.provider.performance_growth_before
+import com.grippo.design.resources.provider.value_transition
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -123,13 +130,11 @@ public fun PerformanceComparisonCard(
         style = MetricSectionPanelStyle.Large,
     ) {
         Text(
-            text = AppTokens.strings.res(
-                if (hasValues && !hasReference) {
-                    Res.string.performance_comparison_first_title
-                } else {
-                    Res.string.performance_comparison_title
-                },
-            ),
+            text = if (hasValues && !hasReference) {
+                AnnotatedString(AppTokens.strings.res(Res.string.performance_comparison_first_title))
+            } else {
+                comparisonTitle()
+            },
             style = AppTokens.typography.h5(),
             color = AppTokens.colors.text.primary,
         )
@@ -174,6 +179,20 @@ public fun PerformanceComparisonCard(
             }
         }
     }
+}
+
+@Composable
+private fun comparisonTitle(): AnnotatedString {
+    val before = AppTokens.strings.res(Res.string.performance_comparison_before)
+    val after = AppTokens.strings.res(Res.string.performance_comparison_after)
+    val sentence = AppTokens.strings.res(Res.string.value_transition, before, ValueSlot.marker(0))
+    val beforeStyle = SpanStyle(color = AppTokens.colors.text.secondary)
+
+    return buildValueSlotString(
+        sentence = sentence,
+        slots = listOf(ValueSlot(value = after)),
+        appendRest = { rest -> withStyle(beforeStyle) { append(rest) } },
+    )
 }
 
 @Composable

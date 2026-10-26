@@ -160,6 +160,7 @@ public object LightColor : AppColor {
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
         override val shadowSpotAlphaMultiplier: Float = 1.5f
+        override val fadeAlpha: Float = 0.9f
         override val shadow = AppPalette.Common.Black.copy(alpha = 0.12f)
     }
 

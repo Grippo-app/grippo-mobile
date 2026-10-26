@@ -27,6 +27,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
@@ -217,6 +218,7 @@ private fun TrainingCompletedContent(
     val performance = state.performance
     val isLoadingRecords = loaders.contains(TrainingCompletedLoader.LoadRecords)
     val loadingDescription = AppTokens.strings.res(Res.string.loading)
+    val topInset = contentPadding.calculateTopPadding()
     val cardModifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
@@ -224,14 +226,19 @@ private fun TrainingCompletedContent(
     LazyColumn(
         modifier = modifier,
         state = listState,
-        contentPadding = contentPadding,
+        // The first item runs up under the top overlay and clears it on its own.
+        contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
     ) {
         if (training == null) {
             item(key = "completion_unavailable") {
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                        .padding(
+                            start = AppTokens.dp.screen.horizontalPadding,
+                            top = topInset,
+                            end = AppTokens.dp.screen.horizontalPadding,
+                        )
                         .semantics { heading() },
                     text = AppTokens.strings.res(
                         if (state.savedTrainingId != null) {
@@ -254,6 +261,7 @@ private fun TrainingCompletedContent(
                 style = heroStyle,
                 state = heroState,
                 layer = heroLayer,
+                topInset = topInset,
             )
 
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
@@ -371,6 +379,7 @@ private fun TrainingCompletedHero(
     style: TrainingRecapHeroStyle,
     state: TrainingRecapHeroState,
     layer: GraphicsLayer,
+    topInset: Dp,
 ) {
     val captureBackground = AppTokens.colors.background.screen
 
@@ -385,6 +394,7 @@ private fun TrainingCompletedHero(
         training = training,
         style = style,
         state = state,
+        contentPadding = PaddingValues(top = topInset),
     )
 }
 

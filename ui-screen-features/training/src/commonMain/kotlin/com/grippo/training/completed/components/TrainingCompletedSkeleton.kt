@@ -41,10 +41,14 @@ internal fun TrainingCompletedSkeleton(
             contentDescription = loadingDescription
             progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
         },
-        contentPadding = contentPadding,
+        // The hero runs up under the top overlay and clears it on its own.
+        contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
     ) {
         item(key = "completion_hero_skeleton") {
-            TrainingRecapHeroSkeleton(modifier = Modifier.fillMaxWidth())
+            TrainingRecapHeroSkeleton(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(top = contentPadding.calculateTopPadding()),
+            )
 
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
         }

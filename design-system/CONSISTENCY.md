@@ -54,6 +54,13 @@ and Latin text in both themes; each role keeps its existing size and line height
   with a decline. `semantic.warning` keeps its other consumers. Custom framed content supplies its
   tint and background explicitly, rather than deriving opacity inside the component.
 - Ordinary weights, counts, dates and instructions use neutral text colors.
+- Every "before → after" statement puts the emphasis on the later value: the
+  earlier value, its label and the `value_transition` arrow stay in
+  `text.secondary` (the set-history "Last time:" context keeps `text.tertiary`),
+  the later value takes `text.primary` or its direction color (unit runs keep
+  their secondary style). This covers the growth card title ("Before → after"),
+  the goal score and streak outcome transitions and the "Before:"/"Previous avg:"
+  labels beside a current value.
 - Neutral boundaries use `border.default`: Light NeutralLight.N250 and Dark
   NeutralDark.N300. `divider.subtle` and `charts.bar.baseline` keep their existing
   0.4 and 0.45 alpha derivations; focus, selection and severity retain their own roles.
@@ -63,9 +70,10 @@ and Latin text in both themes; each role keeps its existing size and line height
 - Chart grid/axis/baseline colors and area/sparkline fill endpoints belong to
   their chart color groups. Each series retains its supplied semantic hue;
   history fills use their chart group's fade endpoints. Avatar fills/rings
-  retain experience hues through the profile coefficients; `OverlayContainer`
-  edges keep their host surface opaque behind a pinned slot and fade only its
-  alpha toward the content. Shadow spot strength uses
+  retain experience hues through the profile coefficients; each `OverlayContainer`
+  edge fades its host surface from clear to `overlay.fadeAlpha` across its `block`
+  gap and holds that alpha behind the pinned slot, so content scrolled beneath
+  stays faintly visible. Shadow spot strength uses
   `overlay.shadowSpotAlphaMultiplier` without changing its hue.
 - Volume bar charts use flat series colors and substantial columns with a small
   4 dp corner radius, distributed in even slots across the plot. Each column uses
@@ -337,9 +345,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   focus frames, wheel selections and swipe actions. 20 dp: standalone content,
   menu, profile, recap, achievement and gallery cards. Equipment detail images
   are unframed; its selection variant uses the repeated-row shape.
-- 28 dp is reserved for BrandHeader, the onboarding hero, all four corners of the
-  completed-workout recap hero (on screen and in its shared card), and
-  bottom-sheet top corners. Warm card fills alone do not change a
+- 28 dp is reserved for BrandHeader, the onboarding hero and bottom-sheet top
+  corners. The completed-workout recap hero is full-bleed with square
+  corners. Warm card fills alone do not change a
   card's radius.
 - Filled segments use a 16 dp outer shape and a 12 dp selection shape with 4 dp
   inset. Neutral navigation and utility icon buttons use `ButtonStyle.Tertiary`
@@ -410,7 +418,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   moved the user's standing in their Home period, with growth in `semantic.success`
   and a dip in `semantic.decline`, never Home's cards repeated. It starts with the
   warm `TrainingRecapHero` (the only illustration region on the screen), a
-  full-width region just below the status-bar overlay - the screen has no
+  full-bleed region that runs up under the status bar - the screen has no
   toolbar, and its verdict title is the screen's heading: an `h2`
   verdict title leads, the `b14Med` description line joins
   the summary and the period label through `joined_pair` ("<summary> · <period>")
@@ -493,19 +501,22 @@ and Latin text in both themes; each role keeps its existing size and line height
   gap: the Primary Done above the Secondary Share (the `share` label with
   `icons.Share` as its start icon), Disabled until the verdict resolves (also while
   saving), Loading while the share operation runs and absent only in the result
-  fallbacks that show no hero. The actions sit on the opaque screen surface:
-  `OverlayContainer` adds its `background.screen` fade gap above the actions and
-  keeps the opaque surface below it, so no card content shows between or under
-  the buttons. Done keeps its resolved overlay insets in every terminal state.
-  The top mirrors it: the `top` slot holds only a `statusBarsPadding()` spacer,
-  so the status bar sits on the opaque screen surface with the same fade below
-  it, scrolled content slides under that fade, and at rest the list starts below it.
-  Missing saved details and an unconfirmed result use their quiet copy as the
-  screen's `h4` `text.primary` heading below the status bar, without a success
-  header.
-- `TrainingRecapHero(modifier, training, style, state)` replaces the
-  completion BrandHeader and the summary facts in one warm full-width region:
-  `illustrationBackground` with all four corners at `brandHeader.radius`,
+  fallbacks that show no hero. The actions sit on the `OverlayContainer` bottom
+  edge: its `background.screen` surface fades in across the `block` gap and holds
+  `overlay.fadeAlpha` behind the buttons, so cards scrolled beneath stay faintly
+  visible between and under them. Done
+  keeps its resolved overlay insets in every terminal state. The top mirrors it:
+  the `top` slot holds only a `statusBarsPadding()` spacer. The list itself has
+  no top padding; the hero and its skeleton start at the top edge under that
+  edge and take the resolved top inset as their own `contentPadding`, so their
+  text starts where the list used to start and scrolled cards slide under the
+  same edge. Missing saved details and an unconfirmed result use their quiet copy
+  as the screen's `h4` `text.primary` heading, inset by the same top padding,
+  without a success header.
+- `TrainingRecapHero(modifier, training, style, state, contentPadding)` replaces
+  the completion BrandHeader and the summary facts in one warm full-width region:
+  `illustrationBackground` with square corners, the caller's `contentPadding`
+  inside it (the completion screen passes the top overlay inset), then
   `screen.horizontalPadding` plus
   `brandHeader.horizontalPadding` sides so its text starts on the cards' text edge,
   and `brandHeader.verticalPadding`. Like the last-workout recap, its top row pairs
@@ -525,9 +536,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   and crossfades in 250 ms when the verdict changes; the reveal lives in the
   caller's saveable `TrainingRecapHeroState` (`rememberTrainingRecapHeroState()`),
   so a hero that scrolls out of the lazy list and back does not replay it. It
-  carries no semantics. The shared image is exactly the on-screen hero, at screen
-  width with its four rounded corners over the opaque `background.screen` base,
-  so every device exports the same card, as before the redesign. These
+  carries no semantics. The shared image is the hero as drawn, without the top
+  overlay over it: screen width, square corners, the opaque `background.screen`
+  base, and the whole resolved top inset (status bar plus the `block` gap), so
+  its height follows the device's top inset. These
   vectors are a user-chosen departure from the 3D raster
   illustration family, made because no image generator was available;
   the column keeps `content` gaps between the top row and the facts row. The
@@ -583,10 +595,13 @@ and Latin text in both themes; each role keeps its existing size and line height
   (`PerformanceVerdictState.of()`); Duration never claims progress or regress.
 - MenuSection headings use `h4` and a 22 dp glyph centered in a 32 dp tile with
   8 dp corners. The tile lightly tints the supplied icon hue through the
-  theme-owned `icon.tintedBackgroundAlpha` coefficient, preserving caller alpha;
+  theme-owned `icon.backgroundAlpha` coefficient, preserving caller alpha;
   the glyph retains its supplied tint. Context icon colors keep their meaning.
   The enclosing section owns the grouping surface; Subtle stays unframed with a
-  secondary heading. Header gaps use `content`; values stay neutral.
+  secondary heading. Header gaps use `content`; values stay neutral. Menu rows
+  close the section on their own 56 dp minimum-height slack (a wrapped row on its
+  vertical padding), so the section adds no bottom padding; other section content
+  brings `menu.contentPadding` below it.
 - Working metric panels carry no decorative illustration spot or icon tile;
   Home's welcome and last-workout recap and the completed-workout recap hero own
   the warm illustration regions.
@@ -877,7 +892,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   The chart-scope sentence appears only with a rendered chart; the comparison rule
   remains available in the disclosure even when there are too few chart points.
 - The completed-workout "Before → after" growth card (`PerformanceComparisonCard`)
-  is one Large MetricSectionPanel with the `h5` `performance_comparison_title`
+  is one Large MetricSectionPanel with an `h5` title composed from
+  `value_transition`: `performance_comparison_before` and the arrow in
+  `text.secondary`, `performance_comparison_after` in `text.primary`
   (`performance_comparison_first_title` when it has values but no earlier value) and no
   description, then an Outline `Segment` (`SegmentWidth.EqualFill`) that
   chooses the reference - `PerformanceReferenceState.Average` "vs average" or
@@ -1187,8 +1204,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   Only one card opens at a time. Routine exposes its three choice groups directly;
   the larger groups retain category disclosures and complete selected summaries.
   Quiet dividers and Small CheckSelectableCard choices organize expanded content.
-  One scrolling body keeps the pinned Primary Save action on an opaque screen
-  surface; permanent introductory and field-description copy is omitted.
+  One scrolling body keeps the pinned Primary Save action on the screen's
+  bottom overlay edge; permanent introductory and field-description copy is omitted.
 - Streak and performance details use `block` before a new section heading.
   Headings meet cards or charts at `content`; performance history retains the
   compact row spacing defined above. Compact goal
@@ -1268,7 +1285,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   The single pinned Primary action names the selected next step, with measured
   OverlayContainer padding rather than a manually reserved overlay height.
   Its pinned action padding includes the single navigation inset; the action sits
-  on the opaque dialog surface below the shared `block` fade over the exercises.
+  on the dialog's bottom overlay edge, whose gradient starts with the shared
+  `block` fade over the exercises.
 - Draft workout sheets use a left-aligned task heading and short secondary
   explanation. A single Large neutral metrics panel groups exercise count,
   filled/all sets and positive saved duration with the existing `TrainingStat`
@@ -1278,8 +1296,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   summary and contents heading stay above the exercise scroll area. Full-width
   Primary Continue and Secondary Start new stay pinned on the shared
   `background.dialog` bottom-action backing with the navigation inset: the
-  container's `block` fade gap above the actions keeps both buttons on the opaque
-  dialog surface.
+  container's bottom overlay edge, starting with its `block` fade gap, sits
+  behind both buttons.
 - Workout completion confirmation keeps the host title and left-aligned secondary
   introduction. One Large neutral metrics panel groups only recorded exercise and
   set counts with `TrainingStat` (`h5` neutral values, secondary `b12Med` labels);

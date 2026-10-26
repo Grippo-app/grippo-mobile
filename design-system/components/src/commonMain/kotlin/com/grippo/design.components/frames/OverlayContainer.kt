@@ -46,6 +46,7 @@ public fun OverlayContainer(
     content: @Composable (PaddingValues) -> Unit
 ) {
     val fade = AppTokens.dp.contentPadding.block
+    val edgeColor = overlay.copy(alpha = overlay.alpha * AppTokens.colors.overlay.fadeAlpha)
     val slotModifier = Modifier
         .fillMaxWidth()
         // As in Material's Surface: without these, touches and accessibility focus reach hidden content.
@@ -96,7 +97,7 @@ public fun OverlayContainer(
             emptyList()
         } else {
             subcompose(OverlaySlots.TOP_OVERLAY) {
-                EdgeOverlay(edge = OverlayEdge.Top, fadePx = fadePx, color = overlay)
+                EdgeOverlay(edge = OverlayEdge.Top, fadePx = fadePx, color = edgeColor)
             }.map { it.measure(constraints.copy(minWidth = 0, minHeight = topHeight, maxHeight = topHeight)) }
         }
 
@@ -104,7 +105,7 @@ public fun OverlayContainer(
             emptyList()
         } else {
             subcompose(OverlaySlots.BOTTOM_OVERLAY) {
-                EdgeOverlay(edge = OverlayEdge.Bottom, fadePx = fadePx, color = overlay)
+                EdgeOverlay(edge = OverlayEdge.Bottom, fadePx = fadePx, color = edgeColor)
             }.map { it.measure(constraints.copy(minWidth = 0, minHeight = bottomHeight, maxHeight = bottomHeight)) }
         }
 

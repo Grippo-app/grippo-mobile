@@ -102,6 +102,7 @@ internal fun ProfileSettingsScreen(
             icon = AppTokens.icons.Lock,
         ) {
             Column(
+                modifier = Modifier.padding(bottom = AppTokens.dp.menu.contentPadding),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
             ) {
                 Row(

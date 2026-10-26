@@ -25,6 +25,7 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.inputs.InputHeight
 import com.grippo.design.components.inputs.InputWeight
@@ -86,16 +87,9 @@ internal fun ProfileBodyScreen(
         onClick = contract::onWeightPickerClick
     )
 
-    Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
+    Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
-    Text(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        text = AppTokens.strings.res(Res.string.weight_history),
-        style = AppTokens.typography.h4(),
-        color = AppTokens.colors.text.primary,
-    )
+    ContentDivider()
 
     val basePadding = PaddingValues(
         top = AppTokens.dp.contentPadding.content,
@@ -115,6 +109,15 @@ internal fun ProfileBodyScreen(
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                 contentPadding = resolvedPadding
             ) {
+                item("weight_history_title") {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = AppTokens.strings.res(Res.string.weight_history),
+                        style = AppTokens.typography.h4(),
+                        color = AppTokens.colors.text.primary,
+                    )
+                }
+
                 item("weight_history_chart") {
                     WeightHistoryChart(
                         modifier = Modifier

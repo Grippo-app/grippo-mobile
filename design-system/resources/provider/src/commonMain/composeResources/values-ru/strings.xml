@@ -872,7 +872,8 @@
     <string name="estimated_one_rm_history_peak">Лучший в этой истории: %1$s</string>
     <string name="estimated_one_rm_unavailable">Пока нет подходящих данных для 1ПМ. Нужен подход на 1–10 повторов с полными данными о нагрузке.</string>
     <string name="performance_comparison_unavailable">Нет данных для сравнения</string>
-    <string name="performance_comparison_title">Было → стало</string>
+    <string name="performance_comparison_before">Было</string>
+    <string name="performance_comparison_after">стало</string>
     <string name="performance_comparison_first_title">Эта тренировка</string>
     <string name="performance_growth_before">Было: %1$s</string>
     <string name="performance_reference_average">к среднему</string>

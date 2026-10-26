@@ -10,12 +10,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -29,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalDensity
@@ -38,6 +39,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
@@ -133,13 +135,14 @@ public fun TrainingRecapHero(
     training: TrainingState,
     style: TrainingRecapHeroStyle,
     state: TrainingRecapHeroState = rememberTrainingRecapHeroState(),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val durationValue = training.duration.value
     val volumeValue = training.total.volume.value
     val setsCount = training.exercises.sumOf { exercise -> exercise.iterations.size }
     val resolvedVerdict = (style as? TrainingRecapHeroStyle.Resolved)?.verdict
 
-    RecapHeroSurface(modifier = modifier) {
+    RecapHeroSurface(modifier = modifier, contentPadding = contentPadding) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
@@ -210,10 +213,13 @@ public fun TrainingRecapHero(
 }
 
 @Composable
-public fun TrainingRecapHeroSkeleton(modifier: Modifier = Modifier) {
+public fun TrainingRecapHeroSkeleton(
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+) {
     val textMeasurer = rememberTextMeasurer()
 
-    RecapHeroSurface(modifier = modifier) {
+    RecapHeroSurface(modifier = modifier, contentPadding = contentPadding) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
@@ -243,13 +249,13 @@ public fun TrainingRecapHeroSkeleton(modifier: Modifier = Modifier) {
 @Composable
 private fun RecapHeroSurface(
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.brandHeader.radius)
-
     Column(
         modifier = modifier
-            .illustrationBackground(shape)
+            .illustrationBackground(RectangleShape)
+            .padding(contentPadding)
             .padding(
                 horizontal = AppTokens.dp.screen.horizontalPadding + AppTokens.dp.brandHeader.horizontalPadding,
                 vertical = AppTokens.dp.brandHeader.verticalPadding,
