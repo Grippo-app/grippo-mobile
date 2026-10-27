@@ -82,7 +82,8 @@ internal class DialogContentComponent(
 
     private fun createChild(step: DialogStep, context: ComponentContext): Child {
         val router = step.config
-        val dialogNavigation = navigationFor(step)
+        val navigation = navigationFor(step)
+
         return when (router) {
             is DialogConfig.WeightPicker -> Child.WeightPicker(
                 WeightPickerComponent(
@@ -90,9 +91,9 @@ internal class DialogContentComponent(
                     initial = WeightFormatState.of(router.initial),
                     onResult = { weight ->
                         val raw = weight.value
-                        dialogNavigation.finish(raw?.let { { router.onResult.invoke(it) } })
+                        navigation.finish(raw?.let { { router.onResult.invoke(it) } })
                     },
-                    back = { dialogNavigation.finish(null) }
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -102,9 +103,9 @@ internal class DialogContentComponent(
                     initial = DurationFormatState.of(router.initial),
                     onResult = { duration ->
                         val raw = duration.value
-                        dialogNavigation.finish(raw?.let { { router.onResult.invoke(it) } })
+                        navigation.finish(raw?.let { { router.onResult.invoke(it) } })
                     },
-                    back = { dialogNavigation.finish(null) }
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -114,9 +115,9 @@ internal class DialogContentComponent(
                     initial = HeightFormatState.of(router.initial ?: 0),
                     onResult = { height ->
                         val raw = height.value
-                        dialogNavigation.finish(raw?.let { { router.onResult.invoke(it) } })
+                        navigation.finish(raw?.let { { router.onResult.invoke(it) } })
                     },
-                    back = { dialogNavigation.finish(null) }
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -124,7 +125,13 @@ internal class DialogContentComponent(
                 ErrorDisplayComponent(
                     componentContext = context,
                     error = router.error,
-                    back = { dialogNavigation.finish(null) }
+                    mode = router.mode,
+                    onRetry = {
+                        val retry = router.mode as? DialogConfig.ErrorDisplay.Mode.Retry
+                        retry?.onRetry?.invoke()
+                        navigation.finish(null)
+                    },
+                    back = { navigation.finish(null) },
                 )
             )
 
@@ -136,19 +143,19 @@ internal class DialogContentComponent(
                     onAction = {
                         val action = router.mode as? DialogConfig.ExerciseExampleDetails.Mode.Action
                         if (action != null) {
-                            action.onClick.invoke(dialogNavigation)
+                            action.onClick.invoke(navigation)
                         } else {
-                            dialogNavigation.finish(null)
+                            navigation.finish(null)
                         }
                     },
-                    back = { dialogNavigation.finish(null) },
+                    back = { navigation.finish(null) },
                 )
             )
 
             is DialogConfig.Exercise -> Child.Exercise(
                 ExerciseComponent(
                     onShowExampleDetails = { id ->
-                        dialogNavigation.push(
+                        navigation.push(
                             DialogConfig.ExerciseExampleDetails(
                                 title = UiText.Res(Res.string.exercise_details_btn),
                                 id = id,
@@ -157,7 +164,7 @@ internal class DialogContentComponent(
                     },
                     componentContext = context,
                     id = router.id,
-                    back = { dialogNavigation.finish(null) }
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -165,7 +172,7 @@ internal class DialogContentComponent(
                 MuscleLoadingDetailsComponent(
                     componentContext = context,
                     range = router.range,
-                    back = { dialogNavigation.finish(null) }
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -173,7 +180,7 @@ internal class DialogContentComponent(
                 TrainingStreakDetailsComponent(
                     componentContext = context,
                     range = router.range,
-                    back = { dialogNavigation.finish(null) }
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -183,7 +190,7 @@ internal class DialogContentComponent(
                     range = router.range,
                     metricType = router.metricType,
                     reference = router.reference,
-                    back = { dialogNavigation.finish(null) }
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -191,15 +198,15 @@ internal class DialogContentComponent(
                 TrainingGoalDetailsComponent(
                     componentContext = context,
                     range = router.range,
-                    back = { dialogNavigation.finish(null) },
-                    onAddGoal = { dialogNavigation.finish { router.onAddGoal.invoke() } }
+                    back = { navigation.finish(null) },
+                    onAddGoal = { navigation.finish { router.onAddGoal.invoke() } }
                 )
             )
 
             is DialogConfig.Iteration -> Child.IterationPicker(
                 IterationPickerComponent(
                     onPickBodyWeight = { initial, onResult ->
-                        dialogNavigation.push(
+                        navigation.push(
                             DialogConfig.WeightPicker(
                                 title = UiText.Res(Res.string.weight_picker_title),
                                 initial = initial,
@@ -214,8 +221,8 @@ internal class DialogContentComponent(
                     example = router.example,
                     suggestions = router.suggestions,
                     previousIteration = router.previousIteration,
-                    onResult = { iteration -> dialogNavigation.finish { router.onResult.invoke(iteration) } },
-                    back = { dialogNavigation.finish(null) }
+                    onResult = { iteration -> navigation.finish { router.onResult.invoke(iteration) } },
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -230,9 +237,9 @@ internal class DialogContentComponent(
                     limitations = router.limitations,
                     onResult = { date ->
                         val raw = date.value
-                        dialogNavigation.finish(raw?.let { { router.onResult.invoke(it) } })
+                        navigation.finish(raw?.let { { router.onResult.invoke(it) } })
                     },
-                    back = { dialogNavigation.finish(null) }
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -240,8 +247,8 @@ internal class DialogContentComponent(
                 PeriodPickerComponent(
                     componentContext = context,
                     initial = router.initial,
-                    onResult = { date -> dialogNavigation.finish { router.onResult.invoke(date) } },
-                    back = { dialogNavigation.finish(null) }
+                    onResult = { date -> navigation.finish { router.onResult.invoke(date) } },
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -249,8 +256,8 @@ internal class DialogContentComponent(
                 PrimaryGoalPickerComponent(
                     componentContext = context,
                     initial = router.initial,
-                    onResult = { goal -> dialogNavigation.finish { router.onResult.invoke(goal) } },
-                    back = { dialogNavigation.finish(null) }
+                    onResult = { goal -> navigation.finish { router.onResult.invoke(goal) } },
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -258,8 +265,8 @@ internal class DialogContentComponent(
                 SecondaryGoalPickerComponent(
                     componentContext = context,
                     initial = router.initial,
-                    onResult = { goal -> dialogNavigation.finish { router.onResult.invoke(goal) } },
-                    back = { dialogNavigation.finish(null) }
+                    onResult = { goal -> navigation.finish { router.onResult.invoke(goal) } },
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -267,17 +274,17 @@ internal class DialogContentComponent(
                 LanguagePickerComponent(
                     componentContext = context,
                     initial = router.initial,
-                    onResult = { language -> dialogNavigation.finish { router.onResult.invoke(language) } },
-                    back = { dialogNavigation.finish(null) }
+                    onResult = { language -> navigation.finish { router.onResult.invoke(language) } },
+                    back = { navigation.finish(null) }
                 )
             )
 
             is DialogConfig.GoalSetupSuggestion -> Child.GoalSetupSuggestion(
                 GoalSetupSuggestionComponent(
                     componentContext = context,
-                    onConfigure = { dialogNavigation.finish { router.onConfigure.invoke() } },
-                    onLater = { dialogNavigation.finish { router.onLater.invoke() } },
-                    back = { dialogNavigation.finish(null) }
+                    onConfigure = { navigation.finish { router.onConfigure.invoke() } },
+                    onLater = { navigation.finish { router.onLater.invoke() } },
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -292,27 +299,27 @@ internal class DialogContentComponent(
                     limitations = router.limitations,
                     onResult = { date ->
                         val raw = date.value
-                        dialogNavigation.finish(raw?.let { { router.onResult.invoke(it) } })
+                        navigation.finish(raw?.let { { router.onResult.invoke(it) } })
                     },
-                    back = { dialogNavigation.finish(null) }
+                    back = { navigation.finish(null) }
                 )
             )
 
             is DialogConfig.DraftTraining -> Child.DraftTraining(
                 DraftTrainingComponent(
                     componentContext = context,
-                    onContinue = { dialogNavigation.finish { router.onContinue.invoke() } },
-                    onStartNew = { dialogNavigation.finish { router.onStartNew.invoke() } },
-                    back = { dialogNavigation.finish(null) }
+                    onContinue = { navigation.finish { router.onContinue.invoke() } },
+                    onStartNew = { navigation.finish { router.onStartNew.invoke() } },
+                    back = { navigation.finish(null) }
                 )
             )
 
             is DialogConfig.StartTraining -> Child.StartTraining(
                 StartTrainingComponent(
                     componentContext = context,
-                    onStartEmpty = { dialogNavigation.finish { router.onStartEmpty.invoke() } },
-                    onUseExercises = { exercises -> dialogNavigation.finish { router.onUseExercises.invoke(exercises) } },
-                    back = { dialogNavigation.finish(null) }
+                    onStartEmpty = { navigation.finish { router.onStartEmpty.invoke() } },
+                    onUseExercises = { exercises -> navigation.finish { router.onUseExercises.invoke(exercises) } },
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -320,8 +327,8 @@ internal class DialogContentComponent(
                 MenuPickerComponent(
                     componentContext = context,
                     items = TrainingMenu.entries,
-                    onResult = { item -> dialogNavigation.finish { router.onResult.invoke(item as TrainingMenu) } },
-                    back = { dialogNavigation.finish(null) }
+                    onResult = { item -> navigation.finish { router.onResult.invoke(item as TrainingMenu) } },
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -329,15 +336,15 @@ internal class DialogContentComponent(
                 ConfirmationComponent(
                     componentContext = context,
                     description = router.description,
-                    onResult = { dialogNavigation.finish { router.onResult.invoke() } },
-                    back = { dialogNavigation.finish(null) }
+                    onResult = { navigation.finish { router.onResult.invoke() } },
+                    back = { navigation.finish(null) }
                 )
             )
 
             is DialogConfig.ConfirmTrainingCompletion -> Child.ConfirmTrainingCompletion(
                 ConfirmTrainingCompletionComponent(
                     onPickDuration = { initial, onResult ->
-                        dialogNavigation.push(
+                        navigation.push(
                             DialogConfig.DurationPicker(
                                 title = UiText.Res(Res.string.duration_picker_title),
                                 initial = initial,
@@ -350,9 +357,9 @@ internal class DialogContentComponent(
                     exercises = router.exercises.toPersistentList(),
                     onResult = { duration ->
                         val raw = duration.value
-                        dialogNavigation.finish(raw?.let { { router.onResult.invoke(it) } })
+                        navigation.finish(raw?.let { { router.onResult.invoke(it) } })
                     },
-                    back = { dialogNavigation.finish(null) }
+                    back = { navigation.finish(null) }
                 )
             )
 
@@ -360,7 +367,7 @@ internal class DialogContentComponent(
                 StatisticsComponent(
                     config = router,
                     componentContext = context,
-                    back = { dialogNavigation.finish(null) }
+                    back = { navigation.finish(null) }
                 )
             )
         }

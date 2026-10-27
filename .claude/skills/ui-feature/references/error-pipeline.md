@@ -209,9 +209,9 @@ popup, token-loss navigation stays inactive until the owning ViewModel is recrea
 which for Root means a process restart.
 Destinations follow [navigation ownership](navigation.md#direction--navigation-translation).
 
-`ErrorDisplay` is an overlay config: while a bottom sheet is open, the host shows the
-error above its active step, so a dialog ViewModel and its suspended Job stay alive
-for Retry; see [dialogs](dialogs.md#dialogcontroller--dialogprovider).
+While a bottom sheet is open, the host pushes the error onto that sheet's stack like
+any opening, so a dialog ViewModel and its suspended Job stay alive for Retry; see
+[dialogs](dialogs.md#dialogcontroller--dialogprovider).
 Error delivery and dismissal callbacks follow the
 [dialog host retention policy](dialogs.md#dialogcontroller--dialogprovider); a later opening must
 not discard the pending error whose callbacks complete this decision.

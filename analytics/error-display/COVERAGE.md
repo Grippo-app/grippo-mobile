@@ -16,25 +16,23 @@ retainedInstance factory. Shared registers the generated annotated module and it
 uniquely qualified `error_display_analytics` schema catalog once.
 
 `BaseViewModel.safeLaunch` asks `ErrorProvider.retry(error)` (for `ErrorRecovery.Retry`)
-or `ErrorProvider.acknowledge(error)` (for `ErrorRecovery.Close`), which open
+or `ErrorProvider.inform(error)` (for `ErrorRecovery.Close`), which open
 `DialogConfig.ErrorDisplay(mode, onClose)` with `Mode.Retry(onRetry)` or
-`Mode.Acknowledge`. `onRetry` completes the failed operation's pending
+`Mode.Inform`. `onRetry` completes the failed operation's pending
 `ErrorDecision.Retry`; `onClose` completes the close. The host child factory runs the
 mode's `onRetry` before finishing the step, and the first completion wins, so a Retry
 is never followed by a close. The failed operation's Job waits for that decision and
 repeats or ends itself; only `ErrorRecovery.Close(onClose)` runs a continuation after a
-close. The host itself is generic: `ErrorDisplay` is an `overlay` config.
-The controller delivers openings without conflation. An error opened while an
-ordinary sheet is presented is pushed above its active step; otherwise errors open a
-root session or queue FIFO before the latest ordinary opening. An active error
-remains until the user acts on it. These host changes emit no synthetic presentation,
-retry, dismissal or result facts.
+close. The host treats it like any opening: with no sheet it starts a session, over
+a presented sheet it is pushed onto that sheet's stack, and while a sheet is closing it
+waits in the FIFO `pending` queue, so no error is dropped. These host changes emit no
+synthetic presentation, retry, dismissal or result facts.
 
 | Callback / path | Observation | Meaning and eligibility |
 |---|---|---|
 | ErrorDisplayViewModel.onAction in `ErrorDisplayModeState.Retry` | RetryRequested / error_display_retry_requested v1 | Primary button labelled Retry (`Mode.Retry`); emitted before the Retry direction. Intent, not a successful retry; it names no operation or error. If the failed operation's Job was cancelled while the popup was open (ViewModel destroyed or its collection cancelled) it is still emitted, but no attempt follows and no `onClose` runs |
 | ErrorDisplayViewModel.onDismiss | DismissRequested / error_display_dismiss_requested v1 | Emitted before the unchanged Back direction |
-| ErrorDisplayViewModel.onAction in `ErrorDisplayModeState.Acknowledge` (Got it button) | DismissRequested through onDismiss | Rendered only for `Mode.Acknowledge` popups, opened for `ErrorRecovery.Close` and by the foundation fallback for a failure outside the attempt (practically unreachable) (TrainingCompleted save, Registration submit, ProfileCompleted creation, ProfileBody apply, Debug generate training) |
+| ErrorDisplayViewModel.onAction in `ErrorDisplayModeState.Inform` (Got it button) | DismissRequested through onDismiss | Rendered only for `Mode.Inform` popups, opened for `ErrorRecovery.Close` and by the foundation fallback for a failure outside the attempt (practically unreachable) (TrainingCompleted save, Registration submit, ProfileCompleted creation, ProfileBody apply, Debug generate training) |
 | Component BackCallback | DismissRequested through onDismiss when dispatched to this component | No inferred button/back source; host Back can bypass the leaf |
 | Host Back, toolbar back arrow or Close, swipe/outside dismissal, programmatic closure | Deliberate omission | May bypass the leaf; shared plumbing does not construct feature events. They run `onClose`, never the retry |
 | Open intent, dialog view/close, retry outcome | Deliberate omission | No owning feature callback/presentation contract in this scope; the repeated operation reports its own attempt through its feature's `trackOperation` |
@@ -52,8 +50,8 @@ remain repeated observations; no exactly-once telemetry guard is introduced.
 |---|---|---|---|
 | ErrorDisplayComponent / VM | ErrorDisplayState.error, ErrorDisplayState.mode | Runtime only; retained in live session | Existing error route input and `ErrorDisplayModeState.of(config.mode)` seed a fresh VM; retainedInstance keeps the current VM while its InstanceKeeper survives |
 | ErrorDisplayScreen | Localized description, button label | Rebuild | Existing AppErrorState.description() / UiText.text(); `ErrorDisplayModeState.labelText()` (`retry_btn` or `got_it_btn`) at rendering |
-| Dialog host / component | Live session, pushed overlay step, pending overlay FIFO, latest ordinary opening, Back callback, retry and close callbacks | Runtime only | Retained DialogState; slot and content stack use serializer = null; fresh process has no restored dialog session, pending error or callback |
-| Foundation VM | Jobs suspended on a pending `ErrorDecision` (Retry) or acknowledgement (Close), per-attempt loaders and telemetry | Runtime only | No StateKeeper supplier, snapshot, secret or analytics provenance added |
+| Dialog host / component | Live session, pushed steps, FIFO pending openings, Back callback, retry and close callbacks | Runtime only | Retained DialogState; slot and content stack use serializer = null; fresh process has no restored dialog session, pending error or callback |
+| Foundation VM | Jobs suspended on a pending `ErrorDecision` (Retry) or an `inform` popup (Close), per-attempt loaders and telemetry | Runtime only | No StateKeeper supplier, snapshot, secret or analytics provenance added |
 
 Preservation source gate: the dialog has no editable inputs, selections, filters,
 child results or accepted parent draft. Error presentation and its retry/close

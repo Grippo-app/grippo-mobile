@@ -46,7 +46,6 @@ Plain sealed class in `:ui-dialog-features:dialog-api` (abridged shape):
 public sealed class DialogConfig(
     public open val onDismiss: (() -> Unit)? = null,
     public open val dismissBySwipe: Boolean = true,
-    public open val overlay: Boolean = false,
 ) {
     public abstract val title: UiText
 
@@ -67,7 +66,7 @@ public sealed class DialogConfig(
         val error: AppErrorState,
         val mode: Mode,
         val onClose: () -> Unit,
-    ) : DialogConfig(onDismiss = onClose, overlay = true) {
+    ) : DialogConfig(onDismiss = onClose) {
         public sealed interface Mode {
             public data class Retry(val onRetry: () -> Unit) : Mode
             public data object Inform : Mode
@@ -81,7 +80,7 @@ Rules (MUST):
 - **Caller-owned `title: UiText`** supplies the shared host toolbar. Keep input data as ordinary typed fields and callbacks as live closures.
 - **Update `hasSameContentAs` for every new subtype/content field.** The existing exhaustive comparison checks title first, compares typed content and excludes callbacks. Session navigation uses it to reject duplicate content already in the stack.
 - **Runtime identity belongs to the host.** `DialogSession` / `DialogStep` IDs preserve live child instances; configs have no `key` / `buildKey` contract.
-- **`onDismiss`, `dismissBySwipe` and `overlay` are `open val`** in the base class; subtypes supply them through super-class arguments. `ErrorDisplay` wires `onDismiss = onClose` and `overlay = true` and is currently the only subtype with either; its `mode` and `onClose` come from the [error pipeline](error-pipeline.md#retry-and-close), and its `Mode` follows the existing `ExerciseExampleDetails.Mode` pattern. Set swipe or overlay policy only when the requested behavior needs it.
+- **`onDismiss` and `dismissBySwipe` are `open val`** in the base class; subtypes supply them through super-class arguments. `ErrorDisplay` wires `onDismiss = onClose` and is currently the only subtype that sets it; its `mode` and `onClose` come from the [error pipeline](error-pipeline.md#retry-and-close), and its `Mode` follows the existing `ExerciseExampleDetails.Mode` pattern. Set swipe policy only when the requested behavior needs it.
 
 ## `DialogController` + `DialogProvider`
 
@@ -105,37 +104,23 @@ The internal implementation in `:ui-dialog-features:dialog-api` is
 `@Module @ComponentScan`, registered through its generated module in shared.
 
 Inject the controller into ordinary caller ViewModels and call
-`dialogController.open(DialogConfig.X(...))` to start a new sheet session. An existing
-session closes before a pending ordinary opening starts; `open` never pushes an ordinary
-config into an existing session. Only overlay configs join an open session, as described below.
-There is **no `dismiss()`** on this controller.
+`dialogController.open(DialogConfig.X(...))`. There is **no `dismiss()`** on this
+controller. The host handles every opening the same way, by sheet phase, and never
+checks a subtype (inspect `DialogViewModel.open`, `onDismiss` and `onRelease`):
 
-The host treats configs with `overlay = true` generically; it checks `config.overlay`
-and the top step's `overlay`, never a subtype (inspect `DialogViewModel.open`,
-`onDismiss` and `onRelease`). `ErrorDisplay` is currently the only overlay, so each
-error popup keeps its presentation and recovery callbacks through the host:
+- **No sheet (Released):** the opening starts a new session.
+- **Sheet presented:** the opening is pushed onto the session's stack above the
+  active step, like an in-sheet step. The step underneath, its ViewModel and, for an
+  error, the suspended operation stay alive, so Retry resumes that operation in its
+  ViewModel. Back or Retry pop the pushed step and return to the one underneath;
+  toolbar Close, a swipe or an outside tap closes the whole session. While a step is
+  covered, its own `finish`/`back`/`push` calls are ignored.
+- **Sheet dismissing:** the opening waits in `pending`, first in, first out. At
+  release, all pending openings start the next session as one stack in arrival order
+  (the latest on top), so no opening and no error is dropped.
 
-- **Above an open dialog.** An overlay opened while a session is presented and its
-  top step is not an overlay is pushed above the active step. The dialog, its
-  ViewModel and, for an error, the suspended operation stay underneath, so Retry
-  resumes that operation's next attempt in that ViewModel. Back and Retry pop the
-  overlay and return to the dialog; toolbar Close, a swipe or an outside tap closes
-  the whole session.
-- **Queued.** An overlay opened while an overlay is on top or while the session is
-  dismissing waits in `pendingOverlays`, first in, first out. Popping a nested
-  overlay pushes the next pending one in its place; when none is pending, a pending
-  ordinary opening starts dismissing the session. At release, pending overlays open
-  before the latest pending ordinary opening. A Retry that pops an error in that last
-  case resumes the attempt in the dialog ViewModel, whose release then cancels it.
-  While an overlay is above a dialog, the dialog's own `finish`/`back`/`push` calls
-  are ignored as for any covered step.
-- **No early replacement.** An active overlay waits for the user; later openings
-  neither replace it nor invoke its callbacks early. An ordinary opening that
-  arrives while an overlay is on top waits without dismissing it. Ordinary pending
-  openings keep latest-wins behavior.
-
-These queues are live runtime State, discarded on process death like the sessions
-they contain.
+The pending queue is live runtime State, discarded on process death like the
+sessions it feeds.
 
 The host supplies `Session` bound to the originating session and active step.
 Use its methods on the UI thread; calls from inactive/removed steps are ignored.
@@ -200,8 +185,8 @@ Dialogs keep these typed config callbacks. Separate screen results use
 
 ## Dismissal behavior
 
-- **Whole-session release:** after hiding, `DialogViewModel.onRelease(session)` invalidates the old session by publishing the next session with its remaining queue, or empty State when nothing is pending. It then runs the old stack's `onDismiss` callbacks top-to-bottom and then the top step's pending result. Reentrant openings see the new state and cannot discard pending overlays. Swipe/scrim or Close supplies no result; `onDismiss` alone does not establish confirmation/cancellation/user exit.
-- **Nested Back/result:** the top step is removed, then its `onDismiss` and pending result run in that order. The sheet stays open unless the overlay retention policy above starts dismissing it. `replaceCurrent` runs the replaced config's `onDismiss` after updating the stack and does not create a result.
+- **Whole-session release:** after hiding, `DialogViewModel.onRelease(session)` invalidates the old session by publishing the next session from the pending openings, or empty State when nothing is pending. It then runs the old stack's `onDismiss` callbacks top-to-bottom and then the top step's pending result. Reentrant openings see the new state and join it. Swipe/scrim or Close supplies no result; `onDismiss` alone does not establish confirmation/cancellation/user exit.
+- **Nested Back/result:** the top step is removed, then its `onDismiss` and pending result run in that order. The sheet stays open. `replaceCurrent` runs the replaced config's `onDismiss` after updating the stack and does not create a result.
 - **Caller cleanup:** use `onDismiss` for cleanup or returning an observed dismissal fact to its owning VM; it runs whenever its step is removed, before any pending result. Shared host/config plumbing does not construct telemetry; caller-VM-owned result callbacks may observe accepted results under the analytics skill.
 - **`dismissBySwipe`:** governs swipe/scrim hiding for the active config. Hardware/toolbar Back still follows the stack; toolbar Close closes the session. It does not turn a generic dismissal into a typed outcome.
 
@@ -210,7 +195,7 @@ Dialogs keep these typed config callbacks. Separate screen results use
 - **One `DialogConfig` per dialog flow.** Don't multiplex configs for similar flows.
 - **Configs and callbacks stay live in memory; sessions are not restored after process death.**
 - **`onResult` callbacks fire only on explicit success.** Dismiss vs result are separate.
-- **Cross-dialog flows use the originating step's `Session` and the shared `StackNavigation<DialogStep>`.** Global `open` of an ordinary config always starts a new session; only an overlay config (currently `ErrorDisplay`) joins an open one.
+- **Cross-dialog flows use the originating step's `Session` and the shared `StackNavigation<DialogStep>`.** Global `open` starts a new session when no sheet is shown and is pushed onto the presented session otherwise.
 - **Single-dialog multi-mode** lives in the dialog's own `State` as a `sealed interface`.
 - **Scrolling dialog bodies go through `OverlayContainer`** with the navigation inset in its `bottom` slot (see step 3 of the recipe); non-scrolling bodies end with the two spacers directly.
 - Dialogs MAY read/write domain data through Feature/UseCase contracts in `:data-features:feature-api`, when their behavior requires it; never access services/DAOs directly. Value pickers return their accepted value through `onResult`; the caller owns its business persistence. A dialog-owned side effect MUST complete through safeLaunch and the shared error pipeline before emitting success.
