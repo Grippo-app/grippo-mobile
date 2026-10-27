@@ -7,10 +7,10 @@
         <item quantity="other">%1$d дней с тренировками</item>
     </plurals>
     <plurals name="training_recap_compared">
-        <item quantity="one">%1$d из %2$d показателя выше среднего</item>
-        <item quantity="few">%1$d из %2$d показателей выше среднего</item>
-        <item quantity="many">%1$d из %2$d показателей выше среднего</item>
-        <item quantity="other">%1$d из %2$d показателя выше среднего</item>
+        <item quantity="one">%1$d из %2$d показателя выше обычного</item>
+        <item quantity="few">%1$d из %2$d показателей выше обычного</item>
+        <item quantity="many">%1$d из %2$d показателей выше обычного</item>
+        <item quantity="other">%1$d из %2$d показателя выше обычного</item>
     </plurals>
     <plurals name="training_recap_compared_previous">
         <item quantity="one">%1$d из %2$d показателя выше прошлой</item>
@@ -24,16 +24,220 @@
         <item quantity="many">%1$d подходов</item>
         <item quantity="other">%1$d подхода</item>
     </plurals>
-    <plurals name="goal_details_analysis_days">
-        <item quantity="one">%1$d дн.</item>
-        <item quantity="few">%1$d дн.</item>
-        <item quantity="many">%1$d дн.</item>
-        <item quantity="other">%1$d дн.</item>
+    <plurals name="day_count">
+        <item quantity="one">%1$d день</item>
+        <item quantity="few">%1$d дня</item>
+        <item quantity="many">%1$d дней</item>
+        <item quantity="other">%1$d дня</item>
     </plurals>
     <plurals name="goal_details_analysis_sets">
         <item quantity="one">%1$d записанный подход</item>
         <item quantity="few">%1$d записанных подхода</item>
         <item quantity="many">%1$d записанных подходов</item>
         <item quantity="other">%1$d записанного подхода</item>
+    </plurals>
+    <plurals name="weekly_volume_workouts">
+        <item quantity="one">%1$d тренировка на этой неделе</item>
+        <item quantity="few">%1$d тренировки на этой неделе</item>
+        <item quantity="many">%1$d тренировок на этой неделе</item>
+        <item quantity="other">%1$d тренировки на этой неделе</item>
+    </plurals>
+    <plurals name="metric_overview_streak_weekly_days">
+        <item quantity="one">Тренировки %1$d раз в неделю</item>
+        <item quantity="few">Тренировки %1$d раза в неделю</item>
+        <item quantity="many">Тренировки %1$d раз в неделю</item>
+        <item quantity="other">Тренировки %1$d раза в неделю</item>
+    </plurals>
+    <plurals name="training_streak_next_workouts">
+        <item quantity="one">Ещё %1$d тренировка на этой неделе</item>
+        <item quantity="few">Ещё %1$d тренировки на этой неделе</item>
+        <item quantity="many">Ещё %1$d тренировок на этой неделе</item>
+        <item quantity="other">Ещё %1$d тренировки на этой неделе</item>
+    </plurals>
+    <plurals name="goal_analyzed_workouts">
+        <item quantity="one">На основе %1$d тренировки за этот период</item>
+        <item quantity="few">На основе %1$d тренировок за этот период</item>
+        <item quantity="many">На основе %1$d тренировок за этот период</item>
+        <item quantity="other">На основе %1$d тренировки за этот период</item>
+    </plurals>
+    <plurals name="muscle_load_excluded_sets">
+        <item quantity="one">%1$d подход не учтён: нет повторений или корректного веса.</item>
+        <item quantity="few">%1$d подхода не учтены: нет повторений или корректного веса.</item>
+        <item quantity="many">%1$d подходов не учтено: нет повторений или корректного веса.</item>
+        <item quantity="other">%1$d подхода не учтено: нет повторений или корректного веса.</item>
+    </plurals>
+    <plurals name="muscle_load_unassigned_sets">
+        <item quantity="one">Для %1$d подхода неизвестно, какие мышцы работали.</item>
+        <item quantity="few">Для %1$d подходов неизвестно, какие мышцы работали.</item>
+        <item quantity="many">Для %1$d подходов неизвестно, какие мышцы работали.</item>
+        <item quantity="other">Для %1$d подхода неизвестно, какие мышцы работали.</item>
+    </plurals>
+    <plurals name="muscle_load_unmeasured_volume_sets">
+        <item quantity="one">У %1$d подхода вес записан не полностью. Доли мышц учитывают все подходы, поднятый вес — только подходы с полным весом.</item>
+        <item quantity="few">У %1$d подходов вес записан не полностью. Доли мышц учитывают все подходы, поднятый вес — только подходы с полным весом.</item>
+        <item quantity="many">У %1$d подходов вес записан не полностью. Доли мышц учитывают все подходы, поднятый вес — только подходы с полным весом.</item>
+        <item quantity="other">У %1$d подхода вес записан не полностью. Доли мышц учитывают все подходы, поднятый вес — только подходы с полным весом.</item>
+    </plurals>
+    <plurals name="period_last_days">
+        <item quantity="one">за %1$d день</item>
+        <item quantity="few">за %1$d дня</item>
+        <item quantity="many">за %1$d дней</item>
+        <item quantity="other">за %1$d дня</item>
+    </plurals>
+    <plurals name="highlight_streak_cycles">
+        <item quantity="one">%1$d цикл подряд</item>
+        <item quantity="few">%1$d цикла подряд</item>
+        <item quantity="many">%1$d циклов подряд</item>
+        <item quantity="other">%1$d цикла подряд</item>
+    </plurals>
+    <plurals name="metric_overview_streak_training_days">
+        <item quantity="one">%1$d день тренировок</item>
+        <item quantity="few">%1$d дня тренировок</item>
+        <item quantity="many">%1$d дней тренировок</item>
+        <item quantity="other">%1$d дня тренировок</item>
+    </plurals>
+    <plurals name="metric_overview_streak_rest_days">
+        <item quantity="one">%1$d день отдыха</item>
+        <item quantity="few">%1$d дня отдыха</item>
+        <item quantity="many">%1$d дней отдыха</item>
+        <item quantity="other">%1$d дня отдыха</item>
+    </plurals>
+    <plurals name="metric_overview_streak_cycle_days">
+        <item quantity="one">в цикле из %1$d дня</item>
+        <item quantity="few">в цикле из %1$d дней</item>
+        <item quantity="many">в цикле из %1$d дней</item>
+        <item quantity="other">в цикле из %1$d дня</item>
+    </plurals>
+    <plurals name="goal_card_progress_days_left">
+        <item quantity="one">Остался %1$d день</item>
+        <item quantity="few">Осталось %1$d дня</item>
+        <item quantity="many">Осталось %1$d дней</item>
+        <item quantity="other">Осталось %1$d дня</item>
+    </plurals>
+    <plurals name="goal_card_progress_overdue">
+        <item quantity="one">Срок истёк %1$d день назад</item>
+        <item quantity="few">Срок истёк %1$d дня назад</item>
+        <item quantity="many">Срок истёк %1$d дней назад</item>
+        <item quantity="other">Срок истёк %1$d дня назад</item>
+    </plurals>
+    <plurals name="goal_fit_unit_groups">
+        <item quantity="one">%1$s группа</item>
+        <item quantity="few">%1$s группы</item>
+        <item quantity="many">%1$s групп</item>
+        <item quantity="other">%1$s группы</item>
+    </plurals>
+    <plurals name="goal_details_analysis_excluded">
+        <item quantity="one">%1$d подход не учтён: в нём неполные или ошибочные данные.</item>
+        <item quantity="few">%1$d подхода не учтены: в них неполные или ошибочные данные.</item>
+        <item quantity="many">%1$d подходов не учтено: в них неполные или ошибочные данные.</item>
+        <item quantity="other">%1$d подхода не учтено: в них неполные или ошибочные данные.</item>
+    </plurals>
+    <plurals name="goal_details_analysis_missing_metadata">
+        <item quantity="one">Для %1$d подхода нет данных о мышцах в упражнении, поэтому группы мышц не оценивались.</item>
+        <item quantity="few">Для %1$d подходов нет данных о мышцах в упражнениях, поэтому группы мышц не оценивались.</item>
+        <item quantity="many">Для %1$d подходов нет данных о мышцах в упражнениях, поэтому группы мышц не оценивались.</item>
+        <item quantity="other">Для %1$d подхода нет данных о мышцах в упражнениях, поэтому группы мышц не оценивались.</item>
+    </plurals>
+    <plurals name="goal_selected_options">
+        <item quantity="one">Выбран %1$d вариант</item>
+        <item quantity="few">Выбрано %1$d варианта</item>
+        <item quantity="many">Выбрано %1$d вариантов</item>
+        <item quantity="other">Выбрано %1$d варианта</item>
+    </plurals>
+    <plurals name="highlight_streak">
+        <item quantity="one">%1$d-дневная серия</item>
+        <item quantity="few">%1$d-дневная серия</item>
+        <item quantity="many">%1$d-дневная серия</item>
+        <item quantity="other">%1$d-дневная серия</item>
+    </plurals>
+    <plurals name="highlight_streak_weekly_headline_primary">
+        <item quantity="one">%1$d-недельная серия</item>
+        <item quantity="few">%1$d-недельная серия</item>
+        <item quantity="many">%1$d-недельная серия</item>
+        <item quantity="other">%1$d-недельная серия</item>
+    </plurals>
+    <plurals name="training_streak_details_cycle_value">
+        <item quantity="one">Тренировки в %1$d из %2$d дня ритма</item>
+        <item quantity="few">Тренировки в %1$d из %2$d дней ритма</item>
+        <item quantity="many">Тренировки в %1$d из %2$d дней ритма</item>
+        <item quantity="other">Тренировки в %1$d из %2$d дней ритма</item>
+    </plurals>
+    <plurals name="exercise_sets_done">
+        <item quantity="one">%1$d подход выполнен</item>
+        <item quantity="few">%1$d подхода выполнено</item>
+        <item quantity="many">%1$d подходов выполнено</item>
+        <item quantity="other">%1$d подхода выполнено</item>
+    </plurals>
+    <plurals name="exercise_sets_planned">
+        <item quantity="one">%1$d подход в плане</item>
+        <item quantity="few">%1$d подхода в плане</item>
+        <item quantity="many">%1$d подходов в плане</item>
+        <item quantity="other">%1$d подхода в плане</item>
+    </plurals>
+    <plurals name="exercise_sets_progress">
+        <item quantity="one">%1$d из %2$d подхода выполнено</item>
+        <item quantity="few">%1$d из %2$d подходов выполнено</item>
+        <item quantity="many">%1$d из %2$d подходов выполнено</item>
+        <item quantity="other">%1$d из %2$d подхода выполнено</item>
+    </plurals>
+    <plurals name="exercise_plan_sets_repetitions">
+        <item quantity="one">%1$d подход по %2$s повт.</item>
+        <item quantity="few">%1$d подхода по %2$s повт.</item>
+        <item quantity="many">%1$d подходов по %2$s повт.</item>
+        <item quantity="other">%1$d подхода по %2$s повт.</item>
+    </plurals>
+    <plurals name="welcome_facts_muscles_excluded">
+        <item quantity="one">%1$d мышца исключена</item>
+        <item quantity="few">%1$d мышцы исключены</item>
+        <item quantity="many">%1$d мышц исключено</item>
+        <item quantity="other">%1$d мышцы исключено</item>
+    </plurals>
+    <plurals name="metric_overview_muscle_workouts">
+        <item quantity="one">%1$d тренировка</item>
+        <item quantity="few">%1$d тренировки</item>
+        <item quantity="many">%1$d тренировок</item>
+        <item quantity="other">%1$d тренировки</item>
+    </plurals>
+    <plurals name="metric_overview_muscle_sets">
+        <item quantity="one">%1$d подход учтён</item>
+        <item quantity="few">%1$d подхода учтено</item>
+        <item quantity="many">%1$d подходов учтено</item>
+        <item quantity="other">%1$d подхода учтено</item>
+    </plurals>
+    <plurals name="muscle_loading_details_coverage">
+        <item quantity="one">%1$d подход не учтён в процентах</item>
+        <item quantity="few">%1$d подхода не учтены в процентах</item>
+        <item quantity="many">%1$d подходов не учтено в процентах</item>
+        <item quantity="other">%1$d подхода не учтено в процентах</item>
+    </plurals>
+    <plurals name="spotlight_needs_attention_metric">
+        <item quantity="one">Последний раз — %1$d день назад</item>
+        <item quantity="few">Последний раз — %1$d дня назад</item>
+        <item quantity="many">Последний раз — %1$d дней назад</item>
+        <item quantity="other">Последний раз — %1$d дня назад</item>
+    </plurals>
+    <plurals name="home_unlock_workouts_left">
+        <item quantity="one">Ещё %1$d тренировка</item>
+        <item quantity="few">Ещё %1$d тренировки</item>
+        <item quantity="many">Ещё %1$d тренировок</item>
+        <item quantity="other">Ещё %1$d тренировки</item>
+    </plurals>
+    <plurals name="welcome_facts_equipment_missing">
+        <item quantity="one">%1$d вид оборудования недоступен</item>
+        <item quantity="few">%1$d вида оборудования недоступны</item>
+        <item quantity="many">%1$d видов оборудования недоступно</item>
+        <item quantity="other">%1$d вида оборудования недоступно</item>
+    </plurals>
+    <plurals name="goal_fit_unit_sets_per_week">
+        <item quantity="one">%1$s подход в неделю</item>
+        <item quantity="few">%1$s подхода в неделю</item>
+        <item quantity="many">%1$s подходов в неделю</item>
+        <item quantity="other">%1$s подхода в неделю</item>
+    </plurals>
+    <plurals name="goal_fit_unit_training_days_per_week">
+        <item quantity="one">%1$s день в неделю</item>
+        <item quantity="few">%1$s дня в неделю</item>
+        <item quantity="many">%1$s дней в неделю</item>
+        <item quantity="other">%1$s дня в неделю</item>
     </plurals>
 </resources>

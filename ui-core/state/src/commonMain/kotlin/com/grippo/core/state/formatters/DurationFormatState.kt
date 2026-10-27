@@ -54,7 +54,7 @@ public sealed class DurationFormatState : FormatState<Duration> {
                 value = value.toDouble(DurationUnit.MINUTES),
                 decimalSeparator = AppTokens.strings.res(Res.string.decimal_separator),
             )
-            return "$number ${AppTokens.strings.res(Res.string.minutes_short)}"
+            return "$number${FormatState.UNIT_SPACE}${AppTokens.strings.res(Res.string.minutes_short)}"
         }
 
         public fun ofTotal(value: Duration?): DurationFormatState {

@@ -75,7 +75,6 @@ import com.grippo.design.resources.provider.performance_comparison_after
 import com.grippo.design.resources.provider.performance_comparison_before
 import com.grippo.design.resources.provider.performance_comparison_empty
 import com.grippo.design.resources.provider.performance_comparison_first_title
-import com.grippo.design.resources.provider.performance_growth_before
 import com.grippo.design.resources.provider.value_transition
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -210,6 +209,7 @@ private fun PerformanceComparisonRow(
     val showsComparison = metric.showsComparison()
     // The reference travels with the status, so a leaving chip keeps the words it was measured in.
     val statusChip = (metric.status to reference).takeIf { showsComparison }
+    val earlierLine = (metric to reference).takeIf { metric.hasEarlierValue() }
     val delta = metric.currentVsAveragePercentage?.takeIf { showsComparison }
 
     val indicatorColors = metric.indicatorColors()
@@ -266,12 +266,9 @@ private fun PerformanceComparisonRow(
                     style = AppTokens.typography.b13Semi(),
                     color = AppTokens.colors.text.primary,
                 )
-                ComparisonOptionalPart(value = metric.takeIf { average != null }) { shown ->
+                ComparisonOptionalPart(value = earlierLine) { (shownMetric, shownReference) ->
                     ComparisonCrossfade(
-                        targetState = AppTokens.strings.res(
-                            Res.string.performance_growth_before,
-                            shown.averageDisplay(),
-                        ),
+                        targetState = shownReference.earlierValue(shownMetric.averageDisplay()),
                     ) { beforeText ->
                         Text(
                             text = beforeText,

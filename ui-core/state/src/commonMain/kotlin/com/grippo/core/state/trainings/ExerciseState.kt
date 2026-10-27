@@ -1,5 +1,6 @@
 package com.grippo.core.state.trainings
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.ImmutableListSerializer
 import com.grippo.core.state.examples.ExerciseExampleValueState
@@ -12,6 +13,12 @@ import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.metrics.volume.TrainingTotalState
 import com.grippo.core.state.metrics.volume.stubTotal
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.exercise_history_no_sets
+import com.grippo.design.resources.provider.exercise_sets_done
+import com.grippo.design.resources.provider.exercise_sets_planned
+import com.grippo.design.resources.provider.exercise_sets_progress
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -49,6 +56,16 @@ public data class ExerciseState(
         }
         val delta = (current.toDouble() - baseline.toDouble()) / baseline.toDouble() * 100.0
         return delta.takeIf { it.isFinite() }
+    }
+
+    public companion object {
+        @Composable
+        public fun setsProgress(completed: Int, total: Int): String = when {
+            total == 0 -> AppTokens.strings.res(Res.string.exercise_history_no_sets)
+            completed == total -> AppTokens.strings.res(Res.plurals.exercise_sets_done, total, total)
+            completed == 0 -> AppTokens.strings.res(Res.plurals.exercise_sets_planned, total, total)
+            else -> AppTokens.strings.res(Res.plurals.exercise_sets_progress, total, completed, total)
+        }
     }
 }
 

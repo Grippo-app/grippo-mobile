@@ -5,8 +5,8 @@
         <item quantity="other">%1$d training days</item>
     </plurals>
     <plurals name="training_recap_compared">
-        <item quantity="one">%1$d of %2$d metric above your average</item>
-        <item quantity="other">%1$d of %2$d metrics above your average</item>
+        <item quantity="one">%1$d of %2$d metric above usual</item>
+        <item quantity="other">%1$d of %2$d metrics above usual</item>
     </plurals>
     <plurals name="training_recap_compared_previous">
         <item quantity="one">%1$d of %2$d metric above last time</item>
@@ -16,12 +16,148 @@
         <item quantity="one">%1$d set</item>
         <item quantity="other">%1$d sets</item>
     </plurals>
-    <plurals name="goal_details_analysis_days">
+    <plurals name="day_count">
         <item quantity="one">%1$d day</item>
         <item quantity="other">%1$d days</item>
     </plurals>
     <plurals name="goal_details_analysis_sets">
         <item quantity="one">%1$d recorded set</item>
         <item quantity="other">%1$d recorded sets</item>
+    </plurals>
+    <plurals name="weekly_volume_workouts">
+        <item quantity="one">%1$d workout this week</item>
+        <item quantity="other">%1$d workouts this week</item>
+    </plurals>
+    <plurals name="metric_overview_streak_weekly_days">
+        <item quantity="one">%1$d training day a week</item>
+        <item quantity="other">%1$d training days a week</item>
+    </plurals>
+    <plurals name="training_streak_next_workouts">
+        <item quantity="one">%1$d more workout this week</item>
+        <item quantity="other">%1$d more workouts this week</item>
+    </plurals>
+    <plurals name="goal_analyzed_workouts">
+        <item quantity="one">Based on %1$d workout in this period</item>
+        <item quantity="other">Based on %1$d workouts in this period</item>
+    </plurals>
+    <plurals name="muscle_load_excluded_sets">
+        <item quantity="one">%1$d set wasn't counted: no reps or no valid weight.</item>
+        <item quantity="other">%1$d sets weren't counted: no reps or no valid weight.</item>
+    </plurals>
+    <plurals name="muscle_load_unassigned_sets">
+        <item quantity="one">%1$d set isn't linked to any muscle.</item>
+        <item quantity="other">%1$d sets aren't linked to any muscle.</item>
+    </plurals>
+    <plurals name="muscle_load_unmeasured_volume_sets">
+        <item quantity="one">%1$d set has no full weight recorded. Muscle shares count all sets; weight lifted counts only sets with full weight.</item>
+        <item quantity="other">%1$d sets have no full weight recorded. Muscle shares count all sets; weight lifted counts only sets with full weight.</item>
+    </plurals>
+    <plurals name="period_last_days">
+        <item quantity="one">over %1$d day</item>
+        <item quantity="other">over %1$d days</item>
+    </plurals>
+    <plurals name="highlight_streak_cycles">
+        <item quantity="one">%1$d-cycle streak</item>
+        <item quantity="other">%1$d-cycle streak</item>
+    </plurals>
+    <plurals name="metric_overview_streak_training_days">
+        <item quantity="one">%1$d training day</item>
+        <item quantity="other">%1$d training days</item>
+    </plurals>
+    <plurals name="metric_overview_streak_rest_days">
+        <item quantity="one">%1$d rest day</item>
+        <item quantity="other">%1$d rest days</item>
+    </plurals>
+    <plurals name="metric_overview_streak_cycle_days">
+        <item quantity="one">per %1$d-day cycle</item>
+        <item quantity="other">per %1$d-day cycle</item>
+    </plurals>
+    <plurals name="goal_card_progress_days_left">
+        <item quantity="one">%1$d day left</item>
+        <item quantity="other">%1$d days left</item>
+    </plurals>
+    <plurals name="goal_card_progress_overdue">
+        <item quantity="one">Target date passed %1$d day ago</item>
+        <item quantity="other">Target date passed %1$d days ago</item>
+    </plurals>
+    <plurals name="goal_fit_unit_groups">
+        <item quantity="one">%1$s group</item>
+        <item quantity="other">%1$s groups</item>
+    </plurals>
+    <plurals name="goal_details_analysis_excluded">
+        <item quantity="one">%1$d set wasn’t counted because its data is incomplete or invalid.</item>
+        <item quantity="other">%1$d sets weren’t counted because their data is incomplete or invalid.</item>
+    </plurals>
+    <plurals name="goal_details_analysis_missing_metadata">
+        <item quantity="one">%1$d set is from an exercise without muscle data, so muscle groups weren’t assessed.</item>
+        <item quantity="other">%1$d sets are from exercises without muscle data, so muscle groups weren’t assessed.</item>
+    </plurals>
+    <plurals name="goal_selected_options">
+        <item quantity="one">%1$d option selected</item>
+        <item quantity="other">%1$d options selected</item>
+    </plurals>
+    <plurals name="highlight_streak">
+        <item quantity="one">%1$d-day streak</item>
+        <item quantity="other">%1$d-day streak</item>
+    </plurals>
+    <plurals name="highlight_streak_weekly_headline_primary">
+        <item quantity="one">%1$d-week streak</item>
+        <item quantity="other">%1$d-week streak</item>
+    </plurals>
+    <plurals name="training_streak_details_cycle_value">
+        <item quantity="one">Trained on %1$d of %2$d rhythm day</item>
+        <item quantity="other">Trained on %1$d of %2$d rhythm days</item>
+    </plurals>
+    <plurals name="exercise_sets_done">
+        <item quantity="one">%1$d set done</item>
+        <item quantity="other">%1$d sets done</item>
+    </plurals>
+    <plurals name="exercise_sets_planned">
+        <item quantity="one">%1$d set planned</item>
+        <item quantity="other">%1$d sets planned</item>
+    </plurals>
+    <plurals name="exercise_sets_progress">
+        <item quantity="one">%1$d of %2$d set done</item>
+        <item quantity="other">%1$d of %2$d sets done</item>
+    </plurals>
+    <plurals name="exercise_plan_sets_repetitions">
+        <item quantity="one">%1$d set of %2$s reps</item>
+        <item quantity="other">%1$d sets of %2$s reps</item>
+    </plurals>
+    <plurals name="welcome_facts_muscles_excluded">
+        <item quantity="one">%1$d muscle excluded</item>
+        <item quantity="other">%1$d muscles excluded</item>
+    </plurals>
+    <plurals name="metric_overview_muscle_workouts">
+        <item quantity="one">%1$d workout</item>
+        <item quantity="other">%1$d workouts</item>
+    </plurals>
+    <plurals name="metric_overview_muscle_sets">
+        <item quantity="one">%1$d set counted</item>
+        <item quantity="other">%1$d sets counted</item>
+    </plurals>
+    <plurals name="muscle_loading_details_coverage">
+        <item quantity="one">%1$d set isn’t included in the percentages</item>
+        <item quantity="other">%1$d sets aren’t included in the percentages</item>
+    </plurals>
+    <plurals name="spotlight_needs_attention_metric">
+        <item quantity="one">Last done %1$d day ago</item>
+        <item quantity="other">Last done %1$d days ago</item>
+    </plurals>
+    <plurals name="home_unlock_workouts_left">
+        <item quantity="one">%1$d more workout</item>
+        <item quantity="other">%1$d more workouts</item>
+    </plurals>
+    <plurals name="welcome_facts_equipment_missing">
+        <item quantity="one">%1$d item unavailable</item>
+        <item quantity="other">%1$d items unavailable</item>
+    </plurals>
+    <plurals name="goal_fit_unit_sets_per_week">
+        <item quantity="one">%1$s set a week</item>
+        <item quantity="other">%1$s sets a week</item>
+    </plurals>
+    <plurals name="goal_fit_unit_training_days_per_week">
+        <item quantity="one">%1$s day a week</item>
+        <item quantity="other">%1$s days a week</item>
     </plurals>
 </resources>

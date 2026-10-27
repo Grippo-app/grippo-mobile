@@ -1,8 +1,13 @@
 package com.grippo.core.state.metrics.volume
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.weekly_volume_no_workouts
+import com.grippo.design.resources.provider.weekly_volume_workouts
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.datetime.LocalDateTime
 
@@ -13,10 +18,19 @@ public data class WeeklyVolumeState(
     val trainingsThisWeek: Int,
     val typicalVolume: VolumeFormatState?,
 ) {
+    public fun usualVolume(): Float? = typicalVolume?.value?.takeIf { volume -> volume > 0f }
+
     public fun progress(): Float? {
-        val typical = typicalVolume?.value?.takeIf { it > 0f } ?: return null
+        val typical = usualVolume() ?: return null
         val current = currentVolume.value ?: 0f
         return (current / typical).coerceIn(0f, 1f)
+    }
+
+    @Composable
+    public fun workoutsLabel(): String = if (trainingsThisWeek == 0) {
+        AppTokens.strings.res(Res.string.weekly_volume_no_workouts)
+    } else {
+        AppTokens.strings.res(Res.plurals.weekly_volume_workouts, trainingsThisWeek, trainingsThisWeek)
     }
 }
 

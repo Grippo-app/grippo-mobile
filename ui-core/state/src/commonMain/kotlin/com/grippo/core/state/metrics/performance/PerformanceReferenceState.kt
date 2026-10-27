@@ -5,6 +5,8 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.performance_comparison_last_time
+import com.grippo.design.resources.provider.performance_comparison_usual
 import com.grippo.design.resources.provider.performance_previous_value
 import com.grippo.design.resources.provider.performance_reference_average
 import com.grippo.design.resources.provider.performance_reference_previous
@@ -16,7 +18,11 @@ import com.grippo.design.resources.provider.performance_trend_details_previous_a
 import com.grippo.design.resources.provider.performance_trend_details_zero_average
 import com.grippo.design.resources.provider.performance_trend_details_zero_previous
 import com.grippo.design.resources.provider.training_recap_compared
+import com.grippo.design.resources.provider.training_recap_compared_all
+import com.grippo.design.resources.provider.training_recap_compared_none
 import com.grippo.design.resources.provider.training_recap_compared_previous
+import com.grippo.design.resources.provider.training_recap_compared_previous_all
+import com.grippo.design.resources.provider.training_recap_compared_previous_none
 import kotlinx.serialization.Serializable
 
 @Immutable
@@ -32,8 +38,23 @@ public enum class PerformanceReferenceState {
 
     @Composable
     public fun comparedSummary(improved: Int, compared: Int): String = when (this) {
-        Average -> AppTokens.strings.res(Res.plurals.training_recap_compared, compared, improved, compared)
-        Previous -> AppTokens.strings.res(Res.plurals.training_recap_compared_previous, compared, improved, compared)
+        Average -> when (improved) {
+            0 -> AppTokens.strings.res(Res.string.training_recap_compared_none)
+            compared -> AppTokens.strings.res(Res.string.training_recap_compared_all)
+            else -> AppTokens.strings.res(Res.plurals.training_recap_compared, compared, improved, compared)
+        }
+
+        Previous -> when (improved) {
+            0 -> AppTokens.strings.res(Res.string.training_recap_compared_previous_none)
+            compared -> AppTokens.strings.res(Res.string.training_recap_compared_previous_all)
+            else -> AppTokens.strings.res(Res.plurals.training_recap_compared_previous, compared, improved, compared)
+        }
+    }
+
+    @Composable
+    public fun earlierValue(value: String): String = when (this) {
+        Average -> AppTokens.strings.res(Res.string.performance_comparison_usual, value)
+        Previous -> AppTokens.strings.res(Res.string.performance_comparison_last_time, value)
     }
 
     @Composable

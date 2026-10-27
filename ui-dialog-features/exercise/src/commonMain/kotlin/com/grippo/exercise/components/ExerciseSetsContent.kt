@@ -23,6 +23,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import com.grippo.core.state.formatters.DateTimeFormatState
+import com.grippo.core.state.formatters.FormatState
 import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
@@ -246,7 +247,7 @@ private fun ExerciseSetComparison(
             val volume = VolumeFormatState.of(rawVolume)
             val load = when {
                 rawVolume == null -> "—"
-                volume.value == null -> "0${AppTokens.strings.res(Res.string.kg)}"
+                volume.value == null -> "0${FormatState.UNIT_SPACE}${AppTokens.strings.res(Res.string.kg)}"
                 else -> volume.short()
             }
             val repetitions = value.repetitions.value?.toString() ?: "—"

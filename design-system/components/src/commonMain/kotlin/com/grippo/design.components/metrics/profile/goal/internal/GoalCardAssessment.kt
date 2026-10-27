@@ -25,7 +25,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.goal_card_limited_data
 import com.grippo.design.resources.provider.goal_course_title
 import com.grippo.design.resources.provider.goal_details_analysis_period
-import com.grippo.design.resources.provider.metric_overview_goal_analyzed
 import com.grippo.design.resources.provider.metric_overview_goal_score
 import com.grippo.design.resources.provider.percent
 
@@ -129,15 +128,17 @@ private fun GoalAnalysisSummary(
             )
         }
         Text(
-            text = AppTokens.strings.res(Res.string.metric_overview_goal_analyzed, value.sessionCount),
+            text = value.analyzedWorkoutsLabel(),
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.secondary,
         )
-        Text(
-            text = value.evidence.summaryLine(),
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary,
-        )
+        value.evidence.summaryLine()?.let { summary ->
+            Text(
+                text = summary,
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.secondary,
+            )
+        }
     }
 }
 

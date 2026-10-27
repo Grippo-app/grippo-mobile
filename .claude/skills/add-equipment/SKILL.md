@@ -49,9 +49,9 @@ integration tasks.
    can support mobile-only work while the server row remains pending. Finalize
    the naming tuple from that evidence before creating dependent declarations.
 3. **Implement the consumer chain.** Follow the integration map through domain
-   promotion, state enum, all actual exhaustive mappings, image, localized title
-   and hint, exercise ordering and preview data. Search by both the closest
-   existing type and the new identifiers to find additional consumers. Apply
+   promotion, state enum, all actual exhaustive mappings, image, localized title,
+   exercise ordering and preview data. Search by both the closest existing type
+   and the new identifiers to find additional consumers. Apply
    [data-layer](../data-layer/SKILL.md), [mappers](../mappers/SKILL.md) and
    [design-system](../design-system/SKILL.md) at their owners.
 4. **Trace selection and saving.** Check catalog refresh, independent toggling,
@@ -80,7 +80,7 @@ permissions. Apply the task's existing authorization and the backend's own rules
   reported explicitly and live selection is not claimed complete. An explicit
   mobile-only task can complete its client outcome without modifying the server.
 - The domain type reaches the correct state type through every affected mapping;
-  title, hint, image and ordering resolve, with real translations in every current
+  title, image and ordering resolve, with real translations in every current
   locale and a distinct preview identity.
 - The identifier naming check passes, including collisions, explicit legacy/reuse
   mappings and agreement between source and the backend handoff.

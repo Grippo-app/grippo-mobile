@@ -10,109 +10,103 @@
     <string name="weight_and_height">Weight &amp; height</string>
     <string name="update_your_body_metrics">Update your current weight and height.</string>
     <string name="extra_weight_placeholder">Extra weight</string>
-    <string name="assist_weight_placeholder">Assist weight</string>
+    <string name="assist_weight_placeholder">Assistance weight</string>
     <string name="home_exercise_highlights_title">Your exercise highlights</string>
     <string name="home_progress_details_hint">Tap a card for details.</string>
     <string name="home_metrics_title">Workout numbers</string>
-    <string name="home_metrics_empty_description">No metric data for this period yet. Try another period.</string>
+    <string name="home_metrics_empty_description">No workout data for this period yet. Try another period.</string>
     <string name="home_last_workout_in_period">Latest workout in period</string>
     <string name="metric_overview_muscle_distribution">Muscle load distribution</string>
-    <string name="metric_overview_muscle_context">Workouts: %1$d · Available sets: %2$d</string>
     <string name="metric_overview_muscle_primary">Most loaded muscle: %1$s</string>
     <string name="metric_overview_muscle_details">All groups and muscles</string>
     <string name="metric_overview_streak_title">Training rhythm</string>
     <string name="metric_overview_streak_active_days">Active days</string>
-    <string name="metric_overview_streak_daily_pattern">Rhythm: consecutive training days</string>
-    <string name="metric_overview_streak_weekly_pattern">Training days per week: %1$d</string>
-    <string name="metric_overview_streak_rhythm_pattern">Training days: %1$d · Rest days: %2$d</string>
-    <string name="metric_overview_streak_pattern_pattern">Training days: %1$d · Days per cycle: %2$d</string>
-    <string name="metric_overview_performance_average">Previous avg: %1$s</string>
-    <string name="metric_overview_performance_comparison">%1$s vs previous average</string>
+    <string name="metric_overview_streak_daily_pattern">Training days in a row</string>
+    <string name="metric_overview_performance_average">Usually %1$s</string>
+    <string name="metric_overview_performance_comparison">%1$s vs usual</string>
     <string name="metric_overview_duration">Workout time</string>
     <string name="metric_overview_volume">Weight lifted</string>
     <string name="metric_overview_density">Weight per minute</string>
     <string name="metric_overview_intensity">Average weight</string>
     <string name="metric_overview_repetitions">Repetitions</string>
-    <string name="metric_overview_goal_score">Training alignment</string>
-    <string name="metric_overview_goal_analyzed">Workouts analyzed in period: %1$d</string>
-    <string name="spotlight_progress_win_title">More training volume</string>
+    <string name="metric_overview_goal_score">Match with your goal</string>
+    <string name="spotlight_progress_win_title">More weight lifted</string>
     <string name="spotlight_needs_attention_title">Longer break</string>
     <string name="spotlight_good_frequency_title">Consistent practice</string>
-    <string name="spotlight_near_best_title">Near your best volume</string>
-    <string name="repetitions_input_hint">1–99 reps</string>
+    <string name="spotlight_near_best_title">Close to your best</string>
     <string name="exercise_details_btn">Exercise details</string>
     <string name="push_token">Push token</string>
-    <string name="start_new">Start new</string>
+    <string name="start_new">Discard and start new</string>
     <string name="weight">Weight</string>
     <string name="choose_your_experience_level">Choose your current training experience level.</string>
-    <string name="weight_input_hint">1–999 kg</string>
-    <string name="spotlight_progress_win_metric">+%1$s% volume · prior sessions: %2$d</string>
-    <string name="spotlight_progress_win_context">Latest %1$s vs median %2$s kg·reps over %3$d days</string>
-    <string name="spotlight_progress_win_action">Recorded volume is weight × reps across sets; more volume does not necessarily mean more strength.</string>
-    <string name="spotlight_needs_attention_metric">Last recorded %1$d days ago</string>
-    <string name="spotlight_needs_attention_context">Recent usual gap ~%1$d days; longer break from %2$d days</string>
+    <string name="spotlight_progress_win_metric">%1$s% more than usual (last %2$d workouts)</string>
+    <string name="spotlight_progress_win_action">Weight lifted is weight × reps across all sets. More of it doesn’t always mean more strength.</string>
     <string name="spotlight_needs_attention_action">Check whether this exercise still fits your current plan.</string>
-    <string name="spotlight_good_frequency_metric">%1$s training days/week over %2$d weeks</string>
-    <string name="spotlight_good_frequency_context">Recorded in %1$d of %2$d weeks, %3$d training days</string>
-    <string name="spotlight_good_frequency_action">Several sessions on one day count as one training day.</string>
-    <string name="spotlight_near_best_metric">Gap to your best volume: %1$s%</string>
-    <string name="spotlight_near_best_context">Recorded %1$s vs prior best %2$s kg·reps over %3$d days</string>
-    <string name="spotlight_near_best_action">Compare volume with the same technique and range of motion.</string>
-    <string name="dashboard">Dashboard</string>
+    <string name="spotlight_good_frequency_metric">%1$s× a week over the last %2$d weeks</string>
+    <string name="spotlight_good_frequency_action">Several workouts on the same day count as one day.</string>
+    <string name="spotlight_near_best_action">A fair comparison needs the same technique and range of motion.</string>
+    <string name="dashboard">Home</string>
     <string name="highlight_muscle_focus">Muscle focus</string>
-    <string name="highlight_streak">%1$d-day streak</string>
-    <string name="highlight_streak_weekly_headline_primary">%1$d-week streak</string>
-    <string name="highlight_streak_rhythm">%1$d-cycle streak</string>
-    <string name="highlight_streak_pattern_headline_primary">Pattern streak: %1$d cycles</string>
     <string name="performance_trend_desc_duration">Workout duration. Longer or shorter does not mean better.</string>
-    <string name="performance_trend_desc_volume">Weight moved: working weight × repetitions. Exercise choice and workout length affect the total; it does not measure strength on its own.</string>
-    <string name="performance_trend_desc_density">Volume per minute of the full workout, including rests. A higher value does not by itself mean a better workout.</string>
-    <string name="performance_trend_desc_repetitions">Total repetitions per workout. Exercise choice, sets and planned lighter sessions affect the total; fewer reps do not establish fatigue.</string>
-    <string name="performance_trend_desc_intensity">Average working weight per weighted repetition. Exercise choice affects this value; it does not measure effort or strength on its own.</string>
+    <string name="performance_trend_desc_volume">The weight of each set times its reps, added up for the whole workout. It depends on which exercises you did and how long you trained, so on its own it doesn’t show strength.</string>
+    <string name="performance_trend_desc_density">Weight lifted divided by the minutes of the whole workout, rests included. A higher number doesn’t by itself mean a better workout.</string>
+    <string name="performance_trend_desc_repetitions">All reps in the workout added up. The total depends on your exercises, number of sets and planned light days; fewer reps don’t mean you were tired.</string>
+    <string name="performance_trend_desc_intensity">Average weight per rep, counting only reps done with weight. It depends on your exercises and doesn’t show effort or strength on its own.</string>
     <string name="sets_value">Sets (%1$s)</string>
     <string name="percent">%</string>
     <string name="joined_pair">%1$s · %2$s</string>
     <string name="value_transition">%1$s → %2$s</string>
     <string name="listed_pair">%1$s, %2$s</string>
     <string name="labeled_value">%1$s %2$s</string>
-    <string name="selected">Selected</string>
     <string name="cm">cm</string>
     <string name="apply_btn">Apply</string>
     <string name="got_it_btn">Got it</string>
     <string name="confirm_btn">Confirm</string>
     <string name="empty_training_exercises">Add your first exercise to start tracking this workout.</string>
     <string name="empty_daily_trainings">No workouts on this day.</string>
-    <string name="empty_exercise_examples">No exercises match your search.</string>
-    <string name="exercise_library_suggestions_chip">Suggested</string>
-    <string name="daily">Daily</string>
-    <string name="yearly">Yearly</string>
+    <string name="empty_exercise_examples">No exercises found. Try a different search or muscle group.</string>
+    <string name="exercise_library_suggestions_chip">Similar</string>
     <string name="custom">Custom</string>
     <string name="danger_zone">Danger zone</string>
-    <string name="weekly">Weekly</string>
-    <string name="monthly">Monthly</string>
     <string name="details">Details</string>
     <string name="cancel_btn">Cancel</string>
-    <string name="logout_btn">Logout</string>
+    <string name="logout_btn">Sign out</string>
     <string name="delete_account">Delete account</string>
     <string name="loading">Loading…</string>
-    <string name="submit_btn">Submit</string>
+    <string name="submit_btn">Done</string>
     <string name="delete_btn">Delete</string>
     <string name="edit_btn">Edit</string>
-    <string name="change_btn">Change</string>
+    <string name="change_btn">Replace exercise</string>
     <string name="continue_btn">Continue</string>
     <string name="add_exercise_btn">Add exercise</string>
     <string name="save_btn">Save</string>
     <string name="update_btn">Update</string>
     <string name="training_completed_details_unavailable">Workout saved. You can find it in your history.</string>
-    <string name="training_completed_result_unavailable">The workout result could not be confirmed. Check your history before trying again.</string>
+    <string name="training_completed_result_unavailable">We couldn’t confirm that the workout was saved. Check your history before you record it again.</string>
     <string name="training_completed_done">Done</string>
     <string name="training_recap_verdict_record">Period best</string>
     <string name="training_recap_verdict_improved">Stronger than usual</string>
     <string name="training_recap_verdict_improved_previous">Stronger than last time</string>
     <string name="training_recap_verdict_stable">Right on your level</string>
-    <string name="training_recap_verdict_declined">A lighter session</string>
     <string name="training_recap_verdict_first">Your starting point</string>
     <string name="training_recap_first_description">The baseline for your next workouts</string>
+    <string name="weekly_volume_usual">Usually %1$s a week</string>
+    <string name="training_streak_growth_started">Streak started</string>
+    <string name="training_streak_none">No streak yet</string>
+    <string name="metric_overview_streak_rhythm_cadence">%1$s, then %2$s</string>
+    <string name="metric_overview_streak_pattern_cadence">%1$s %2$s</string>
+    <string name="period_today">today</string>
+    <string name="period_this_week">this week</string>
+    <string name="period_this_month">this month</string>
+    <string name="period_this_year">this year</string>
+    <string name="training_recap_compared_none">No metrics above usual</string>
+    <string name="training_recap_compared_all">Every metric above usual</string>
+    <string name="training_recap_compared_previous_none">No metrics above last time</string>
+    <string name="training_recap_compared_previous_all">Every metric above last time</string>
+    <string name="performance_comparison_usual">Usually %1$s</string>
+    <string name="performance_comparison_last_time">Last time %1$s</string>
+    <string name="weekly_volume_no_workouts">No workouts this week yet</string>
+    <string name="goal_analyzed_none">No workouts in this period yet</string>
     <string name="training_recap_period_as_of">as of %1$s</string>
     <string name="per_group">Per group</string>
     <string name="per_muscle">Per muscle</string>
@@ -140,7 +134,7 @@
     <string name="or_continue_with">Or continue with</string>
     <string name="login_title">Welcome to Grippo</string>
     <string name="login_button_login">Sign in</string>
-    <string name="account_deletion">Account deletion</string>
+    <string name="account_deletion">Delete your account?</string>
     <string name="account_deletion_description">Your account and data will be permanently removed. You won’t be able to restore them later.</string>
     <string name="continue_with_google">Google</string>
     <string name="continue_with_apple">Apple</string>
@@ -166,7 +160,7 @@
     <string name="registration_equipment_description">Turn off unavailable equipment and we’ll hide exercises that need it.</string>
 
     <string name="welcome_title">Time for your first workout</string>
-    <string name="welcome_subtitle">Start tracking your progress with your first session.</string>
+    <string name="welcome_subtitle">Start tracking your progress with your first workout.</string>
 
 
     <string name="welcome_check_profile">Profile created</string>
@@ -174,23 +168,21 @@
     <string name="welcome_check_muscles">Muscles configured</string>
     <string name="welcome_check_equipment">Equipment configured</string>
     <string name="welcome_check_goal">Goal set</string>
-    <string name="welcome_section_progress_title">Setup progress</string>
-    <string name="welcome_section_benefits_title">What you have</string>
+    <string name="welcome_section_progress_title">Profile setup</string>
+    <string name="welcome_section_benefits_title">What you get</string>
 
     <string name="welcome_facts_muscles_all">All muscles</string>
-    <string name="welcome_facts_muscles_excluded">%1$d excluded</string>
     <string name="welcome_facts_equipment_all">All equipment</string>
-    <string name="welcome_facts_equipment_missing">%1$d missing</string>
 
     <string name="welcome_motto_beginner">The first set matters most.</string>
     <string name="welcome_motto_intermediate">Time to level up.</string>
     <string name="welcome_motto_advanced">Consistency makes champions.</string>
     <string name="welcome_motto_pro">Time to deliver results.</string>
 
-    <string name="welcome_benefit_pack_title">Your exercise set is ready</string>
+    <string name="welcome_benefit_pack_title">Your exercise list is ready</string>
     <string name="welcome_benefit_pack_subtitle">Tailored to your equipment and muscles.</string>
     <string name="welcome_benefit_progress_title">Progress, tracked</string>
-    <string name="welcome_benefit_progress_subtitle">Volume, repetitions, and time logged for every workout.</string>
+    <string name="welcome_benefit_progress_subtitle">Weight lifted, reps and time are logged for every workout.</string>
     <string name="welcome_benefit_history_title">Full training history</string>
     <string name="welcome_benefit_history_subtitle">Every set saved, ready to revisit anytime.</string>
 
@@ -209,7 +201,7 @@
     <string name="experience_advanced_title">Advanced</string>
     <string name="experience_pro_title">Pro</string>
     <string name="experience_beginner_description">Under a year of training — learning the main exercises and building a foundation.</string>
-    <string name="experience_intermediate_description">Over a year of experience, comfortable with the main exercises and a solid base.</string>
+    <string name="experience_intermediate_description">Over a year of training — you know the main exercises well and have a solid base.</string>
     <string name="experience_advanced_description">2+ years of training, with good form and steady progress.</string>
     <string name="experience_pro_description">5+ years of experience — excellent form and a high level of muscle development.</string>
 
@@ -219,8 +211,8 @@
     <string name="profile_menu_experience">Experience</string>
 
     <string name="trainings">Workouts</string>
-    <string name="trainings_period_daily">Daily</string>
-    <string name="trainings_period_monthly">Monthly</string>
+    <string name="trainings_period_daily">Day</string>
+    <string name="trainings_period_monthly">Month</string>
     <string name="training">Workout</string>
     <string name="duration">Duration</string>
     <string name="sets">Sets</string>
@@ -231,10 +223,10 @@
     <string name="tiktok">TikTok</string>
     <string name="youtube">YouTube</string>
     <string name="social_hero_subtitle">Workout tips, product updates, and practical training ideas.</string>
-    <string name="value_statistics">%1$s statistics</string>
-    <string name="value_muscle_loading">%1$s muscle loading</string>
+    <string name="value_statistics">%1$s — statistics</string>
+    <string name="value_muscle_loading">%1$s — muscle loading</string>
     <string name="muscle_loading">Muscle loading</string>
-    <string name="muscle_load_no_data">No data yet.</string>
+    <string name="muscle_load_no_data">No muscle data.</string>
     <string name="value_performance_trend">%1$s — %2$s trend</string>
     <string name="performance_trend">%1$s trend</string>
     <string name="training_streak_insights_title">About this calculation</string>
@@ -262,16 +254,16 @@
     <string name="select_date">Select date</string>
     <string name="select_month">Select month</string>
     <string name="x">x</string>
-    <string name="tonnage">Tonnage</string>
+    <string name="tonnage">Weight lifted</string>
     <string name="progress">Progress</string>
-    <string name="tonnage_chip">Tonnage</string>
+    <string name="tonnage_chip">Weight lifted</string>
     <string name="intensity_chip">Intensity</string>
     <string name="repetitions_chip">Repetitions</string>
-    <string name="volume">Volume</string>
-    <string name="training_progress_lost_title">Exit workout</string>
-    <string name="training_progress_lost_description">Closing now will discard all progress from this session.</string>
+    <string name="volume">Weight lifted</string>
+    <string name="training_progress_lost_title">Leave the workout?</string>
+    <string name="training_progress_lost_description">If you leave now, what you’ve entered won’t be saved.</string>
     <string name="planned_sets_unfinished_title">Unfinished sets</string>
-    <string name="planned_sets_unfinished_description">Some planned sets are still empty. They will be dropped when you finish the workout.</string>
+    <string name="planned_sets_unfinished_description">Some planned sets are still empty. They won’t be saved when you finish the workout.</string>
     <string name="confirm_training_completion_title">Finish workout</string>
     <string name="confirm_training_completion_subtitle">Review your completed sets and duration before saving.</string>
     <string name="confirm_training_completion_hint">Tap the duration to adjust it.</string>
@@ -280,15 +272,14 @@
     <string name="confirm_training_completion_save">Save workout</string>
     <string name="confirm_training_completion_continue">Keep training</string>
     <string name="something_went_wrong">Something went wrong</string>
-    <string name="timeout_error">Timeout</string>
+    <string name="timeout_error">The server took too long</string>
     <string name="unexpected_network_error">Unexpected network error</string>
     <string name="draft_training_alert_title_add">Resume workout</string>
     <string name="draft_training_alert_description_add">Your workout draft is saved. Pick up where you left off.</string>
     <string name="draft_training_alert_title_edit">Resume editing</string>
-    <string name="draft_training_alert_description_edit">Your changes are saved in a draft and ready to continue.</string>
+    <string name="draft_training_alert_description_edit">Your changes to this workout are saved in a draft. Pick up where you left off.</string>
     <string name="draft_training_summary_exercises">Exercises</string>
-    <string name="draft_training_summary_sets">Filled sets</string>
-    <string name="draft_training_summary_time">Saved time</string>
+    <string name="draft_training_summary_time">Duration</string>
     <string name="draft_training_contents">In this workout</string>
     <string name="draft_training_empty">No exercises added yet. Continue to add your first one.</string>
     <string name="start_training_title">Start workout</string>
@@ -304,21 +295,18 @@
     <string name="start_training_use_preset_btn">Use this plan</string>
     <string name="start_training_repeat_btn">Repeat workout</string>
     <string name="start_training_recent_description">Repeat the exercises and sets. Add today’s weights as you train.</string>
-    <string name="exercise_plan_sets_repetitions">Sets: %1$s · Reps: %2$s</string>
-    <string name="exercise_plan_sets">Sets: %1$s</string>
     <string name="menu">Menu</string>
     <string name="calendar">Calendar</string>
 
-    <string name="best_tonnage">Best tonnage</string>
-    <string name="best_weight">Best weight</string>
-    <string name="lifetime_volume">Lifetime volume</string>
-    <string name="max_repetitions">Max repetitions</string>
-    <string name="peak_intensity">Peak intensity</string>
+    <string name="best_tonnage">Most lifted in a workout</string>
+    <string name="best_weight">Max weight</string>
+    <string name="lifetime_volume">All-time weight lifted</string>
+    <string name="max_repetitions">Most reps in a set</string>
+    <string name="peak_intensity">Best average weight</string>
 
-    <string name="exercise_example_last_used_value">Last used: %1$s</string>
-    <string name="exercise_example_in_history">In your history</string>
+    <string name="exercise_example_last_used_value">Last done: %1$s</string>
+    <string name="exercise_example_in_history">Done before</string>
     <string name="exercise_example_not_used">Not tried yet</string>
-    <string name="exercise_example_weight_type_value">Weight type: %1$s</string>
     <string name="exercise_library_replace_target">Exercise to replace</string>
 
 
@@ -332,9 +320,9 @@
     <string name="category_isolation">Isolation</string>
 
     <!-- WeightTypeEnumState -->
-    <string name="weight_type_free">Free</string>
-    <string name="weight_type_fixed">Fixed</string>
-    <string name="weight_type_body_weight">Body</string>
+    <string name="weight_type_free">Free weight</string>
+    <string name="weight_type_fixed">Machine</string>
+    <string name="weight_type_body_weight">Body weight</string>
 
     <!-- ResourceTypeEnumState -->
     <string name="resource_type_youtube_video">YouTube Video</string>
@@ -353,13 +341,13 @@
     <string name="equipment_landmine">Landmine Attachment</string>
     <string name="equipment_rope">Rope</string>
     <string name="equipment_straight_bar">Straight Bar</string>
-    <string name="equipment_cord_handles">Cord Handles</string>
+    <string name="equipment_cord_handles">Cable Handles</string>
     <string name="equipment_ankle_cuff">Ankle Cuff</string>
 
-    <string name="equipment_ab_machines">AB Machines</string>
+    <string name="equipment_ab_machines">Ab Machines</string>
     <string name="equipment_butterfly">Butterfly</string>
     <string name="equipment_butterfly_forearm">Pec Deck with Forearm Pads</string>
-    <string name="equipment_butterfly_reverse">Butterfly Reverse</string>
+    <string name="equipment_butterfly_reverse">Reverse Butterfly</string>
     <string name="equipment_leg_extension_machines">Leg Extension Machines</string>
     <string name="equipment_leg_curl_machines">Leg Curl Machines</string>
     <string name="equipment_chest_press_machines">Chest Press Machines</string>
@@ -378,17 +366,17 @@
     <string name="equipment_glute_machines">Glute Machines</string>
     <string name="equipment_assisted_pull_up_dip">Assisted Pull-Up / Dip</string>
     <string name="equipment_plate_loaded_row">Chest-Supported Plate-Loaded Row</string>
-    <string name="equipment_belt_squat">Belt Squat</string>
+    <string name="equipment_belt_squat">Belt Squat Machine</string>
     <string name="equipment_plate_loaded_seated_dip">Plate-Loaded Seated Dip</string>
     <string name="equipment_adductor_machine">Adductor Machine</string>
     <string name="equipment_abductor_machine">Abductor Machine</string>
 
     <string name="equipment_lat_pulldown">Lat Pulldown</string>
-    <string name="equipment_cable">Cable</string>
+    <string name="equipment_cable">Cable Station</string>
     <string name="equipment_cable_crossover">Cable Crossover</string>
-    <string name="equipment_row_cable">Row Cable</string>
+    <string name="equipment_row_cable">Seated Cable Row</string>
 
-    <string name="equipment_pull_up_bar">Pull Up Bar</string>
+    <string name="equipment_pull_up_bar">Pull-Up Bar</string>
     <string name="equipment_dip_bars">Dip Bars</string>
     <string name="equipment_roman_chair">Roman Chair</string>
     <string name="equipment_glute_ham_raise_bench">Glute Ham Raise Bench</string>
@@ -404,34 +392,34 @@
     <string name="equipment_row_bench">Row Bench</string>
 
     <!-- EquipmentGroupEnumState -->
-    <string name="equipment_group_free_weight">Free Weight</string>
+    <string name="equipment_group_free_weight">Free Weights</string>
     <string name="equipment_group_machines">Machines</string>
     <string name="equipment_group_cable_machines">Cable Machines</string>
     <string name="equipment_group_body_weight">Body Weight</string>
     <string name="equipment_group_benches_and_racks">Benches and Racks</string>
 
     <!-- MuscleEnumState -->
-    <string name="muscle_pectoralis_major_clavicular">Upper Chest (Pec)</string>
-    <string name="muscle_pectoralis_major_sternocostal">Mid Chest (Pec)</string>
-    <string name="muscle_pectoralis_major_abdominal">Lower Chest (Pec)</string>
-    <string name="muscle_trapezius">Trapezius Muscles</string>
-    <string name="muscle_latissimus_dorsi">Latissimus Dorsi</string>
-    <string name="muscle_rhomboids">Rhomboid Muscles</string>
-    <string name="muscle_teres_major">Teres Major Muscle</string>
-    <string name="muscle_rectus_abdominis">Rectus Abdominis</string>
-    <string name="muscle_obliques">Oblique Muscles</string>
-    <string name="muscle_calf">Calf Muscle Group</string>
-    <string name="muscle_gluteal">Gluteal Muscles</string>
-    <string name="muscle_hamstrings">Hamstring Muscles</string>
-    <string name="muscle_quadriceps">Quadriceps Group</string>
-    <string name="muscle_adductors">Adductor Muscles</string>
-    <string name="muscle_abductors">Abductor Muscles</string>
-    <string name="muscle_anterior_deltoid">Anterior Deltoid</string>
-    <string name="muscle_lateral_deltoid">Lateral Deltoids</string>
-    <string name="muscle_posterior_deltoid">Posterior Deltoid</string>
-    <string name="muscle_biceps">Biceps Brachii</string>
-    <string name="muscle_triceps">Triceps Brachii</string>
-    <string name="muscle_forearm">Forearm Muscles</string>
+    <string name="muscle_pectoralis_major_clavicular">Upper chest</string>
+    <string name="muscle_pectoralis_major_sternocostal">Mid chest</string>
+    <string name="muscle_pectoralis_major_abdominal">Lower chest</string>
+    <string name="muscle_trapezius">Trapezius</string>
+    <string name="muscle_latissimus_dorsi">Lats</string>
+    <string name="muscle_rhomboids">Rhomboids</string>
+    <string name="muscle_teres_major">Teres major</string>
+    <string name="muscle_rectus_abdominis">Rectus abdominis</string>
+    <string name="muscle_obliques">Obliques</string>
+    <string name="muscle_calf">Calves</string>
+    <string name="muscle_gluteal">Glutes</string>
+    <string name="muscle_hamstrings">Hamstrings</string>
+    <string name="muscle_quadriceps">Quadriceps</string>
+    <string name="muscle_adductors">Adductors (inner thigh)</string>
+    <string name="muscle_abductors">Abductors (outer thigh)</string>
+    <string name="muscle_anterior_deltoid">Front delts</string>
+    <string name="muscle_lateral_deltoid">Side delts</string>
+    <string name="muscle_posterior_deltoid">Rear delts</string>
+    <string name="muscle_biceps">Biceps</string>
+    <string name="muscle_triceps">Triceps</string>
+    <string name="muscle_forearm">Forearms</string>
 
     <!-- MuscleGroupEnumState -->
     <string name="muscle_group_chest_muscles">Chest</string>
@@ -442,85 +430,17 @@
     <string name="muscle_group_shoulder_muscles">Shoulders</string>
 
     <!-- IterationFocus -->
-    <string name="iteration_focus_volume">Volume</string>
-    <string name="iteration_focus_repetitions">Repetitions</string>
-    <string name="iteration_focus_unidentified">Unidentified</string>
-
-    <!-- Equipment hints -->
-    <string name="equipment_hint_common">Reps: how many reps you did in this set. Weight: follow the tips below.</string>
-    <string name="equipment_hint_none">Weight: if there is no added weight, enter 1. If you hold a plate/dumbbell/vest, enter added weight only.</string>
-
-    <string name="equipment_hint_dumbbells">Enter the total for the pair (2×20 → 40), even for alternating reps.</string>
-    <string name="equipment_hint_kettlebells">Enter the total weight of the kettlebells used: the weight of one kettlebell or the combined weight of two.</string>
-    <string name="equipment_hint_barbell">Enter total weight on the bar. If you include the bar, include it every time.</string>
-    <string name="equipment_hint_v_bar">Hold the V-handle with both hands.</string>
-    <string name="equipment_hint_wide_grip_handle">Hold the wide handle with both hands.</string>
-    <string name="equipment_hint_close_grip_handle">Hold the close handle with both hands.</string>
-    <string name="equipment_hint_ez_bar">Enter total weight on the EZ-bar. If you include the bar, include it every time.</string>
-    <string name="equipment_hint_trap_bar">Enter total weight on the trap bar. If you include the bar, include it every time.</string>
-    <string name="equipment_hint_landmine">Enter the total weight of plates on the free end of the bar. Do not include the bar or the attachment.</string>
-    <string name="equipment_hint_rope">Hold the rope with one or two hands — as the exercise requires.</string>
-    <string name="equipment_hint_straight_bar">Hold the straight bar with both hands.</string>
-    <string name="equipment_hint_cord_handles">Hold the handle with one hand or as a pair — as the exercise requires.</string>
-    <string name="equipment_hint_ankle_cuff">Secure the cuff around your ankle and attach it to the cable. Enter the weight selected on the stack.</string>
-
-    <string name="equipment_hint_ab_machines">Enter the weight you set on the machine.</string>
-    <string name="equipment_hint_butterfly">Enter the machine weight. If left/right show different numbers, use one side.</string>
-    <string name="equipment_hint_butterfly_forearm">Enter the weight selected on the machine.</string>
-    <string name="equipment_hint_butterfly_reverse">Enter the machine weight. If left/right show different numbers, use one side.</string>
-    <string name="equipment_hint_leg_extension_machines">Enter the weight you set on leg extensions.</string>
-    <string name="equipment_hint_leg_curl_machines">Enter the weight you set on leg curls.</string>
-    <string name="equipment_hint_chest_press_machines">Enter the weight you set on the chest press machine.</string>
-    <string name="equipment_hint_plate_loaded_incline_chest_press">Enter the total weight of plates on the working arms you use. For a one-arm press, count only the plates on that side. Do not count storage plates or the machine’s own resistance.</string>
-    <string name="equipment_hint_plate_loaded_decline_chest_press">Enter the total weight of plates on the working arms you use. For a one-arm press, count only the plates on that side. Do not count storage plates or the machine’s own resistance.</string>
-    <string name="equipment_hint_biceps_machines">Enter the weight you set on the biceps machine.</string>
-    <string name="equipment_hint_smith_machines">Enter total plates. The Smith bar itself can be skipped — just be consistent every time.</string>
-    <string name="equipment_hint_hack_squat_machines">Enter total plates on the hack squat.</string>
-    <string name="equipment_hint_leg_press_machine">Enter total plates on the leg press.</string>
-    <string name="equipment_hint_vertical_leg_press">Enter the total weight of the working plates on the vertical leg press. Do not include the platform or carriage.</string>
-    <string name="equipment_hint_deadlift_machines">Enter total plates on the deadlift machine.</string>
-    <string name="equipment_hint_shoulder_press_machines">Enter the weight you set on the shoulder machine.</string>
-    <string name="equipment_hint_lateral_raise_machines">Enter the weight you set on the lateral raise machine.</string>
-    <string name="equipment_hint_triceps_machines">Enter the weight you set on the triceps machine.</string>
-    <string name="equipment_hint_calf_raise_machines">Enter the weight you set on the calf machine.</string>
-    <string name="equipment_hint_glute_machines">Enter the weight you set on the glute machine.</string>
-    <string name="equipment_hint_assisted_pull_up_dip">Enter the assistance weight shown on the stack as a positive value. More assistance makes the exercise easier.</string>
-    <string name="equipment_hint_plate_loaded_row">Enter the total weight of plates on the arms you use. For one-arm rows, count only the plates on that side. Do not include resistance from the machine itself.</string>
-    <string name="equipment_hint_belt_squat">Enter the total weight of the plates used for resistance. Do not include your body weight or the resistance of the unloaded machine.</string>
-    <string name="equipment_hint_plate_loaded_seated_dip">Enter the total weight of plates on the working arms. Do not count storage plates or the machine’s own resistance.</string>
-
-    <string name="equipment_hint_lat_pulldown">Enter the weight you set on lat pulldown.</string>
-    <string name="equipment_hint_cable">Enter the weight you set on the cable station.</string>
-    <string name="equipment_hint_cable_crossover">On crossover, enter the weight for one side.</string>
-    <string name="equipment_hint_row_cable">Enter the weight you set on seated row.</string>
-
-    <string name="equipment_hint_pull_up_bar">No extra weight — enter your bodyweight. With a belt/vest — add the extra weight.</string>
-    <string name="equipment_hint_dip_bars">No extra weight — enter your bodyweight. With a belt/vest — add the extra weight.</string>
-    <string name="equipment_hint_romain_chair">No extra weight — enter your bodyweight. Holding a plate/dumbbell — add it.</string>
-    <string name="equipment_hint_glute_ham_raise_bench">No extra weight — enter your bodyweight. With a plate/vest — add it.</string>
-
-    <string name="equipment_hint_flat_bench">If you use external weight, enter its weight.</string>
-    <string name="equipment_hint_adjustable_bench">If you use external weight, enter its weight.</string>
-    <string name="equipment_hint_adductor_machine">Enter the weight you set on the adductor machine.</string>
-    <string name="equipment_hint_abductor_machine">Enter the weight you set on the abductor machine.</string>
-    <string name="equipment_hint_decline_bench">If you use external weight, enter its weight.</string>
-    <string name="equipment_hint_flat_bench_with_rack">Enter total barbell weight on the rack.</string>
-    <string name="equipment_hint_incline_bench_with_rack">Enter total barbell weight on the rack.</string>
-    <string name="equipment_hint_decline_bench_with_rack">Enter total barbell weight on the rack.</string>
-    <string name="equipment_hint_squat_rack">Enter total barbell weight in the rack.</string>
-    <string name="equipment_hint_preacher_curl_bench">Enter the weight you lift in the exercise.</string>
-    <string name="equipment_hint_row_bench">Enter the weight you use in the exercise.</string>
 
     <string name="notification_forgot_training_title">Workout still open 💪</string>
     <string name="notification_forgot_training_description">Come back to finish or save your progress.</string>
 
     <string name="notification_weight_title">Quick weigh-in? 👋</string>
-    <string name="notification_weight_description">A fresh weight keeps your progress and recommendations accurate.</string>
+    <string name="notification_weight_description">Update your weight to keep your progress accurate.</string>
 
     <string name="training_unusual_weight_title">Unusual weight</string>
-    <string name="training_unusual_weight_subtitle">Possible missing or extra digit</string>
+    <string name="training_unusual_weight_subtitle">Check for a missing or extra digit</string>
     <string name="training_unusual_reps_title">Unusual rep count</string>
-    <string name="training_unusual_reps_subtitle">Possible missing or extra digit</string>
+    <string name="training_unusual_reps_subtitle">Check for a missing or extra digit</string>
 
     <!-- Goal Profile -->
     <string name="goal_title">Training goal</string>
@@ -530,25 +450,24 @@
     <string name="goal_secondary_section">What else matters?</string>
     <string name="goal_target_date_placeholder">Target date</string>
     <string name="personalizations_schedule_section">Training schedule</string>
-    <string name="personalizations_session_duration_section">Session duration</string>
+    <string name="personalizations_session_duration_section">Workout length</string>
     <string name="personalizations_lifestyle_section">Lifestyle</string>
-    <string name="personalizations_recovery_context_section">Recovery context</string>
-    <string name="personalizations_care_zones_section">Care zones</string>
+    <string name="personalizations_recovery_context_section">Current situation</string>
+    <string name="personalizations_care_zones_section">Sensitive areas</string>
     <string name="personalizations_health_conditions_section">Health conditions</string>
     <string name="personalizations_movement_restrictions_section">Movement restrictions</string>
-    <string name="personalizations_sports_section">Sports</string>
-    <string name="personalizations_focus_areas_section">Focus areas</string>
-    <string name="personalizations_physical_qualities_section">Physical qualities</string>
+    <string name="personalizations_sports_section">Your sports</string>
+    <string name="personalizations_focus_areas_section">Priority muscles</string>
+    <string name="personalizations_physical_qualities_section">What to improve</string>
     <string name="personalizations_program_preferences_section">Program preferences</string>
     <string name="personalizations_routine_structure_section">Routine structure</string>
-    <string name="personalizations_set_method_preferences_section">Set / method preferences</string>
+    <string name="personalizations_set_method_preferences_section">Training style</string>
     <string name="personalizations_equipment_preferences_section">Equipment preferences</string>
     <string name="personalizations_training_phase_section">Training phase</string>
     <string name="goal_optional">Optional</string>
     <string name="goal_routine_section">Training routine</string>
     <string name="goal_training_preferences_section">Training preferences</string>
     <string name="goal_recovery_section">Recovery and limitations</string>
-    <string name="goal_selected_options">Selected: %1$d</string>
     <string name="goal_options_expanded">Expanded</string>
     <string name="goal_options_collapsed">Collapsed</string>
     <string name="goal_target_date_invalid">Choose a date from %1$s to %2$s.</string>
@@ -572,18 +491,18 @@
     <string name="goal_secondary_consistency">Consistency</string>
 
     <!-- Primary goal descriptions -->
-    <string name="goal_primary_build_muscle_desc">Train for muscle growth with structured volume and steady progression.</string>
-    <string name="goal_primary_get_stronger_desc">Focus on heavier lifts, clear progression, and strength-focused work.</string>
-    <string name="goal_primary_lose_fat_desc">Support fat loss with consistent, muscle-preserving training.</string>
-    <string name="goal_primary_return_to_training_desc">Rebuild your routine gradually with controlled progression.</string>
+    <string name="goal_primary_build_muscle_desc">Train for muscle growth: enough sets and weights that rise over time.</string>
+    <string name="goal_primary_get_stronger_desc">Heavy compound lifts, low reps and weights that rise over time.</string>
+    <string name="goal_primary_lose_fat_desc">Regular workouts that help you lose fat and keep your muscle.</string>
+    <string name="goal_primary_return_to_training_desc">Ease back into a routine without ramping up too fast.</string>
     <string name="goal_primary_maintain_desc">Maintain your fitness with balanced, repeatable workouts.</string>
-    <string name="goal_primary_general_fitness_desc">Build a balanced routine for strength, movement, and consistency.</string>
+    <string name="goal_primary_general_fitness_desc">Regular, balanced workouts for your whole body.</string>
 
     <!-- Secondary goal descriptions -->
-    <string name="goal_secondary_build_muscle_desc">Add muscle on the side of your main goal.</string>
-    <string name="goal_secondary_get_stronger_desc">Build strength alongside your main focus.</string>
-    <string name="goal_secondary_lose_fat_desc">Support fat loss alongside your main goal.</string>
-    <string name="goal_secondary_return_to_training_desc">Rebuild your base gradually while pursuing your main goal.</string>
+    <string name="goal_secondary_build_muscle_desc">Build some muscle alongside your main goal.</string>
+    <string name="goal_secondary_get_stronger_desc">Build strength alongside your main goal.</string>
+    <string name="goal_secondary_lose_fat_desc">Lose some fat alongside your main goal.</string>
+    <string name="goal_secondary_return_to_training_desc">Ease back in gradually while working toward your main goal.</string>
     <string name="goal_secondary_maintain_desc">Hold your current level without losing what you’ve built.</string>
     <string name="goal_secondary_general_fitness_desc">Improve energy, endurance, and overall fitness.</string>
     <string name="goal_secondary_consistency_desc">Build a lasting training habit, week after week.</string>
@@ -591,13 +510,11 @@
     <!-- Goal progress card -->
     <string name="goal_card_title">Training goal</string>
     <string name="goal_course_title">Your course</string>
-    <string name="goal_period_label">Goal period</string>
+    <string name="goal_period_label">Target date</string>
     <string name="goal_card_status_on_track">On course</string>
     <string name="goal_card_status_drifting">Room to improve</string>
     <string name="goal_card_status_off_track">Adjust your course</string>
-    <string name="goal_card_progress_days_left">%1$d days left</string>
-    <string name="goal_card_progress_overdue">Overdue by %1$d days</string>
-    <string name="goal_card_progress_due_today">Due today</string>
+    <string name="goal_card_progress_due_today">Today is the last day</string>
     <string name="goal_card_update_btn">Update</string>
 
     <!-- Training goal details dialog -->
@@ -605,51 +522,49 @@
     <string name="goal_details_show_details">About this assessment</string>
     <string name="goal_details_hide_details">Hide details</string>
     <!-- Training goal details: unavailable assessment -->
-    <string name="goal_details_reason_no_data_detail">There are not enough recorded sets or available criteria to assess this period.</string>
-    <string name="goal_details_reason_too_early_detail">At least seven observed days are needed to assess weekly training patterns.</string>
+    <string name="goal_details_reason_no_data_detail">There isn’t enough data in this period to assess your goal.</string>
+    <string name="goal_details_reason_too_early_detail">The assessment needs at least seven days since the goal was set, within this period.</string>
 
     <!-- Goal-fit diagnostic sections -->
-    <string name="goal_fit_diagnostic_drifting_title">What to adjust</string>
-    <string name="goal_fit_diagnostic_on_track_title">What works</string>
+    <string name="goal_fit_diagnostic_drifting_title">What to work on</string>
+    <string name="goal_fit_diagnostic_on_track_title">What’s working</string>
     <!-- Target line: %1$s is the formatted goal-fit criterion. -->
     <string name="goal_fit_target_value">Target: %1$s</string>
-    <string name="goal_fit_target_at_least">≥%1$s</string>
-    <string name="goal_fit_target_at_most">≤%1$s</string>
+    <string name="goal_fit_target_at_least">at least %1$s</string>
+    <string name="goal_fit_target_at_most">at most %1$s</string>
     <string name="goal_fit_target_range">%1$s–%2$s</string>
 
     <!-- Goal-fit unit suffixes (concatenated with numbers in code; never used as printf %d) -->
-    <string name="goal_fit_unit_sets_per_week">sets/wk</string>
-    <string name="goal_fit_unit_groups">groups</string>
     <string name="goal_fit_unit_ratio">×</string>
 
     <!-- Goal-fit context labels (shown next to per-group sub-findings) -->
 
     <!-- Goal-fit rule titles — BUILD_MUSCLE -->
-    <string name="goal_fit_rule_build_muscle_weekly_sets_per_primary_group_title">Estimated sets by muscle group</string>
+    <string name="goal_fit_rule_build_muscle_weekly_sets_per_primary_group_title">Weekly sets by muscle group</string>
     <string name="goal_fit_rule_build_muscle_weekly_frequency_per_primary_group_title">Training days by muscle group</string>
-    <string name="goal_fit_rule_build_muscle_load_progression_title">Estimated strength change over period</string>
+    <string name="goal_fit_rule_build_muscle_load_progression_title">Strength change over the period</string>
 
     <!-- Goal-fit rule titles — GET_STRONGER -->
-    <string name="goal_fit_rule_get_stronger_strength_rep_range_share_title">Strength rep range</string>
-    <string name="goal_fit_rule_get_stronger_strength_progression_title">Estimated strength change over period</string>
+    <string name="goal_fit_rule_get_stronger_strength_rep_range_share_title">Share of sets with up to 5 reps</string>
+    <string name="goal_fit_rule_get_stronger_strength_progression_title">Strength change over the period</string>
 
     <!-- Goal-fit rule titles — MAINTAIN -->
-    <string name="goal_fit_rule_maintain_group_coverage_title">Chest, back and leg coverage</string>
+    <string name="goal_fit_rule_maintain_group_coverage_title">Chest, back and legs each week</string>
     <string name="goal_fit_rule_maintain_weekly_frequency_title">Training days per week</string>
     <string name="goal_fit_rule_maintain_weekly_volume_stability_title">Weekly set-count variation</string>
 
     <!-- Goal-fit rule titles — GENERAL_FITNESS -->
-    <string name="goal_fit_rule_general_fitness_group_coverage_title">Chest, back and leg coverage</string>
+    <string name="goal_fit_rule_general_fitness_group_coverage_title">Chest, back and legs each week</string>
     <string name="goal_fit_rule_general_fitness_weekly_frequency_title">Training days per week</string>
 
     <!-- Goal-fit rule titles — LOSE_FAT -->
     <string name="goal_fit_rule_lose_fat_session_adherence_title">Training days per week</string>
-    <string name="goal_fit_rule_lose_fat_resistance_presence_title">Resistance work per week</string>
-    <string name="goal_fit_rule_lose_fat_weekly_volume_trend_title">Latest full week’s set count vs previous</string>
+    <string name="goal_fit_rule_lose_fat_resistance_presence_title">Strength work per week</string>
+    <string name="goal_fit_rule_lose_fat_weekly_volume_trend_title">Sets in the last full week vs the week before</string>
 
     <!-- Goal-fit rule titles — RETURN_TO_TRAINING -->
     <string name="goal_fit_rule_return_to_training_weekly_frequency_title">Training days per week</string>
-    <string name="goal_fit_rule_return_to_training_load_ramp_gentle_title">Largest weekly set-count increase</string>
+    <string name="goal_fit_rule_return_to_training_load_ramp_gentle_title">Biggest week-to-week jump in sets</string>
 
     <!-- Personalizations: schedule -->
     <string name="personalization_low_frequency">1–2 times a week</string>
@@ -674,10 +589,10 @@
     <string name="personalization_physically_active_job">Physically active job</string>
 
     <!-- Personalizations: recovery context -->
-    <string name="personalization_returning_after_break">Returning after break</string>
+    <string name="personalization_returning_after_break">Returning after a break</string>
     <string name="personalization_recovering_from_injury">Recovering from injury</string>
     <string name="personalization_limited_range_of_motion">Limited range of motion</string>
-    <string name="personalization_fatigue_management">Manage fatigue</string>
+    <string name="personalization_fatigue_management">Often worn out</string>
     <string name="personalization_recovery_focus">Recovery focus</string>
     <string name="personalization_mobility_focus">Mobility focus</string>
 
@@ -693,7 +608,7 @@
     <string name="personalization_ankle_care">Protect ankles</string>
 
     <!-- Personalizations: health conditions -->
-    <string name="personalization_hypertension">Hypertension</string>
+    <string name="personalization_hypertension">High blood pressure</string>
     <string name="personalization_diabetes">Diabetes</string>
     <string name="personalization_asthma">Asthma</string>
     <string name="personalization_osteoporosis">Osteoporosis</string>
@@ -701,22 +616,22 @@
     <string name="personalization_herniated_disc">Herniated disc</string>
     <string name="personalization_chronic_pain">Chronic pain</string>
     <string name="personalization_pregnancy">Pregnancy</string>
-    <string name="personalization_postpartum">Postpartum</string>
+    <string name="personalization_postpartum">After childbirth</string>
 
     <!-- Personalizations: movement restrictions -->
-    <string name="personalization_avoid_high_intensity">Avoid high intensity</string>
-    <string name="personalization_avoid_heavy_loading">Avoid heavy weights</string>
-    <string name="personalization_avoid_high_impact">Avoid high impact</string>
+    <string name="personalization_avoid_high_intensity">No max effort</string>
+    <string name="personalization_avoid_heavy_loading">No heavy weights</string>
+    <string name="personalization_avoid_high_impact">No high-impact exercises</string>
     <string name="personalization_avoid_deep_squats">No deep squats</string>
     <string name="personalization_avoid_lunges">No lunges</string>
-    <string name="personalization_avoid_overhead_work">No overhead work</string>
-    <string name="personalization_avoid_heavy_spinal_loading">No heavy spinal load</string>
-    <string name="personalization_avoid_spinal_flexion">No spinal flexion</string>
+    <string name="personalization_avoid_overhead_work">No overhead exercises</string>
+    <string name="personalization_avoid_heavy_spinal_loading">No heavy load on the spine</string>
+    <string name="personalization_avoid_spinal_flexion">No bending the spine</string>
     <string name="personalization_avoid_twisting">No twisting</string>
-    <string name="personalization_avoid_floor_work">No floor work</string>
-    <string name="personalization_avoid_inversions">No inversions</string>
+    <string name="personalization_avoid_floor_work">No floor exercises</string>
+    <string name="personalization_avoid_inversions">No head-down positions</string>
     <string name="personalization_avoid_valsalva">No breath holding</string>
-    <string name="personalization_needs_supported_movements">Supported movements</string>
+    <string name="personalization_needs_supported_movements">Exercises with support</string>
 
     <!-- Personalizations: sports -->
     <string name="personalization_sport_powerlifting">Powerlifting</string>
@@ -727,7 +642,7 @@
     <string name="personalization_sport_running">Running</string>
     <string name="personalization_sport_cycling">Cycling</string>
     <string name="personalization_sport_swimming">Swimming</string>
-    <string name="personalization_sport_grappling">Grappling / BJJ</string>
+    <string name="personalization_sport_grappling">Wrestling / jiu-jitsu</string>
     <string name="personalization_sport_striking">Boxing / MMA</string>
     <string name="personalization_sport_team_ball_sports">Team ball sports</string>
     <string name="personalization_sport_racquet_sports">Racquet sports</string>
@@ -750,7 +665,7 @@
     <string name="personalization_focus_calves">Calves</string>
 
     <!-- Personalizations: physical qualities -->
-    <string name="personalization_improve_cardio">Improve cardio</string>
+    <string name="personalization_improve_cardio">Cardio</string>
     <string name="personalization_improve_muscular_endurance">Muscular endurance</string>
     <string name="personalization_improve_explosive_power">Explosive power</string>
     <string name="personalization_improve_speed">Speed</string>
@@ -761,34 +676,34 @@
 
     <!-- Personalizations: program preferences -->
     <string name="personalization_simple_plan">Simple plan</string>
-    <string name="personalization_lower_volume">Lower volume</string>
-    <string name="personalization_higher_volume">Higher volume</string>
+    <string name="personalization_lower_volume">Fewer sets</string>
+    <string name="personalization_higher_volume">More sets</string>
     <string name="personalization_gradual_progression">Gradual progression</string>
-    <string name="personalization_aggressive_progression">Aggressive progression</string>
+    <string name="personalization_aggressive_progression">Fast progression</string>
 
     <!-- Personalizations: routine structure -->
     <string name="personalization_prefer_full_body">Full body</string>
-    <string name="personalization_prefer_upper_lower">Upper / Lower</string>
+    <string name="personalization_prefer_upper_lower">Upper / lower body</string>
     <string name="personalization_prefer_push_pull_legs">Push / Pull / Legs</string>
-    <string name="personalization_prefer_split_routine">Split routine</string>
+    <string name="personalization_prefer_split_routine">By muscle group</string>
 
     <!-- Personalizations: set / method preferences -->
-    <string name="personalization_prefer_straight_sets">Straight sets</string>
+    <string name="personalization_prefer_straight_sets">One exercise at a time</string>
     <string name="personalization_prefer_supersets">Supersets</string>
-    <string name="personalization_prefer_circuits">Circuits</string>
-    <string name="personalization_prefer_heavy_compounds">Heavy compounds</string>
+    <string name="personalization_prefer_circuits">Circuit training</string>
+    <string name="personalization_prefer_heavy_compounds">Heavy compound lifts</string>
 
     <!-- Personalizations: equipment preferences -->
     <string name="personalization_prefer_free_weights">Free weights</string>
     <string name="personalization_prefer_machines">Machines</string>
-    <string name="personalization_prefer_cables">Cables</string>
+    <string name="personalization_prefer_cables">Cable machines</string>
     <string name="personalization_prefer_bodyweight">Bodyweight</string>
 
     <!-- Personalizations: training phase -->
-    <string name="personalization_phase_bulking">Bulking</string>
-    <string name="personalization_phase_cutting">Cutting</string>
+    <string name="personalization_phase_bulking">Gaining mass</string>
+    <string name="personalization_phase_cutting">Losing fat</string>
     <string name="personalization_phase_maintenance">Maintenance</string>
-    <string name="personalization_phase_deload">Deload week</string>
+    <string name="personalization_phase_deload">Lighter week</string>
     <string name="personalization_phase_competition_prep">Competition prep</string>
 
     <!-- Muscle load summary -->
@@ -797,29 +712,28 @@
     <string name="goal_setup_suggestion_title">What's your goal?</string>
     <string name="goal_setup_suggestion_subtitle">Give your training a clear direction.</string>
     <string name="goal_setup_suggestion_benefit_tailored_title">Workouts with a target</string>
-    <string name="goal_setup_suggestion_benefit_tailored_description">Reps and intensity tuned to your goal.</string>
+    <string name="goal_setup_suggestion_benefit_tailored_description">Reps and weights matched to your goal.</string>
     <string name="goal_setup_suggestion_primary_btn">Set my goal</string>
     <string name="goal_setup_suggestion_secondary_btn">Skip</string>
 
     <!-- Home unlock banner -->
     <string name="home_unlock_banner_header">Unlock more</string>
-    <string name="home_unlock_duration_trend_title">Workout duration trend</string>
-    <string name="home_unlock_duration_trend_description">See how the length of your sessions changes over time</string>
-    <string name="home_unlock_performance_trends_title">Performance trends</string>
-    <string name="home_unlock_performance_trends_description">See trends for volume, density, repetitions, and intensity</string>
-    <string name="home_unlock_set_goal_title">Goal alignment</string>
+    <string name="home_unlock_duration_trend_title">Workout time</string>
+    <string name="home_unlock_duration_trend_description">See how long your workouts last and how that changes</string>
+    <string name="home_unlock_performance_trends_title">More workout numbers</string>
+    <string name="home_unlock_performance_trends_description">Weight lifted, reps, average weight and weight per minute compared with your usual</string>
+    <string name="home_unlock_set_goal_title">Training goal</string>
     <string name="home_unlock_set_goal_description">See how training matches your goal</string>
-    <string name="home_unlock_set_goal_cta">Set</string>
+    <string name="home_unlock_set_goal_cta">Set a goal</string>
     <string name="dialog_back">Back</string>
     <string name="dialog_close">Close</string>
-    <string name="dialog_saved_workout">Saved workout</string>
+    <string name="dialog_saved_workout">Workout draft</string>
     <string name="exercise_example_information">Information</string>
     <string name="exercise_example_achievements_empty_title">No history yet</string>
-    <string name="exercise_example_achievements_empty_description">Do this exercise in a workout to see your achievements, estimated 1RM and set history here.</string>
-    <string name="exercise_sets_count">%1$d/%2$d sets</string>
+    <string name="exercise_example_achievements_empty_description">Do this exercise in a workout and your achievements, estimated one-rep max and set history will appear here.</string>
     <string name="exercise_max_weight">%1$s max</string>
     <string name="home">Home</string>
-    <string name="profile_body_section">Body</string>
+    <string name="profile_body_section">About you</string>
     <string name="profile_height">Height</string>
     <string name="profile_restrictions_section">Restrictions</string>
     <string name="profile_name_not_set">Name not specified</string>
@@ -839,7 +753,7 @@
     <string name="language_portuguese_portugal">Português (Portugal)</string>
     <string name="iteration_picker_last_time">Last time · %1$s</string>
     <string name="iteration_picker_suggestions">Suggestions</string>
-    <string name="iteration_picker_weight_range">%1$s–1000 kg</string>
+    <string name="iteration_picker_weight_range">%1$s–1 000 kg</string>
     <string name="iteration_picker_repetitions_range">1–100 reps</string>
     <string name="training_external_weight">External weight</string>
     <string name="training_previous_set">Last time: %1$s × %2$s</string>
@@ -847,58 +761,54 @@
     <string name="training_first_set_hint">Add your first set to start tracking your progress.</string>
     <string name="exercise_library">Exercise library</string>
     <string name="library">Library</string>
-    <string name="analytics_consent_title">Usage analytics</string>
-    <string name="analytics_consent_description">Allow usage events to help improve the app. No entered text or body measurements are sent. You can turn this off at any time.</string>
+    <string name="analytics_consent_title">Share usage data</string>
+    <string name="analytics_consent_description">Shows us how the app is used so we can improve it. Nothing you type and no body measurements are sent. You can turn this off at any time.</string>
     <string name="onboarding_get_started">Get started</string>
     <string name="onboarding_title">Make every workout count</string>
-    <string name="onboarding_description">Your training journal, built around you. Record your sessions and see how far you have come.</string>
+    <string name="onboarding_description">Your training journal, built around you. Log your workouts and see how far you have come.</string>
     <string name="onboarding_workouts_title">Keep every set</string>
     <string name="onboarding_workouts_description">Weights, reps and exercises — all in one place.</string>
     <string name="onboarding_progress_title">See your progress</string>
-    <string name="onboarding_progress_description">Follow your strength, consistency and training history.</string>
+    <string name="onboarding_progress_description">Track your strength, consistency and training history.</string>
     <string name="onboarding_setup_title">Train your way</string>
     <string name="onboarding_setup_description">Choose your muscles, equipment and experience level.</string>
-    <string name="input_invalid_value">Invalid value</string>
+    <string name="input_invalid_value">Check this value</string>
     <string name="accessibility_completed">Completed</string>
     <string name="accessibility_not_completed">Not completed</string>
     <string name="accessibility_previous_period">Previous period</string>
     <string name="accessibility_next_period">Next period</string>
-    <string name="exercise_history_total_volume">Total volume</string>
+    <string name="exercise_history_total_volume">Weight lifted</string>
     <string name="exercise_history_no_sets">No sets recorded</string>
-    <string name="exercise_history_unavailable">This exercise record is unavailable</string>
-    <string name="exercise_history_max_load">Max load</string>
-    <string name="exercise_history_trend_title">Volume history</string>
-    <string name="exercise_history_current_date">%1$s · this entry</string>
-    <string name="exercise_history_no_previous">No earlier entries in the previous 180 days</string>
+    <string name="exercise_history_unavailable">Couldn’t find this exercise. It may have been deleted.</string>
+    <string name="exercise_history_max_load">Max weight</string>
+    <string name="exercise_history_trend_title">Weight lifted by workout</string>
+    <string name="exercise_history_current_date">%1$s, this workout</string>
+    <string name="exercise_history_no_previous">This exercise wasn’t done in the 180 days before this workout</string>
     <string name="exercise_history_comparison_loading">Loading previous workouts…</string>
-    <string name="exercise_history_volume_delta">%1$s volume</string>
-    <string name="exercise_history_previous_set_date">Previous sets · %1$s</string>
-    <string name="exercise_history_chart_unavailable">Chart unavailable for these volume values</string>
+    <string name="exercise_history_volume_delta">%1$s weight lifted</string>
+    <string name="exercise_history_previous_set_date">Sets from last time, %1$s</string>
+    <string name="exercise_history_chart_unavailable">Can’t show a chart for these workouts</string>
     <string name="exercise_history_set_result">%1$s × %2$s</string>
-    <string name="exercise_history_vs_date">vs %1$s</string>
-    <string name="training_streak_current_progress">Latest period: %1$d / %2$d active days</string>
+    <string name="exercise_history_vs_date">Last time · %1$s</string>
     <string name="training_streak_growth_extended">Streak extended</string>
     <string name="training_streak_growth_kept">Rhythm kept</string>
     <string name="training_streak_growth_reset">Streak restarted</string>
     <string name="estimated_one_rm_source">From %1$s × %2$s · %3$s</string>
-    <string name="estimated_one_rm_history_peak">Best in this history: %1$s</string>
-    <string name="estimated_one_rm_unavailable">No suitable 1RM data yet. Record a set of 1–10 reps with complete load information.</string>
-    <string name="performance_comparison_unavailable">Comparison unavailable</string>
+    <string name="estimated_one_rm_history_peak">Best of recent workouts: %1$s</string>
+    <string name="estimated_one_rm_unavailable">Not enough data yet. Record a set of 1–10 reps with the weight filled in.</string>
+    <string name="performance_comparison_unavailable">Nothing to compare with yet</string>
     <string name="performance_comparison_before">Before</string>
     <string name="performance_comparison_after">after</string>
     <string name="performance_comparison_first_title">This workout</string>
-    <string name="performance_growth_before">Before: %1$s</string>
-    <string name="performance_reference_average">vs average</string>
-    <string name="performance_reference_previous">vs last workout</string>
+    <string name="performance_reference_average">vs usual</string>
+    <string name="performance_reference_previous">vs last time</string>
     <string name="training_records_title">Personal records</string>
     <string name="training_records_description">All-time bests set in this workout.</string>
     <string name="weekly_volume_title">This week</string>
     <string name="weekly_volume_progress">%1$s of your usual %2$s</string>
     <string name="weekly_volume_no_typical">No recent weeks to compare with yet.</string>
-    <string name="weekly_volume_trainings">Workouts this week: %1$d</string>
-    <string name="training_streak_next_date">Next by your rhythm: %1$s</string>
-    <string name="training_streak_next_weekly">%1$d more this week</string>
-    <string name="training_streak_week_done">Week plan done</string>
+    <string name="training_streak_next_date">%1$s — next workout by your rhythm</string>
+    <string name="training_streak_week_done">On rhythm this week</string>
     <string name="share">Share</string>
     <string name="performance_comparison_empty">Nothing to compare in this period yet.</string>
     <string name="performance_history_empty">No workouts in this period</string>
@@ -906,57 +816,50 @@
     <string name="performance_status_record">Period best</string>
     <string name="performance_status_improved">Above usual</string>
     <string name="performance_status_declined">Below usual</string>
-    <string name="performance_status_stable">Within usual range</string>
+    <string name="performance_status_stable">As usual</string>
     <string name="performance_status_improved_previous">Above last workout</string>
     <string name="performance_status_declined_previous">Below last workout</string>
-    <string name="performance_status_stable_previous">Like last workout</string>
+    <string name="performance_status_stable_previous">Similar to last workout</string>
 
     <string name="digest_title">Month summary</string>
     <string name="digest_unavailable">—</string>
     <string name="digest_zero_duration">0 min</string>
     <string name="goal_card_status_not_evaluated">Not evaluated yet</string>
     <string name="goal_details_analysis_period">Analyzed: %1$s</string>
-    <string name="goal_details_analysis_excluded">Excluded sets with invalid or incomplete entries: %1$d</string>
-    <string name="goal_details_analysis_missing_metadata">Muscle diagnostics unavailable: exercise data missing for %1$d sets.</string>
-    <string name="goal_details_analysis_unavailable">The selected period does not overlap the goal history available today.</string>
-    <string name="goal_details_analysis_method">Uses recorded sets since you set the goal, within the selected period. Weekly patterns need at least seven observed days.</string>
-    <string name="training_streak_partial_period">Partially observed period</string>
-    <string name="goal_fit_rule_build_muscle_weekly_frequency_title">Training frequency</string>
-    <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Training frequency</string>
-    <string name="goal_fit_rule_get_stronger_compound_set_share_title">Compound set share</string>
-    <string name="goal_fit_unit_training_days_per_week">days/wk</string>
-    <string name="muscle_load_excluded_sets">Sets not counted (missing repetitions or invalid measurements): %1$d.</string>
-    <string name="muscle_load_unassigned_sets">Recorded sets with unknown muscle involvement: %1$d.</string>
-    <string name="performance_history_scope">The chart connects available values from up to 10 latest workouts.</string>
-    <string name="performance_trend_details_comparison_scope">Comparisons use the average of all earlier workouts with data in the selected period.</string>
+    <string name="goal_details_analysis_unavailable">This goal was set after this period ended.</string>
+    <string name="goal_details_analysis_method">Counts the sets you’ve recorded since setting the goal, within the selected period. At least seven days are needed to assess weekly training.</string>
+    <string name="training_streak_partial_period">Only part of this period counts</string>
+    <string name="goal_fit_rule_build_muscle_weekly_frequency_title">Training days per week</string>
+    <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Training days per week</string>
+    <string name="goal_fit_rule_get_stronger_compound_set_share_title">Share of sets in compound exercises</string>
+    <string name="performance_history_scope">The chart shows up to 10 latest workouts; workouts without this data are skipped.</string>
+    <string name="performance_trend_details_comparison_scope">Your usual value is the average of all earlier workouts in the selected period that have this data.</string>
     <string name="performance_trend_details_comparison_scope_previous">Comparisons use the previous workout in the selected period.</string>
-    <string name="muscle_load_unmeasured_volume_sets">Sets with incomplete load data: %1$d. Muscle shares use recorded sets; volume includes fully measured sets only.</string>
-    <string name="goal_card_limited_data">Limited data</string>
-    <string name="available_sets_label">Available sets</string>
-    <string name="available_exercises_label">Available exercises</string>
-    <string name="muscle_loading_details_coverage">Sets outside this breakdown: %1$d</string>
+    <string name="goal_card_limited_data">Based on partial data</string>
+    <string name="available_sets_label">Sets counted</string>
+    <string name="available_exercises_label">Exercises</string>
     <string name="muscle_loading_details_no_workouts_title">No workouts in this period</string>
-    <string name="muscle_loading_details_no_workouts_message">Record a workout to see which muscles your sets involved.</string>
+    <string name="muscle_loading_details_no_workouts_message">Record a workout to see which muscles you trained.</string>
     <string name="muscle_loading_details_no_sets_title">No sets to break down yet</string>
-    <string name="muscle_loading_details_no_sets_message">This period has no available recorded sets with usable data.</string>
-    <string name="muscle_loading_details_unknown_title">Muscle data is unavailable</string>
-    <string name="muscle_loading_details_unknown_message">Your sets are recorded, but their exercises have no known muscle involvement.</string>
-    <string name="muscle_loading_details_method_title">How to read this</string>
-    <string name="muscle_loading_details_method_body">Each available set is shared between muscles in proportion to their listed involvement in the exercise. Before rounding, shares total 100% across sets with known muscle involvement.</string>
-    <string name="muscle_loading_details_method_limits">The share describes recorded sets. Muscle fatigue, recovery and training quality are not measured here.</string>
+    <string name="muscle_loading_details_no_sets_message">There are no sets with reps and a valid weight in this period.</string>
+    <string name="muscle_loading_details_unknown_title">No muscle data</string>
+    <string name="muscle_loading_details_unknown_message">Your sets are recorded, but we don’t know which muscles these exercises work.</string>
+    <string name="muscle_loading_details_method_title">How it is calculated</string>
+    <string name="muscle_loading_details_method_body">Each set is split between the muscles the exercise works, according to how much each one is involved. Sets with known muscles add up to 100%, give or take rounding.</string>
+    <string name="muscle_loading_details_method_limits">The percentages show how your sets were spread, not muscle fatigue, recovery or workout quality.</string>
     <string name="muscle_loading_details_method_expanded">Expanded</string>
     <string name="muscle_loading_details_method_collapsed">Collapsed</string>
 
     <string name="performance_trend_details_latest">Latest workout</string>
-    <string name="performance_trend_details_previous_average">Earlier average: %1$s</string>
-    <string name="performance_previous_value">Previous workout: %1$s</string>
+    <string name="performance_trend_details_previous_average">Usually %1$s</string>
+    <string name="performance_previous_value">Last time %1$s</string>
     <string name="performance_trend_details_comparison">Change: %1$s</string>
-    <string name="performance_trend_details_first_workout">A comparison needs an earlier workout with data in this period.</string>
-    <string name="performance_trend_details_no_previous">A comparison needs data from the previous workout in this period.</string>
-    <string name="performance_trend_details_zero_average">The earlier average is zero, so a percentage change is unavailable.</string>
-    <string name="performance_trend_details_zero_previous">The previous workout’s value is zero, so a percentage change is unavailable.</string>
-    <string name="performance_trend_details_value_unavailable">Value unavailable</string>
-    <string name="performance_trend_details_value_unavailable_description">This workout does not have enough data for this metric.</string>
+    <string name="performance_trend_details_first_workout">Nothing to compare with yet: this period has no earlier workouts with this data.</string>
+    <string name="performance_trend_details_no_previous">Nothing to compare with: there’s no data from a previous workout in this period.</string>
+    <string name="performance_trend_details_zero_average">Your usual value is zero, so the change can’t be shown in percent.</string>
+    <string name="performance_trend_details_zero_previous">Last time the value was zero, so the change can’t be shown in percent.</string>
+    <string name="performance_trend_details_value_unavailable">No data</string>
+    <string name="performance_trend_details_value_unavailable_description">This workout doesn’t have enough data to calculate this.</string>
     <string name="performance_trend_details_recent_workouts">Recent workouts</string>
     <string name="performance_trend_details_about">How it is calculated</string>
     <string name="performance_trend_details_expanded">Expanded</string>
@@ -964,28 +867,40 @@
     <string name="performance_trend_details_empty_message">Choose another period on Home to see your recorded workouts.</string>
 
     <!-- Training rhythm details -->
-    <string name="training_streak_details_daily_headline">%1$d-day streak</string>
-    <string name="training_streak_details_weekly_headline">%1$d-week streak</string>
-    <string name="training_streak_details_cycle_headline">Rhythm repeats: %1$d</string>
-    <string name="training_streak_details_no_sequence">No continuous streak at the end of the period</string>
-    <string name="training_streak_details_daily_cadence">Consecutive days with recorded training</string>
-    <string name="training_streak_details_weekly_cadence">Usual weekly rhythm · training days: %1$d</string>
-    <string name="training_streak_details_rhythm_cadence">In your records · training days: %1$d, then days without a recorded workout: %2$d</string>
-    <string name="training_streak_details_pattern_cadence">Recorded cycle · total days: %2$d · training days: %1$d</string>
-    <string name="training_streak_details_daily_method">Several workouts on one day count once. The streak counts consecutive training days at the end of the selected period; an unfinished day keeps the previous streak. This is your history, not a daily training goal.</string>
-    <string name="training_streak_details_weekly_method">Several workouts on one day count once. The streak counts consecutive weeks at your usual frequency by the end of the selected period; an unfinished week keeps the previous streak. This frequency comes from your records, not a training goal.</string>
-    <string name="training_streak_details_cycle_method">Several workouts on one day count once. The streak counts consecutive cycles at the end of the selected period; an unfinished cycle keeps the previous streak. The bars count days matching the rhythm in your records, not a training goal.</string>
+    <string name="training_streak_details_no_sequence">No streak at the end of this period</string>
+    <string name="training_streak_details_daily_method">Several workouts on the same day count as one. The streak is the number of days in a row with a workout up to the end of the selected period. A day that isn’t over yet doesn’t break it. This shows your history; it isn’t a goal to train every day.</string>
+    <string name="training_streak_details_weekly_method">Several workouts on the same day count as one. The streak is the number of weeks in a row in which you trained at least as often as usual, up to the end of the selected period. A week that isn’t over yet doesn’t break it. Your usual frequency comes from your records; it isn’t a training goal.</string>
+    <string name="training_streak_details_cycle_method">Several workouts on the same day count as one. The streak is the number of cycles in a row in which the rhythm was kept, up to the end of the selected period. A cycle that isn’t over yet doesn’t break it. The bars count days that fit the rhythm found in your records; it isn’t a training goal.</string>
     <string name="training_streak_details_recent_days">Recent days</string>
     <string name="training_streak_details_recent_weeks">Recent weeks</string>
     <string name="training_streak_details_recent_cycles">Recent cycles</string>
-    <string name="training_streak_details_daily_legend">Filled: training recorded · Empty: no record</string>
-    <string name="training_streak_details_weekly_legend">Training days / usual weekly count</string>
-    <string name="training_streak_details_cycle_legend">Matches / training days in your recorded rhythm</string>
-    <string name="training_streak_details_weekly_value">Training days: %1$d / %2$d</string>
-    <string name="training_streak_details_cycle_value">Matched days: %1$d / %2$d</string>
+    <string name="training_streak_details_daily_legend">Filled: day with a workout · Empty: no workout</string>
     <string name="training_streak_details_day_recorded">Training recorded</string>
     <string name="training_streak_details_day_unrecorded">No training recorded</string>
-    <string name="training_streak_details_empty">No training days in this period. Recorded workouts with completed reps will form your rhythm here.</string>
+    <string name="training_streak_details_empty">No workouts in this period. Your training rhythm appears here once you record workouts.</string>
     <string name="training_streak_details_method_expanded">Expanded</string>
     <string name="training_streak_details_method_collapsed">Collapsed</string>
+    <string name="training_streak_period_days">%1$s (usually %2$d)</string>
+    <string name="training_streak_period_days_none">No training days (usually %1$d)</string>
+    <string name="training_streak_details_cycle_value_none">No workouts on rhythm days</string>
+    <string name="exercise_plan_no_sets">No sets planned</string>
+    <string name="error_no_internet_description">Check your connection and try again.</string>
+    <string name="error_timeout_description">Try again in a moment.</string>
+    <string name="error_network_description">Try again later.</string>
+    <string name="welcome_check_goal_pending">Goal not set yet</string>
+    <string name="profile_value_none">None</string>
+    <string name="spotlight_near_best_metric">Just %1$s% below your best</string>
+    <string name="spotlight_near_best_metric_equal">Matches your best</string>
+    <string name="spotlight_progress_win_context">Latest workout %1$s kg, usually %2$s kg. Data from the past %3$s.</string>
+    <string name="spotlight_near_best_context">Latest workout %1$s kg, your best %2$s kg. Data from the past %3$s.</string>
+    <string name="spotlight_needs_attention_context">Your usual gap is ~%1$s; %2$s or more is a long break.</string>
+    <string name="spotlight_good_frequency_context">Done in %1$d of the last %2$d weeks — %3$s in total.</string>
+    <string name="training_recap_verdict_declined">A lighter workout</string>
+    <string name="training_streak_today_done">You’ve trained today</string>
+    <string name="training_streak_today_pending">No workout today yet</string>
+    <string name="daily">Day</string>
+    <string name="weekly">Week</string>
+    <string name="monthly">Month</string>
+    <string name="yearly">Year</string>
+    <string name="digest_empty">No workouts this month</string>
 </resources>

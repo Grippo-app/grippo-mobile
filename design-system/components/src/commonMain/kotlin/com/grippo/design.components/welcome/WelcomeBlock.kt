@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.grippo.core.state.formatters.FormatState
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -53,16 +54,18 @@ public fun WelcomeBlock(
     val musclesText = when {
         excludedMusclesCount <= 0 -> AppTokens.strings.res(Res.string.welcome_facts_muscles_all)
         else -> AppTokens.strings.res(
-            Res.string.welcome_facts_muscles_excluded,
-            excludedMusclesCount
+            Res.plurals.welcome_facts_muscles_excluded,
+            excludedMusclesCount,
+            excludedMusclesCount,
         )
     }
 
     val equipmentText = when {
         missingEquipmentCount <= 0 -> AppTokens.strings.res(Res.string.welcome_facts_equipment_all)
         else -> AppTokens.strings.res(
-            Res.string.welcome_facts_equipment_missing,
-            missingEquipmentCount
+            Res.plurals.welcome_facts_equipment_missing,
+            missingEquipmentCount,
+            missingEquipmentCount,
         )
     }
 
@@ -103,14 +106,14 @@ public fun WelcomeBlock(
                 FactRow(
                     modifier = Modifier.weight(1f),
                     icon = AppTokens.icons.Height,
-                    text = "$heightDisplay $heightUnit",
+                    text = "$heightDisplay${FormatState.UNIT_SPACE}$heightUnit",
                     tint = AppTokens.colors.context.body,
                 )
 
                 FactRow(
                     modifier = Modifier.weight(1f),
                     icon = AppTokens.icons.Weight,
-                    text = "$weightDisplay $weightUnit",
+                    text = "$weightDisplay${FormatState.UNIT_SPACE}$weightUnit",
                     tint = AppTokens.colors.context.body,
                 )
             }

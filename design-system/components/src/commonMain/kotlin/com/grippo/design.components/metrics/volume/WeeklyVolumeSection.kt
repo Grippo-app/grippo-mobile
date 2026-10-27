@@ -36,7 +36,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.weekly_volume_no_typical
 import com.grippo.design.resources.provider.weekly_volume_progress
 import com.grippo.design.resources.provider.weekly_volume_title
-import com.grippo.design.resources.provider.weekly_volume_trainings
+import com.grippo.design.resources.provider.weekly_volume_usual
 
 private const val WEEKLY_VOLUME_REVEAL_DURATION_MS = 900
 private const val WEEKLY_VOLUME_REVEAL_LABEL = "WeeklyVolumeReveal"
@@ -47,6 +47,7 @@ public fun WeeklyVolumeSection(
     value: WeeklyVolumeState,
 ) {
     val typical = value.typicalVolume?.value
+    val usualVolume = value.usualVolume()
     val current = value.currentVolume.value ?: 0f
     val progress = value.progress()
     val currentText = VolumeFormatState.shortTotal(value.currentVolume.value)
@@ -86,22 +87,39 @@ public fun WeeklyVolumeSection(
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
-            if (typical != null) {
-                Text(
+            when {
+                current > 0f && usualVolume != null -> Text(
                     text = weeklyProgressText(
                         current = currentText,
-                        typical = VolumeFormatState.shortTotal(typical),
+                        typical = VolumeFormatState.shortTotal(usualVolume),
                     ),
                     style = AppTokens.typography.h3(),
                     color = AppTokens.colors.text.primary,
                 )
-            } else {
-                Text(
-                    text = currentText,
-                    style = AppTokens.typography.h3(),
-                    color = AppTokens.colors.text.primary,
+
+                current > 0f -> {
+                    Text(
+                        text = currentText,
+                        style = AppTokens.typography.h3(),
+                        color = AppTokens.colors.text.primary,
+                    )
+                    Text(
+                        text = AppTokens.strings.res(Res.string.weekly_volume_no_typical),
+                        style = AppTokens.typography.b12Med(),
+                        color = AppTokens.colors.text.secondary,
+                    )
+                }
+
+                usualVolume != null -> Text(
+                    text = AppTokens.strings.res(
+                        Res.string.weekly_volume_usual,
+                        VolumeFormatState.shortTotal(usualVolume),
+                    ),
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.text.secondary,
                 )
-                Text(
+
+                else -> Text(
                     text = AppTokens.strings.res(Res.string.weekly_volume_no_typical),
                     style = AppTokens.typography.b12Med(),
                     color = AppTokens.colors.text.secondary,
@@ -123,7 +141,7 @@ public fun WeeklyVolumeSection(
         }
 
         Text(
-            text = AppTokens.strings.res(Res.string.weekly_volume_trainings, value.trainingsThisWeek),
+            text = value.workoutsLabel(),
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.secondary,
         )

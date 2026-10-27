@@ -5,32 +5,29 @@ import androidx.compose.runtime.Immutable
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.highlight_streak
-import com.grippo.design.resources.provider.highlight_streak_pattern_headline_primary
-import com.grippo.design.resources.provider.highlight_streak_rhythm
+import com.grippo.design.resources.provider.highlight_streak_cycles
 import com.grippo.design.resources.provider.highlight_streak_weekly_headline_primary
+import com.grippo.design.resources.provider.metric_overview_streak_cycle_days
 import com.grippo.design.resources.provider.metric_overview_streak_daily_pattern
-import com.grippo.design.resources.provider.metric_overview_streak_pattern_pattern
-import com.grippo.design.resources.provider.metric_overview_streak_rhythm_pattern
-import com.grippo.design.resources.provider.metric_overview_streak_weekly_pattern
-import com.grippo.design.resources.provider.training_streak_details_cycle_headline
-import com.grippo.design.resources.provider.training_streak_details_cycle_legend
+import com.grippo.design.resources.provider.metric_overview_streak_pattern_cadence
+import com.grippo.design.resources.provider.metric_overview_streak_rest_days
+import com.grippo.design.resources.provider.metric_overview_streak_rhythm_cadence
+import com.grippo.design.resources.provider.metric_overview_streak_training_days
+import com.grippo.design.resources.provider.metric_overview_streak_weekly_days
 import com.grippo.design.resources.provider.training_streak_details_cycle_method
 import com.grippo.design.resources.provider.training_streak_details_cycle_value
-import com.grippo.design.resources.provider.training_streak_details_daily_cadence
-import com.grippo.design.resources.provider.training_streak_details_daily_headline
-import com.grippo.design.resources.provider.training_streak_details_daily_legend
+import com.grippo.design.resources.provider.training_streak_details_cycle_value_none
 import com.grippo.design.resources.provider.training_streak_details_daily_method
-import com.grippo.design.resources.provider.training_streak_details_no_sequence
-import com.grippo.design.resources.provider.training_streak_details_pattern_cadence
 import com.grippo.design.resources.provider.training_streak_details_recent_cycles
 import com.grippo.design.resources.provider.training_streak_details_recent_days
 import com.grippo.design.resources.provider.training_streak_details_recent_weeks
-import com.grippo.design.resources.provider.training_streak_details_rhythm_cadence
-import com.grippo.design.resources.provider.training_streak_details_weekly_cadence
-import com.grippo.design.resources.provider.training_streak_details_weekly_headline
-import com.grippo.design.resources.provider.training_streak_details_weekly_legend
 import com.grippo.design.resources.provider.training_streak_details_weekly_method
-import com.grippo.design.resources.provider.training_streak_details_weekly_value
+import com.grippo.design.resources.provider.training_streak_none
+import com.grippo.design.resources.provider.training_streak_period_days
+import com.grippo.design.resources.provider.training_streak_period_days_none
+import com.grippo.design.resources.provider.training_streak_today_done
+import com.grippo.design.resources.provider.training_streak_today_pending
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 
 @Immutable
@@ -43,68 +40,40 @@ public sealed interface TrainingStreakFeaturedState {
     public val confidence: Float
 
     @Composable
-    public fun overviewHeadline(): String {
-        val resource = when (this) {
-            is Daily -> Res.string.highlight_streak
-            is Weekly -> Res.string.highlight_streak_weekly_headline_primary
-            is Rhythm -> Res.string.highlight_streak_rhythm
-            is Pattern -> Res.string.highlight_streak_pattern_headline_primary
+    public fun headline(): String {
+        if (length == 0) {
+            return AppTokens.strings.res(Res.string.training_streak_none)
         }
-        return AppTokens.strings.res(resource, length)
+        return when (this) {
+            is Daily -> AppTokens.strings.res(Res.plurals.highlight_streak, length, length)
+            is Weekly -> AppTokens.strings.res(Res.plurals.highlight_streak_weekly_headline_primary, length, length)
+            is Rhythm, is Pattern -> AppTokens.strings.res(Res.plurals.highlight_streak_cycles, length, length)
+        }
     }
 
     @Composable
-    public fun overviewCadence(): String = when (this) {
+    public fun cadence(): String = when (this) {
         is Daily -> AppTokens.strings.res(Res.string.metric_overview_streak_daily_pattern)
         is Weekly -> AppTokens.strings.res(
-            Res.string.metric_overview_streak_weekly_pattern,
+            Res.plurals.metric_overview_streak_weekly_days,
+            targetTrainingDaysPerPeriod,
             targetTrainingDaysPerPeriod,
         )
 
         is Rhythm -> AppTokens.strings.res(
-            Res.string.metric_overview_streak_rhythm_pattern,
-            workDays,
-            restDays,
+            Res.string.metric_overview_streak_rhythm_cadence,
+            AppTokens.strings.res(Res.plurals.metric_overview_streak_training_days, workDays, workDays),
+            AppTokens.strings.res(Res.plurals.metric_overview_streak_rest_days, restDays, restDays),
         )
 
         is Pattern -> AppTokens.strings.res(
-            Res.string.metric_overview_streak_pattern_pattern,
-            targetTrainingDaysPerPeriod,
-            periodLengthDays,
-        )
-    }
-
-    @Composable
-    public fun detailsHeadline(): String {
-        if (length == 0) {
-            return AppTokens.strings.res(Res.string.training_streak_details_no_sequence)
-        }
-        val resource = when (this) {
-            is Daily -> Res.string.training_streak_details_daily_headline
-            is Weekly -> Res.string.training_streak_details_weekly_headline
-            is Rhythm, is Pattern -> Res.string.training_streak_details_cycle_headline
-        }
-        return AppTokens.strings.res(resource, length)
-    }
-
-    @Composable
-    public fun cadenceDescription(): String = when (this) {
-        is Daily -> AppTokens.strings.res(Res.string.training_streak_details_daily_cadence)
-        is Weekly -> AppTokens.strings.res(
-            Res.string.training_streak_details_weekly_cadence,
-            targetTrainingDaysPerPeriod,
-        )
-
-        is Rhythm -> AppTokens.strings.res(
-            Res.string.training_streak_details_rhythm_cadence,
-            workDays,
-            restDays,
-        )
-
-        is Pattern -> AppTokens.strings.res(
-            Res.string.training_streak_details_pattern_cadence,
-            targetTrainingDaysPerPeriod,
-            periodLengthDays,
+            Res.string.metric_overview_streak_pattern_cadence,
+            AppTokens.strings.res(
+                Res.plurals.metric_overview_streak_training_days,
+                targetTrainingDaysPerPeriod,
+                targetTrainingDaysPerPeriod,
+            ),
+            AppTokens.strings.res(Res.plurals.metric_overview_streak_cycle_days, periodLengthDays, periodLengthDays),
         )
     }
 
@@ -127,21 +96,38 @@ public sealed interface TrainingStreakFeaturedState {
     )
 
     @Composable
-    public fun timelineDescription(): String = AppTokens.strings.res(
-        when (this) {
-            is Daily -> Res.string.training_streak_details_daily_legend
-            is Weekly -> Res.string.training_streak_details_weekly_legend
-            is Rhythm, is Pattern -> Res.string.training_streak_details_cycle_legend
-        },
-    )
+    public fun periodValue(entry: TrainingStreakProgressState): String {
+        val achieved = entry.achievedTrainingDays
+        val target = entry.targetTrainingDays
+        return when (this) {
+            is Daily, is Weekly -> if (achieved == 0) {
+                AppTokens.strings.res(Res.string.training_streak_period_days_none, target)
+            } else {
+                AppTokens.strings.res(
+                    Res.string.training_streak_period_days,
+                    AppTokens.strings.res(Res.plurals.metric_overview_streak_training_days, achieved, achieved),
+                    target,
+                )
+            }
+
+            is Rhythm, is Pattern -> if (achieved == 0) {
+                AppTokens.strings.res(Res.string.training_streak_details_cycle_value_none)
+            } else {
+                AppTokens.strings.res(Res.plurals.training_streak_details_cycle_value, target, achieved, target)
+            }
+        }
+    }
 
     @Composable
-    public fun timelineValue(entry: TrainingStreakProgressState): String {
-        val resource = when (this) {
-            is Daily, is Weekly -> Res.string.training_streak_details_weekly_value
-            is Rhythm, is Pattern -> Res.string.training_streak_details_cycle_value
+    public fun currentPeriodLine(entry: TrainingStreakProgressState): String? {
+        if (this !is Daily) return periodValue(entry)
+        if (entry.range.value?.to?.date != DateTimeUtils.today()) return null
+        val resource = if (entry.achievedTrainingDays > 0) {
+            Res.string.training_streak_today_done
+        } else {
+            Res.string.training_streak_today_pending
         }
-        return AppTokens.strings.res(resource, entry.achievedTrainingDays, entry.targetTrainingDays)
+        return AppTokens.strings.res(resource)
     }
 
     @Immutable

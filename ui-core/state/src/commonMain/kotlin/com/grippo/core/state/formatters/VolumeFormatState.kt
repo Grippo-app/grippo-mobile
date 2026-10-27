@@ -10,7 +10,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.decimal_separator
 import com.grippo.design.resources.provider.kg
-import com.grippo.design.resources.provider.weight_input_hint
 import com.grippo.toolkit.number.utils.formatDecimal
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -49,7 +48,7 @@ public sealed class VolumeFormatState : FormatState<Float> {
                 value = value.toDouble(),
                 decimalSeparator = AppTokens.strings.res(Res.string.decimal_separator),
             )
-            return "$number ${AppTokens.strings.res(Res.string.kg)}"
+            return "$number${FormatState.UNIT_SPACE}${AppTokens.strings.res(Res.string.kg)}"
         }
 
         public fun ofTotal(value: Float?): VolumeFormatState = when {
@@ -140,7 +139,7 @@ public sealed class VolumeFormatState : FormatState<Float> {
         val kg = AppTokens.strings.res(Res.string.kg)
         val separator = AppTokens.strings.res(Res.string.decimal_separator)
         val number = value?.let { formatVolume(value = it, decimalSeparator = separator) }
-        return "${number ?: "-"}$kg"
+        return "${number ?: "-"}${FormatState.UNIT_SPACE}$kg"
     }
 
     @Composable
@@ -152,10 +151,12 @@ public sealed class VolumeFormatState : FormatState<Float> {
         return buildAnnotatedString {
             if (display != null) {
                 append(display)
+                append(FormatState.UNIT_SPACE)
                 append(kg)
             } else {
                 withStyle(SpanStyle(color = tertiary)) {
                     append("-")
+                    append(FormatState.UNIT_SPACE)
                     append(kg)
                 }
             }
@@ -166,10 +167,5 @@ public sealed class VolumeFormatState : FormatState<Float> {
         fun isValid(value: Float): Boolean {
             return value in 0f..1000f
         }
-    }
-
-    @Composable
-    public fun hint(): String {
-        return AppTokens.strings.res(Res.string.weight_input_hint)
     }
 }

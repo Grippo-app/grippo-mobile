@@ -279,7 +279,8 @@ private fun MuscleLoadingMethodDisclosure(
                 if (summary.meta.unassignedSets > 0) {
                     Text(
                         text = AppTokens.strings.res(
-                            Res.string.muscle_load_unassigned_sets,
+                            Res.plurals.muscle_load_unassigned_sets,
+                            summary.meta.unassignedSets,
                             summary.meta.unassignedSets,
                         ),
                         style = AppTokens.typography.b12Med(),
@@ -289,7 +290,8 @@ private fun MuscleLoadingMethodDisclosure(
                 if (summary.meta.excludedSets > 0) {
                     Text(
                         text = AppTokens.strings.res(
-                            Res.string.muscle_load_excluded_sets,
+                            Res.plurals.muscle_load_excluded_sets,
+                            summary.meta.excludedSets,
                             summary.meta.excludedSets,
                         ),
                         style = AppTokens.typography.b12Med(),

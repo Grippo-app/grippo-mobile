@@ -16,6 +16,7 @@ import com.grippo.design.resources.provider.goal_fit_unit_groups
 import com.grippo.design.resources.provider.goal_fit_unit_ratio
 import com.grippo.design.resources.provider.goal_fit_unit_training_days_per_week
 import com.grippo.design.resources.provider.goal_fit_unit_sets_per_week
+import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import com.grippo.toolkit.number.utils.formatDecimal
@@ -88,7 +89,7 @@ public data class GoalFitFindingState(
 
             GoalFitRuleState.BUILD_MUSCLE_WEEKLY_SETS_PER_PRIMARY_GROUP,
             GoalFitRuleState.LOSE_FAT_RESISTANCE_PRESENCE ->
-                "$number ${AppTokens.strings.res(Res.string.goal_fit_unit_sets_per_week)}"
+                AppTokens.strings.res(Res.plurals.goal_fit_unit_sets_per_week, value.roundToInt(), number)
 
             GoalFitRuleState.BUILD_MUSCLE_WEEKLY_FREQUENCY,
             GoalFitRuleState.GET_STRONGER_WEEKLY_FREQUENCY,
@@ -97,11 +98,11 @@ public data class GoalFitFindingState(
             GoalFitRuleState.GENERAL_FITNESS_WEEKLY_FREQUENCY,
             GoalFitRuleState.LOSE_FAT_SESSION_ADHERENCE,
             GoalFitRuleState.RETURN_TO_TRAINING_WEEKLY_FREQUENCY ->
-                "$number ${AppTokens.strings.res(Res.string.goal_fit_unit_training_days_per_week)}"
+                AppTokens.strings.res(Res.plurals.goal_fit_unit_training_days_per_week, value.roundToInt(), number)
 
             GoalFitRuleState.MAINTAIN_GROUP_COVERAGE,
             GoalFitRuleState.GENERAL_FITNESS_GROUP_COVERAGE ->
-                "$number ${AppTokens.strings.res(Res.string.goal_fit_unit_groups)}"
+                AppTokens.strings.res(Res.plurals.goal_fit_unit_groups, value.roundToInt(), number)
 
             GoalFitRuleState.RETURN_TO_TRAINING_LOAD_RAMP_GENTLE ->
                 "$number${AppTokens.strings.res(Res.string.goal_fit_unit_ratio)}"

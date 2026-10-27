@@ -22,6 +22,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.listed_pair
+import com.grippo.design.resources.provider.training_streak_details_daily_legend
 import com.grippo.design.resources.provider.training_streak_details_day_recorded
 import com.grippo.design.resources.provider.training_streak_details_day_unrecorded
 import com.grippo.design.resources.provider.training_streak_partial_period
@@ -53,11 +54,6 @@ public fun TrainingStreakTimelineCard(
         if (value.featured is TrainingStreakFeaturedState.Daily) {
             TrainingStreakDayStrip(value = value)
         } else {
-            Text(
-                text = value.featured.timelineDescription(),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-            )
             value.timeline.takeLast(4).asReversed().forEach { entry ->
                 TrainingStreakTimelineRow(value = value, entry = entry)
             }
@@ -94,7 +90,7 @@ private fun TrainingStreakDayStrip(
             }
         }
         Text(
-            text = value.featured.timelineDescription(),
+            text = AppTokens.strings.res(Res.string.training_streak_details_daily_legend),
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.secondary,
         )
@@ -167,7 +163,7 @@ private fun TrainingStreakTimelineRow(
             color = AppTokens.colors.text.primary,
         )
         Text(
-            text = value.featured.timelineValue(entry),
+            text = value.featured.periodValue(entry),
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.secondary,
         )

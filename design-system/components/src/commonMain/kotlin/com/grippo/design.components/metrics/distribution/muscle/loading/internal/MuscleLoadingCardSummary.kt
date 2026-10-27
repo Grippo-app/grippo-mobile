@@ -74,7 +74,7 @@ internal fun MuscleLoadingCardSummary(
 
         if (outsideSets > 0) {
             Text(
-                text = AppTokens.strings.res(Res.string.muscle_loading_details_coverage, outsideSets),
+                text = AppTokens.strings.res(Res.plurals.muscle_loading_details_coverage, outsideSets, outsideSets),
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,
             )

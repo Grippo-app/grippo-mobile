@@ -22,6 +22,7 @@ import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.illustration.Illustration
 import com.grippo.design.components.illustration.IllustrationStyle
+import com.grippo.design.components.modifiers.IllustrationBackgroundStyle
 import com.grippo.design.components.modifiers.illustrationBackground
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -58,7 +59,7 @@ public fun LastTrainingCard(
 
     Column(
         modifier = modifier
-            .illustrationBackground(shape)
+            .illustrationBackground(shape, style = IllustrationBackgroundStyle.Solid)
             .padding(
                 horizontal = AppTokens.dp.metrics.panel.large.horizontalPadding,
                 vertical = AppTokens.dp.metrics.panel.large.verticalPadding,

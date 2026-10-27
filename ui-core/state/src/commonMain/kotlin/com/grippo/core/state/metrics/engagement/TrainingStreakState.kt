@@ -9,7 +9,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.training_streak_details_active_days
 import com.grippo.design.resources.provider.training_streak_details_no_sequence
 import com.grippo.design.resources.provider.training_streak_next_date
-import com.grippo.design.resources.provider.training_streak_next_weekly
+import com.grippo.design.resources.provider.training_streak_next_workouts
 import com.grippo.design.resources.provider.training_streak_week_done
 import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
@@ -51,14 +51,14 @@ public data class TrainingStreakState(
     public fun summaryHeadline(): String = if (featured.length == 0) {
         activeDaysDescription()
     } else {
-        featured.detailsHeadline()
+        featured.headline()
     }
 
     @Composable
     public fun summaryDescription(): String = if (featured.length == 0) {
         AppTokens.strings.res(Res.string.training_streak_details_no_sequence)
     } else {
-        featured.cadenceDescription()
+        featured.cadence()
     }
 
     @Composable
@@ -78,7 +78,7 @@ public data class TrainingStreakState(
         return if (remaining == 0) {
             AppTokens.strings.res(Res.string.training_streak_week_done)
         } else {
-            AppTokens.strings.res(Res.string.training_streak_next_weekly, remaining)
+            AppTokens.strings.res(Res.plurals.training_streak_next_workouts, remaining, remaining)
         }
     }
 }

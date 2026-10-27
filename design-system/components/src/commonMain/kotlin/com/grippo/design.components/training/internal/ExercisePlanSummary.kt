@@ -11,8 +11,9 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.exercise_plan_sets
+import com.grippo.design.resources.provider.exercise_plan_no_sets
 import com.grippo.design.resources.provider.exercise_plan_sets_repetitions
+import com.grippo.design.resources.provider.exercise_sets_planned
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
@@ -20,22 +21,21 @@ internal fun ExercisePlanSummary(
     modifier: Modifier = Modifier,
     value: ExerciseState,
 ) {
-    val summary = if (value.iterations.isEmpty()) {
-        AppTokens.strings.res(Res.string.exercise_plan_sets, "0")
-    } else {
-        val repetitions = value.iterations.map { it.repetitions.value }
-        val first = repetitions.first()
-        val repetitionsText = if (repetitions.all { it == first }) {
-            first?.toString() ?: "—"
-        } else {
-            repetitions.joinToString(separator = " / ") { it?.toString() ?: "—" }
-        }
+    val setCount = value.iterations.size
+    val repetitions = value.iterations.map { it.repetitions.value }
+    val summary = when {
+        setCount == 0 -> AppTokens.strings.res(Res.string.exercise_plan_no_sets)
+        repetitions.all { it == null } -> AppTokens.strings.res(Res.plurals.exercise_sets_planned, setCount, setCount)
+        else -> {
+            val first = repetitions.first()
+            val repetitionsText = if (repetitions.all { it == first }) {
+                first.toString()
+            } else {
+                repetitions.joinToString(separator = " / ") { it?.toString() ?: "—" }
+            }
 
-        AppTokens.strings.res(
-            Res.string.exercise_plan_sets_repetitions,
-            value.iterations.size.toString(),
-            repetitionsText,
-        )
+            AppTokens.strings.res(Res.plurals.exercise_plan_sets_repetitions, setCount, setCount, repetitionsText)
+        }
     }
 
     Text(

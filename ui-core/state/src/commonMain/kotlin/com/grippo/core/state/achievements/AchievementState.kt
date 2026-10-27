@@ -111,15 +111,6 @@ public sealed interface AchievementState {
 
     @Composable
     public fun value(): String = when (this) {
-        is BestTonnage -> this.tonnage.short()
-        is BestWeight -> this.weight.short()
-        is LifetimeVolume -> this.totalVolume.short()
-        is MaxRepetitions -> this.repetitions.short()
-        is PeakIntensity -> this.intensity.short()
-    }
-
-    @Composable
-    public fun spacedValue(): String = when (this) {
         is BestTonnage -> VolumeFormatState.shortTotal(tonnage.value)
         is BestWeight -> VolumeFormatState.shortTotal(weight.value)
         is LifetimeVolume -> VolumeFormatState.shortTotal(totalVolume.value)

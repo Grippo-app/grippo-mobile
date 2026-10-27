@@ -57,7 +57,7 @@ public sealed class IntensityFormatState : FormatState<Float> {
                 value = value.toDouble(),
                 decimalSeparator = AppTokens.strings.res(Res.string.decimal_separator),
             )
-            return "$number ${AppTokens.strings.res(Res.string.kg)}"
+            return "$number${FormatState.UNIT_SPACE}${AppTokens.strings.res(Res.string.kg)}"
         }
 
         private fun tenths(value: Float): Int = (value * 10f).roundToInt()
@@ -98,7 +98,7 @@ public sealed class IntensityFormatState : FormatState<Float> {
         val kg = AppTokens.strings.res(Res.string.kg)
         val separator = AppTokens.strings.res(Res.string.decimal_separator)
         val number = value?.let { formatDecimal(value = it.toDouble(), decimalSeparator = separator) }
-        return "${number ?: "-"}$kg"
+        return "${number ?: "-"}${FormatState.UNIT_SPACE}$kg"
     }
 
     @Composable
@@ -110,10 +110,12 @@ public sealed class IntensityFormatState : FormatState<Float> {
         return buildAnnotatedString {
             if (display != null) {
                 append(display)
+                append(FormatState.UNIT_SPACE)
                 append(kg)
             } else {
                 withStyle(SpanStyle(color = tertiary)) {
                     append("-")
+                    append(FormatState.UNIT_SPACE)
                     append(kg)
                 }
             }

@@ -30,14 +30,22 @@ internal fun MuscleLoadingDataNotice(
     ) {
         if (summary.meta.excludedSets > 0) {
             Text(
-                text = AppTokens.strings.res(Res.string.muscle_load_excluded_sets, summary.meta.excludedSets),
+                text = AppTokens.strings.res(
+                    Res.plurals.muscle_load_excluded_sets,
+                    summary.meta.excludedSets,
+                    summary.meta.excludedSets,
+                ),
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,
             )
         }
         if (summary.meta.unassignedSets > 0) {
             Text(
-                text = AppTokens.strings.res(Res.string.muscle_load_unassigned_sets, summary.meta.unassignedSets),
+                text = AppTokens.strings.res(
+                    Res.plurals.muscle_load_unassigned_sets,
+                    summary.meta.unassignedSets,
+                    summary.meta.unassignedSets,
+                ),
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,
             )
@@ -45,7 +53,8 @@ internal fun MuscleLoadingDataNotice(
         if (summary.meta.unmeasuredVolumeSets > 0) {
             Text(
                 text = AppTokens.strings.res(
-                    Res.string.muscle_load_unmeasured_volume_sets,
+                    Res.plurals.muscle_load_unmeasured_volume_sets,
+                    summary.meta.unmeasuredVolumeSets,
                     summary.meta.unmeasuredVolumeSets,
                 ),
                 style = AppTokens.typography.b12Med(),

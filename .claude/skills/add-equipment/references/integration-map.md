@@ -33,10 +33,10 @@ catalog contains a selectable row.
 | Source | What to reconcile |
 |---|---|
 | [EquipmentEnum](../../../../data-features/feature-api/src/commonMain/kotlin/com/grippo/data.features.api/equipment/models/EquipmentEnum.kt) | Exact backend type key and `of` promotion; preserve existing keys |
-| [EquipmentEnumState](../../../../ui-core/state/src/commonMain/kotlin/com/grippo/core/state/equipments/EquipmentEnumState.kt) | New member, vector import and `icon`, `sortPriority` (intended position relative to similar machines), `TITLE_RES`, `HINT_RES` branches |
+| [EquipmentEnumState](../../../../ui-core/state/src/commonMain/kotlin/com/grippo/core/state/equipments/EquipmentEnumState.kt) | New member, vector import and `icon`, `sortPriority` (intended position relative to similar machines), `TITLE_RES` branch |
 | [EquipmentEnumMapper](../../../../data-mappers/domain-to-state/src/commonMain/kotlin/com/grippo/domain/state/equipment/EquipmentEnumMapper.kt) | Exhaustive domain-to-state branch |
 | [Equipment diagrams](../../../../design-system/resources/provider/src/commonMain/kotlin/com/grippo/design.resources/provider/equipment/) | Native diagram under the [vector pipeline](imagevector-pipeline.md) |
-| [Compose resources](../../../../design-system/resources/provider/src/commonMain/composeResources/) | `equipment_*` title and `equipment_hint_*` hint in every current locale's `strings.xml` |
+| [Compose resources](../../../../design-system/resources/provider/src/commonMain/composeResources/) | `equipment_*` title in every current locale's `strings.xml` |
 | [EquipmentGroupState](../../../../ui-core/state/src/commonMain/kotlin/com/grippo/core/state/equipments/EquipmentGroupState.kt) | `stubEquipments` entry in the correct preview group with a unique preview ID |
 
 Search every mapper direction and every `EquipmentEnum` / `EquipmentEnumState`
@@ -63,8 +63,6 @@ This handling also affects rollout. Under the catalog exception in
 a build hides equipment whose type it does not know until an app update adds the
 type. Until then, on that build:
 
-- an example whose only equipment is hidden shows the no-equipment weight hint
-  (`ExerciseExampleState.hint`);
 - the user cannot select or exclude hidden equipment; for an item whose own type is
   unknown, the example filters (`UserExerciseExamplesUseCase`,
   `GeneratePresetTrainingUseCase`) also ignore an exclusion made from a newer build,

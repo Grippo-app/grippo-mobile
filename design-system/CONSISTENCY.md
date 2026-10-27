@@ -66,8 +66,14 @@ and Latin text in both themes; each role keeps its existing size and line height
   `text.secondary` (the set-history "Last time:" context keeps `text.tertiary`),
   the later value takes `text.primary` or its direction color (unit runs keep
   their secondary style). This covers the comparison section title ("Before → after"),
-  the goal score and streak outcome transitions and the "Before:"/"Previous avg:"
+  the goal score and streak outcome transitions and the "Usually …"/"Last time …"
   labels beside a current value.
+- Summary surfaces apply the [copy rule](../.claude/skills/design-system/references/resources.md#strings-and-plurals)
+  with these choices: "N of M" uses words at its ends ("No metrics above usual",
+  "Every metric above usual"), so no "0 of N", "N of N" or "0 kg of your usual …"
+  is shown; a zero earlier value hides its "Usually …" line, a zero set count drops
+  the hero's sets fact; the comparison period is a phrase ("over 30 days", "this
+  month", "за 30 дней", "в этом месяце"), not a picker name.
 - Neutral boundaries use `border.default`: Light NeutralLight.N250 and Dark
   NeutralDark.N300. `divider.subtle` and `charts.bar.baseline` keep their existing
   0.4 and 0.45 alpha derivations; focus, selection and severity retain their own roles.
@@ -356,7 +362,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   context icon and `context.equipment`; they do not substitute for concrete types.
 - Missing exercise equipment data produces no apparatus image or inferred
   “no equipment” claim. The existing declared weight-type fallback remains useful
-  metadata under the explicit localized “Weight type” label. Exercise-image
+  metadata and shows as its plain localized value (“Body weight”, “Machine”), which
+  names itself without a label. Exercise-image
   loading/missing-image treatment remains with ExerciseExampleImage. Muscle
   markers, measured load scales and recommendation filters keep their own meanings.
 
@@ -454,9 +461,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   once the stored period is resolved. An edited older
   workout is compared with the same kind of period around its own date (a rolling
   preset ends on that day, a calendar preset is the week, month or year containing
-  it). The period label is the preset name ("30 days") whenever that comparison
-  period is the current Home period (none for Infinity, which has no preset name)
-  and otherwise its end date through `training_recap_period_as_of` ("as of 27 May",
+  it). The period label is `DateRangeFormatState.periodPhrase()` - "today", "this
+  week", "this month", "this year" for the calendar presets and `period_last_days`
+  ("over 30 days", "за 30 дней") for the rolling ones - whenever that comparison
+  period is the current Home period (none for Custom and Infinity) and otherwise its end date through `training_recap_period_as_of` ("as of 27 May",
   "на 27 мая", "на 27 трав.", "até 27 mai."; `PerformanceComparisonState.periodLabel()`
   owns this choice; the trend sheet title names the preset only when the sheet shows
   exactly the Home period): a date range would crowd the uk `Average` line
@@ -469,13 +477,22 @@ and Latin text in both themes; each role keeps its existing size and line height
   тренувань", "Base para seus próximos treinos", "Base para os seus próximos
   treinos": short enough to keep two lines with the period label) and otherwise
   `PerformanceReferenceState.comparedSummary(improved, compared)`, which names the
-  selected reference: `training_recap_compared` ("N of M metrics above your
-  average") under `Average`, `training_recap_compared_previous` ("… above last
-  time", "… выше прошлой", "… вище минулого", "… acima do anterior") under
-  `Previous`, each shorter than its locale's Average line so a reference switch never
+  selected reference: `training_recap_compared` ("2 of 4 metrics above usual") under
+  `Average`, `training_recap_compared_previous` ("… above last time", "… выше прошлой",
+  "… вище минулого", "… acima do anterior") under `Previous`; with the period label
+  both stay within two description lines (en Previous runs four characters longer
+  than en Average, ru is shorter, uk and pt are equal), so a reference switch never
   adds a line to the hero and moves the segment under the finger. Both are plurals
-  on M, the compared count, in every locale ("1 of 1 metric", "2 з 4 показників",
-  "1 из 1 показателя").
+  on M, the compared count, in every locale ("2 з 4 показників", "2 из 4
+  показателей"). Under `Average` they speak of "usual" ("2 of 4 metrics above
+  usual", "выше обычного", "вище звичного", "acima do habitual"), the chips' word,
+  because the count is the chips' Improved/Record status after the noise band, not a
+  raw comparison with the average. The ends read as words: none improved gives
+  `training_recap_compared_none` / `_previous_none` ("No metrics above usual", "Нет
+  показателей выше обычного", "Nada acima do habitual"), all improved gives
+  `training_recap_compared_all` / `_previous_all` ("Every metric above usual",
+  "Все показатели выше обычного", "Tudo acima do habitual"), each no longer than
+  its locale's partial line so the hero keeps two description lines.
   "N of M" counts the metrics that
   `showsComparison()` - they vote (not Duration, not empty) and `hasComparison()` -
   through `PerformanceVerdictState.improvedCount/comparedCount`: exactly the
@@ -496,11 +513,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   streak placeholder shown while the period computes stays silent, since it resolves
   with the comparison skeleton that already announces it. A missing value is
   not drawn as a placeholder dash: the part that would hold it is omitted.
-  Every weight on
-  this screen carries a space before its unit through the `shortTotal`/`shortAverage`
-  family ("400 kg"): hero facts, comparison section, records (`AchievementState.spacedValue()`)
-  and the weekly block alike; the compact `short()` form ("400kg") stays with
-  set-level values and the other screens that use it. Below the pinned hero the
+  Every weight carries a non-breaking space before its unit (`FormatState.UNIT_SPACE`,
+  "400 kg"), in the `shortTotal`/`shortAverage` family used by the hero facts, the
+  comparison section, records (`AchievementState.value()`) and the weekly block, and
+  in the compact `short()`/`shortAnnotated()` forms used for set-level values. Below the pinned hero the
   content is a lazy list of open sections on `background.screen` rather than a
   wall of cards: only `TrainingRecordsCard` keeps a frame, because a personal
   record is an achievement with its own boundary. The order is
@@ -554,7 +570,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   screen's `h4` `text.primary` heading, `block` below it, without a success header.
 - `TrainingRecapHero(modifier, training, style, state, contentPadding)` replaces
   the completion BrandHeader and the summary facts in one warm full-width region:
-  `illustrationBackground` with square corners, the caller's `contentPadding`
+  `illustrationBackground` (`IllustrationBackgroundStyle.Solid`, the flat
+  `illustration.backgroundStart`) with square corners, the caller's `contentPadding`
   inside it (the completion screen passes the status-bar inset), then
   `screen.horizontalPadding` plus `brandHeader.horizontalPadding` sides - 16 dp
   inside the open sections' text edge, deliberately: the shared image is this
@@ -621,8 +638,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   and values use the comparison section's formatters (`DurationFormatState.shortMinutes`
   "65 min", `VolumeFormatState.shortTotal` "500 kg"). Fact values are `h3`
   `text.primary` with `b11Med` `text.secondary` labels; a missing workout time or
-  weight omits that fact (the remaining facts share the row) and zero sets dims to
-  `text.tertiary`. Each fact is one accessibility node read label first through
+  weight omits that fact (the remaining facts share the row), and so does a zero set
+  count, which the compact bar words as `exercise_history_no_sets`. The facts sit in a
+  `FlowRow` with equal weights, so a value wider than its share ("12 345,5 kg")
+  moves whole to the next line instead of breaking inside the number or unit. Each fact is one accessibility node read label first through
   `listed_pair` ("Workout time, 65 min").
   `TrainingRecapHeroSkeleton` lives beside the hero on the same warm surface:
   the title and description bones shared with `Pending` and one row of
@@ -657,7 +676,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   at least half opaque), the bar rising by `training.recap.collapsed.rise`: the verdict title in `h4`
   `text.primary` (a static `h4` bone while `Pending`) over one `b12Med`
   `text.secondary` facts line - workout time, weight and `training_recap_sets`
-  ("18 sets", "18 підходів") joined by `joined_pair` - both one line with an
+  ("18 sets", "18 підходів"; zero sets reads `exercise_history_no_sets`, "No sets
+  recorded") joined by `joined_pair` - both one line with an
   ellipsis, `training.recap.collapsed.verticalPadding` above and below.
   Accessibility follows what is visible: past half of the collapse the bar owns the
   `heading()` verdict and the facts line as one merged node, plus, whenever the
@@ -700,9 +720,12 @@ and Latin text in both themes; each role keeps its existing size and line height
   "Workouts" wording above the hero label. One primary `h3` workout count with a secondary `b13Med`
   "Workouts" label leads, a `ContentDivider` follows, and one `MetricBreakdownRow`
   shows duration (`duration`), tonnage (`tonnage`) and sets; the digest and the
-  completed-workout recap hero both label sets with the plain `sets` key. An empty month, an unavailable value and a recorded zero use the
-  dimmed `text.tertiary` treatment; unavailable duration shows "—" and recorded
-  zero shows "0 min". Average volume per workout is not shown.
+  completed-workout recap hero both label sets with the plain `sets` key. An empty
+  month replaces the count and breakdown with one `b14Med` `text.secondary`
+  `digest_empty` sentence ("No workouts this month"); within a month that has
+  workouts, an unavailable value and a recorded zero use the dimmed `text.tertiary`
+  treatment; unavailable duration shows "—" and recorded zero shows "0 min".
+  Average volume per workout is not shown.
   The history toolbar uses `divider.subtle` to separate controls from records.
 - Home uses `GoalCardStyle.Overview`, `MuscleLoadingCardStyle.Overview` and
   `TrainingStreakCardStyle.Overview` for goal, muscle and streak summaries, and
@@ -769,7 +792,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   Summary, Session; Detailed has no loading host), with no default, so each
   host names its style: the streak Overview for Home sizes the header, the
   headline/active-days row (the flame beside the headline alone), the indicator
-  and the `training_streak_current_progress` line with three Large spacers; the
+  and the current-period line (`TrainingStreakFeaturedState.currentPeriodLine()`:
+  the period's training days, or today's status for Daily) with three Large spacers; the
   open streak Growth for the completed workout sizes the header, the flame beside
   headline and cadence (`maxOf(rhythmIcon, h4 + text + b13Med)`) and the text group
   of the `b12Med` outcome and next-training lines (`text` apart) with two Large
@@ -822,8 +846,11 @@ and Latin text in both themes; each role keeps its existing size and line height
   `exerciseCard.small` bones).
 - The last-workout recap names its selected-period scope. Title/date and two
   training facts share a row with the unchanged compact journal illustration;
-  exercise count and Calendar share the footer. It keeps the illustration gradient
-  and large card shape, with content-driven height and complete values.
+  exercise count and Calendar share the footer. Like the completed-workout recap hero
+  and the welcome hero it fills its large card shape with the flat
+  `illustration.backgroundStart` (`IllustrationBackgroundStyle.Solid`), with
+  content-driven height and complete values; the gradient's fading end had blended
+  the card into the screen.
 - Home muscle and training-rhythm summaries are separate full-width large panels;
   neither is stretched to a neighbor's height. Muscle distribution pairs a 144×140 dp
   front/back map with up to three real groups and their existing load shares.
@@ -998,14 +1025,19 @@ and Latin text in both themes; each role keeps its existing size and line height
   short - en "vs average / vs last workout", uk "до середнього / до попереднього",
   ru "к среднему / к прошлому разу" ("к прошлой тренировке" wraps), pt
   "vs média / vs último treino" - and a new or changed label is checked against
-  that width. The "Before: X" sub-line keeps
-  its wording under both references; the metrics already carry the matching before
+  that width. The earlier-value sub-line is worded for the selected reference
+  through `PerformanceReferenceState.earlierValue()`: `performance_comparison_usual`
+  ("Usually 16 497.5 kg", "Обычно …", without a colon so it reads as a phrase) under `Average`, matching the chips'
+  "usual", and `performance_comparison_last_time` ("Last time 21 266 kg", "В прошлый раз
+  …") under `Previous`, hidden when that earlier value is zero; a repetitions average
+  shows as a whole number ("Usually x181", also on Home's performance cards) because
+  nobody does a fraction of a rep; the metrics already carry the matching before
   value, the caller owns the selection and the card never recomputes it. Under
   `Average` a status has to clear the period's noise band (at least 5 %, wider
   when earlier sessions vary); under `Previous` a single earlier value has no
   spread, so a fixed ±5 % band decides it. The segment renders only when some
   metric `hasAverage()` - an earlier value exists under the selected reference,
-  zero included - and a block's "Before" line and its comparison bar only when its own
+  zero included - and a block's earlier-value line and its comparison bar only when its own
   metric has one. Earlier values exist under both references as soon as the period
   has an earlier workout, so a switch never removes the selector and the user can
   always switch back. The hero reads `FirstWorkout` on a different predicate - no
@@ -1026,8 +1058,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   of the name (a box one measured `b13Semi` line tall, aligned to the row's top,
   like the goal diagnostic dots on their first title line), not on the label
   column, the `b13Semi`
-  `text.primary` name with the `b11Med` `text.secondary` "Before: average"
-  sub-line (omitted without an average) and, for every metric that
+  `text.primary` name with the `b11Med` `text.secondary` earlier-value sub-line
+  ("Usually …" / "Last time …", omitted without a positive earlier value) and, for every metric that
   `showsComparison()` (it votes and `hasComparison()`: a percentage change, or a
   period best, which needs none), the status chip (`PerformanceTrendChip`, worded
   for the selected reference through `PerformanceTrendStatusState.label(reference)`:
@@ -1073,11 +1105,12 @@ and Latin text in both themes; each role keeps its existing size and line height
   (the bar's scale moves with the reference), while the status color switches at
   once. The
   current value does not depend on the reference and stays put. The parts a switch
-  adds or drops - the "Before" line and the bar with the earlier value, the
+  adds or drops - the earlier-value line and the bar with the earlier value, the
   chip and the signed change with the comparison - are `AnimatedVisibility` parts
   (`expandVertically` + `fadeIn` from the top, `shrinkVertically` + `fadeOut`
   toward it) on the same 250 ms tween, and the parts that stay but reword - the
-  chip, the "Before:" line and the signed change - crossfade on it (`AnimatedContent`,
+  chip, the earlier-value line (whose wording travels with its reference) and the
+  signed change - crossfade on it (`AnimatedContent`,
   fade only, no size animation, aligned to their reading edge). A switch during the
   running entrance retargets with the transition's spring. Each part carries its own gap
   (`contentPadding.text` for the text parts, `subContent` for the bar), so the gap
@@ -1098,7 +1131,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   `b13Med` `text.secondary` cadence, and one `b12Med` `text.secondary` outcome
   line. It draws no indicator bar: without the Overview's progress caption a bar
   would read as progress toward an unstated goal, and Overview and Details keep it.
-  The headline is always `overviewHeadline()` with its unit ("5-week streak") and the
+  The headline is always `headline()`, shared with Overview and the details sheet,
+  with its unit ("5-week streak", the
+  Rhythm and Pattern cycles as `highlight_streak_cycles` plurals, "3 цикла подряд";
+  a length of zero reads `training_streak_none`, "No streak yet") and the
   flame keeps the mood colors (`mood.indicatorColors()`) like Overview and Detailed;
   a change is one fact in one color, so only the current length carries the
   direction. When the previous length differs the outcome line
@@ -1111,15 +1147,17 @@ and Latin text in both themes; each role keeps its existing size and line height
   first frame while only the current length fades in over 900 ms behind a
   `rememberSaveable` reveal flag (once per screen instance), so it never reads
   "4 → 4"; an unchanged length shows the outcome text alone
-  (`training_streak_growth_kept`), and no outcome line is shown without a
-  previous state. The outcome line and the forward line form one text group at
+  (`training_streak_growth_kept`), a streak that grows from zero reads
+  `training_streak_growth_started` ("Streak started") without an arrow, and no
+  outcome line is shown without a previous state or when both lengths are zero. The outcome line and the forward line form one text group at
   `contentPadding.text` below the headline row, not separated by the panel spacer. The
   second `b12Med` `text.secondary` line looks forward through
-  `TrainingStreakState.nextTrainingLine()`: `training_streak_next_date` with the
-  rhythm's next day (`nextTrainingDate`, contextual `DateCompose` "Tomorrow" or
+  `TrainingStreakState.nextTrainingLine()`: `training_streak_next_date`
+  ("Tomorrow — next workout by your rhythm", the day leading so a contextual word
+  keeps its capital) with the rhythm's next day (`nextTrainingDate`, contextual `DateCompose` "Tomorrow" or
   `DateDdMmm`), otherwise for a Weekly rhythm the days still due in the current
-  timeline entry (`training_streak_next_weekly`, or `training_streak_week_done`
-  at zero); other rhythms without a predicted day show no line. The field has no
+  timeline entry (`training_streak_next_workouts` plurals, "2 more workouts this
+  week", or `training_streak_week_done` at zero); other rhythms without a predicted day show no line. The field has no
   default: every producer states whether a next day exists.
 - `GoalCardStyle.Growth(previous)` is the completed-workout goal block, open like
   the streak block in the "Progress" group: the Course
@@ -1145,7 +1183,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   How the score moved and the band it now falls in are separate facts: the score
   numbers and the bar's changed stretch carry the direction, while the label keeps
   the band of the current score, so a drop into the off-track band keeps its red
-  error label instead of reading as the calm decline. The `b12Med` analyzed-workouts line closes the
+  error label instead of reading as the calm decline. The `b12Med` analyzed-workouts line
+  (`GoalProgressState.analyzedWorkoutsLabel()`: `goal_analyzed_workouts` plurals,
+  "Based on 12 workouts in this period", or `goal_analyzed_none` at zero) closes the
   block. A missing score shows only the not-evaluated label, with no score line
   and no bar.
 - `MuscleLoadingCardStyle.Session` is the completed-workout muscle load: an open
@@ -1165,9 +1205,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   tonnage, max repetitions, peak intensity) separated by `ContentDivider`: a
   `SMALL` (32 dp) `ExerciseExampleImage`, the `b13Semi` `text.primary` exercise
   name once, over one plain `b11Med` `text.secondary` line listing every kind with
-  its value - `AchievementState.text()` and `spacedValue()` (spaced weights such as
-  "92.5 kg", repetitions as "x14"; `AchievementState.value()` keeps the compact form
-  for exercise details), each kind joined to its value by `labeled_value` and the
+  its value - `AchievementState.text()` and `value()` (weights such as
+  "92.5 kg", repetitions as "x14", the same value the exercise details show), each kind joined to its value by `labeled_value` and the
   kinds by `joined_pair` ("Best weight 22.5 kg · Best
   tonnage 380 kg · Max repetitions x10 · Peak intensity 21.1 kg") and wrapping
   without truncation (at most four kinds; an ellipsis would hide a record) - then
@@ -1201,12 +1240,14 @@ and Latin text in both themes; each role keeps its existing size and line height
   stays nearly as quiet as the track - and `charts.indicator.success` from 100% on,
   the part past the marker green - never `charts.indicator.primary`,
   whose dominant is the warning orange; without a typical week there is no bar at
-  all, the note alone explains the absence; the `b12Med` `weekly_volume_trainings`
-  count closes the block. Zero tonnage against a positive typical week shows
-  "0 kg" with an empty bar and its marker at the end. A bar appears only against a positive typical
-  week: a zero typical week (recent weeks without tonnage) gives no share, so
-  `progress()` is null, the sentence still states both values ("0 kg of your usual
-  0 kg") and there is neither a bar nor a note; it never reads as reached. No
+  all, the note alone explains the absence; the `b12Med`
+  `WeeklyVolumeState.workoutsLabel()` (`weekly_volume_workouts` plurals, "1 workout
+  this week", or `weekly_volume_no_workouts` at zero) closes the block. Zero tonnage against a positive typical week drops the `h3`
+  sentence for `weekly_volume_usual` ("Usually 9 800 kg a week") over an empty bar
+  with its marker at the end. A bar appears only against a positive typical week: a
+  zero typical week (recent weeks without tonnage) counts as no typical week, so
+  this week's tonnage stands alone with `weekly_volume_no_typical` (or only the
+  note when this week is zero too); it never reads as reached. No
   typical value is ever invented.
 - Regular exercise thumbnails remain `ExerciseExampleImageStyle.MEDIUM` (64 dp).
   Medium history/read-only exercise rows use `COMPACT` (48 dp); small inline
@@ -1223,7 +1264,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   beside the icon. Exercises without either history signal use a plain `b12Med`, `text.secondary`
   “Not tried yet” caption. History is neither selection nor success, so it has
   no orange or feedback tint. Equipment uses the shared Compact treatment;
-  missing equipment keeps an explicitly labelled declared weight type.
+  missing equipment shows the declared weight type as its plain value.
   All muscle groups are represented by one upper-body mark and, when needed,
   one legs mark at `muscle.summaryMarkSize` (32 dp), with neutral `icon.secondary`
   highlights and complete localized accessibility names. The equipment and
@@ -1458,7 +1499,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   primary `b14Semi` "load × reps" results, each followed by a tertiary middle
   dot inside the same text so a wrapped line never starts with a separator, with
   no nested cells or frames; a missing value shows "—" and a recorded zero shows
-  "0kg", and an entry without sets shows the secondary `b12Med` no-sets caption
+  "0 kg", and an entry without sets shows the secondary `b12Med` no-sets caption
   instead of the line. The chart axis uses the same day-and-month `DateDdMmm` vocabulary as
   the completed-exercise sheet; the tonnage history chart above the entries
   keeps the shared flat bar style with adaptive X labels.

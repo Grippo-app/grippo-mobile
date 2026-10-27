@@ -46,6 +46,23 @@ resource packaging/use needs its relevant inspection or manual scenario.
   value finds its own marker, so a locale may reorder them. Never split such a
   sentence into fragments, concatenate pieces or set a value and its words in
   separate `Text`s to style them.
+- Copy reads like a person talking, not like a report. Russian and Ukrainian
+  address the user with "ты", English with "you", both Portuguese bundles with
+  "você". A count is a plural phrase ("3 sets done", "12 workouts"), never
+  "Label: N" or "N/M"; zero gets its own text ("No sets planned", "None") instead of
+  a bare 0. Sentences and headlines spell words out ("дней", not "дн."); a unit
+  after a number in a compact value slot (an input suffix, "8 подх./нед." in a
+  finding value, "по 12 / 10 / 8 повт." in a plan caption) stays short. One term per concept: weight
+  × reps is "Weight lifted" / "Поднятый вес" (not tonnage or volume), the earlier
+  average is "usual" / "обычно", a workout is never a "session" / "сессия", a set is
+  "подход" / "підхід" (not "сет"). Labels that fill a title slot are nouns
+  ("Месяц — статистика"), not adverbs ("Ежемесячно").
+- A number and its unit are joined by a non-breaking space (`FormatState.UNIT_SPACE`:
+  "80 кг", "65 мин", "12 кг/мин"), and `formatDecimal` groups thousands with
+  non-breaking spaces ("13 980"), so a value never breaks across lines; a resource
+  that puts a unit after a placeholder or a literal number writes U+00A0 there too.
+  A tight slot that cannot fit its longest value lets the whole value move (flow
+  layout), never a breakable space.
 - When a plural is first needed, add a complete `plurals.xml` `<resources>` document
   in the default and every existing locale, with the quantity categories of each
   specific locale rather than one copied four-category list.

@@ -15,6 +15,7 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -82,12 +83,14 @@ import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.stubRecapTraining
 import com.grippo.design.components.illustration.Illustration
 import com.grippo.design.components.illustration.IllustrationStyle
+import com.grippo.design.components.modifiers.IllustrationBackgroundStyle
 import com.grippo.design.components.modifiers.illustrationBackground
 import com.grippo.design.components.skeleton.SkeletonText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.exercise_history_no_sets
 import com.grippo.design.resources.provider.joined_pair
 import com.grippo.design.resources.provider.listed_pair
 import com.grippo.design.resources.provider.sets
@@ -280,7 +283,11 @@ public fun TrainingRecapHero(
     val compactFacts = listOfNotNull(
         durationValue?.let { value -> DurationFormatState.shortMinutes(value) },
         volumeValue?.let { value -> VolumeFormatState.shortTotal(value) },
-        AppTokens.strings.res(Res.plurals.training_recap_sets, setsCount, setsCount),
+        if (setsCount == 0) {
+            AppTokens.strings.res(Res.string.exercise_history_no_sets)
+        } else {
+            AppTokens.strings.res(Res.plurals.training_recap_sets, setsCount, setsCount)
+        },
     ).reduce { line, fact -> AppTokens.strings.res(Res.string.joined_pair, line, fact) }
     val isCollapsed by remember(state) {
         derivedStateOf { state.collapseFraction >= RECAP_COLLAPSE_SEMANTICS_SWITCH }
@@ -346,11 +353,12 @@ public fun TrainingRecapHero(
             )
         },
         facts = {
-            Row(
+            FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .then(expandedSemantics),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
             ) {
                 if (durationValue != null) {
                     RecapFact(
@@ -366,12 +374,13 @@ public fun TrainingRecapHero(
                         label = PerformanceMetricTypeState.Volume.label(),
                     )
                 }
-                RecapFact(
-                    modifier = Modifier.weight(1f),
-                    value = setsCount.toString(),
-                    label = AppTokens.strings.res(Res.string.sets),
-                    dimmed = setsCount == 0,
-                )
+                if (setsCount > 0) {
+                    RecapFact(
+                        modifier = Modifier.weight(1f),
+                        value = setsCount.toString(),
+                        label = AppTokens.strings.res(Res.string.sets),
+                    )
+                }
             }
         },
         bar = {
@@ -474,7 +483,7 @@ private fun RecapCollapsingSurface(
 
     Layout(
         contents = listOf(
-            { Box(modifier = Modifier.illustrationBackground(RectangleShape)) },
+            { Box(modifier = Modifier.illustrationBackground(RectangleShape, style = IllustrationBackgroundStyle.Solid)) },
             text,
             backdrop,
             facts,
@@ -511,7 +520,8 @@ private fun RecapCollapsingSurface(
         )
 
         val topRowHeight = maxOf(textPlaceable.height, backdropPx)
-        val expandedHeight = topInset + expandedPaddingPx + topRowHeight + rowGapPx +
+        val factsGapPx = if (factsPlaceable.height > 0) rowGapPx else 0
+        val expandedHeight = topInset + expandedPaddingPx + topRowHeight + factsGapPx +
             factsPlaceable.height + expandedPaddingPx + bottomInset
         val barRowHeight = maxOf(barPlaceable.height, collapsedBackdropPx)
         val collapsedHeight = topInset + collapsedPaddingPx + barRowHeight + collapsedPaddingPx + bottomInset
@@ -568,7 +578,7 @@ private fun RecapCollapsingSurface(
             }
             factsPlaceable.placeRelativeWithLayer(
                 x = startPadding,
-                y = expandedTop + topRowHeight + rowGapPx - parallax,
+                y = expandedTop + topRowHeight + factsGapPx - parallax,
             ) {
                 alpha = 1f - collapsePhase(fraction = fraction, start = 0f, end = RECAP_COLLAPSE_FACTS_FADE_END)
             }
@@ -657,7 +667,6 @@ private fun RecapFact(
     modifier: Modifier = Modifier,
     value: String,
     label: String,
-    dimmed: Boolean = false,
 ) {
     val description = AppTokens.strings.res(Res.string.listed_pair, label, value)
 
@@ -668,7 +677,7 @@ private fun RecapFact(
         Text(
             text = value,
             style = AppTokens.typography.h3(),
-            color = if (dimmed) AppTokens.colors.text.tertiary else AppTokens.colors.text.primary,
+            color = AppTokens.colors.text.primary,
         )
         Text(
             text = label,

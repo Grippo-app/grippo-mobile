@@ -18,7 +18,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_max_weight
-import com.grippo.design.resources.provider.exercise_sets_count
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
@@ -30,10 +29,8 @@ internal fun ExerciseSummary(
     val completedCount = value.iterations.count { !it.isPending }
     val totalCount = value.iterations.size
 
-    val setsColor = when {
-        totalCount > 0 && completedCount == totalCount -> AppTokens.colors.semantic.success
-        else -> AppTokens.colors.text.secondary
-    }
+    val isCompleted = totalCount > 0 && completedCount == totalCount
+    val setsColor = if (isCompleted) AppTokens.colors.semantic.success else AppTokens.colors.text.secondary
 
     val completedLoads = value.iterations
         .filterNot { it.isPending }
@@ -58,7 +55,7 @@ internal fun ExerciseSummary(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
     ) {
         Text(
-            text = AppTokens.strings.res(Res.string.exercise_sets_count, completedCount, totalCount),
+            text = ExerciseState.setsProgress(completed = completedCount, total = totalCount),
             style = AppTokens.typography.b13Med(),
             color = setsColor,
         )

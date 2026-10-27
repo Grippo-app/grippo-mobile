@@ -8,6 +8,7 @@ import com.grippo.core.state.examples.stubExerciseExampleValueState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.day_count
 import com.grippo.design.resources.provider.decimal_separator
 import com.grippo.design.resources.provider.spotlight_good_frequency_action
 import com.grippo.design.resources.provider.spotlight_good_frequency_context
@@ -16,6 +17,7 @@ import com.grippo.design.resources.provider.spotlight_good_frequency_title
 import com.grippo.design.resources.provider.spotlight_near_best_action
 import com.grippo.design.resources.provider.spotlight_near_best_context
 import com.grippo.design.resources.provider.spotlight_near_best_metric
+import com.grippo.design.resources.provider.spotlight_near_best_metric_equal
 import com.grippo.design.resources.provider.spotlight_near_best_title
 import com.grippo.design.resources.provider.spotlight_needs_attention_action
 import com.grippo.design.resources.provider.spotlight_needs_attention_context
@@ -120,9 +122,12 @@ public data class ExerciseSpotlightState(
                 persistentListOf(value.improvementPercent, value.comparedSessions),
             )
 
-            is Details.NeedsAttention -> UiText.Res(
-                Res.string.spotlight_needs_attention_metric,
-                persistentListOf(value.currentGapDays),
+            is Details.NeedsAttention -> UiText.Str(
+                AppTokens.strings.res(
+                    Res.plurals.spotlight_needs_attention_metric,
+                    value.currentGapDays,
+                    value.currentGapDays,
+                ),
             )
 
             is Details.GoodFrequency -> UiText.Res(
@@ -133,10 +138,14 @@ public data class ExerciseSpotlightState(
                 ),
             )
 
-            is Details.NearBest -> UiText.Res(
-                Res.string.spotlight_near_best_metric,
-                persistentListOf(value.gapPercent),
-            )
+            is Details.NearBest -> if (value.gapPercent == 0) {
+                UiText.Res(Res.string.spotlight_near_best_metric_equal)
+            } else {
+                UiText.Res(
+                    Res.string.spotlight_near_best_metric,
+                    persistentListOf(value.gapPercent),
+                )
+            }
         }
     }
 
@@ -148,13 +157,13 @@ public data class ExerciseSpotlightState(
                 persistentListOf(
                     decimalText(value.latestSessionVolume),
                     decimalText(value.baselineVolumeMedian),
-                    value.comparisonWindowDays,
+                    dayCount(value.comparisonWindowDays),
                 ),
             )
 
             is Details.NeedsAttention -> UiText.Res(
                 Res.string.spotlight_needs_attention_context,
-                persistentListOf(value.typicalGapDays, value.triggerGapDays),
+                persistentListOf(dayCount(value.typicalGapDays), dayCount(value.triggerGapDays)),
             )
 
             is Details.GoodFrequency -> UiText.Res(
@@ -162,7 +171,7 @@ public data class ExerciseSpotlightState(
                 persistentListOf(
                     value.activeWeeks,
                     value.recentWindowDays / 7,
-                    value.appearancesInWindow,
+                    dayCount(value.appearancesInWindow),
                 ),
             )
 
@@ -171,7 +180,7 @@ public data class ExerciseSpotlightState(
                 persistentListOf(
                     decimalText(value.latestSessionVolume),
                     decimalText(value.bestSessionVolume),
-                    value.comparisonWindowDays,
+                    dayCount(value.comparisonWindowDays),
                 ),
             )
         }
@@ -185,6 +194,9 @@ public data class ExerciseSpotlightState(
             Kind.NearBest -> UiText.Res(Res.string.spotlight_near_best_action)
         }
     }
+
+    @Composable
+    private fun dayCount(days: Int): String = AppTokens.strings.res(Res.plurals.day_count, days, days)
 
     @Composable
     private fun decimalText(value: Float): String {

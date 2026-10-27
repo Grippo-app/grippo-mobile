@@ -9,7 +9,6 @@ import androidx.compose.ui.text.withStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.decimal_separator
-import com.grippo.design.resources.provider.repetitions_input_hint
 import com.grippo.design.resources.provider.x
 import com.grippo.toolkit.number.utils.formatDecimal
 import kotlinx.serialization.Serializable
@@ -100,11 +99,6 @@ public sealed class RepetitionsFormatState : FormatState<Int> {
                 )
             }
         }
-    }
-
-    @Composable
-    public fun hint(): String {
-        return AppTokens.strings.res(Res.string.repetitions_input_hint)
     }
 
     @Composable

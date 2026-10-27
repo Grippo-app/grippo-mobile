@@ -26,6 +26,8 @@ public sealed interface PerformanceMetricState {
 
     public fun isEmpty(): Boolean = status == PerformanceTrendStatusState.Empty
 
+    public fun hasEarlierValue(): Boolean = (averageChartValue() ?: 0f) > 0f
+
     public fun hasAverage(): Boolean = when (this) {
         is Duration -> average != null
         is Volume -> average != null
@@ -90,7 +92,7 @@ public sealed interface PerformanceMetricState {
         is Duration -> DurationFormatState.shortMinutes(average)
         is Volume -> VolumeFormatState.shortTotal(average)
         is Density -> DensityFormatState.shortTotal(average)
-        is Repetitions -> RepetitionsFormatState.shortAverage(average)
+        is Repetitions -> RepetitionsFormatState.shortAverage(average?.roundToInt()?.toDouble())
         is Intensity -> IntensityFormatState.shortAverage(average)
     }
 

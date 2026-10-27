@@ -3,6 +3,9 @@ package com.grippo.core.state.error
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.error_network_description
+import com.grippo.design.resources.provider.error_no_internet_description
+import com.grippo.design.resources.provider.error_timeout_description
 import com.grippo.design.resources.provider.no_internet_connection
 import com.grippo.design.resources.provider.something_went_wrong
 import com.grippo.design.resources.provider.timeout_error
@@ -26,27 +29,19 @@ public sealed interface AppErrorState {
 
         @Immutable
         @Serializable
-        public data class NoInternet(
-            val description: String?,
-        ) : Network
+        public data object NoInternet : Network
 
         @Immutable
         @Serializable
-        public data class Timeout(
-            val description: String?,
-        ) : Network
+        public data object Timeout : Network
 
         @Immutable
         @Serializable
-        public data class IncompleteResponse(
-            val description: String?,
-        ) : Network
+        public data object IncompleteResponse : Network
 
         @Immutable
         @Serializable
-        public data class Unexpected(
-            val description: String?,
-        ) : Network
+        public data object Unexpected : Network
     }
 
     @Immutable
@@ -75,10 +70,10 @@ public sealed interface AppErrorState {
     public fun description(): UiText? {
         return when (this) {
             is Network.Expected -> this.description?.let { UiText.Str(it) }
-            is Network.NoInternet -> this.description?.let { UiText.Str(it) }
-            is Network.Timeout -> this.description?.let { UiText.Str(it) }
-            is Network.IncompleteResponse -> this.description?.let { UiText.Str(it) }
-            is Network.Unexpected -> this.description?.let { UiText.Str(it) }
+            is Network.NoInternet -> DESCRIPTION_NO_INTERNET
+            is Network.Timeout -> DESCRIPTION_TIMEOUT
+            is Network.IncompleteResponse -> DESCRIPTION_NETWORK
+            is Network.Unexpected -> DESCRIPTION_NETWORK
             is Expected -> this.description?.let { UiText.Str(it) }
             is Unknown -> null
         }
@@ -90,5 +85,8 @@ public sealed interface AppErrorState {
         private val TITLE_UNEXPECTED_NETWORK: UiText =
             UiText.Res(Res.string.unexpected_network_error)
         private val TITLE_UNKNOWN: UiText = UiText.Res(Res.string.something_went_wrong)
+        private val DESCRIPTION_NO_INTERNET: UiText = UiText.Res(Res.string.error_no_internet_description)
+        private val DESCRIPTION_TIMEOUT: UiText = UiText.Res(Res.string.error_timeout_description)
+        private val DESCRIPTION_NETWORK: UiText = UiText.Res(Res.string.error_network_description)
     }
 }

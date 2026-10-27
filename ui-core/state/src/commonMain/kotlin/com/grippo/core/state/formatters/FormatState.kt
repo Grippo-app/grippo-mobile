@@ -10,4 +10,8 @@ public sealed interface FormatState<T> {
     public interface Valid<T> : FormatState<T>
     public interface Invalid<T> : FormatState<T>
     public interface Empty<T> : FormatState<T>
+
+    public companion object {
+        public const val UNIT_SPACE: String = "\u00A0"
+    }
 }

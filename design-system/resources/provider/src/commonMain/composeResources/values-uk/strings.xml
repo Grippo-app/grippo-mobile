@@ -10,112 +10,106 @@
     <string name="weight_and_height">Вага та зріст</string>
     <string name="update_your_body_metrics">Вкажи актуальні вагу та зріст.</string>
     <string name="extra_weight_placeholder">Додаткова вага</string>
-    <string name="assist_weight_placeholder">Асистована вага</string>
-    <string name="home_exercise_highlights_title">Твої вправи</string>
+    <string name="assist_weight_placeholder">Вага допомоги</string>
+    <string name="home_exercise_highlights_title">Вправи у фокусі</string>
     <string name="home_progress_details_hint">Натисни картку, щоб побачити подробиці.</string>
     <string name="home_metrics_title">Показники тренування</string>
     <string name="home_metrics_empty_description">За цей період поки немає показників. Спробуй інший період.</string>
     <string name="home_last_workout_in_period">Останнє тренування за період</string>
     <string name="metric_overview_muscle_distribution">Як розподілилося навантаження</string>
-    <string name="metric_overview_muscle_context">Тренування: %1$d · Доступні підходи: %2$d</string>
     <string name="metric_overview_muscle_primary">Найбільше навантаження: %1$s</string>
     <string name="metric_overview_muscle_details">Усі групи та м’язи</string>
     <string name="metric_overview_streak_title">Ритм тренувань</string>
     <string name="metric_overview_streak_active_days">Активні дні</string>
-    <string name="metric_overview_streak_daily_pattern">Ритм: тренування поспіль</string>
-    <string name="metric_overview_streak_weekly_pattern">Днів тренувань на тиждень: %1$d</string>
-    <string name="metric_overview_streak_rhythm_pattern">Дні тренувань: %1$d · Дні відпочинку: %2$d</string>
-    <string name="metric_overview_streak_pattern_pattern">Днів тренувань: %1$d · Днів у циклі: %2$d</string>
-    <string name="metric_overview_performance_average">Раніше в середньому: %1$s</string>
-    <string name="metric_overview_performance_comparison">%1$s порівняно з попереднім середнім</string>
+    <string name="metric_overview_streak_daily_pattern">Дні з тренуваннями поспіль</string>
+    <string name="metric_overview_performance_average">Зазвичай %1$s</string>
+    <string name="metric_overview_performance_comparison">%1$s до звичного</string>
     <string name="metric_overview_duration">Час тренування</string>
     <string name="metric_overview_volume">Піднята вага</string>
     <string name="metric_overview_density">Вага за хвилину</string>
     <string name="metric_overview_intensity">Середня вага</string>
     <string name="metric_overview_repetitions">Повторення</string>
-    <string name="metric_overview_goal_score">Відповідність тренувань</string>
-    <string name="metric_overview_goal_analyzed">Проаналізовано тренувань за період: %1$d</string>
-    <string name="spotlight_progress_win_title">Зростання обсягу</string>
+    <string name="metric_overview_goal_score">Відповідність цілі</string>
+    <string name="spotlight_progress_win_title">Більше піднятої ваги</string>
     <string name="spotlight_needs_attention_title">Довше без вправи</string>
     <string name="spotlight_good_frequency_title">Регулярність</string>
-    <string name="spotlight_near_best_title">Близько до найкращого обсягу</string>
-    <string name="repetitions_input_hint">1–99 повторень</string>
+    <string name="spotlight_near_best_title">Майже найкращий результат</string>
     <string name="exercise_details_btn">Деталі вправи</string>
     <string name="push_token">Пуш-токен</string>
-    <string name="start_new">Почати нове</string>
+    <string name="start_new">Видалити й почати нове</string>
     <string name="weight">Вага</string>
     <string name="choose_your_experience_level">Обери свій поточний рівень підготовки.</string>
-    <string name="weight_input_hint">1–999 кг</string>
-    <string name="spotlight_progress_win_metric">+%1$s% обсягу · попередніх тренувань: %2$d</string>
-    <string name="spotlight_progress_win_context">Останній обсяг %1$s проти медіани %2$s кг·повт. за %3$d дн.</string>
-    <string name="spotlight_progress_win_action">Обсяг у журналі — вага × повтори в усіх підходах; його зростання не обов’язково означає зростання сили.</string>
-    <string name="spotlight_needs_attention_metric">Останній запис %1$d дн. тому</string>
-    <string name="spotlight_needs_attention_context">Нещодавній інтервал ~%1$d дн.; затягнута перерва від %2$d дн.</string>
+    <string name="spotlight_progress_win_metric">На %1$s% більше за звичне (за %2$d останніми тренуваннями)</string>
+    <string name="spotlight_progress_win_action">Піднята вага — це вага × повторення в усіх підходах. Її зростання не завжди означає зростання сили.</string>
     <string name="spotlight_needs_attention_action">Перевір, чи вписується вправа в поточний план.</string>
-    <string name="spotlight_good_frequency_metric">%1$s дн./тиж. за %2$d тиж.</string>
-    <string name="spotlight_good_frequency_context">Записи в %1$d з %2$d тижнів, усього %3$d тренувальних дн.</string>
+    <string name="spotlight_good_frequency_metric">%1$s× на тиждень за останні %2$d тижні</string>
     <string name="spotlight_good_frequency_action">Кілька тренувань в один день рахуються як один тренувальний день.</string>
-    <string name="spotlight_near_best_metric">До найкращого обсягу: %1$s%</string>
-    <string name="spotlight_near_best_context">Обсяг у журналі %1$s проти попереднього найкращого %2$s кг·повт. за %3$d дн.</string>
-    <string name="spotlight_near_best_action">Порівнюй обсяг за однакової техніки й амплітуди.</string>
+    <string name="spotlight_near_best_action">Чесно порівнювати можна лише за тієї самої техніки й амплітуди.</string>
     <string name="dashboard">Головна</string>
     <string name="highlight_muscle_focus">Фокус на м’язи</string>
-    <string name="highlight_streak">%1$d-денна серія</string>
-    <string name="highlight_streak_weekly_headline_primary">%1$d-тижнева серія</string>
-    <string name="highlight_streak_rhythm">Серія циклів: %1$d</string>
-    <string name="highlight_streak_pattern_headline_primary">Патерн: %1$d циклів</string>
     <string name="performance_trend_desc_duration">Тривалість тренування. Довше чи коротше не означає краще.</string>
-    <string name="performance_trend_desc_volume">Піднята вага: робоча вага × повторення. На підсумок впливають вправи й тривалість тренування; сам по собі він не показує зростання сили.</string>
-    <string name="performance_trend_desc_density">Обсяг за хвилину всього тренування, включно з відпочинком. Більше роботи за хвилину саме по собі не означає краще.</string>
-    <string name="performance_trend_desc_repetitions">Усього повторень за тренування. На підсумок впливають вправи, підходи й заплановані легкі сесії; менше повторень не доводить втому.</string>
-    <string name="performance_trend_desc_intensity">Середня робоча вага на повторення з вагою. Вибір вправ впливає на значення; саме по собі воно не показує зусилля чи зростання сили.</string>
+    <string name="performance_trend_desc_volume">Вага в кожному підході × повторення, складені за все тренування. Вона залежить від вправ і тривалості тренування, тому сама по собі не показує зростання сили.</string>
+    <string name="performance_trend_desc_density">Піднята вага, поділена на хвилини всього тренування разом із відпочинком. Більше значення саме по собі не означає кращого тренування.</string>
+    <string name="performance_trend_desc_repetitions">Усі повторення за тренування разом. Підсумок залежить від вправ, кількості підходів і запланованих легких тренувань; менше повторень — ще не ознака втоми.</string>
+    <string name="performance_trend_desc_intensity">Середня вага на одне повторення — враховуються лише повторення з вагою. Залежить від вправ і сама по собі не показує зусилля чи силу.</string>
     <string name="sets_value">Підходи (%1$s)</string>
     <string name="percent">%</string>
     <string name="joined_pair">%1$s · %2$s</string>
     <string name="value_transition">%1$s → %2$s</string>
     <string name="listed_pair">%1$s, %2$s</string>
     <string name="labeled_value">%1$s %2$s</string>
-    <string name="selected">Обрано</string>
     <string name="cm">см</string>
     <string name="apply_btn">Застосувати</string>
     <string name="got_it_btn">Зрозуміло</string>
     <string name="confirm_btn">Підтвердити</string>
     <string name="empty_training_exercises">Додай першу вправу, щоб почати відстежувати тренування.</string>
     <string name="empty_daily_trainings">Цього дня тренувань немає.</string>
-    <string name="empty_exercise_examples">За запитом нічого не знайшли.</string>
+    <string name="empty_exercise_examples">Вправ не знайдено. Спробуй інший запит або групу м’язів.</string>
     <string name="exercise_library_suggestions_chip">Схожі</string>
-    <string name="daily">Щодня</string>
-    <string name="yearly">Щороку</string>
     <string name="custom">Власний</string>
     <string name="danger_zone">Небезпечна зона</string>
-    <string name="weekly">Щотижня</string>
-    <string name="monthly">Щомісяця</string>
     <string name="details">Деталі</string>
     <string name="cancel_btn">Скасувати</string>
     <string name="logout_btn">Вийти</string>
     <string name="delete_account">Видалити акаунт</string>
     <string name="loading">Завантаження…</string>
-    <string name="submit_btn">Надіслати</string>
+    <string name="submit_btn">Готово</string>
     <string name="delete_btn">Видалити</string>
     <string name="edit_btn">Редагувати</string>
-    <string name="change_btn">Змінити</string>
+    <string name="change_btn">Замінити вправу</string>
     <string name="continue_btn">Продовжити</string>
     <string name="add_exercise_btn">Додати вправу</string>
     <string name="save_btn">Зберегти</string>
-    <string name="update_btn">Оновити</string>
+    <string name="update_btn">Зберегти</string>
     <string name="training_completed_details_unavailable">Тренування збережено. Переглянути його можна в історії.</string>
-    <string name="training_completed_result_unavailable">Не вдалося підтвердити результат тренування. Перевір історію перед повторною спробою.</string>
+    <string name="training_completed_result_unavailable">Не вдалося переконатися, що тренування збережено. Перевір історію, перш ніж записувати його знову.</string>
     <string name="training_completed_done">Готово</string>
     <string name="training_recap_verdict_record">Максимум періоду</string>
     <string name="training_recap_verdict_improved">Сильніше за звичне</string>
     <string name="training_recap_verdict_improved_previous">Сильніше за минуле</string>
     <string name="training_recap_verdict_stable">На своєму рівні</string>
-    <string name="training_recap_verdict_declined">Легке тренування</string>
     <string name="training_recap_verdict_first">Точка відліку</string>
     <string name="training_recap_first_description">Основа для наступних тренувань</string>
+    <string name="weekly_volume_usual">Зазвичай %1$s на тиждень</string>
+    <string name="training_streak_growth_started">Серія почалася</string>
+    <string name="training_streak_none">Серії поки немає</string>
+    <string name="metric_overview_streak_rhythm_cadence">%1$s, потім %2$s</string>
+    <string name="metric_overview_streak_pattern_cadence">%1$s %2$s</string>
+    <string name="period_today">сьогодні</string>
+    <string name="period_this_week">цього тижня</string>
+    <string name="period_this_month">цього місяця</string>
+    <string name="period_this_year">цього року</string>
+    <string name="training_recap_compared_none">Немає показників вище звичного</string>
+    <string name="training_recap_compared_all">Усі показники вище звичного</string>
+    <string name="training_recap_compared_previous_none">Немає показників вище минулого</string>
+    <string name="training_recap_compared_previous_all">Усі показники вище минулого</string>
+    <string name="performance_comparison_usual">Зазвичай %1$s</string>
+    <string name="performance_comparison_last_time">Минулого разу %1$s</string>
+    <string name="weekly_volume_no_workouts">Цього тижня тренувань ще не було</string>
+    <string name="goal_analyzed_none">За цей період тренувань ще немає</string>
     <string name="training_recap_period_as_of">на %1$s</string>
-    <string name="per_group">По групам</string>
-    <string name="per_muscle">По м’язах</string>
+    <string name="per_group">За групами</string>
+    <string name="per_muscle">За м’язами</string>
     <string name="add_set_btn">Додати підхід</string>
     <string name="create_account_btn">Створити акаунт</string>
     <string name="email_placeholder">Введи електронну адресу</string>
@@ -127,7 +121,7 @@
     <string name="input_show_password">Показати пароль</string>
     <string name="input_hide_password">Приховати пароль</string>
     <string name="password_placeholder_default">Введи пароль</string>
-    <string name="name_placeholder">Введи ім&apos;я</string>
+    <string name="name_placeholder">Введи ім’я</string>
     <string name="weight_placeholder">Вкажи свою вагу</string>
     <string name="volume_placeholder">Вага</string>
     <string name="repetitions_placeholder">Повторення</string>
@@ -136,11 +130,11 @@
     <string name="history">Історія</string>
     <string name="achievements">Досягнення</string>
 
-    <string name="or_continue_with">Або продовжити з</string>
+    <string name="or_continue_with">Або увійди через</string>
     <string name="login_title">Ласкаво просимо до Grippo</string>
     <string name="track_real_progress_no_fluff">Персональні тренування під твій рівень, зал і прогрес.</string>
     <string name="login_button_login">Увійти</string>
-    <string name="account_deletion">Видалення акаунта</string>
+    <string name="account_deletion">Видалити акаунт?</string>
     <string name="account_deletion_description">Твій акаунт і дані буде видалено назавжди. Відновити їх пізніше не вдасться.</string>
     <string name="continue_with_google">Google</string>
     <string name="continue_with_apple">Apple</string>
@@ -164,7 +158,7 @@
     <string name="registration_equipment_title">Чого немає у твоєму залі?</string>
     <string name="registration_equipment_description">Вимкни недоступне обладнання — ми приберемо вправи, яким воно потрібне.</string>
 
-    <string name="welcome_title">Час до першого тренування</string>
+    <string name="welcome_title">Час для першого тренування</string>
     <string name="welcome_subtitle">Почни стежити за прогресом з першого тренування.</string>
 
 
@@ -173,13 +167,11 @@
     <string name="welcome_check_muscles">М’язи налаштовано</string>
     <string name="welcome_check_equipment">Обладнання налаштовано</string>
     <string name="welcome_check_goal">Ціль задано</string>
-    <string name="welcome_section_progress_title">Прогрес налаштування</string>
-    <string name="welcome_section_benefits_title">Що в тебе є</string>
+    <string name="welcome_section_progress_title">Налаштування профілю</string>
+    <string name="welcome_section_benefits_title">Що ти отримуєш</string>
 
     <string name="welcome_facts_muscles_all">Усі м’язи</string>
-    <string name="welcome_facts_muscles_excluded">%1$d виключено</string>
     <string name="welcome_facts_equipment_all">Усе обладнання</string>
-    <string name="welcome_facts_equipment_missing">%1$d недоступно</string>
 
     <string name="welcome_motto_beginner">Перший підхід — найважливіший.</string>
     <string name="welcome_motto_intermediate">Час виходити на новий рівень.</string>
@@ -189,9 +181,9 @@
     <string name="welcome_benefit_pack_title">Твій набір вправ готовий</string>
     <string name="welcome_benefit_pack_subtitle">Підібрано під твоє обладнання та м’язи.</string>
     <string name="welcome_benefit_progress_title">Прогрес під контролем</string>
-    <string name="welcome_benefit_progress_subtitle">Обсяг, повторення та час фіксуються в кожному тренуванні.</string>
+    <string name="welcome_benefit_progress_subtitle">Піднята вага, повторення та час записуються для кожного тренування.</string>
     <string name="welcome_benefit_history_title">Повна історія тренувань</string>
-    <string name="welcome_benefit_history_subtitle">Кожен підхід збережено — повертайся коли захочеш.</string>
+    <string name="welcome_benefit_history_subtitle">Кожен підхід збережено — повертайся, коли захочеш.</string>
 
     <string name="height_picker_title">Обери свій зріст</string>
     <string name="period_picker_title">Обери період</string>
@@ -206,7 +198,7 @@
     <string name="experience_advanced_title">Досвідчений</string>
     <string name="experience_pro_title">Профі</string>
     <string name="experience_beginner_description">Менше року тренувань — знайомишся з основними вправами й будуєш базу.</string>
-    <string name="experience_intermediate_description">Понад рік досвіду, упевнено володієш основними вправами та маєш міцну базу.</string>
+    <string name="experience_intermediate_description">Понад рік тренувань — упевнено виконуєш основні вправи й маєш міцну базу.</string>
     <string name="experience_advanced_description">2+ роки тренувань, добра техніка та стабільний прогрес.</string>
     <string name="experience_pro_description">5+ років досвіду — відмінна техніка та високий рівень розвитку м’язів.</string>
 
@@ -232,9 +224,9 @@
     <string name="value_statistics">%1$s — статистика</string>
     <string name="value_muscle_loading">%1$s — м’язове навантаження</string>
     <string name="muscle_loading">М’язове навантаження</string>
-    <string name="muscle_load_no_data">Немає даних.</string>
-    <string name="value_performance_trend">%1$s — тренд %2$s</string>
-    <string name="performance_trend">Тренд %1$s</string>
+    <string name="muscle_load_no_data">Немає даних про м’язи.</string>
+    <string name="value_performance_trend">%1$s — %2$s</string>
+    <string name="performance_trend">%1$s — динаміка</string>
     <string name="training_streak_insights_title">Як це розраховано</string>
     <string name="estimated_one_rm">Розрахунковий максимум на 1 повтор</string>
     <string name="equipments">Обладнання</string>
@@ -260,16 +252,16 @@
     <string name="select_date">Обери дату</string>
     <string name="select_month">Обери місяць</string>
     <string name="x">x</string>
-    <string name="tonnage">Тоннаж</string>
+    <string name="tonnage">Піднята вага</string>
     <string name="progress">Прогрес</string>
-    <string name="tonnage_chip">Тоннаж</string>
+    <string name="tonnage_chip">Піднята вага</string>
     <string name="intensity_chip">Інтенсивність</string>
     <string name="repetitions_chip">Повторення</string>
-    <string name="volume">Обсяг</string>
-    <string name="training_progress_lost_title">Вийти з тренування</string>
-    <string name="training_progress_lost_description">Якщо закриєш зараз, увесь прогрес цієї сесії буде втрачено.</string>
-    <string name="planned_sets_unfinished_title">Незакриті підходи</string>
-    <string name="planned_sets_unfinished_description">Кілька запланованих підходів ще порожні. Вони не потраплять до тренування при завершенні.</string>
+    <string name="volume">Піднята вага</string>
+    <string name="training_progress_lost_title">Вийти з тренування?</string>
+    <string name="training_progress_lost_description">Якщо вийдеш зараз, усе введене не збережеться.</string>
+    <string name="planned_sets_unfinished_title">Незаповнені підходи</string>
+    <string name="planned_sets_unfinished_description">Деякі заплановані підходи ще не заповнені. Після завершення тренування вони не збережуться.</string>
     <string name="confirm_training_completion_title">Завершити тренування</string>
     <string name="confirm_training_completion_subtitle">Перевір виконані підходи й тривалість перед збереженням.</string>
     <string name="confirm_training_completion_hint">Натисни на тривалість, щоб змінити її.</string>
@@ -278,46 +270,42 @@
     <string name="confirm_training_completion_save">Зберегти тренування</string>
     <string name="confirm_training_completion_continue">Продовжити тренування</string>
     <string name="something_went_wrong">Щось пішло не так</string>
-    <string name="timeout_error">Час очікування минув</string>
+    <string name="timeout_error">Сервер довго не відповідає</string>
     <string name="unexpected_network_error">Неочікувана мережева помилка</string>
     <string name="draft_training_alert_title_add">Продовжити тренування</string>
-    <string name="draft_training_alert_description_add">Чернетку тренування збережено. Продовжуй з того місця, де зупинився.</string>
+    <string name="draft_training_alert_description_add">Чернетку тренування збережено. Можна продовжити з того самого місця.</string>
     <string name="draft_training_alert_title_edit">Продовжити редагування</string>
-    <string name="draft_training_alert_description_edit">Твої зміни збережено в чернетці. Можна продовжувати редагування.</string>
+    <string name="draft_training_alert_description_edit">Зміни в тренуванні збережено в чернетці. Можна продовжити з того самого місця.</string>
     <string name="draft_training_summary_exercises">Вправи</string>
-    <string name="draft_training_summary_sets">Заповнені підходи</string>
-    <string name="draft_training_summary_time">Збережений час</string>
+    <string name="draft_training_summary_time">Тривалість</string>
     <string name="draft_training_contents">У цьому тренуванні</string>
     <string name="draft_training_empty">Вправ поки немає. Продовжуй, щоб додати першу.</string>
     <string name="start_training_title">Почати тренування</string>
     <string name="start_training_option_empty_title">Склади своє тренування</string>
     <string name="start_training_option_empty_description">Обери вправи на сьогодні, а підходи й вагу додавай під час тренування.</string>
     <string name="start_training_option_preset_title">План для початку</string>
-    <string name="start_training_option_preset_description">Вправи й підходи з урахуванням твоєї цілі та досвіду. Зміни план під сьогоднішню сесію.</string>
+    <string name="start_training_option_preset_description">Вправи й підходи з урахуванням твоєї цілі та досвіду. Зміни план під сьогоднішнє тренування.</string>
     <string name="start_training_option_recent_title">Нещодавнє тренування</string>
     <string name="start_training_choice_empty">З нуля</string>
-    <string name="start_training_choice_preset">Добірка</string>
+    <string name="start_training_choice_preset">План</string>
     <string name="start_training_choice_recent">Повторити</string>
     <string name="start_training_choose_exercises_btn">Обрати вправи</string>
     <string name="start_training_use_preset_btn">Використати план</string>
     <string name="start_training_repeat_btn">Повторити тренування</string>
     <string name="start_training_recent_description">Повтори вправи й підходи. Сьогоднішню вагу додавай під час тренування.</string>
-    <string name="exercise_plan_sets_repetitions">Підходи: %1$s · Повтори: %2$s</string>
-    <string name="exercise_plan_sets">Підходи: %1$s</string>
     <string name="menu">Меню</string>
     <string name="calendar">Календар</string>
 
-    <string name="best_tonnage">Найкращий тоннаж</string>
-    <string name="best_weight">Найкраща вага</string>
-    <string name="lifetime_volume">Загальний обсяг</string>
-    <string name="max_repetitions">Максимум повторень</string>
-    <string name="peak_intensity">Пікова інтенсивність</string>
+    <string name="best_tonnage">Найбільше піднято за тренування</string>
+    <string name="best_weight">Максимальна вага</string>
+    <string name="lifetime_volume">Піднято за весь час</string>
+    <string name="max_repetitions">Найбільше повторень у підході</string>
+    <string name="peak_intensity">Найкраща середня вага</string>
 
-    <string name="exercise_example_last_used_value">Останнє використання: %1$s</string>
-    <string name="exercise_example_in_history">В історії</string>
+    <string name="exercise_example_last_used_value">Востаннє: %1$s</string>
+    <string name="exercise_example_in_history">Уже виконували</string>
     <string name="exercise_example_not_used">Ще не виконували</string>
-    <string name="exercise_example_weight_type_value">Тип ваги: %1$s</string>
-    <string name="exercise_library_replace_target">Вправа для заміни</string>
+    <string name="exercise_library_replace_target">Замінюємо цю вправу</string>
 
 
     <!-- ForceTypeEnumState -->
@@ -330,8 +318,8 @@
     <string name="category_isolation">Ізолюючі</string>
 
     <!-- WeightTypeEnumState -->
-    <string name="weight_type_free">Вільна</string>
-    <string name="weight_type_fixed">Фіксована</string>
+    <string name="weight_type_free">Вільна вага</string>
+    <string name="weight_type_fixed">Тренажер</string>
     <string name="weight_type_body_weight">Вага тіла</string>
 
     <!-- ResourceTypeEnumState -->
@@ -344,8 +332,8 @@
     <string name="equipment_kettlebells">Гирі</string>
     <string name="equipment_barbell">Штанга</string>
     <string name="equipment_v_bar">V-рукоятка</string>
-    <string name="equipment_wide_grip_handle">Рукоятка широким хватом</string>
-    <string name="equipment_close_grip_handle">Рукоятка вузьким хватом</string>
+    <string name="equipment_wide_grip_handle">Широка рукоятка</string>
+    <string name="equipment_close_grip_handle">Вузька рукоятка</string>
     <string name="equipment_ez_bar">EZ-штанга</string>
     <string name="equipment_trap_bar">Трап-гриф</string>
     <string name="equipment_landmine">Кріплення лендмайн</string>
@@ -361,8 +349,8 @@
     <string name="equipment_leg_extension_machines">Тренажери для розгинання ніг</string>
     <string name="equipment_leg_curl_machines">Тренажери для згинання ніг</string>
     <string name="equipment_chest_press_machines">Тренажери для жиму</string>
-    <string name="equipment_plate_loaded_incline_chest_press">Похилий важільний жим грудей</string>
-    <string name="equipment_plate_loaded_decline_chest_press">Важільний жим грудьми вниз</string>
+    <string name="equipment_plate_loaded_incline_chest_press">Важільний жим грудей з нахилом вгору</string>
+    <string name="equipment_plate_loaded_decline_chest_press">Важільний жим грудей з нахилом вниз</string>
     <string name="equipment_biceps_machines">Тренажери для біцепса</string>
     <string name="equipment_smith_machines">Машина Сміта</string>
     <string name="equipment_hack_squat_machines">Хак-присідання</string>
@@ -376,10 +364,10 @@
     <string name="equipment_glute_machines">Тренажери для сідниць</string>
     <string name="equipment_assisted_pull_up_dip">Гравітрон</string>
     <string name="equipment_plate_loaded_row">Важільна тяга з упором грудьми</string>
-    <string name="equipment_belt_squat">Присідання з поясом</string>
+    <string name="equipment_belt_squat">Тренажер для присідань з поясом</string>
     <string name="equipment_plate_loaded_seated_dip">Важільний трицепс-прес сидячи</string>
-    <string name="equipment_adductor_machine">Тренажер для приведення</string>
-    <string name="equipment_abductor_machine">Тренажер для відведення</string>
+    <string name="equipment_adductor_machine">Тренажер для зведення ніг</string>
+    <string name="equipment_abductor_machine">Тренажер для розведення ніг</string>
 
     <string name="equipment_lat_pulldown">Тяга верхнього блоку</string>
     <string name="equipment_cable">Блочний тренажер</string>
@@ -389,7 +377,7 @@
     <string name="equipment_pull_up_bar">Турнік</string>
     <string name="equipment_dip_bars">Бруси</string>
     <string name="equipment_roman_chair">Римський стілець</string>
-    <string name="equipment_glute_ham_raise_bench">Лавка GHR</string>
+    <string name="equipment_glute_ham_raise_bench">Лавка для сідниць і біцепса стегна</string>
 
     <string name="equipment_flat_bench">Пласка лавка</string>
     <string name="equipment_adjustable_bench">Регульована лавка</string>
@@ -409,9 +397,9 @@
     <string name="equipment_group_benches_and_racks">Лавки та стійки</string>
 
     <!-- MuscleEnumState -->
-    <string name="muscle_pectoralis_major_clavicular">Верх грудей (грудні)</string>
-    <string name="muscle_pectoralis_major_sternocostal">Середина грудей (грудні)</string>
-    <string name="muscle_pectoralis_major_abdominal">Низ грудей (грудні)</string>
+    <string name="muscle_pectoralis_major_clavicular">Верх грудних м’язів</string>
+    <string name="muscle_pectoralis_major_sternocostal">Середина грудних м’язів</string>
+    <string name="muscle_pectoralis_major_abdominal">Низ грудних м’язів</string>
     <string name="muscle_trapezius">Трапеції</string>
     <string name="muscle_latissimus_dorsi">Найширші</string>
     <string name="muscle_rhomboids">Ромбоподібні</string>
@@ -422,8 +410,8 @@
     <string name="muscle_gluteal">Сідниці</string>
     <string name="muscle_hamstrings">Задня поверхня стегна</string>
     <string name="muscle_quadriceps">Квадрицепс</string>
-    <string name="muscle_adductors">Привідні</string>
-    <string name="muscle_abductors">Відвідні</string>
+    <string name="muscle_adductors">Привідні м’язи стегна</string>
+    <string name="muscle_abductors">Відвідні м’язи стегна</string>
     <string name="muscle_anterior_deltoid">Передня дельта</string>
     <string name="muscle_lateral_deltoid">Середня дельта</string>
     <string name="muscle_posterior_deltoid">Задня дельта</string>
@@ -440,83 +428,16 @@
     <string name="muscle_group_shoulder_muscles">Плечі</string>
 
     <!-- IterationFocus -->
-    <string name="iteration_focus_volume">Обсяг</string>
-    <string name="iteration_focus_repetitions">Повторення</string>
-    <string name="iteration_focus_unidentified">Невизначено</string>
 
-    <!-- Equipment hints -->
-    <string name="equipment_hint_common">Повтори: скільки повторень зробив у цьому підході. Вага: вводь за підказками нижче.</string>
-    <string name="equipment_hint_none">Вага: якщо без додаткової ваги — введи 1. Якщо тримаєш диск/гантель/жилет — введи лише додаткову вагу.</string>
-
-    <string name="equipment_hint_dumbbells">Вкажи сумарну вагу пари (2×20 → 40), навіть якщо робиш почергово.</string>
-    <string name="equipment_hint_kettlebells">Вкажіть загальну вагу гир, які використовуєте: вагу однієї гирі або суму ваг двох.</string>
-    <string name="equipment_hint_barbell">Вводь загальну вагу на штанзі. Якщо рахуєш гриф, рахуй його завжди.</string>
-    <string name="equipment_hint_v_bar">V-рукоятку тримай двома руками.</string>
-    <string name="equipment_hint_wide_grip_handle">Широку рукоятку тримай двома руками.</string>
-    <string name="equipment_hint_close_grip_handle">Вузьку рукоятку тримай двома руками.</string>
-    <string name="equipment_hint_ez_bar">Вводь загальну вагу на EZ-грифі. Якщо рахуєш гриф, рахуй його завжди.</string>
-    <string name="equipment_hint_trap_bar">Вводь загальну вагу на трап-грифі. Якщо рахуєш гриф, рахуй його завжди.</string>
-    <string name="equipment_hint_landmine">Вкажіть загальну вагу дисків на вільному кінці штанги. Вагу грифа та кріплення не додавайте.</string>
-    <string name="equipment_hint_rope">Канат тримай однією або двома руками — як у вправі.</string>
-    <string name="equipment_hint_straight_bar">Прямий гриф тримай двома руками.</string>
-    <string name="equipment_hint_cord_handles">Тримай рукоятку однією рукою або парою — як у вправі.</string>
-    <string name="equipment_hint_ankle_cuff">Закріпи манжету навколо щиколотки та пристебни її до троса. Вкажи вагу, виставлену на блоці.</string>
-
-    <string name="equipment_hint_ab_machines">Вкажи вагу, яку виставив на тренажері.</string>
-    <string name="equipment_hint_butterfly">Вкажи вагу на тренажері. Якщо дві сторони з різними цифрами — візьми одну.</string>
-    <string name="equipment_hint_butterfly_forearm">Вкажи вагу, яку виставив на тренажері.</string>
-    <string name="equipment_hint_butterfly_reverse">Вкажи вагу на тренажері. Якщо дві сторони з різними цифрами — візьми одну.</string>
-    <string name="equipment_hint_leg_extension_machines">Вкажи вагу на розгинанні ніг.</string>
-    <string name="equipment_hint_leg_curl_machines">Вкажи вагу на згинанні ніг.</string>
-    <string name="equipment_hint_chest_press_machines">Вкажи вагу, яку виставив на жимовому тренажері.</string>
-    <string name="equipment_hint_plate_loaded_incline_chest_press">Вкажіть загальну вагу дисків на задіяних робочих важелях. При жимі однією рукою враховуйте лише диски з цього боку. Диски на тримачах для зберігання та власний опір тренажера не враховуйте.</string>
-    <string name="equipment_hint_plate_loaded_decline_chest_press">Вкажіть загальну вагу дисків на задіяних робочих важелях. При жимі однією рукою враховуйте лише диски з цього боку. Диски на тримачах для зберігання та власний опір тренажера не враховуйте.</string>
-    <string name="equipment_hint_biceps_machines">Вкажи вагу, яку виставив на біцепс-тренажері.</string>
-    <string name="equipment_hint_smith_machines">Вводь загальну вагу дисків. Гриф Сміта можна не рахувати — головне, роби це однаково щоразу.</string>
-    <string name="equipment_hint_hack_squat_machines">Вкажи суму дисків на гак-присіді.</string>
-    <string name="equipment_hint_leg_press_machine">Вкажи суму дисків на жимі ногами.</string>
-    <string name="equipment_hint_vertical_leg_press">Вкажи сумарну вагу робочих дисків на вертикальному жимі ногами. Не враховуй вагу платформи та каретки.</string>
-    <string name="equipment_hint_deadlift_machines">Вкажи суму дисків на тяговому тренажері.</string>
-    <string name="equipment_hint_shoulder_press_machines">Вкажи вагу на тренажері для плечей.</string>
-    <string name="equipment_hint_lateral_raise_machines">Вкажи вагу на тренажері для махів у сторони.</string>
-    <string name="equipment_hint_triceps_machines">Вкажи вагу на тренажері для трицепса.</string>
-    <string name="equipment_hint_calf_raise_machines">Вкажи вагу на тренажері для литок.</string>
-    <string name="equipment_hint_glute_machines">Вкажи вагу на тренажері для сідниць.</string>
-    <string name="equipment_hint_assisted_pull_up_dip">Вкажіть вагу допомоги, виставлену на стеку, додатним числом. Що більша допомога, то легша вправа.</string>
-    <string name="equipment_hint_plate_loaded_row">Вкажіть загальну вагу дисків на задіяних важелях. Для тяги однією рукою враховуйте лише диски з цього боку. Власний опір тренажера не додавайте.</string>
-    <string name="equipment_hint_belt_squat">Вкажіть загальну вагу дисків, які створюють навантаження. Вагу тіла та опір тренажера без дисків не додавайте.</string>
-    <string name="equipment_hint_plate_loaded_seated_dip">Вкажіть загальну вагу дисків на робочих важелях. Диски на тримачах для зберігання та власний опір тренажера не враховуйте.</string>
-
-    <string name="equipment_hint_lat_pulldown">Вкажи вагу, яку виставив на тязі зверху.</string>
-    <string name="equipment_hint_cable">Вкажи вагу, яку виставив на блоці.</string>
-    <string name="equipment_hint_cable_crossover">На кросовері вкажи вагу однієї сторони.</string>
-    <string name="equipment_hint_row_cable">Вкажи вагу, яку виставив на тязі сидячи.</string>
-
-    <string name="equipment_hint_pull_up_bar">Якщо без дод. ваги — вкажи свою вагу. Якщо з поясом/жилетом — додай дод. вагу.</string>
-    <string name="equipment_hint_dip_bars">Якщо без дод. ваги — вкажи свою вагу. Якщо з поясом/жилетом — додай дод. вагу.</string>
-    <string name="equipment_hint_romain_chair">Якщо без дод. ваги — вкажи свою вагу. Якщо з диском/гантеллю — додай дод. вагу.</string>
-    <string name="equipment_hint_glute_ham_raise_bench">Якщо без дод. ваги — вкажи свою вагу. Якщо з диском/жилетом — додай дод. вагу.</string>
-
-    <string name="equipment_hint_flat_bench">Якщо є обтяження, вкажи його вагу.</string>
-    <string name="equipment_hint_adjustable_bench">Якщо є обтяження, вкажи його вагу.</string>
-    <string name="equipment_hint_adductor_machine">Вкажи вагу на тренажері для привідних.</string>
-    <string name="equipment_hint_abductor_machine">Вкажи вагу на тренажері для відвідних.</string>
-    <string name="equipment_hint_decline_bench">Якщо є обтяження, вкажи його вагу.</string>
-    <string name="equipment_hint_flat_bench_with_rack">Вкажи загальну вагу штанги на стійках.</string>
-    <string name="equipment_hint_incline_bench_with_rack">Вкажи загальну вагу штанги на стійках.</string>
-    <string name="equipment_hint_decline_bench_with_rack">Вкажи загальну вагу штанги на стійках.</string>
-    <string name="equipment_hint_squat_rack">Вкажи загальну вагу штанги в рамі.</string>
-    <string name="equipment_hint_preacher_curl_bench">Вкажи вагу, яку піднімаєш у вправі.</string>
-    <string name="equipment_hint_row_bench">Вкажи вагу, яку використовуєш у вправі.</string>
     <string name="notification_forgot_training_title">Тренування ще відкрите 💪</string>
     <string name="notification_forgot_training_description">Повернись, щоб завершити або зберегти прогрес.</string>
-    <string name="notification_weight_title">Швидке зважування? 👋</string>
-    <string name="notification_weight_description">Свіжа вага тримає прогрес і рекомендації точними.</string>
+    <string name="notification_weight_title">Час зважитися 👋</string>
+    <string name="notification_weight_description">Онови вагу, щоб прогрес рахувався точно.</string>
 
     <string name="training_unusual_weight_title">Незвичайна вага</string>
-    <string name="training_unusual_weight_subtitle">Можливо, пропущена або зайва цифра</string>
+    <string name="training_unusual_weight_subtitle">Перевір, чи немає зайвої або пропущеної цифри</string>
     <string name="training_unusual_reps_title">Незвичайна кількість повторень</string>
-    <string name="training_unusual_reps_subtitle">Можливо, пропущена або зайва цифра</string>
+    <string name="training_unusual_reps_subtitle">Перевір, чи немає зайвої або пропущеної цифри</string>
 
     <!-- Goal Profile -->
     <string name="goal_title">Ціль тренувань</string>
@@ -524,27 +445,26 @@
     <string name="goal_picker_secondary_title">Додаткова ціль</string>
     <string name="goal_save_btn">Зберегти ціль</string>
     <string name="goal_secondary_section">Що ще важливо?</string>
-    <string name="goal_target_date_placeholder">Цільова дата</string>
+    <string name="goal_target_date_placeholder">Термін цілі</string>
     <string name="personalizations_schedule_section">Розклад тренувань</string>
-    <string name="personalizations_session_duration_section">Тривалість сесії</string>
+    <string name="personalizations_session_duration_section">Тривалість тренування</string>
     <string name="personalizations_lifestyle_section">Спосіб життя</string>
-    <string name="personalizations_recovery_context_section">Контекст відновлення</string>
+    <string name="personalizations_recovery_context_section">Поточний стан</string>
     <string name="personalizations_care_zones_section">Чутливі зони</string>
-    <string name="personalizations_health_conditions_section">Стани здоров’я</string>
-    <string name="personalizations_movement_restrictions_section">Заборони на рухи</string>
-    <string name="personalizations_sports_section">Види спорту</string>
-    <string name="personalizations_focus_areas_section">Пріоритетні зони</string>
-    <string name="personalizations_physical_qualities_section">Фізичні якості</string>
-    <string name="personalizations_program_preferences_section">Налаштування програми</string>
+    <string name="personalizations_health_conditions_section">Особливості здоров’я</string>
+    <string name="personalizations_movement_restrictions_section">Обмеження у вправах</string>
+    <string name="personalizations_sports_section">Твої види спорту</string>
+    <string name="personalizations_focus_areas_section">М’язи в пріоритеті</string>
+    <string name="personalizations_physical_qualities_section">Що розвивати</string>
+    <string name="personalizations_program_preferences_section">Побажання до програми</string>
     <string name="personalizations_routine_structure_section">Структура програми</string>
-    <string name="personalizations_set_method_preferences_section">Стиль виконання</string>
+    <string name="personalizations_set_method_preferences_section">Стиль тренування</string>
     <string name="personalizations_equipment_preferences_section">Обладнання</string>
-    <string name="personalizations_training_phase_section">Фаза циклу</string>
+    <string name="personalizations_training_phase_section">Етап тренувань</string>
     <string name="goal_optional">Необов’язково</string>
     <string name="goal_routine_section">Ритм тренувань</string>
     <string name="goal_training_preferences_section">Тренувальні вподобання</string>
     <string name="goal_recovery_section">Відновлення й обмеження</string>
-    <string name="goal_selected_options">Обрано: %1$d</string>
     <string name="goal_options_expanded">Розгорнуто</string>
     <string name="goal_options_collapsed">Згорнуто</string>
     <string name="goal_target_date_invalid">Вибери дату від %1$s до %2$s.</string>
@@ -560,7 +480,7 @@
 
     <!-- Secondary goals -->
     <string name="goal_secondary_build_muscle">Набір м’язів</string>
-    <string name="goal_secondary_get_stronger">Набір сили</string>
+    <string name="goal_secondary_get_stronger">Ріст сили</string>
     <string name="goal_secondary_lose_fat">Спалювання жиру</string>
     <string name="goal_secondary_return_to_training">М’яке повернення</string>
     <string name="goal_secondary_maintain">Збереження форми</string>
@@ -568,75 +488,71 @@
     <string name="goal_secondary_consistency">Регулярність</string>
 
     <!-- Primary goal descriptions -->
-    <string name="goal_primary_build_muscle_desc">Тренуйся на ріст м’язів зі структурним обсягом і стабільною прогресією.</string>
-    <string name="goal_primary_get_stronger_desc">Важкі базові вправи, чітка прогресія і силова робота у фокусі.</string>
-    <string name="goal_primary_lose_fat_desc">Підтримай зниження жиру стабільними тренуваннями, що зберігають м’язи.</string>
-    <string name="goal_primary_return_to_training_desc">Поступово відновлюй режим під контролем навантаження.</string>
+    <string name="goal_primary_build_muscle_desc">Тренуйся на ріст м’язів: достатньо підходів і поступово більші ваги.</string>
+    <string name="goal_primary_get_stronger_desc">Важкі базові вправи, мало повторень і поступово більші ваги.</string>
+    <string name="goal_primary_lose_fat_desc">Регулярні тренування, що допомагають худнути й зберігати м’язи.</string>
+    <string name="goal_primary_return_to_training_desc">Поступово повертайся до режиму, не збільшуючи навантаження надто швидко.</string>
     <string name="goal_primary_maintain_desc">Утримуй форму регулярними збалансованими тренуваннями.</string>
-    <string name="goal_primary_general_fitness_desc">Збалансовані тренування на силу, рух і регулярність.</string>
+    <string name="goal_primary_general_fitness_desc">Регулярні збалансовані тренування на все тіло.</string>
 
     <!-- Secondary goal descriptions -->
-    <string name="goal_secondary_build_muscle_desc">Додай ріст м’язів паралельно з основною ціллю.</string>
-    <string name="goal_secondary_get_stronger_desc">Розвивай силу на доповнення до головного фокусу.</string>
-    <string name="goal_secondary_lose_fat_desc">Підтримай зниження жиру на шляху до основної цілі.</string>
-    <string name="goal_secondary_return_to_training_desc">Поступово відновлюй базу, рухаючись до головної цілі.</string>
+    <string name="goal_secondary_build_muscle_desc">Набирай м’язи паралельно з основною ціллю.</string>
+    <string name="goal_secondary_get_stronger_desc">Розвивай силу паралельно з основною ціллю.</string>
+    <string name="goal_secondary_lose_fat_desc">Худни паралельно з основною ціллю.</string>
+    <string name="goal_secondary_return_to_training_desc">Поступово повертайся у форму, рухаючись до основної цілі.</string>
     <string name="goal_secondary_maintain_desc">Утримуй поточний рівень і не втрачай набрану форму.</string>
     <string name="goal_secondary_general_fitness_desc">Підвищуй енергію, витривалість та загальне самопочуття.</string>
     <string name="goal_secondary_consistency_desc">Формуй звичку тренуватися тиждень за тижнем.</string>
 
     <!-- Goal progress card -->
     <string name="goal_card_title">Ціль тренувань</string>
-    <string name="goal_course_title">Ваш курс</string>
-    <string name="goal_period_label">Період цілі</string>
+    <string name="goal_course_title">Твій курс</string>
+    <string name="goal_period_label">Термін цілі</string>
     <string name="goal_card_status_on_track">На правильному курсі</string>
     <string name="goal_card_status_drifting">Є що покращити</string>
-    <string name="goal_card_status_off_track">Скоригуйте курс</string>
-    <string name="goal_card_progress_days_left">Залишилось %1$d дн.</string>
-    <string name="goal_card_progress_overdue">Прострочено на %1$d дн.</string>
-    <string name="goal_card_progress_due_today">Термін сьогодні</string>
-    <string name="goal_card_update_btn">Оновити</string>
+    <string name="goal_card_status_off_track">Скоригуй курс</string>
+    <string name="goal_card_progress_due_today">Сьогодні останній день</string>
+    <string name="goal_card_update_btn">Змінити</string>
 
     <!-- Training goal details dialog -->
     <string name="goal_details_title">Деталі цілі</string>
     <string name="goal_details_show_details">Докладніше про оцінку</string>
     <string name="goal_details_hide_details">Сховати подробиці</string>
     <!-- Training goal details: unavailable assessment -->
-    <string name="goal_details_reason_no_data_detail">Для оцінки цього періоду недостатньо записаних підходів або доступних критеріїв.</string>
-    <string name="goal_details_reason_too_early_detail">Для оцінки тижневого ритму тренувань потрібно спостерігати хоча б сім днів.</string>
+    <string name="goal_details_reason_no_data_detail">За цей період недостатньо даних, щоб оцінити ціль.</string>
+    <string name="goal_details_reason_too_early_detail">Для оцінки потрібно щонайменше сім днів після вибору цілі в межах цього періоду.</string>
 
     <!-- Goal-fit diagnostic sections -->
-    <string name="goal_fit_diagnostic_drifting_title">Що налаштувати</string>
+    <string name="goal_fit_diagnostic_drifting_title">Що підтягнути</string>
     <string name="goal_fit_diagnostic_on_track_title">Що вже працює</string>
     <string name="goal_fit_target_value">Орієнтир: %1$s</string>
-    <string name="goal_fit_target_at_least">≥%1$s</string>
-    <string name="goal_fit_target_at_most">≤%1$s</string>
+    <string name="goal_fit_target_at_least">щонайменше %1$s</string>
+    <string name="goal_fit_target_at_most">не більше %1$s</string>
     <string name="goal_fit_target_range">%1$s–%2$s</string>
 
-    <string name="goal_fit_unit_sets_per_week">сетів/тиж</string>
-    <string name="goal_fit_unit_groups">груп</string>
     <string name="goal_fit_unit_ratio">×</string>
 
 
-    <string name="goal_fit_rule_build_muscle_weekly_sets_per_primary_group_title">Розрахункові підходи за групами м’язів</string>
+    <string name="goal_fit_rule_build_muscle_weekly_sets_per_primary_group_title">Підходи на тиждень за групами м’язів</string>
     <string name="goal_fit_rule_build_muscle_weekly_frequency_per_primary_group_title">Дні тренувань за групами м’язів</string>
-    <string name="goal_fit_rule_build_muscle_load_progression_title">Зміна розрахункової сили за період</string>
+    <string name="goal_fit_rule_build_muscle_load_progression_title">Зміна сили за період</string>
 
-    <string name="goal_fit_rule_get_stronger_strength_rep_range_share_title">Силовий діапазон повторів</string>
-    <string name="goal_fit_rule_get_stronger_strength_progression_title">Зміна розрахункової сили за період</string>
+    <string name="goal_fit_rule_get_stronger_strength_rep_range_share_title">Частка підходів до 5 повторень</string>
+    <string name="goal_fit_rule_get_stronger_strength_progression_title">Зміна сили за період</string>
 
-    <string name="goal_fit_rule_maintain_group_coverage_title">Охоплення грудей, спини та ніг</string>
+    <string name="goal_fit_rule_maintain_group_coverage_title">Груди, спина й ноги щотижня</string>
     <string name="goal_fit_rule_maintain_weekly_frequency_title">Дні тренувань на тиждень</string>
     <string name="goal_fit_rule_maintain_weekly_volume_stability_title">Розкид кількості підходів за тижнями</string>
 
-    <string name="goal_fit_rule_general_fitness_group_coverage_title">Охоплення грудей, спини та ніг</string>
+    <string name="goal_fit_rule_general_fitness_group_coverage_title">Груди, спина й ноги щотижня</string>
     <string name="goal_fit_rule_general_fitness_weekly_frequency_title">Дні тренувань на тиждень</string>
 
     <string name="goal_fit_rule_lose_fat_session_adherence_title">Дні тренувань на тиждень</string>
     <string name="goal_fit_rule_lose_fat_resistance_presence_title">Силова робота на тиждень</string>
-    <string name="goal_fit_rule_lose_fat_weekly_volume_trend_title">Підходи останнього повного тижня до попереднього</string>
+    <string name="goal_fit_rule_lose_fat_weekly_volume_trend_title">Підходи за останній повний тиждень відносно попереднього</string>
 
     <string name="goal_fit_rule_return_to_training_weekly_frequency_title">Дні тренувань на тиждень</string>
-    <string name="goal_fit_rule_return_to_training_load_ramp_gentle_title">Найбільше тижневе зростання кількості підходів</string>
+    <string name="goal_fit_rule_return_to_training_load_ramp_gentle_title">Найбільший стрибок підходів між тижнями</string>
 
     <!-- Personalizations: frequency -->
     <string name="personalization_low_frequency">1–2 рази на тиждень</string>
@@ -654,19 +570,19 @@
     <string name="personalization_flexible_duration">Гнучка тривалість</string>
 
     <!-- Personalizations: recovery -->
-    <string name="personalization_high_stress_lifestyle">Високий рівень стресу</string>
+    <string name="personalization_high_stress_lifestyle">Багато стресу</string>
     <string name="personalization_poor_sleep_pattern">Погано сплю</string>
     <string name="personalization_low_energy_tendency">Часто мало енергії</string>
     <string name="personalization_sedentary_job">Сидяча робота</string>
     <string name="personalization_physically_active_job">Фізично активна робота</string>
 
     <!-- Personalizations: physical limitations -->
-    <string name="personalization_returning_after_break">Повертаюсь після паузи</string>
+    <string name="personalization_returning_after_break">Повертаюсь після перерви</string>
     <string name="personalization_recovering_from_injury">Відновлююсь після травми</string>
-    <string name="personalization_limited_range_of_motion">Обмежена амплітуда</string>
+    <string name="personalization_limited_range_of_motion">Обмежена рухливість</string>
     <string name="personalization_fatigue_management">Часто перевтомлююсь</string>
-    <string name="personalization_recovery_focus">Фокус на відновлення</string>
-    <string name="personalization_mobility_focus">Фокус на мобільність</string>
+    <string name="personalization_recovery_focus">Акцент на відновленні</string>
+    <string name="personalization_mobility_focus">Акцент на рухливості</string>
 
     <!-- Personalizations: movement exclusions -->
     <string name="personalization_neck_care">Берегти шию</string>
@@ -677,9 +593,9 @@
     <string name="personalization_wrist_care">Берегти зап’ястя</string>
     <string name="personalization_hip_care">Берегти таз</string>
     <string name="personalization_knee_care">Берегти коліна</string>
-    <string name="personalization_ankle_care">Берегти гомілковостоп</string>
+    <string name="personalization_ankle_care">Берегти щиколотки</string>
 
-    <string name="personalization_hypertension">Гіпертонія</string>
+    <string name="personalization_hypertension">Високий тиск</string>
     <string name="personalization_diabetes">Діабет</string>
     <string name="personalization_asthma">Астма</string>
     <string name="personalization_osteoporosis">Остеопороз</string>
@@ -687,19 +603,19 @@
     <string name="personalization_herniated_disc">Грижа міжхребцевого диска</string>
     <string name="personalization_chronic_pain">Хронічний біль</string>
     <string name="personalization_pregnancy">Вагітність</string>
-    <string name="personalization_postpartum">Післяпологовий період</string>
+    <string name="personalization_postpartum">Після пологів</string>
 
-    <string name="personalization_avoid_high_intensity">Без високої інтенсивності</string>
+    <string name="personalization_avoid_high_intensity">Без максимальних зусиль</string>
     <string name="personalization_avoid_heavy_loading">Без важких ваг</string>
     <string name="personalization_avoid_high_impact">Без ударного навантаження</string>
     <string name="personalization_avoid_deep_squats">Без глибоких присідань</string>
     <string name="personalization_avoid_lunges">Без випадів</string>
     <string name="personalization_avoid_overhead_work">Без вправ над головою</string>
-    <string name="personalization_avoid_heavy_spinal_loading">Без осьового навантаження</string>
+    <string name="personalization_avoid_heavy_spinal_loading">Без важкого навантаження на хребет</string>
     <string name="personalization_avoid_spinal_flexion">Без згинання хребта</string>
-    <string name="personalization_avoid_twisting">Без скручувань</string>
+    <string name="personalization_avoid_twisting">Без поворотів корпусу</string>
     <string name="personalization_avoid_floor_work">Без вправ на підлозі</string>
-    <string name="personalization_avoid_inversions">Без інверсій</string>
+    <string name="personalization_avoid_inversions">Без положень головою вниз</string>
     <string name="personalization_avoid_valsalva">Без затримки дихання</string>
     <string name="personalization_needs_supported_movements">З опорою та підтримкою</string>
 
@@ -707,98 +623,97 @@
     <string name="personalization_sport_bodybuilding">Бодібілдинг</string>
     <string name="personalization_sport_olympic_weightlifting">Важка атлетика</string>
     <string name="personalization_sport_crossfit">Кросфіт</string>
-    <string name="personalization_sport_calisthenics">Каллістеніка</string>
+    <string name="personalization_sport_calisthenics">Воркаут</string>
     <string name="personalization_sport_running">Біг</string>
     <string name="personalization_sport_cycling">Велоспорт</string>
     <string name="personalization_sport_swimming">Плавання</string>
-    <string name="personalization_sport_grappling">Боротьба / BJJ</string>
+    <string name="personalization_sport_grappling">Боротьба / джиу-джитсу</string>
     <string name="personalization_sport_striking">Бокс / MMA</string>
-    <string name="personalization_sport_team_ball_sports">Командні види</string>
-    <string name="personalization_sport_racquet_sports">Ракеткові види</string>
+    <string name="personalization_sport_team_ball_sports">Командні ігри з м’ячем</string>
+    <string name="personalization_sport_racquet_sports">Ігри з ракеткою</string>
     <string name="personalization_sport_climbing">Скелелазіння</string>
     <string name="personalization_sport_winter_board_sports">Лижі / сноуборд</string>
     <string name="personalization_sport_yoga_or_pilates">Йога / пілатес</string>
 
-    <string name="personalization_focus_chest">Грудні</string>
+    <string name="personalization_focus_chest">Груди</string>
     <string name="personalization_focus_back">Спина</string>
     <string name="personalization_focus_shoulders">Плечі</string>
     <string name="personalization_focus_rear_delts">Задні дельти</string>
     <string name="personalization_focus_arms">Руки</string>
     <string name="personalization_focus_forearms_and_grip">Передпліччя / хват</string>
-    <string name="personalization_focus_abs_and_core">Прес і кор</string>
+    <string name="personalization_focus_abs_and_core">Прес і корпус</string>
     <string name="personalization_focus_legs">Ноги</string>
     <string name="personalization_focus_glutes">Сідниці</string>
     <string name="personalization_focus_quadriceps">Квадрицепси</string>
     <string name="personalization_focus_hamstrings">Біцепс стегна</string>
     <string name="personalization_focus_calves">Литки</string>
 
-    <string name="personalization_improve_cardio">Розвинути кардіо</string>
+    <string name="personalization_improve_cardio">Кардіо</string>
     <string name="personalization_improve_muscular_endurance">М’язова витривалість</string>
     <string name="personalization_improve_explosive_power">Вибухова сила</string>
     <string name="personalization_improve_speed">Швидкість</string>
     <string name="personalization_improve_flexibility">Гнучкість</string>
-    <string name="personalization_improve_balance">Баланс</string>
+    <string name="personalization_improve_balance">Рівновага</string>
     <string name="personalization_improve_grip_strength">Сила хвату</string>
     <string name="personalization_improve_core_stability">Стабільність корпусу</string>
 
     <!-- Personalizations: plan style -->
     <string name="personalization_simple_plan">Простий план</string>
-    <string name="personalization_lower_volume">Менше обсягу</string>
-    <string name="personalization_higher_volume">Більше обсягу</string>
-    <string name="personalization_gradual_progression">Поступова прогресія</string>
-    <string name="personalization_aggressive_progression">Агресивна прогресія</string>
+    <string name="personalization_lower_volume">Менше підходів</string>
+    <string name="personalization_higher_volume">Більше підходів</string>
+    <string name="personalization_gradual_progression">Поступовий прогрес</string>
+    <string name="personalization_aggressive_progression">Швидкий прогрес</string>
 
     <!-- Personalizations: structure -->
-    <string name="personalization_prefer_full_body">Full-body</string>
-    <string name="personalization_prefer_upper_lower">Upper / Lower</string>
-    <string name="personalization_prefer_push_pull_legs">Push / Pull / Legs</string>
-    <string name="personalization_prefer_split_routine">Спліт</string>
+    <string name="personalization_prefer_full_body">Усе тіло за тренування</string>
+    <string name="personalization_prefer_upper_lower">Верх / низ тіла</string>
+    <string name="personalization_prefer_push_pull_legs">Жими / тяги / ноги</string>
+    <string name="personalization_prefer_split_routine">За групами м’язів</string>
 
-    <string name="personalization_prefer_straight_sets">Прямі підходи</string>
+    <string name="personalization_prefer_straight_sets">Одна вправа за раз</string>
     <string name="personalization_prefer_supersets">Суперсети</string>
     <string name="personalization_prefer_circuits">Колові тренування</string>
-    <string name="personalization_prefer_heavy_compounds">Базові з важкими вагами</string>
+    <string name="personalization_prefer_heavy_compounds">Важкі базові вправи</string>
 
     <string name="personalization_prefer_free_weights">Вільні ваги</string>
     <string name="personalization_prefer_machines">Тренажери</string>
-    <string name="personalization_prefer_cables">Кросовер / блоки</string>
+    <string name="personalization_prefer_cables">Блочні тренажери</string>
     <string name="personalization_prefer_bodyweight">Вага тіла</string>
 
     <string name="personalization_phase_bulking">Набір маси</string>
-    <string name="personalization_phase_cutting">Сушка</string>
-    <string name="personalization_phase_maintenance">Підтримання</string>
-    <string name="personalization_phase_deload">Розвантажувальний тиждень</string>
+    <string name="personalization_phase_cutting">Зниження жиру</string>
+    <string name="personalization_phase_maintenance">Підтримання форми</string>
+    <string name="personalization_phase_deload">Полегшений тиждень</string>
     <string name="personalization_phase_competition_prep">Підготовка до змагань</string>
 
     <!-- Muscle load summary -->
 
     <!-- Goal setup suggestion dialog -->
     <string name="goal_setup_suggestion_title">Яка твоя ціль?</string>
-    <string name="goal_setup_suggestion_subtitle">Задайте напрям тренуванням.</string>
+    <string name="goal_setup_suggestion_subtitle">Задай тренуванням чіткий напрям.</string>
     <string name="goal_setup_suggestion_benefit_tailored_title">Тренування під ціль</string>
-    <string name="goal_setup_suggestion_benefit_tailored_description">Повторення й інтенсивність підлаштовані під твій результат.</string>
+    <string name="goal_setup_suggestion_benefit_tailored_description">Повторення й ваги підбираються під твою ціль.</string>
     <string name="goal_setup_suggestion_primary_btn">Вказати ціль</string>
     <string name="goal_setup_suggestion_secondary_btn">Пропустити</string>
 
     <!-- Home unlock banner -->
-    <string name="home_unlock_banner_header">Розблокувати більше</string>
-    <string name="home_unlock_duration_trend_title">Тренд тривалості тренування</string>
-    <string name="home_unlock_duration_trend_description">Дивись як змінюється тривалість твоїх сесій з часом</string>
-    <string name="home_unlock_performance_trends_title">Тренди продуктивності</string>
-    <string name="home_unlock_performance_trends_description">Тренди обсягу, щільності, повторень та інтенсивності</string>
-    <string name="home_unlock_set_goal_title">Відповідність цілі</string>
+    <string name="home_unlock_banner_header">Відкрий більше можливостей</string>
+    <string name="home_unlock_duration_trend_title">Час тренування</string>
+    <string name="home_unlock_duration_trend_description">Дивись, скільки тривають твої тренування і як це змінюється</string>
+    <string name="home_unlock_performance_trends_title">Більше показників тренування</string>
+    <string name="home_unlock_performance_trends_description">Піднята вага, повторення, середня вага й вага за хвилину — порівняно зі звичним</string>
+    <string name="home_unlock_set_goal_title">Ціль тренувань</string>
     <string name="home_unlock_set_goal_description">Звіряй тренування з ціллю</string>
-    <string name="home_unlock_set_goal_cta">Поставити</string>
+    <string name="home_unlock_set_goal_cta">Поставити ціль</string>
     <string name="dialog_back">Назад</string>
     <string name="dialog_close">Закрити</string>
-    <string name="dialog_saved_workout">Збережене тренування</string>
+    <string name="dialog_saved_workout">Чернетка тренування</string>
     <string name="exercise_example_information">Інформація</string>
     <string name="exercise_example_achievements_empty_title">Поки немає історії</string>
-    <string name="exercise_example_achievements_empty_description">Виконайте вправу на тренуванні — тут з’являться досягнення, оцінка 1ПМ та історія підходів.</string>
-    <string name="exercise_sets_count">%1$d/%2$d підх.</string>
-    <string name="exercise_max_weight">%1$s макс.</string>
+    <string name="exercise_example_achievements_empty_description">Виконай цю вправу на тренуванні — тут з’являться досягнення, розрахунковий максимум на одне повторення та історія підходів.</string>
+    <string name="exercise_max_weight">макс. %1$s</string>
     <string name="home">Головна</string>
-    <string name="profile_body_section">Тіло</string>
+    <string name="profile_body_section">Про тебе</string>
     <string name="profile_height">Зріст</string>
     <string name="profile_restrictions_section">Обмеження</string>
     <string name="profile_name_not_set">Ім’я не вказано</string>
@@ -818,66 +733,62 @@
     <string name="language_portuguese_portugal">Português (Portugal)</string>
     <string name="iteration_picker_last_time">Минулого разу · %1$s</string>
     <string name="iteration_picker_suggestions">Підказки</string>
-    <string name="iteration_picker_weight_range">%1$s–1000 кг</string>
+    <string name="iteration_picker_weight_range">%1$s–1 000 кг</string>
     <string name="iteration_picker_repetitions_range">1–100 повторень</string>
-    <string name="training_external_weight">Зовнішня вага</string>
+    <string name="training_external_weight">Вага снаряда</string>
     <string name="training_previous_set">Минулого разу: %1$s × %2$s</string>
     <string name="training_no_sets">Поки немає підходів</string>
-    <string name="training_first_set_hint">Додайте перший підхід, щоб відстежувати прогрес.</string>
+    <string name="training_first_set_hint">Додай перший підхід, щоб відстежувати прогрес.</string>
     <string name="exercise_library">Бібліотека вправ</string>
     <string name="library">Бібліотека</string>
-    <string name="analytics_consent_title">Аналітика використання</string>
-    <string name="analytics_consent_description">Дозвольте події використання, щоб допомогти покращити застосунок. Введений текст і вимірювання тіла не надсилаються. Можна вимкнути будь-коли.</string>
+    <string name="analytics_consent_title">Ділитися даними про використання</string>
+    <string name="analytics_consent_description">Допомагає нам зрозуміти, як використовується застосунок, і зробити його кращим. Введений текст і параметри тіла не надсилаються. Вимкнути можна будь-коли.</string>
     <string name="onboarding_get_started">Розпочати</string>
     <string name="onboarding_title">Кожне тренування має значення</string>
-    <string name="onboarding_description">Твій щоденник тренувань. Записуй заняття та стеж за тим, як далеко ти просунувся.</string>
+    <string name="onboarding_description">Твій щоденник тренувань. Записуй заняття й дивись, як ростуть результати.</string>
     <string name="onboarding_workouts_title">Зберігай кожен підхід</string>
     <string name="onboarding_workouts_description">Вага, повторення та вправи — усе в одному місці.</string>
-    <string name="onboarding_progress_title">Бач свій прогрес</string>
+    <string name="onboarding_progress_title">Весь прогрес на виду</string>
     <string name="onboarding_progress_description">Стеж за силою, регулярністю та історією тренувань.</string>
     <string name="onboarding_setup_title">Тренуйся по-своєму</string>
     <string name="onboarding_setup_description">Обери м’язи, обладнання та свій рівень досвіду.</string>
-    <string name="input_invalid_value">Некоректне значення</string>
+    <string name="input_invalid_value">Перевір це значення</string>
     <string name="accessibility_completed">Виконано</string>
     <string name="accessibility_not_completed">Не виконано</string>
     <string name="accessibility_previous_period">Попередній період</string>
     <string name="accessibility_next_period">Наступний період</string>
-    <string name="exercise_history_total_volume">Загальний обсяг</string>
+    <string name="exercise_history_total_volume">Піднята вага</string>
     <string name="exercise_history_no_sets">Немає записаних підходів</string>
-    <string name="exercise_history_unavailable">Цей запис вправи недоступний</string>
-    <string name="exercise_history_max_load">Макс. навантаження</string>
-    <string name="exercise_history_trend_title">Історія обсягу</string>
-    <string name="exercise_history_current_date">%1$s · цей запис</string>
-    <string name="exercise_history_no_previous">Немає попередніх записів за останні 180 днів</string>
+    <string name="exercise_history_unavailable">Не вдалося знайти цю вправу. Можливо, її видалили.</string>
+    <string name="exercise_history_max_load">Макс. вага</string>
+    <string name="exercise_history_trend_title">Піднята вага за тренуваннями</string>
+    <string name="exercise_history_current_date">%1$s, це тренування</string>
+    <string name="exercise_history_no_previous">За 180 днів до цього тренування вправу не виконували</string>
     <string name="exercise_history_comparison_loading">Завантаження попередніх тренувань…</string>
-    <string name="exercise_history_volume_delta">%1$s обсягу</string>
-    <string name="exercise_history_previous_set_date">Попередні підходи · %1$s</string>
-    <string name="exercise_history_chart_unavailable">Графік недоступний для цих значень обсягу</string>
+    <string name="exercise_history_volume_delta">%1$s піднятої ваги</string>
+    <string name="exercise_history_previous_set_date">Підходи минулого разу, %1$s</string>
+    <string name="exercise_history_chart_unavailable">Не вдається побудувати графік за цими тренуваннями</string>
     <string name="exercise_history_set_result">%1$s × %2$s</string>
-    <string name="exercise_history_vs_date">Раніше · %1$s</string>
-    <string name="training_streak_current_progress">Останній період: %1$d / %2$d активних дн.</string>
+    <string name="exercise_history_vs_date">Минулого разу · %1$s</string>
     <string name="training_streak_growth_extended">Серія триває</string>
     <string name="training_streak_growth_kept">Ритм збережено</string>
     <string name="training_streak_growth_reset">Серія почалася знову</string>
     <string name="estimated_one_rm_source">За підходом %1$s × %2$s · %3$s</string>
-    <string name="estimated_one_rm_history_peak">Найкращий у цій історії: %1$s</string>
-    <string name="estimated_one_rm_unavailable">Поки немає відповідних даних для 1ПМ. Потрібен підхід на 1–10 повторів із повними даними про навантаження.</string>
+    <string name="estimated_one_rm_history_peak">Найкращий за останні тренування: %1$s</string>
+    <string name="estimated_one_rm_unavailable">Поки бракує даних. Запиши підхід на 1–10 повторень із заповненою вагою.</string>
     <string name="performance_comparison_unavailable">Немає даних для порівняння</string>
     <string name="performance_comparison_before">Було</string>
     <string name="performance_comparison_after">стало</string>
     <string name="performance_comparison_first_title">Це тренування</string>
-    <string name="performance_growth_before">Було: %1$s</string>
-    <string name="performance_reference_average">до середнього</string>
-    <string name="performance_reference_previous">до попереднього</string>
+    <string name="performance_reference_average">Зазвичай</string>
+    <string name="performance_reference_previous">Минулого разу</string>
     <string name="training_records_title">Особисті рекорди</string>
     <string name="training_records_description">Найкращі результати за весь час, встановлені в цьому тренуванні.</string>
     <string name="weekly_volume_title">Цей тиждень</string>
     <string name="weekly_volume_progress">%1$s зі звичних %2$s</string>
-    <string name="weekly_volume_no_typical">Поки нема з чим порівняти: останніми тижнями тренувань не було.</string>
-    <string name="weekly_volume_trainings">Тренувань цього тижня: %1$d</string>
-    <string name="training_streak_next_date">Наступне за ритмом: %1$s</string>
-    <string name="training_streak_next_weekly">Залишилось цього тижня: %1$d</string>
-    <string name="training_streak_week_done">План тижня виконано</string>
+    <string name="weekly_volume_no_typical">Поки немає звичного тижня для порівняння.</string>
+    <string name="training_streak_next_date">%1$s — наступне тренування за ритмом</string>
+    <string name="training_streak_week_done">Тиждень у звичному ритмі</string>
     <string name="share">Поділитися</string>
     <string name="performance_comparison_empty">За цей період поки нема що порівнювати.</string>
     <string name="performance_history_empty">У цьому періоді немає тренувань</string>
@@ -885,7 +796,7 @@
     <string name="performance_status_record">Максимум періоду</string>
     <string name="performance_status_improved">Вище звичного</string>
     <string name="performance_status_declined">Нижче звичного</string>
-    <string name="performance_status_stable">У звичному діапазоні</string>
+    <string name="performance_status_stable">Як зазвичай</string>
     <string name="performance_status_improved_previous">Вище минулого тренування</string>
     <string name="performance_status_declined_previous">Нижче минулого тренування</string>
     <string name="performance_status_stable_previous">Як на минулому тренуванні</string>
@@ -895,76 +806,81 @@
     <string name="digest_zero_duration">0 хв</string>
     <string name="goal_card_status_not_evaluated">Поки немає оцінки</string>
     <string name="goal_details_analysis_period">Період аналізу: %1$s</string>
-    <string name="goal_details_analysis_excluded">Виключено підходів із помилковими або неповними даними: %1$d</string>
-    <string name="goal_details_analysis_missing_metadata">Діагностика м’язів недоступна: немає даних про вправи для %1$d підходів.</string>
-    <string name="goal_details_analysis_unavailable">У вибраному періоді немає доступної історії цієї цілі.</string>
-    <string name="goal_details_analysis_method">Ураховує записані підходи після вибору цілі в межах обраного періоду. Для оцінки тижневого ритму потрібно щонайменше сім днів спостережень.</string>
-    <string name="training_streak_partial_period">Неповний період спостереження</string>
-    <string name="goal_fit_rule_build_muscle_weekly_frequency_title">Регулярність тренувань</string>
-    <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Регулярність тренувань</string>
-    <string name="goal_fit_rule_get_stronger_compound_set_share_title">Частка багатосуглобових підходів</string>
-    <string name="goal_fit_unit_training_days_per_week">дн./тиж.</string>
-    <string name="muscle_load_excluded_sets">Не враховано підходів без повторень або з некоректними вимірюваннями: %1$d.</string>
-    <string name="muscle_load_unassigned_sets">Підходів без даних про участь м’язів: %1$d.</string>
-    <string name="performance_history_scope">Графік з’єднує доступні значення до 10 останніх тренувань.</string>
-    <string name="performance_trend_details_comparison_scope">Порівняння — із середнім усіх попередніх тренувань із даними у вибраному періоді.</string>
+    <string name="goal_details_analysis_unavailable">Ціль вибрано вже після цього періоду.</string>
+    <string name="goal_details_analysis_method">Враховуються підходи, записані після вибору цілі, у межах вибраного періоду. Щоб оцінити тренування за тижнями, потрібно щонайменше сім днів.</string>
+    <string name="training_streak_partial_period">Враховано лише частину періоду</string>
+    <string name="goal_fit_rule_build_muscle_weekly_frequency_title">Дні тренувань на тиждень</string>
+    <string name="goal_fit_rule_get_stronger_weekly_frequency_title">Дні тренувань на тиждень</string>
+    <string name="goal_fit_rule_get_stronger_compound_set_share_title">Частка підходів у базових вправах</string>
+    <string name="performance_history_scope">На графіку — до 10 останніх тренувань; тренування без цих даних пропущено.</string>
+    <string name="performance_trend_details_comparison_scope">Звичне значення — це середнє за всіма попередніми тренуваннями вибраного періоду, де є ці дані.</string>
     <string name="performance_trend_details_comparison_scope_previous">Порівняння — з попереднім тренуванням у вибраному періоді.</string>
-    <string name="muscle_load_unmeasured_volume_sets">Підходів із неповними даними про навантаження: %1$d. Частки м’язів розраховано за записаними підходами, тоннаж — лише за повністю виміряними.</string>
-    <string name="goal_card_limited_data">Обмежені дані</string>
-    <string name="available_sets_label">Доступні підходи</string>
-    <string name="available_exercises_label">Доступні вправи</string>
-    <string name="muscle_loading_details_coverage">Підходів поза розподілом: %1$d</string>
+    <string name="goal_card_limited_data">Оцінка за неповними даними</string>
+    <string name="available_sets_label">Враховані підходи</string>
+    <string name="available_exercises_label">Вправи</string>
     <string name="muscle_loading_details_no_workouts_title">У цьому періоді немає тренувань</string>
-    <string name="muscle_loading_details_no_workouts_message">Запиши тренування, щоб побачити, які м’язи брали участь у підходах.</string>
+    <string name="muscle_loading_details_no_workouts_message">Запиши тренування, щоб побачити, які м’язи працювали.</string>
     <string name="muscle_loading_details_no_sets_title">Ще немає підходів для розподілу</string>
-    <string name="muscle_loading_details_no_sets_message">У цьому періоді немає доступних записаних підходів із придатними даними.</string>
-    <string name="muscle_loading_details_unknown_title">Дані про м’язи недоступні</string>
-    <string name="muscle_loading_details_unknown_message">Підходи записані, але для їхніх вправ невідома участь м’язів.</string>
-    <string name="muscle_loading_details_method_title">Як читати ці дані</string>
-    <string name="muscle_loading_details_method_body">Кожен доступний підхід розподіляється між м’язами пропорційно їхній участі у вправі. До округлення частки підходів із відомою участю м’язів у сумі дають 100%.</string>
-    <string name="muscle_loading_details_method_limits">Частка описує записані підходи. Втома м’язів, відновлення та якість тренувань тут не вимірюються.</string>
+    <string name="muscle_loading_details_no_sets_message">У цьому періоді немає підходів із повтореннями та коректною вагою.</string>
+    <string name="muscle_loading_details_unknown_title">Немає даних про м’язи</string>
+    <string name="muscle_loading_details_unknown_message">Підходи записані, але невідомо, які м’язи працюють у цих вправах.</string>
+    <string name="muscle_loading_details_method_title">Як розраховується</string>
+    <string name="muscle_loading_details_method_body">Кожен підхід ділиться між м’язами, які працюють у вправі, — залежно від того, наскільки задіяний кожен із них. Разом підходи з відомими м’язами дають 100% (з поправкою на округлення).</string>
+    <string name="muscle_loading_details_method_limits">Відсотки показують, як розподілилися підходи, а не втому м’язів, відновлення чи якість тренувань.</string>
     <string name="muscle_loading_details_method_expanded">Розгорнуто</string>
     <string name="muscle_loading_details_method_collapsed">Згорнуто</string>
 
     <string name="performance_trend_details_latest">Останнє тренування</string>
-    <string name="performance_trend_details_previous_average">Середнє попередніх: %1$s</string>
-    <string name="performance_previous_value">Попереднє тренування: %1$s</string>
+    <string name="performance_trend_details_previous_average">Зазвичай %1$s</string>
+    <string name="performance_previous_value">Минулого разу %1$s</string>
     <string name="performance_trend_details_comparison">Зміна: %1$s</string>
-    <string name="performance_trend_details_first_workout">Для порівняння потрібне попереднє тренування з даними в цьому періоді.</string>
-    <string name="performance_trend_details_no_previous">Для порівняння потрібні дані попереднього тренування в цьому періоді.</string>
-    <string name="performance_trend_details_zero_average">Середнє попередніх дорівнює нулю, тому відсоткову зміну не розрахувати.</string>
-    <string name="performance_trend_details_zero_previous">Значення попереднього тренування дорівнює нулю, тому відсоткову зміну не розрахувати.</string>
+    <string name="performance_trend_details_first_workout">Поки немає з чим порівняти: у цьому періоді немає попередніх тренувань із такими даними.</string>
+    <string name="performance_trend_details_no_previous">Немає з чим порівняти: немає даних попереднього тренування за цей період.</string>
+    <string name="performance_trend_details_zero_average">Звичне значення дорівнює нулю, тому зміну у відсотках не порахувати.</string>
+    <string name="performance_trend_details_zero_previous">Минулого разу значення було нульовим, тому зміну у відсотках не порахувати.</string>
     <string name="performance_trend_details_value_unavailable">Немає даних</string>
     <string name="performance_trend_details_value_unavailable_description">Даних цього тренування недостатньо для розрахунку показника.</string>
     <string name="performance_trend_details_recent_workouts">Останні тренування</string>
     <string name="performance_trend_details_about">Як розраховується</string>
     <string name="performance_trend_details_expanded">Розгорнуто</string>
     <string name="performance_trend_details_collapsed">Згорнуто</string>
-    <string name="performance_trend_details_empty_message">Виберіть інший період на головному екрані, щоб переглянути записані тренування.</string>
+    <string name="performance_trend_details_empty_message">Обери інший період на головному екрані, щоб переглянути записані тренування.</string>
 
     <!-- Training rhythm details -->
-    <string name="training_streak_details_daily_headline">%1$d дн. поспіль</string>
-    <string name="training_streak_details_weekly_headline">%1$d тиж. у ритмі</string>
-    <string name="training_streak_details_cycle_headline">Повторів ритму: %1$d</string>
-    <string name="training_streak_details_no_sequence">Без безперервної серії наприкінці періоду</string>
-    <string name="training_streak_details_daily_cadence">Послідовні дні із записаними тренуваннями</string>
-    <string name="training_streak_details_weekly_cadence">Звичний тижневий ритм · днів із тренуваннями: %1$d</string>
-    <string name="training_streak_details_rhythm_cadence">За записами · днів із тренуваннями: %1$d, потім без тренувань: %2$d</string>
-    <string name="training_streak_details_pattern_cadence">Цикл за записами · усього днів: %2$d · із тренуваннями: %1$d</string>
-    <string name="training_streak_details_daily_method">Кілька тренувань за день рахуються один раз. Серія — дні з тренуваннями поспіль наприкінці вибраного періоду; незавершений день її не обриває. Це історія, а не ціль тренуватися щодня.</string>
-    <string name="training_streak_details_weekly_method">Кілька тренувань за день рахуються один раз. Серія — послідовні тижні у звичному ритмі наприкінці вибраного періоду; незавершений тиждень її не обриває. Частоту знайдено за записами, це не тренувальна ціль.</string>
-    <string name="training_streak_details_cycle_method">Кілька тренувань за день рахуються один раз. Серія — послідовні цикли наприкінці вибраного періоду; незавершений цикл її не обриває. У смугах — дні, що збіглися з ритмом у записах, а не тренувальна ціль.</string>
+    <string name="training_streak_details_no_sequence">Наприкінці періоду серії немає</string>
+    <string name="training_streak_details_daily_method">Кілька тренувань за день рахуються як одне. Серія — це дні поспіль із тренуваннями до кінця вибраного періоду. День, який ще не закінчився, її не перериває. Це твоя історія, а не ціль тренуватися щодня.</string>
+    <string name="training_streak_details_weekly_method">Кілька тренувань за день рахуються як одне. Серія — це тижні поспіль, у яких тренувальних днів було не менше за звичне, до кінця вибраного періоду. Тиждень, який ще не закінчився, її не перериває. Звичну частоту взято з твоїх записів, це не тренувальна ціль.</string>
+    <string name="training_streak_details_cycle_method">Кілька тренувань за день рахуються як одне. Серія — це цикли поспіль, у яких ритм дотримано, до кінця вибраного періоду. Цикл, який ще не закінчився, її не перериває. Смуги рахують дні, що збіглися з ритмом із твоїх записів; це не тренувальна ціль.</string>
     <string name="training_streak_details_recent_days">Останні дні</string>
     <string name="training_streak_details_recent_weeks">Останні тижні</string>
     <string name="training_streak_details_recent_cycles">Останні цикли</string>
-    <string name="training_streak_details_daily_legend">Заповнено: є тренування · Порожньо: немає запису</string>
-    <string name="training_streak_details_weekly_legend">Дні з тренуваннями / звична кількість за тиждень</string>
-    <string name="training_streak_details_cycle_legend">Збіги / тренувальні дні у звичному ритмі</string>
-    <string name="training_streak_details_weekly_value">Днів із тренуваннями: %1$d / %2$d</string>
-    <string name="training_streak_details_cycle_value">Днів зі збігом: %1$d / %2$d</string>
+    <string name="training_streak_details_daily_legend">Заповнено: було тренування · Порожньо: без тренування</string>
     <string name="training_streak_details_day_recorded">Тренування записано</string>
     <string name="training_streak_details_day_unrecorded">Немає запису про тренування</string>
-    <string name="training_streak_details_empty">У цьому періоді ще немає тренувальних днів. Збережені тренування з виконаними повтореннями допоможуть побачити твій ритм.</string>
+    <string name="training_streak_details_empty">У цьому періоді немає тренувань. Ритм з’явиться тут, коли ти запишеш тренування.</string>
     <string name="training_streak_details_method_expanded">Розгорнуто</string>
     <string name="training_streak_details_method_collapsed">Згорнуто</string>
+    <string name="training_streak_period_days">%1$s (зазвичай %2$d)</string>
+    <string name="training_streak_period_days_none">Без тренувань (зазвичай %1$d)</string>
+    <string name="training_streak_details_cycle_value_none">Жодного тренування в дні ритму</string>
+    <string name="exercise_plan_no_sets">Підходів не заплановано</string>
+    <string name="error_no_internet_description">Перевір підключення й спробуй ще раз.</string>
+    <string name="error_timeout_description">Спробуй ще раз за хвилину.</string>
+    <string name="error_network_description">Спробуй ще раз пізніше.</string>
+    <string name="welcome_check_goal_pending">Ціль ще не задано</string>
+    <string name="profile_value_none">Немає</string>
+    <string name="spotlight_near_best_metric">Лише на %1$s% менше за найкраще</string>
+    <string name="spotlight_near_best_metric_equal">На рівні найкращого</string>
+    <string name="spotlight_progress_win_context">Останнє тренування — %1$s кг, зазвичай — %2$s кг. Дані за останні %3$s.</string>
+    <string name="spotlight_near_best_context">Останнє тренування — %1$s кг, найкраще — %2$s кг. Дані за останні %3$s.</string>
+    <string name="spotlight_needs_attention_context">Зазвичай перерва ~%1$s; %2$s і більше — це вже довга пауза.</string>
+    <string name="spotlight_good_frequency_context">Вправа була в %1$d з %2$d останніх тижнів — усього %3$s.</string>
+    <string name="training_recap_verdict_declined">Легке тренування</string>
+    <string name="training_streak_today_done">Сьогодні тренування вже є</string>
+    <string name="training_streak_today_pending">Сьогодні тренування ще не було</string>
+    <string name="daily">День</string>
+    <string name="weekly">Тиждень</string>
+    <string name="monthly">Місяць</string>
+    <string name="yearly">Рік</string>
+    <string name="digest_empty">У цьому місяці тренувань немає</string>
 </resources>

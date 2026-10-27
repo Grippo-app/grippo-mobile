@@ -37,7 +37,6 @@ import com.grippo.design.resources.provider.goal_course_title
 import com.grippo.design.resources.provider.goal_period_label
 import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.icons.Calendar
-import com.grippo.design.resources.provider.metric_overview_goal_analyzed
 import com.grippo.design.resources.provider.metric_overview_goal_score
 import com.grippo.design.resources.provider.percent
 
@@ -146,10 +145,7 @@ private fun GoalTrainingAlignment(
         }
 
         Text(
-            text = AppTokens.strings.res(
-                Res.string.metric_overview_goal_analyzed,
-                value.sessionCount,
-            ),
+            text = value.analyzedWorkoutsLabel(),
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.secondary,
         )

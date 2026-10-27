@@ -35,6 +35,7 @@ import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.home_unlock_set_goal_cta
 import com.grippo.design.resources.provider.home_unlock_set_goal_description
 import com.grippo.design.resources.provider.home_unlock_set_goal_title
+import com.grippo.design.resources.provider.home_unlock_workouts_left
 import com.grippo.design.resources.provider.icons.Compass
 import com.grippo.design.resources.provider.icons.Lock
 import com.grippo.design.resources.provider.trainings
@@ -69,18 +70,21 @@ internal fun HomeUnlockBanner(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
     ) {
         if (isNewUser) {
-            LifetimeStatsRow(
-                modifier = Modifier.fillMaxWidth(),
-                stats = stats,
-            )
+            if (stats.trainingsCount > 0) {
+                LifetimeStatsRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    stats = stats,
+                )
+            }
 
             HomeUnlock.entries
                 .filterNot { it.isUnlocked(lifetimeCount) }
                 .forEach { milestone ->
+                    val remaining = milestone.requiredLifetimeCount - lifetimeCount
                     MilestoneCard(
                         title = AppTokens.strings.res(milestone.titleRes),
                         description = AppTokens.strings.res(milestone.descriptionRes),
-                        progressLabel = "$lifetimeCount / ${milestone.requiredLifetimeCount}",
+                        progressLabel = AppTokens.strings.res(Res.plurals.home_unlock_workouts_left, remaining, remaining),
                     )
                 }
         }
@@ -162,12 +166,12 @@ private fun LifetimeStatsRow(
         StatsCell(
             modifier = Modifier.weight(1f),
             value = stats.trainingsCount.toString(),
-            valueColor = if (stats.trainingsCount == 0) tertiary else primary,
+            valueColor = primary,
             label = AppTokens.strings.res(Res.string.trainings),
         )
         StatsCell(
             modifier = Modifier.weight(1f),
-            value = stats.totalVolume.short(),
+            value = if (stats.totalVolume is FormatState.Empty<*>) "—" else stats.totalVolume.short(),
             valueColor = if (stats.totalVolume is FormatState.Empty<*>) tertiary else primary,
             label = AppTokens.strings.res(Res.string.volume),
         )

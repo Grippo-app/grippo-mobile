@@ -51,7 +51,7 @@ Goal details use an open compact summary, up to two attention findings and one
 positive finding; the remaining checks and calculation details are disclosed on
 request. A deadline is a goal date, never evidence of achieving the outcome.
 The full-width muscle summary shows recorded-set distribution and selected-period
-workouts/sets. Accepted performed sets retain their shares when required load
+workouts and counted sets (the sets part is omitted at zero). Accepted performed sets retain their shares when required load
 measurements are incomplete; `unmeasuredVolumeSets` discloses sets omitted from
 physical volume, which is calculated only from measured sets. Missing groups are
 not displayed as zero or assigned a training recommendation. The Home map uses

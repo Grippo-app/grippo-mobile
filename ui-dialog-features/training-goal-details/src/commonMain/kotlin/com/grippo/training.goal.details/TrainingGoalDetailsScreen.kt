@@ -312,7 +312,8 @@ private fun GoalEvidenceDetails(
         if (value.excludedSetCount > 0) {
             Text(
                 text = AppTokens.strings.res(
-                    Res.string.goal_details_analysis_excluded,
+                    Res.plurals.goal_details_analysis_excluded,
+                    value.excludedSetCount,
                     value.excludedSetCount,
                 ),
                 style = AppTokens.typography.b13Med(),
@@ -322,7 +323,8 @@ private fun GoalEvidenceDetails(
         if (value.missingMetadataSetCount > 0) {
             Text(
                 text = AppTokens.strings.res(
-                    Res.string.goal_details_analysis_missing_metadata,
+                    Res.plurals.goal_details_analysis_missing_metadata,
+                    value.missingMetadataSetCount,
                     value.missingMetadataSetCount,
                 ),
                 style = AppTokens.typography.b13Med(),

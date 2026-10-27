@@ -49,10 +49,10 @@ import com.grippo.design.resources.provider.icons.Flame
 import com.grippo.design.resources.provider.joined_pair
 import com.grippo.design.resources.provider.metric_overview_streak_active_days
 import com.grippo.design.resources.provider.metric_overview_streak_title
-import com.grippo.design.resources.provider.training_streak_current_progress
 import com.grippo.design.resources.provider.training_streak_growth_extended
 import com.grippo.design.resources.provider.training_streak_growth_kept
 import com.grippo.design.resources.provider.training_streak_growth_reset
+import com.grippo.design.resources.provider.training_streak_growth_started
 import com.grippo.design.resources.provider.value_transition
 import kotlinx.collections.immutable.toPersistentList
 
@@ -97,8 +97,8 @@ private fun TrainingStreakOverview(
 ) {
     val title = AppTokens.strings.res(Res.string.metric_overview_streak_title)
 
-    val headlinePrimary = value.featured.overviewHeadline()
-    val cadenceLabel = value.featured.overviewCadence()
+    val headline = value.featured.headline()
+    val cadenceLabel = value.featured.cadence()
 
     val progressValue =
         (value.featured.progressPercent.coerceIn(0, 100)) / 100f
@@ -132,7 +132,7 @@ private fun TrainingStreakOverview(
                     )
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = headlinePrimary,
+                        text = headline,
                         style = AppTokens.typography.h4(),
                         color = AppTokens.colors.text.primary,
                     )
@@ -170,17 +170,15 @@ private fun TrainingStreakOverview(
             colors = progressColors,
         )
 
-        value.timeline.lastOrNull()?.let { currentPeriod ->
-            Text(
-                text = AppTokens.strings.res(
-                    Res.string.training_streak_current_progress,
-                    currentPeriod.achievedTrainingDays,
-                    currentPeriod.targetTrainingDays,
-                ),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-            )
-        }
+        value.timeline.lastOrNull()
+            ?.let { currentPeriod -> value.featured.currentPeriodLine(currentPeriod) }
+            ?.let { line ->
+                Text(
+                    text = line,
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.text.secondary,
+                )
+            }
     }
 }
 
@@ -256,23 +254,25 @@ private fun TrainingStreakGrowth(
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
             ) {
                 Text(
-                    text = value.featured.overviewHeadline(),
+                    text = value.featured.headline(),
                     style = AppTokens.typography.h4(),
                     color = AppTokens.colors.text.primary,
                 )
                 Text(
-                    text = value.featured.overviewCadence(),
+                    text = value.featured.cadence(),
                     style = AppTokens.typography.b13Med(),
                     color = AppTokens.colors.text.secondary,
                 )
             }
         }
 
-        if (previousLength != null || nextTrainingLine != null) {
+        val outcomeFrom = previousLength?.takeIf { earlier -> earlier > 0 || length > 0 }
+
+        if (outcomeFrom != null || nextTrainingLine != null) {
             Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
-                if (previousLength != null) {
+                if (outcomeFrom != null) {
                     StreakOutcomeLine(
-                        previousLength = previousLength,
+                        previousLength = outcomeFrom,
                         length = length,
                         currentColor = lengthColor,
                         currentLengthAlpha = currentLengthAlpha,
@@ -300,31 +300,33 @@ private fun StreakOutcomeLine(
     currentLengthAlpha: State<Float>,
 ) {
     val lineColor = AppTokens.colors.text.secondary
-    val text = if (length == previousLength) {
-        AnnotatedString(AppTokens.strings.res(Res.string.training_streak_growth_kept))
-    } else {
-        val outcomeResource = if (length < previousLength) {
-            Res.string.training_streak_growth_reset
-        } else {
-            Res.string.training_streak_growth_extended
-        }
-        val outcome = AppTokens.strings.res(outcomeResource)
-        val change = AppTokens.strings.res(
-            Res.string.value_transition,
-            previousLength.toString(),
-            ValueSlot.marker(0),
-        )
-        val line = AppTokens.strings.res(Res.string.joined_pair, outcome, change)
-        val revealedColor = currentColor.copy(alpha = currentColor.alpha * currentLengthAlpha.value)
+    val text = when {
+        previousLength == 0 -> AnnotatedString(AppTokens.strings.res(Res.string.training_streak_growth_started))
+        length == previousLength -> AnnotatedString(AppTokens.strings.res(Res.string.training_streak_growth_kept))
+        else -> {
+            val outcomeResource = if (length < previousLength) {
+                Res.string.training_streak_growth_reset
+            } else {
+                Res.string.training_streak_growth_extended
+            }
+            val outcome = AppTokens.strings.res(outcomeResource)
+            val change = AppTokens.strings.res(
+                Res.string.value_transition,
+                previousLength.toString(),
+                ValueSlot.marker(0),
+            )
+            val line = AppTokens.strings.res(Res.string.joined_pair, outcome, change)
+            val revealedColor = currentColor.copy(alpha = currentColor.alpha * currentLengthAlpha.value)
 
-        buildValueSlotString(
-            sentence = line,
-            slots = listOf(
-                ValueSlot(value = length.toString()) { current ->
-                    withStyle(SpanStyle(color = revealedColor)) { append(current) }
-                },
-            ),
-        )
+            buildValueSlotString(
+                sentence = line,
+                slots = listOf(
+                    ValueSlot(value = length.toString()) { current ->
+                        withStyle(SpanStyle(color = revealedColor)) { append(current) }
+                    },
+                ),
+            )
+        }
     }
 
     Text(
@@ -588,6 +590,35 @@ private fun TrainingStreakCardGrowthResetPreview() {
                 featured = featured.copy(length = 1, mood = TrainingStreakMood.Restart),
             ),
             style = TrainingStreakCardStyle.Growth(previous = streak.copy(featured = featured.copy(length = 6))),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakCardGrowthStartedPreview() {
+    val streak = stubTrainingStreaks()[1]
+    val featured = streak.featured as TrainingStreakFeaturedState.Weekly
+    PreviewContainer {
+        TrainingStreakCard(
+            modifier = Modifier.fillMaxWidth(),
+            value = streak.copy(featured = featured.copy(length = 1)),
+            style = TrainingStreakCardStyle.Growth(previous = streak.copy(featured = featured.copy(length = 0))),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakCardGrowthNoStreakPreview() {
+    val streak = stubTrainingStreaks()[1]
+    val featured = streak.featured as TrainingStreakFeaturedState.Weekly
+    val noStreak = streak.copy(featured = featured.copy(length = 0))
+    PreviewContainer {
+        TrainingStreakCard(
+            modifier = Modifier.fillMaxWidth(),
+            value = noStreak,
+            style = TrainingStreakCardStyle.Growth(previous = noStreak),
         )
     }
 }

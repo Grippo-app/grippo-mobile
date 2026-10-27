@@ -2,16 +2,19 @@ package com.grippo.draft.training.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.training.TrainingStat
@@ -20,7 +23,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.draft_training_summary_exercises
-import com.grippo.design.resources.provider.draft_training_summary_sets
 import com.grippo.design.resources.provider.draft_training_summary_time
 import com.grippo.draft.training.DraftTrainingState
 import kotlin.time.Duration.Companion.minutes
@@ -37,7 +39,7 @@ internal fun DraftTrainingSummary(
     val totalSets = state.exercises.sumOf { it.iterations.size }
     val duration = state.duration
 
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .background(
@@ -48,28 +50,32 @@ internal fun DraftTrainingSummary(
                 horizontal = AppTokens.dp.metrics.panel.large.horizontalPadding,
                 vertical = AppTokens.dp.metrics.panel.large.verticalPadding,
             ),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
-        TrainingStat(
-            modifier = Modifier.weight(1f),
-            label = AppTokens.strings.res(Res.string.draft_training_summary_exercises),
-            value = AnnotatedString(state.exercises.size.toString()),
-            contentColor = AppTokens.colors.text.primary,
-        )
-        TrainingStat(
-            modifier = Modifier.weight(1f),
-            label = AppTokens.strings.res(Res.string.draft_training_summary_sets),
-            value = AnnotatedString("$filledSets / $totalSets"),
-            contentColor = AppTokens.colors.text.primary,
-        )
-        if (duration.value?.isPositive() == true) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        ) {
             TrainingStat(
                 modifier = Modifier.weight(1f),
-                label = AppTokens.strings.res(Res.string.draft_training_summary_time),
-                value = AnnotatedString(duration.short()),
+                label = AppTokens.strings.res(Res.string.draft_training_summary_exercises),
+                value = AnnotatedString(state.exercises.size.toString()),
                 contentColor = AppTokens.colors.text.primary,
             )
+            if (duration.value?.isPositive() == true) {
+                TrainingStat(
+                    modifier = Modifier.weight(1f),
+                    label = AppTokens.strings.res(Res.string.draft_training_summary_time),
+                    value = AnnotatedString(duration.short()),
+                    contentColor = AppTokens.colors.text.primary,
+                )
+            }
         }
+        Text(
+            text = ExerciseState.setsProgress(completed = filledSets, total = totalSets),
+            style = AppTokens.typography.b13Med(),
+            color = AppTokens.colors.text.secondary,
+        )
     }
 }
 

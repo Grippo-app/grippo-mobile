@@ -51,7 +51,7 @@ public sealed class DensityFormatState : FormatState<Float> {
             )
             val kg = AppTokens.strings.res(Res.string.kg)
             val minutes = AppTokens.strings.res(Res.string.minutes_short)
-            return "$number $kg\u2060/\u2060$minutes"
+            return "$number${FormatState.UNIT_SPACE}$kg\u2060/\u2060$minutes"
         }
 
         private fun tenths(value: Float): Int = (value * 10f).roundToInt()
@@ -99,7 +99,7 @@ public sealed class DensityFormatState : FormatState<Float> {
         val minutes = AppTokens.strings.res(Res.string.minutes_short)
         val separator = AppTokens.strings.res(Res.string.decimal_separator)
         val number = value?.let { formatDecimal(value = it.toDouble(), decimalSeparator = separator) }
-        return "${number ?: "-"}$kg/$minutes"
+        return "${number ?: "-"}${FormatState.UNIT_SPACE}$kg/$minutes"
     }
 
     @Composable
@@ -112,12 +112,14 @@ public sealed class DensityFormatState : FormatState<Float> {
         return buildAnnotatedString {
             if (display != null) {
                 append(display)
+                append(FormatState.UNIT_SPACE)
                 append(kg)
                 append("/")
                 append(minutes)
             } else {
                 withStyle(SpanStyle(color = tertiary)) {
                     append("-")
+                    append(FormatState.UNIT_SPACE)
                     append(kg)
                     append("/")
                     append(minutes)

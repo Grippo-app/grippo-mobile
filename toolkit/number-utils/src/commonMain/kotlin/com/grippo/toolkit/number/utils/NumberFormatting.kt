@@ -29,7 +29,7 @@ public fun formatDecimal(value: Double, decimalSeparator: String): String {
 
     val sign = if (rounded < 0.0) "-" else ""
     val parts = text.removeSuffix(".0").split('.')
-    val whole = sign + parts.first().reversed().chunked(3).joinToString(" ").reversed()
+    val whole = sign + parts.first().reversed().chunked(3).joinToString("\u00A0").reversed()
     val fraction = parts.getOrNull(1) ?: return whole
     return "$whole$decimalSeparator$fraction"
 }

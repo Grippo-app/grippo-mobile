@@ -6,9 +6,9 @@
         <item quantity="other">%1$d dias com treino</item>
     </plurals>
     <plurals name="training_recap_compared">
-        <item quantity="one">%1$d de %2$d indicador acima da sua média</item>
-        <item quantity="many">%1$d de %2$d indicadores acima da sua média</item>
-        <item quantity="other">%1$d de %2$d indicadores acima da sua média</item>
+        <item quantity="one">%1$d de %2$d indicador acima do habitual</item>
+        <item quantity="many">%1$d de %2$d indicadores acima do habitual</item>
+        <item quantity="other">%1$d de %2$d indicadores acima do habitual</item>
     </plurals>
     <plurals name="training_recap_compared_previous">
         <item quantity="one">%1$d de %2$d indicador acima do anterior</item>
@@ -20,7 +20,7 @@
         <item quantity="many">%1$d séries</item>
         <item quantity="other">%1$d séries</item>
     </plurals>
-    <plurals name="goal_details_analysis_days">
+    <plurals name="day_count">
         <item quantity="one">%1$d dia</item>
         <item quantity="many">%1$d dias</item>
         <item quantity="other">%1$d dias</item>
@@ -29,5 +29,175 @@
         <item quantity="one">%1$d série registrada</item>
         <item quantity="many">%1$d séries registradas</item>
         <item quantity="other">%1$d séries registradas</item>
+    </plurals>
+    <plurals name="weekly_volume_workouts">
+        <item quantity="one">%1$d treino nesta semana</item>
+        <item quantity="many">%1$d treinos nesta semana</item>
+        <item quantity="other">%1$d treinos nesta semana</item>
+    </plurals>
+    <plurals name="metric_overview_streak_weekly_days">
+        <item quantity="one">%1$d dia de treino por semana</item>
+        <item quantity="many">%1$d dias de treino por semana</item>
+        <item quantity="other">%1$d dias de treino por semana</item>
+    </plurals>
+    <plurals name="training_streak_next_workouts">
+        <item quantity="one">Mais %1$d treino nesta semana</item>
+        <item quantity="many">Mais %1$d treinos nesta semana</item>
+        <item quantity="other">Mais %1$d treinos nesta semana</item>
+    </plurals>
+    <plurals name="goal_analyzed_workouts">
+        <item quantity="one">Com base em %1$d treino neste período</item>
+        <item quantity="many">Com base em %1$d treinos neste período</item>
+        <item quantity="other">Com base em %1$d treinos neste período</item>
+    </plurals>
+    <plurals name="muscle_load_excluded_sets">
+        <item quantity="one">%1$d série não foi contada: sem repetições ou sem peso válido.</item>
+        <item quantity="many">%1$d séries não foram contadas: sem repetições ou sem peso válido.</item>
+        <item quantity="other">%1$d séries não foram contadas: sem repetições ou sem peso válido.</item>
+    </plurals>
+    <plurals name="muscle_load_unassigned_sets">
+        <item quantity="one">Em %1$d série não se sabe quais músculos trabalharam.</item>
+        <item quantity="many">Em %1$d séries não se sabe quais músculos trabalharam.</item>
+        <item quantity="other">Em %1$d séries não se sabe quais músculos trabalharam.</item>
+    </plurals>
+    <plurals name="muscle_load_unmeasured_volume_sets">
+        <item quantity="one">%1$d série está sem o peso completo. As proporções musculares contam todas as séries; o peso levantado conta só as séries com peso completo.</item>
+        <item quantity="many">%1$d séries estão sem o peso completo. As proporções musculares contam todas as séries; o peso levantado conta só as séries com peso completo.</item>
+        <item quantity="other">%1$d séries estão sem o peso completo. As proporções musculares contam todas as séries; o peso levantado conta só as séries com peso completo.</item>
+    </plurals>
+    <plurals name="period_last_days">
+        <item quantity="one">no último %1$d dia</item>
+        <item quantity="many">nos últimos %1$d dias</item>
+        <item quantity="other">nos últimos %1$d dias</item>
+    </plurals>
+    <plurals name="highlight_streak_cycles">
+        <item quantity="one">Sequência de %1$d ciclo</item>
+        <item quantity="many">Sequência de %1$d ciclos</item>
+        <item quantity="other">Sequência de %1$d ciclos</item>
+    </plurals>
+    <plurals name="metric_overview_streak_training_days">
+        <item quantity="one">%1$d dia de treino</item>
+        <item quantity="many">%1$d dias de treino</item>
+        <item quantity="other">%1$d dias de treino</item>
+    </plurals>
+    <plurals name="metric_overview_streak_rest_days">
+        <item quantity="one">%1$d dia de descanso</item>
+        <item quantity="many">%1$d dias de descanso</item>
+        <item quantity="other">%1$d dias de descanso</item>
+    </plurals>
+    <plurals name="metric_overview_streak_cycle_days">
+        <item quantity="one">em um ciclo de %1$d dia</item>
+        <item quantity="many">em um ciclo de %1$d dias</item>
+        <item quantity="other">em um ciclo de %1$d dias</item>
+    </plurals>
+    <plurals name="goal_card_progress_days_left">
+        <item quantity="one">Resta %1$d dia</item>
+        <item quantity="many">Restam %1$d dias</item>
+        <item quantity="other">Restam %1$d dias</item>
+    </plurals>
+    <plurals name="goal_card_progress_overdue">
+        <item quantity="one">O prazo terminou há %1$d dia</item>
+        <item quantity="many">O prazo terminou há %1$d dias</item>
+        <item quantity="other">O prazo terminou há %1$d dias</item>
+    </plurals>
+    <plurals name="goal_fit_unit_groups">
+        <item quantity="one">%1$s grupo</item>
+        <item quantity="many">%1$s grupos</item>
+        <item quantity="other">%1$s grupos</item>
+    </plurals>
+    <plurals name="goal_details_analysis_excluded">
+        <item quantity="one">%1$d série não foi considerada porque tem dados incompletos ou inválidos.</item>
+        <item quantity="many">%1$d séries não foram consideradas porque têm dados incompletos ou inválidos.</item>
+        <item quantity="other">%1$d séries não foram consideradas porque têm dados incompletos ou inválidos.</item>
+    </plurals>
+    <plurals name="goal_details_analysis_missing_metadata">
+        <item quantity="one">%1$d série é de um exercício sem dados musculares, por isso os grupos musculares não foram avaliados.</item>
+        <item quantity="many">%1$d séries são de exercícios sem dados musculares, por isso os grupos musculares não foram avaliados.</item>
+        <item quantity="other">%1$d séries são de exercícios sem dados musculares, por isso os grupos musculares não foram avaliados.</item>
+    </plurals>
+    <plurals name="goal_selected_options">
+        <item quantity="one">%1$d opção selecionada</item>
+        <item quantity="many">%1$d opções selecionadas</item>
+        <item quantity="other">%1$d opções selecionadas</item>
+    </plurals>
+    <plurals name="highlight_streak">
+        <item quantity="one">Sequência de %1$d dia</item>
+        <item quantity="many">Sequência de %1$d dias</item>
+        <item quantity="other">Sequência de %1$d dias</item>
+    </plurals>
+    <plurals name="highlight_streak_weekly_headline_primary">
+        <item quantity="one">Sequência de %1$d semana</item>
+        <item quantity="many">Sequência de %1$d semanas</item>
+        <item quantity="other">Sequência de %1$d semanas</item>
+    </plurals>
+    <plurals name="training_streak_details_cycle_value">
+        <item quantity="one">Treino em %1$d de %2$d dia do ritmo</item>
+        <item quantity="many">Treino em %1$d de %2$d dias do ritmo</item>
+        <item quantity="other">Treino em %1$d de %2$d dias do ritmo</item>
+    </plurals>
+    <plurals name="exercise_sets_done">
+        <item quantity="one">%1$d série feita</item>
+        <item quantity="many">%1$d séries feitas</item>
+        <item quantity="other">%1$d séries feitas</item>
+    </plurals>
+    <plurals name="exercise_sets_planned">
+        <item quantity="one">%1$d série planejada</item>
+        <item quantity="many">%1$d séries planejadas</item>
+        <item quantity="other">%1$d séries planejadas</item>
+    </plurals>
+    <plurals name="exercise_sets_progress">
+        <item quantity="one">%1$d de %2$d série feita</item>
+        <item quantity="many">%1$d de %2$d séries feitas</item>
+        <item quantity="other">%1$d de %2$d séries feitas</item>
+    </plurals>
+    <plurals name="exercise_plan_sets_repetitions">
+        <item quantity="one">%1$d série de %2$s repetições</item>
+        <item quantity="many">%1$d séries de %2$s repetições</item>
+        <item quantity="other">%1$d séries de %2$s repetições</item>
+    </plurals>
+    <plurals name="welcome_facts_muscles_excluded">
+        <item quantity="one">%1$d músculo excluído</item>
+        <item quantity="many">%1$d de músculos excluídos</item>
+        <item quantity="other">%1$d músculos excluídos</item>
+    </plurals>
+    <plurals name="metric_overview_muscle_workouts">
+        <item quantity="one">%1$d treino</item>
+        <item quantity="many">%1$d treinos</item>
+        <item quantity="other">%1$d treinos</item>
+    </plurals>
+    <plurals name="metric_overview_muscle_sets">
+        <item quantity="one">%1$d série contabilizada</item>
+        <item quantity="many">%1$d séries contabilizadas</item>
+        <item quantity="other">%1$d séries contabilizadas</item>
+    </plurals>
+    <plurals name="muscle_loading_details_coverage">
+        <item quantity="one">%1$d série não entrou nas porcentagens</item>
+        <item quantity="many">%1$d séries não entraram nas porcentagens</item>
+        <item quantity="other">%1$d séries não entraram nas porcentagens</item>
+    </plurals>
+    <plurals name="spotlight_needs_attention_metric">
+        <item quantity="one">Feito pela última vez há %1$d dia</item>
+        <item quantity="many">Feito pela última vez há %1$d dias</item>
+        <item quantity="other">Feito pela última vez há %1$d dias</item>
+    </plurals>
+    <plurals name="home_unlock_workouts_left">
+        <item quantity="one">Mais %1$d treino</item>
+        <item quantity="many">Mais %1$d treinos</item>
+        <item quantity="other">Mais %1$d treinos</item>
+    </plurals>
+    <plurals name="welcome_facts_equipment_missing">
+        <item quantity="one">%1$d equipamento indisponível</item>
+        <item quantity="many">%1$d de equipamentos indisponíveis</item>
+        <item quantity="other">%1$d equipamentos indisponíveis</item>
+    </plurals>
+    <plurals name="goal_fit_unit_sets_per_week">
+        <item quantity="one">%1$s série por semana</item>
+        <item quantity="many">%1$s séries por semana</item>
+        <item quantity="other">%1$s séries por semana</item>
+    </plurals>
+    <plurals name="goal_fit_unit_training_days_per_week">
+        <item quantity="one">%1$s dia por semana</item>
+        <item quantity="many">%1$s dias por semana</item>
+        <item quantity="other">%1$s dias por semana</item>
     </plurals>
 </resources>

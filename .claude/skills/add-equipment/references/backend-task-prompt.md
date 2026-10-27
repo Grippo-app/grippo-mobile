@@ -19,8 +19,8 @@ Read the final mobile implementation and the relevant sources in the
   `EquipmentEnum`; an enum member, resource key or vector name is not that value.
 - The exact raw group `type` used in mobile, reconciled with `EquipmentGroupEnum`
   and the equipment's group assignment.
-- What the entered weight means, using the implemented hint and the agreed
-  equipment semantics: for example total plate weight, weight per side, selected
+- What the entered weight means under the weight-entry convention established
+  for the equipment: for example total plate weight, weight per side, selected
   stack weight or assistance weight. State included/excluded machine or bar
   weight when that distinction affects entry.
 - How it differs from the closest existing equipment, naming those positions

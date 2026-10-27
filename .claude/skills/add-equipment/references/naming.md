@@ -40,7 +40,7 @@ existing contracts or aliases.
 | UI enum member | Same member as domain, connected by the explicit mapper | `EquipmentEnumState.BUTTERFLY_FOREARM` |
 | New vector file / public property | Same stem in `PascalCase`, with `.kt` for the file | `ButterflyForearm.kt` / `ButterflyForearm` |
 | New vector builder name / private cache | Public property spelling / `_` plus that spelling | `"ButterflyForearm"` / `_ButterflyForearm` |
-| Title / weight-hint resources | `equipment_<type>` / `equipment_hint_<type>` | `equipment_butterfly_forearm` / `equipment_hint_butterfly_forearm` |
+| Title resource | `equipment_<type>` | `equipment_butterfly_forearm` |
 | New synthetic preview row ID | `preview-` plus the type stem with hyphens | `preview-butterfly-forearm` |
 | Raw group / domain and UI group members | Reuse the confirmed existing group mapping | `machines` / `EquipmentGroupEnum.MACHINES` / `EquipmentGroupEnumState.MACHINES` |
 | Group title resource | Reuse the existing key; new groups use `equipment_group_<group>` | `equipment_group_machines` |
@@ -86,17 +86,17 @@ Drawing an icon does not require inventing a wire key, group or catalog row.
   [integration map](integration-map.md#mobile-touchpoints).
 
 Existing mappings are not uniformly derivable: inspect `ROMAIN_CHAIR` /
-`romain_chair`, which map to `RomanChair`, title `equipment_roman_chair` and hint
-`equipment_hint_romain_chair`. Some existing vector builder/cache spellings also
-differ from their public properties. Preserve these explicit mappings unless
-their rename is part of the requested scope; do not copy their irregularities
-into a new declaration or perform a catalog-wide cleanup.
+`romain_chair`, which map to `RomanChair` and title `equipment_roman_chair`.
+Some existing vector builder/cache spellings also differ from their public
+properties. Preserve these explicit mappings unless their rename is part of the
+requested scope; do not copy their irregularities into a new declaration or
+perform a catalog-wide cleanup.
 
 ## Naming check
 
 Search every finalized identifier for declarations, collisions and consumers.
 Verify the exact key, both enum members, explicit mapping, reused/new asset tuple,
-title/hint keys in every current locale, group tuple and preview identity against
+title keys in every current locale, group tuple and preview identity against
 the [integration map](integration-map.md). For the backend prompt's contents,
 follow the [backend task](backend-task-prompt.md).
 Name consistency does not establish deployed support.

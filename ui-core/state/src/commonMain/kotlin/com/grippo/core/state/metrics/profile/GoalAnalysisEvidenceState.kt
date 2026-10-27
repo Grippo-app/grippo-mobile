@@ -5,7 +5,7 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.goal_details_analysis_days
+import com.grippo.design.resources.provider.day_count
 import com.grippo.design.resources.provider.goal_details_analysis_sets
 import com.grippo.design.resources.provider.joined_pair
 import kotlinx.datetime.daysUntil
@@ -24,9 +24,14 @@ public data class GoalAnalysisEvidenceState(
         }
 
     @Composable
-    public fun summaryLine(): String {
-        val daysLabel = AppTokens.strings.res(Res.plurals.goal_details_analysis_days, days, days)
-        val setsLabel = AppTokens.strings.res(Res.plurals.goal_details_analysis_sets, setCount, setCount)
-        return AppTokens.strings.res(Res.string.joined_pair, daysLabel, setsLabel)
+    public fun summaryLine(): String? {
+        val daysLabel = days.takeIf { it > 0 }?.let { AppTokens.strings.res(Res.plurals.day_count, it, it) }
+        val setsLabel = setCount.takeIf { it > 0 }?.let {
+            AppTokens.strings.res(Res.plurals.goal_details_analysis_sets, it, it)
+        }
+        return when {
+            daysLabel != null && setsLabel != null -> AppTokens.strings.res(Res.string.joined_pair, daysLabel, setsLabel)
+            else -> daysLabel ?: setsLabel
+        }
     }
 }

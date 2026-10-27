@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.formatters.FormatState
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.menu.ProfileMenu
@@ -31,6 +32,7 @@ import com.grippo.design.resources.provider.profile_account
 import com.grippo.design.resources.provider.profile_body_section
 import com.grippo.design.resources.provider.profile_height
 import com.grippo.design.resources.provider.profile_restrictions_section
+import com.grippo.design.resources.provider.profile_value_none
 import com.grippo.design.resources.provider.profile_value_not_set
 import com.grippo.design.resources.provider.settings
 import com.grippo.design.resources.provider.weight
@@ -51,11 +53,14 @@ internal fun ProfileMenuContent(
 ) {
     val notSet = AppTokens.strings.res(Res.string.profile_value_not_set)
     val weight = (user?.weight as? WeightFormatState.Valid)?.let {
-        "${it.display} ${AppTokens.strings.res(Res.string.kg)}"
+        "${it.display}${FormatState.UNIT_SPACE}${AppTokens.strings.res(Res.string.kg)}"
     } ?: notSet
     val height = (user?.height as? HeightFormatState.Valid)?.let {
-        "${it.display} ${AppTokens.strings.res(Res.string.cm)}"
+        "${it.display}${FormatState.UNIT_SPACE}${AppTokens.strings.res(Res.string.cm)}"
     } ?: notSet
+    val none = AppTokens.strings.res(Res.string.profile_value_none)
+    val excludedMuscles = excludedMusclesCount?.let { if (it == 0) none else it.toString() } ?: notSet
+    val excludedEquipments = excludedEquipmentsCount?.let { if (it == 0) none else it.toString() } ?: notSet
 
     Column(
         modifier = modifier,
@@ -114,7 +119,7 @@ internal fun ProfileMenuContent(
         ) {
             MenuValueRow(
                 title = ProfileMenu.Muscles.text().text(),
-                value = excludedMusclesCount?.toString() ?: notSet,
+                value = excludedMuscles,
                 loading = musclesLoading,
                 onClick = {
                     onProfileMenuClick(ProfileMenu.Muscles)
@@ -122,7 +127,7 @@ internal fun ProfileMenuContent(
             )
             MenuValueRow(
                 title = ProfileMenu.Equipment.text().text(),
-                value = excludedEquipmentsCount?.toString() ?: notSet,
+                value = excludedEquipments,
                 loading = equipmentsLoading,
                 showDivider = false,
                 onClick = {

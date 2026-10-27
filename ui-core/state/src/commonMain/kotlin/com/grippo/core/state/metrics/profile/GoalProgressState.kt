@@ -12,6 +12,8 @@ import com.grippo.core.state.profile.stubGoal
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.AppColor
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.goal_analyzed_none
+import com.grippo.design.resources.provider.goal_analyzed_workouts
 import com.grippo.design.resources.provider.goal_card_progress_days_left
 import com.grippo.design.resources.provider.goal_card_progress_due_today
 import com.grippo.design.resources.provider.goal_card_progress_overdue
@@ -81,13 +83,21 @@ public data class GoalProgressState(
     public fun remainingLine(): String {
         return when {
             daysRemaining > 0 -> AppTokens.strings.res(
-                Res.string.goal_card_progress_days_left,
-                daysRemaining
+                Res.plurals.goal_card_progress_days_left,
+                daysRemaining,
+                daysRemaining,
             )
 
             daysRemaining == 0 -> AppTokens.strings.res(Res.string.goal_card_progress_due_today)
-            else -> AppTokens.strings.res(Res.string.goal_card_progress_overdue, -daysRemaining)
+            else -> AppTokens.strings.res(Res.plurals.goal_card_progress_overdue, -daysRemaining, -daysRemaining)
         }
+    }
+
+    @Composable
+    public fun analyzedWorkoutsLabel(): String = if (sessionCount == 0) {
+        AppTokens.strings.res(Res.string.goal_analyzed_none)
+    } else {
+        AppTokens.strings.res(Res.plurals.goal_analyzed_workouts, sessionCount, sessionCount)
     }
 
     @Composable

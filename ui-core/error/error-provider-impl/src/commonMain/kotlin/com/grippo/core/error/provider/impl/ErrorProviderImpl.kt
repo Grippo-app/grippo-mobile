@@ -15,26 +15,18 @@ internal class ErrorProviderImpl(
     override suspend fun provide(exception: Throwable, callback: () -> Unit) {
         val error = when (exception) {
 
-            is AppError.Network.NoInternet -> AppErrorState.Network.NoInternet(
-                description = exception.message,
-            )
+            is AppError.Network.NoInternet -> AppErrorState.Network.NoInternet
 
-            is AppError.Network.Timeout -> AppErrorState.Network.Timeout(
-                description = exception.message,
-            )
+            is AppError.Network.Timeout -> AppErrorState.Network.Timeout
 
             is AppError.Network.Expected -> AppErrorState.Network.Expected(
                 title = exception.title,
                 description = exception.description,
             )
 
-            is AppError.Network.IncompleteResponse -> AppErrorState.Network.IncompleteResponse(
-                description = exception.message,
-            )
+            is AppError.Network.IncompleteResponse -> AppErrorState.Network.IncompleteResponse
 
-            is AppError.Network.Unexpected -> AppErrorState.Network.Unexpected(
-                description = exception.message,
-            )
+            is AppError.Network.Unexpected -> AppErrorState.Network.Unexpected
 
             is AppError.Expected -> AppErrorState.Expected(
                 title = exception.message,

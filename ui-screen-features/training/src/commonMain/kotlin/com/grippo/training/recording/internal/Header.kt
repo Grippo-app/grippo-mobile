@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
+import com.grippo.core.state.formatters.FormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.design.components.training.TrainingStat
@@ -15,7 +16,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.kg
-import com.grippo.design.resources.provider.reps
+import com.grippo.design.resources.provider.repetitions_chip
 import com.grippo.design.resources.provider.tonnage
 import com.grippo.design.resources.provider.x
 
@@ -41,7 +42,7 @@ internal fun Header(
             label = AppTokens.strings.res(Res.string.tonnage),
             value = when (volume) {
                 is VolumeFormatState.Empty -> {
-                    AnnotatedString("0${AppTokens.strings.res(Res.string.kg)}")
+                    AnnotatedString("0${FormatState.UNIT_SPACE}${AppTokens.strings.res(Res.string.kg)}")
                 }
                 else -> {
                     volume.shortAnnotated()
@@ -51,7 +52,7 @@ internal fun Header(
         )
         TrainingStat(
             modifier = Modifier.weight(1f),
-            label = AppTokens.strings.res(Res.string.reps),
+            label = AppTokens.strings.res(Res.string.repetitions_chip),
             value = when (repetitions) {
                 is RepetitionsFormatState.Empty -> {
                     AnnotatedString("${AppTokens.strings.res(Res.string.x)}0")

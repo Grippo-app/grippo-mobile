@@ -3,6 +3,7 @@ package com.grippo.core.state.trainings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
+import com.grippo.core.state.formatters.FormatState
 import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
@@ -69,7 +70,7 @@ public data class IterationState(
         val volume = recordedVolume()?.let { VolumeFormatState.of(it) }
         val load = when {
             volume == null -> "—"
-            volume.value == null -> "0${AppTokens.strings.res(Res.string.kg)}"
+            volume.value == null -> "0${FormatState.UNIT_SPACE}${AppTokens.strings.res(Res.string.kg)}"
             else -> volume.short()
         }
         val repetitions = repetitions.value?.toString() ?: "—"

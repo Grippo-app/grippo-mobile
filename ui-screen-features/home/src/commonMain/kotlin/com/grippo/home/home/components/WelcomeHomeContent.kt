@@ -22,6 +22,7 @@ import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.illustration.Illustration
 import com.grippo.design.components.illustration.IllustrationStyle
 import com.grippo.design.components.konfetti.KonfettiParade
+import com.grippo.design.components.modifiers.IllustrationBackgroundStyle
 import com.grippo.design.components.modifiers.illustrationBackground
 import com.grippo.design.components.welcome.WelcomeBlock
 import com.grippo.design.components.welcome.WelcomeChecklist
@@ -46,6 +47,7 @@ import com.grippo.design.resources.provider.welcome_benefit_progress_title
 import com.grippo.design.resources.provider.welcome_check_equipment
 import com.grippo.design.resources.provider.welcome_check_experience
 import com.grippo.design.resources.provider.welcome_check_goal
+import com.grippo.design.resources.provider.welcome_check_goal_pending
 import com.grippo.design.resources.provider.welcome_check_muscles
 import com.grippo.design.resources.provider.welcome_check_profile
 import com.grippo.design.resources.provider.welcome_section_benefits_title
@@ -116,7 +118,9 @@ private fun WelcomeBody(
             isCompleted = true
         ),
         WelcomeChecklistItem(
-            text = AppTokens.strings.res(Res.string.welcome_check_goal),
+            text = AppTokens.strings.res(
+                if (hasGoal) Res.string.welcome_check_goal else Res.string.welcome_check_goal_pending,
+            ),
             isCompleted = hasGoal
         ),
     )
@@ -235,7 +239,7 @@ private fun HeroBlock(
     val shape = RoundedCornerShape(AppTokens.dp.welcome.card.radius)
     Column(
         modifier = modifier
-            .illustrationBackground(shape)
+            .illustrationBackground(shape, style = IllustrationBackgroundStyle.Solid)
             .padding(AppTokens.dp.contentPadding.block),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {

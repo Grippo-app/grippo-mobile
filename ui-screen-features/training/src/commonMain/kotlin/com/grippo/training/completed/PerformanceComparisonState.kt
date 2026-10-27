@@ -21,7 +21,7 @@ internal data class PerformanceComparisonState(
 
     @Composable
     fun periodLabel(range: DateRangeFormatState): String? = when {
-        isOver(range.value) -> range.label()?.text()
+        isOver(range.value) -> range.periodPhrase()
         else -> period.shortEnd()?.let { AppTokens.strings.res(Res.string.training_recap_period_as_of, it) }
     }
 }

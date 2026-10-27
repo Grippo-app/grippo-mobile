@@ -42,6 +42,7 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.ExerciseExampleComponentsState
 import com.grippo.core.state.examples.stubExerciseExample
+import com.grippo.core.state.formatters.FormatState
 import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
@@ -68,6 +69,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.assist_weight_placeholder
 import com.grippo.design.resources.provider.body_weight_placeholder
+import com.grippo.design.resources.provider.decimal_separator
 import com.grippo.design.resources.provider.extra_weight_placeholder
 import com.grippo.design.resources.provider.iteration_picker_suggestions
 import com.grippo.design.resources.provider.iteration_picker_repetitions_range
@@ -286,7 +288,11 @@ internal fun IterationPickerScreen(
                     Text(
                         text = AppTokens.strings.res(
                             Res.string.iteration_picker_weight_range,
-                            if (state.example.components is ExerciseExampleComponentsState.External) "0.1" else "0"
+                            if (state.example.components is ExerciseExampleComponentsState.External) {
+                                "0${AppTokens.strings.res(Res.string.decimal_separator)}1"
+                            } else {
+                                "0"
+                            }
                         ),
                         style = AppTokens.typography.b12Semi(),
                         color = AppTokens.colors.text.tertiary
@@ -406,15 +412,14 @@ private fun IterationState.suggestionKey(
 
 @Composable
 private fun IterationState.suggestionLabel(components: ExerciseExampleComponentsState): String {
-    val kg = AppTokens.strings.res(Res.string.kg)
-    val zero = "0 $kg"
+    val zero = "0${FormatState.UNIT_SPACE}${AppTokens.strings.res(Res.string.kg)}"
     val weight = when (components) {
-        is ExerciseExampleComponentsState.External -> "${externalWeight.short().removeSuffix(kg)} $kg"
+        is ExerciseExampleComponentsState.External -> externalWeight.short()
         is ExerciseExampleComponentsState.BodyAndExtra ->
-            if (extraWeight.value == null) zero else "+${extraWeight.short().removeSuffix(kg)} $kg"
+            if (extraWeight.value == null) zero else "+${extraWeight.short()}"
         is ExerciseExampleComponentsState.BodyAndAssist ->
             if (assistWeight.value == null || assistWeight.value == 0f) zero
-            else "−${assistWeight.short().removeSuffix(kg)} $kg"
+            else "−${assistWeight.short()}"
         is ExerciseExampleComponentsState.BodyOnly -> ""
     }
     return "${if (weight.isEmpty()) "" else "$weight "}× ${repetitions.value ?: "–"}"

@@ -2,6 +2,7 @@ package com.grippo.core.state.formatters
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.daily
 import com.grippo.design.resources.provider.last_14_days
@@ -10,6 +11,11 @@ import com.grippo.design.resources.provider.last_365_days
 import com.grippo.design.resources.provider.last_60_days
 import com.grippo.design.resources.provider.last_7_days
 import com.grippo.design.resources.provider.monthly
+import com.grippo.design.resources.provider.period_last_days
+import com.grippo.design.resources.provider.period_this_month
+import com.grippo.design.resources.provider.period_this_week
+import com.grippo.design.resources.provider.period_this_year
+import com.grippo.design.resources.provider.period_today
 import com.grippo.design.resources.provider.weekly
 import com.grippo.design.resources.provider.yearly
 import com.grippo.toolkit.date.utils.DateCompose
@@ -69,6 +75,25 @@ public sealed class DateRangeFormatState : FormatState<DateRange> {
         val range = value ?: return null
         val format = DateRangeFormatter.dateFormat(kind)
         return DateCompose.rememberFormat(value = range.to, format = format)
+    }
+
+    @Composable
+    public fun periodPhrase(): String? = when (kind) {
+        DateRangeKind.Daily -> AppTokens.strings.res(Res.string.period_today)
+        DateRangeKind.Weekly -> AppTokens.strings.res(Res.string.period_this_week)
+        DateRangeKind.Monthly -> AppTokens.strings.res(Res.string.period_this_month)
+        DateRangeKind.Yearly -> AppTokens.strings.res(Res.string.period_this_year)
+        DateRangeKind.Last7Days -> lastDaysPhrase(days = 7)
+        DateRangeKind.Last14Days -> lastDaysPhrase(days = 14)
+        DateRangeKind.Last30Days -> lastDaysPhrase(days = 30)
+        DateRangeKind.Last60Days -> lastDaysPhrase(days = 60)
+        DateRangeKind.Last365Days -> lastDaysPhrase(days = 365)
+        DateRangeKind.Custom, DateRangeKind.Infinity -> null
+    }
+
+    @Composable
+    private fun lastDaysPhrase(days: Int): String {
+        return AppTokens.strings.res(Res.plurals.period_last_days, days, days)
     }
 
     public fun label(): UiText? = when (kind) {

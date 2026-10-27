@@ -43,7 +43,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.highlight_muscle_focus
-import com.grippo.design.resources.provider.metric_overview_muscle_context
 import com.grippo.design.resources.provider.metric_overview_muscle_details
 import com.grippo.design.resources.provider.metric_overview_muscle_distribution
 import com.grippo.design.resources.provider.metric_overview_muscle_primary
@@ -136,11 +135,7 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
             title = AppTokens.strings.res(Res.string.metric_overview_muscle_distribution),
         )
         Text(
-            text = AppTokens.strings.res(
-                Res.string.metric_overview_muscle_context,
-                summary.meta.trainingsCount,
-                summary.meta.totalSets,
-            ),
+            text = summary.meta.contextLine(),
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.secondary,
         )

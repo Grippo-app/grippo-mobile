@@ -34,7 +34,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.AppColor
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.metric_overview_goal_analyzed
 import com.grippo.design.resources.provider.percent
 import com.grippo.design.resources.provider.value_transition
 
@@ -109,7 +108,7 @@ internal fun GoalCardGrowth(
             }
 
             Text(
-                text = AppTokens.strings.res(Res.string.metric_overview_goal_analyzed, value.sessionCount),
+                text = value.analyzedWorkoutsLabel(),
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,
             )

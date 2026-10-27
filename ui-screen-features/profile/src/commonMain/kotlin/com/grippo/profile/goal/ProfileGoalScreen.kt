@@ -387,7 +387,7 @@ private fun PersonalizationSection(
         expandCategories && routineOptions.size in 1..2 -> {
             routineOptions.map { it.label() }.joinToString(separator = " · ")
         }
-        else -> AppTokens.strings.res(Res.string.goal_selected_options, selectedOptions.size)
+        else -> AppTokens.strings.res(Res.plurals.goal_selected_options, selectedOptions.size, selectedOptions.size)
     }
     val expansionDescription = AppTokens.strings.res(
         if (isExpanded) Res.string.goal_options_expanded else Res.string.goal_options_collapsed,

@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.text.rememberTextMeasurer
 import com.grippo.core.state.formatters.DateTimeFormatState
+import com.grippo.core.state.formatters.FormatState
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.MultiplierFormatState
 import com.grippo.core.state.formatters.PercentageFormatState
@@ -71,7 +72,7 @@ internal fun ExerciseProgressCard(
     isHistoryLoading: Boolean = false,
 ) {
     val exercise = value.exercise
-    val zeroVolume = "0${AppTokens.strings.res(Res.string.kg)}"
+    val zeroVolume = "0${FormatState.UNIT_SPACE}${AppTokens.strings.res(Res.string.kg)}"
     val repetitions = exercise.total.repetitions.value ?: 0
     val maximum = exercise.maximumRecordedLoad()
     val maximumVolume = VolumeFormatState.of(maximum)
@@ -218,7 +219,7 @@ private fun ExerciseVolumeHistory(
     } ?: previous?.createdAt?.display
     val caption = previous?.let {
         val previousVolumeText = if (it.total.volume.value == null) {
-            "0${AppTokens.strings.res(Res.string.kg)}"
+            "0${FormatState.UNIT_SPACE}${AppTokens.strings.res(Res.string.kg)}"
         } else {
             it.total.volume.short()
         }

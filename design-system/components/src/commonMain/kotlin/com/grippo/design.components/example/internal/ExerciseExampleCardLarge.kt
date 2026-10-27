@@ -44,7 +44,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.exercise_example_in_history
 import com.grippo.design.resources.provider.exercise_example_last_used_value
 import com.grippo.design.resources.provider.exercise_example_not_used
-import com.grippo.design.resources.provider.exercise_example_weight_type_value
 import com.grippo.design.resources.provider.icons.Calendar
 import com.grippo.design.resources.provider.muscles.bodySplit
 import com.grippo.toolkit.date.utils.DateCompose
@@ -112,10 +111,7 @@ internal fun ExerciseExampleCardLarge(
 
             if (equipments.isEmpty()) {
                 Text(
-                    text = AppTokens.strings.res(
-                        Res.string.exercise_example_weight_type_value,
-                        value.value.weightType.title().text(),
-                    ),
+                    text = value.value.weightType.title().text(),
                     style = AppTokens.typography.b13Med(),
                     color = AppTokens.colors.text.secondary,
                 )

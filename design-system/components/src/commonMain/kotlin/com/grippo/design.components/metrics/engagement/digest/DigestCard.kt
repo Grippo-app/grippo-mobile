@@ -22,6 +22,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.digest_empty
 import com.grippo.design.resources.provider.digest_title
 import com.grippo.design.resources.provider.digest_unavailable
 import com.grippo.design.resources.provider.digest_zero_duration
@@ -55,26 +56,11 @@ public fun DigestCard(
 }
 
 @Composable
-private fun ColumnScope.EmptyDigestBody() {
-    DigestBody(
-        trainingsCount = 0,
-        breakdown = persistentListOf(
-            MetricBreakdownItem(
-                label = AppTokens.strings.res(Res.string.duration),
-                value = AppTokens.strings.res(Res.string.digest_zero_duration),
-                dimmed = true,
-            ),
-            MetricBreakdownItem(
-                label = AppTokens.strings.res(Res.string.tonnage),
-                value = VolumeFormatState.shortTotal(0f),
-                dimmed = true,
-            ),
-            MetricBreakdownItem(
-                label = AppTokens.strings.res(Res.string.sets),
-                value = "0",
-                dimmed = true,
-            ),
-        ),
+private fun EmptyDigestBody() {
+    Text(
+        text = AppTokens.strings.res(Res.string.digest_empty),
+        style = AppTokens.typography.b14Med(),
+        color = AppTokens.colors.text.secondary,
     )
 }
 
