@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,8 +33,10 @@ import com.grippo.design.components.metrics.distribution.muscle.loading.internal
 import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
+import com.grippo.design.components.skeleton.SkeletonBone
 import com.grippo.design.components.skeleton.SkeletonPanel
 import com.grippo.design.components.skeleton.SkeletonPanelStyle
+import com.grippo.design.components.skeleton.SkeletonText
 import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -79,9 +82,9 @@ public fun MuscleLoadingCard(
             summary = summary,
         )
 
-        MuscleLoadingCardStyle.Session -> MetricSectionPanel(
+        MuscleLoadingCardStyle.Session -> Column(
             modifier = modifier,
-            style = MetricSectionPanelStyle.Large,
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.metrics.section.spacer),
         ) {
             MuscleLoadingSession(summary = summary)
         }
@@ -157,8 +160,9 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
 @Composable
 private fun MuscleLoadingSession(summary: MuscleLoadSummaryState) {
     Text(
+        modifier = Modifier.semantics { heading() },
         text = AppTokens.strings.res(Res.string.muscle_loading),
-        style = AppTokens.typography.h5(),
+        style = AppTokens.typography.h4(),
         color = AppTokens.colors.text.primary,
     )
 
@@ -276,23 +280,40 @@ public fun MuscleLoadingCardSkeleton(
     val mapRowHeight = maxOf(AppTokens.dp.metrics.overview.muscleImageHeight, groupsHeight)
     val spacer = AppTokens.dp.metrics.panel.large.spacer
 
-    val contentHeight = when (style) {
-        MuscleLoadingCardStyle.Overview -> maxOf(titleLine, AppTokens.dp.metrics.overview.detailsIcon) +
-            AppTokens.dp.contentPadding.text + captionLine + mapRowHeight + captionLine + spacer * 2
+    when (style) {
+        MuscleLoadingCardStyle.Overview -> SkeletonPanel(
+            modifier = modifier,
+            contentHeight = maxOf(titleLine, AppTokens.dp.metrics.overview.detailsIcon) +
+                AppTokens.dp.contentPadding.text + captionLine + mapRowHeight + captionLine + spacer * 2,
+            style = SkeletonPanelStyle.Large,
+        )
 
         MuscleLoadingCardStyle.Summary -> {
             val countLine = rememberTextHeight(style = AppTokens.typography.h3(), textMeasurer = textMeasurer)
-            countLine + AppTokens.dp.contentPadding.text + captionLine
+
+            SkeletonPanel(
+                modifier = modifier,
+                contentHeight = countLine + AppTokens.dp.contentPadding.text + captionLine,
+                style = SkeletonPanelStyle.Large,
+            )
         }
 
-        MuscleLoadingCardStyle.Session -> titleLine + spacer + mapRowHeight
+        MuscleLoadingCardStyle.Session -> Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.metrics.section.spacer),
+        ) {
+            SkeletonText(
+                modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.medium),
+                style = AppTokens.typography.h4(),
+                textMeasurer = textMeasurer,
+            )
+            SkeletonBone(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(mapRowHeight),
+            )
+        }
     }
-
-    SkeletonPanel(
-        modifier = modifier,
-        contentHeight = contentHeight,
-        style = SkeletonPanelStyle.Large,
-    )
 }
 
 @AppPreview

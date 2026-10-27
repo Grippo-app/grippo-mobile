@@ -18,6 +18,12 @@
         <item quantity="many">%1$d з %2$d показників вище минулого</item>
         <item quantity="other">%1$d з %2$d показника вище минулого</item>
     </plurals>
+    <plurals name="training_recap_sets">
+        <item quantity="one">%1$d підхід</item>
+        <item quantity="few">%1$d підходи</item>
+        <item quantity="many">%1$d підходів</item>
+        <item quantity="other">%1$d підходу</item>
+    </plurals>
     <plurals name="goal_details_analysis_days">
         <item quantity="one">%1$d дн.</item>
         <item quantity="few">%1$d дн.</item>

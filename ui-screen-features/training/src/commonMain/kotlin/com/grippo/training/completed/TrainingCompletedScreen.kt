@@ -5,11 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -22,12 +25,12 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateRangeFormatState
@@ -62,16 +65,17 @@ import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLo
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardSkeleton
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardStyle
-import com.grippo.design.components.metrics.performance.PerformanceComparisonCard
-import com.grippo.design.components.metrics.performance.PerformanceComparisonCardSkeleton
+import com.grippo.design.components.metrics.performance.PerformanceComparisonSection
+import com.grippo.design.components.metrics.performance.PerformanceComparisonSectionSkeleton
 import com.grippo.design.components.metrics.performance.TrainingRecordsCard
 import com.grippo.design.components.metrics.performance.TrainingRecordsCardSkeleton
 import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.metrics.profile.goal.GoalCardStyle
-import com.grippo.design.components.metrics.volume.WeeklyVolumeCard
-import com.grippo.design.components.metrics.volume.WeeklyVolumeCardSkeleton
+import com.grippo.design.components.metrics.volume.WeeklyVolumeSection
+import com.grippo.design.components.metrics.volume.WeeklyVolumeSectionSkeleton
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.training.TrainingRecapHero
+import com.grippo.design.components.training.TrainingRecapHeroSkeleton
 import com.grippo.design.components.training.TrainingRecapHeroState
 import com.grippo.design.components.training.TrainingRecapHeroStyle
 import com.grippo.design.components.training.rememberTrainingRecapHeroState
@@ -82,15 +86,18 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Share
 import com.grippo.design.resources.provider.joined_pair
 import com.grippo.design.resources.provider.loading
+import com.grippo.design.resources.provider.progress
 import com.grippo.design.resources.provider.share
 import com.grippo.design.resources.provider.training_completed_details_unavailable
 import com.grippo.design.resources.provider.training_completed_done
 import com.grippo.design.resources.provider.training_completed_result_unavailable
 import com.grippo.toolkit.date.utils.DateRangeKind
+import com.grippo.training.completed.components.ProgressDivider
 import com.grippo.training.completed.components.TrainingCompletedSkeleton
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlin.time.Duration.Companion.hours
@@ -108,9 +115,11 @@ internal fun TrainingCompletedScreen(
 ) {
     val isSaving = loaders.contains(TrainingCompletedLoader.SaveTraining)
     val isSharing = loaders.contains(TrainingCompletedLoader.ShareRecap)
+    val training = state.training
     val heroStyle = trainingCompletedHeroStyle(state)
     val heroLayer = rememberGraphicsLayer()
     val heroState = rememberTrainingRecapHeroState()
+    val heroPadding = WindowInsets.statusBars.asPaddingValues()
     val contentListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val shareState = when {
@@ -125,75 +134,95 @@ internal fun TrainingCompletedScreen(
             .fillMaxWidth()
             .weight(1f),
     ) {
-        OverlayContainer(
-            modifier = Modifier.fillMaxSize(),
-            content = { resolvedPadding ->
-                if (isSaving) {
-                    TrainingCompletedSkeleton(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = resolvedPadding,
-                    )
-                } else {
-                    TrainingCompletedContent(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = resolvedPadding,
-                        listState = contentListState,
-                        state = state,
-                        loaders = loaders,
-                        heroStyle = heroStyle,
-                        heroState = heroState,
-                        heroLayer = heroLayer,
-                        contract = contract,
-                    )
-                }
-            },
-            overlay = AppTokens.colors.background.screen,
-            top = {
-                Spacer(modifier = Modifier.statusBarsPadding())
-            },
-            bottom = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .navigationBarsPadding()
-                        .padding(
-                            start = AppTokens.dp.screen.horizontalPadding,
-                            end = AppTokens.dp.screen.horizontalPadding,
-                            bottom = AppTokens.dp.screen.verticalPadding,
-                        ),
-                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-                ) {
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        content = ButtonContent.Text(
-                            text = AppTokens.strings.res(Res.string.training_completed_done),
-                        ),
-                        style = ButtonStyle.Primary,
-                        state = if (isSaving) ButtonState.Loading else ButtonState.Enabled,
-                        onClick = contract::onBack,
-                    )
+        Column(modifier = Modifier.fillMaxSize()) {
+            when {
+                isSaving -> TrainingRecapHeroSkeleton(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = heroPadding,
+                )
 
-                    if (isSaving || state.training != null) {
+                training != null -> TrainingCompletedHero(
+                    modifier = Modifier.fillMaxWidth(),
+                    training = training,
+                    style = heroStyle,
+                    state = heroState,
+                    layer = heroLayer,
+                    contentPadding = heroPadding,
+                )
+
+                else -> Spacer(modifier = Modifier.statusBarsPadding())
+            }
+
+            OverlayContainer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .nestedScroll(heroState.nestedScrollConnection),
+                content = { resolvedPadding ->
+                    if (isSaving) {
+                        TrainingCompletedSkeleton(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = resolvedPadding,
+                        )
+                    } else {
+                        TrainingCompletedContent(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = resolvedPadding,
+                            listState = contentListState,
+                            state = state,
+                            loaders = loaders,
+                            contract = contract,
+                        )
+                    }
+                },
+                overlay = AppTokens.colors.background.screen,
+                bottom = {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .navigationBarsPadding()
+                            .padding(
+                                start = AppTokens.dp.screen.horizontalPadding,
+                                end = AppTokens.dp.screen.horizontalPadding,
+                                bottom = AppTokens.dp.screen.verticalPadding,
+                            ),
+                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                    ) {
                         Button(
                             modifier = Modifier.fillMaxWidth(),
                             content = ButtonContent.Text(
-                                text = AppTokens.strings.res(Res.string.share),
-                                startIcon = ButtonIcon.Icon(AppTokens.icons.Share),
+                                text = AppTokens.strings.res(Res.string.training_completed_done),
                             ),
-                            style = ButtonStyle.Secondary,
-                            state = shareState,
-                            onClick = {
-                                coroutineScope.launch {
-                                    contentListState.animateScrollToItem(index = 0)
-                                    heroState.settle()
-                                    contract.onShareClick { heroLayer.toImageBitmap() }
-                                }
-                            },
+                            style = ButtonStyle.Primary,
+                            state = if (isSaving) ButtonState.Loading else ButtonState.Enabled,
+                            onClick = contract::onBack,
                         )
+
+                        if (isSaving || training != null) {
+                            Button(
+                                modifier = Modifier.fillMaxWidth(),
+                                content = ButtonContent.Text(
+                                    text = AppTokens.strings.res(Res.string.share),
+                                    startIcon = ButtonIcon.Icon(AppTokens.icons.Share),
+                                ),
+                                style = ButtonStyle.Secondary,
+                                state = shareState,
+                                onClick = {
+                                    coroutineScope.launch {
+                                        val scrollToTop = async { contentListState.animateScrollToItem(index = 0) }
+                                        heroState.whileExpanded {
+                                            scrollToTop.await()
+                                            heroState.settle()
+                                            contract.onShareClick { heroLayer.toImageBitmap() }
+                                        }
+                                    }
+                                },
+                            )
+                        }
                     }
-                }
-            },
-        )
+                },
+            )
+        }
 
         KonfettiParade(
             show = state.recordCelebration == RecordCelebrationState.Playing && !isSaving,
@@ -209,37 +238,27 @@ private fun TrainingCompletedContent(
     listState: LazyListState,
     state: TrainingCompletedState,
     loaders: ImmutableSet<TrainingCompletedLoader>,
-    heroStyle: TrainingRecapHeroStyle,
-    heroState: TrainingRecapHeroState,
-    heroLayer: GraphicsLayer,
     contract: TrainingCompletedContract,
 ) {
-    val training = state.training
     val performance = state.performance
     val isLoadingRecords = loaders.contains(TrainingCompletedLoader.LoadRecords)
     val loadingDescription = AppTokens.strings.res(Res.string.loading)
-    val topInset = contentPadding.calculateTopPadding()
-    val cardModifier = Modifier
+    val sectionModifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
 
     LazyColumn(
         modifier = modifier,
         state = listState,
-        // The first item runs up under the top overlay and clears it on its own.
-        contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
+        contentPadding = PaddingValues(
+            top = AppTokens.dp.contentPadding.block,
+            bottom = contentPadding.calculateBottomPadding(),
+        ),
     ) {
-        if (training == null) {
+        if (state.training == null) {
             item(key = "completion_unavailable") {
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            start = AppTokens.dp.screen.horizontalPadding,
-                            top = topInset,
-                            end = AppTokens.dp.screen.horizontalPadding,
-                        )
-                        .semantics { heading() },
+                    modifier = sectionModifier.semantics { heading() },
                     text = AppTokens.strings.res(
                         if (state.savedTrainingId != null) {
                             Res.string.training_completed_details_unavailable
@@ -254,51 +273,38 @@ private fun TrainingCompletedContent(
             return@LazyColumn
         }
 
-        item(key = "completion_hero") {
-            TrainingCompletedHero(
-                modifier = Modifier.fillMaxWidth(),
-                training = training,
-                style = heroStyle,
-                state = heroState,
-                layer = heroLayer,
-                topInset = topInset,
-            )
-
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
-        }
-
         if (isLoadingRecords || state.records.isNotEmpty()) {
             item(key = "training_records") {
                 if (isLoadingRecords) {
                     TrainingRecordsCardSkeleton(
-                        modifier = cardModifier.semantics(mergeDescendants = true) {
+                        modifier = sectionModifier.semantics(mergeDescendants = true) {
                             contentDescription = loadingDescription
                             progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
                         },
                     )
                 } else {
                     TrainingRecordsCard(
-                        modifier = cardModifier,
+                        modifier = sectionModifier,
                         records = state.records,
                         onRecordClick = contract::onRecordClick,
                     )
                 }
 
-                Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+                Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
             }
         }
 
         item(key = "performance_comparison") {
             if (performance == null) {
-                PerformanceComparisonCardSkeleton(
-                    modifier = cardModifier.semantics(mergeDescendants = true) {
+                PerformanceComparisonSectionSkeleton(
+                    modifier = sectionModifier.semantics(mergeDescendants = true) {
                         contentDescription = loadingDescription
                         progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
                     },
                 )
             } else {
-                PerformanceComparisonCard(
-                    modifier = cardModifier,
+                PerformanceComparisonSection(
+                    modifier = sectionModifier,
                     metrics = performance.metrics,
                     reference = performance.reference,
                     onReferenceSelect = contract::onReferenceSelect,
@@ -307,19 +313,30 @@ private fun TrainingCompletedContent(
             }
         }
 
-        item(key = "weekly_volume") {
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+        item(key = "progress_heading") {
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
 
+            Text(
+                modifier = sectionModifier.semantics { heading() },
+                text = AppTokens.strings.res(Res.string.progress),
+                style = AppTokens.typography.h4(),
+                color = AppTokens.colors.text.primary,
+            )
+
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+        }
+
+        item(key = "weekly_volume") {
             if (state.weeklyVolume == null) {
-                WeeklyVolumeCardSkeleton(
-                    modifier = cardModifier.semantics(mergeDescendants = true) {
+                WeeklyVolumeSectionSkeleton(
+                    modifier = sectionModifier.semantics(mergeDescendants = true) {
                         contentDescription = loadingDescription
                         progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
                     },
                 )
             } else {
-                WeeklyVolumeCard(
-                    modifier = cardModifier,
+                WeeklyVolumeSection(
+                    modifier = sectionModifier,
                     value = state.weeklyVolume,
                 )
             }
@@ -327,19 +344,19 @@ private fun TrainingCompletedContent(
 
         if (performance == null) {
             item(key = "training_streak_skeleton") {
-                Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+                ProgressDivider(modifier = sectionModifier)
 
                 TrainingStreakCardSkeleton(
-                    modifier = cardModifier,
+                    modifier = sectionModifier,
                     style = TrainingStreakCardStyle.Growth(previous = null),
                 )
             }
         } else if (state.streak != null) {
             item(key = "training_streak") {
-                Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+                ProgressDivider(modifier = sectionModifier)
 
                 TrainingStreakCard(
-                    modifier = cardModifier.scalableClick(onClick = contract::onStreakClick),
+                    modifier = sectionModifier.scalableClick(onClick = contract::onStreakClick),
                     value = state.streak,
                     style = TrainingStreakCardStyle.Growth(previous = state.previousStreak),
                 )
@@ -348,10 +365,10 @@ private fun TrainingCompletedContent(
 
         if (state.goalProgress != null) {
             item(key = "goal_progress") {
-                Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+                ProgressDivider(modifier = sectionModifier)
 
                 GoalCard(
-                    modifier = cardModifier.scalableClick(onClick = contract::onGoalClick),
+                    modifier = sectionModifier.scalableClick(onClick = contract::onGoalClick),
                     value = state.goalProgress,
                     style = GoalCardStyle.Growth(previous = state.previousGoalProgress),
                 )
@@ -360,10 +377,10 @@ private fun TrainingCompletedContent(
 
         if (state.muscleLoad != null) {
             item(key = "muscle_load") {
-                Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+                Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
 
                 MuscleLoadingCard(
-                    modifier = cardModifier,
+                    modifier = sectionModifier,
                     summary = state.muscleLoad,
                     style = MuscleLoadingCardStyle.Session,
                 )
@@ -379,7 +396,7 @@ private fun TrainingCompletedHero(
     style: TrainingRecapHeroStyle,
     state: TrainingRecapHeroState,
     layer: GraphicsLayer,
-    topInset: Dp,
+    contentPadding: PaddingValues,
 ) {
     val captureBackground = AppTokens.colors.background.screen
 
@@ -394,7 +411,7 @@ private fun TrainingCompletedHero(
         training = training,
         style = style,
         state = state,
-        contentPadding = PaddingValues(top = topInset),
+        contentPadding = contentPadding,
     )
 }
 

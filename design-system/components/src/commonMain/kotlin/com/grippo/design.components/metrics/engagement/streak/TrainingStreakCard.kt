@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -34,6 +35,7 @@ import com.grippo.design.components.indicators.LineIndicator
 import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
+import com.grippo.design.components.skeleton.SkeletonBone
 import com.grippo.design.components.skeleton.SkeletonPanel
 import com.grippo.design.components.skeleton.SkeletonPanelStyle
 import com.grippo.design.components.utils.ValueSlot
@@ -232,9 +234,9 @@ private fun TrainingStreakGrowth(
     }
     val nextTrainingLine = value.nextTrainingLine()
 
-    MetricSectionPanel(
+    Column(
         modifier = modifier,
-        style = MetricSectionPanelStyle.Large,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.metrics.section.spacer),
     ) {
         MetricOverviewHeader(title = AppTokens.strings.res(Res.string.metric_overview_streak_title))
 
@@ -349,31 +351,42 @@ public fun TrainingStreakCardSkeleton(
     val headerHeight = maxOf(titleLine, AppTokens.dp.metrics.overview.detailsIcon)
     val indicatorHeight = AppTokens.dp.metrics.charts.indicator.height
 
-    val contentHeight = when (style) {
+    when (style) {
         TrainingStreakCardStyle.Overview -> {
             val countLine = rememberTextHeight(style = AppTokens.typography.h3(), textMeasurer = textMeasurer)
             val headlineHeight = maxOf(AppTokens.dp.metrics.overview.rhythmIcon, headlineLine) + textGap + cadenceLine
             val activeDaysHeight = countLine + textGap + captionLine
-            headerHeight + maxOf(headlineHeight, activeDaysHeight) + indicatorHeight + captionLine + spacer * 3
+
+            SkeletonPanel(
+                modifier = modifier,
+                contentHeight = headerHeight + maxOf(headlineHeight, activeDaysHeight) + indicatorHeight +
+                    captionLine + spacer * 3,
+                style = SkeletonPanelStyle.Large,
+            )
         }
 
         TrainingStreakCardStyle.Detailed -> {
             val summaryLine = rememberTextHeight(style = AppTokens.typography.h3(), textMeasurer = textMeasurer)
             val descriptionLine = rememberTextHeight(style = AppTokens.typography.b14Med(), textMeasurer = textMeasurer)
-            summaryLine + descriptionLine + cadenceLine + spacer * 2
+
+            SkeletonPanel(
+                modifier = modifier,
+                contentHeight = summaryLine + descriptionLine + cadenceLine + spacer * 2,
+                style = SkeletonPanelStyle.Large,
+            )
         }
 
         is TrainingStreakCardStyle.Growth -> {
             val headlineHeight = maxOf(AppTokens.dp.metrics.overview.rhythmIcon, headlineLine + textGap + cadenceLine)
-            headerHeight + headlineHeight + captionLine + textGap + captionLine + spacer * 2
+            val sectionSpacer = AppTokens.dp.metrics.section.spacer
+
+            SkeletonBone(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(headerHeight + headlineHeight + captionLine + textGap + captionLine + sectionSpacer * 2),
+            )
         }
     }
-
-    SkeletonPanel(
-        modifier = modifier,
-        contentHeight = contentHeight,
-        style = SkeletonPanelStyle.Large,
-    )
 }
 
 @AppPreview

@@ -15,6 +15,11 @@
         <item quantity="many">%1$d de %2$d indicadores acima do anterior</item>
         <item quantity="other">%1$d de %2$d indicadores acima do anterior</item>
     </plurals>
+    <plurals name="training_recap_sets">
+        <item quantity="one">%1$d série</item>
+        <item quantity="many">%1$d séries</item>
+        <item quantity="other">%1$d séries</item>
+    </plurals>
     <plurals name="goal_details_analysis_days">
         <item quantity="one">%1$d dia</item>
         <item quantity="many">%1$d dias</item>

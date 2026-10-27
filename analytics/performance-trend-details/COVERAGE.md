@@ -2,7 +2,7 @@
 
 Scope: `:ui-dialog-features:performance-trend-details`; Home opens the selected
 metric and selected training period, and the Completed workout screen opens the
-tapped growth-bar metric and its comparison period (the Home period's kind anchored
+tapped comparison-row metric and its comparison period (the Home period's kind anchored
 at the saved workout's date; for an edited workout it ends at the end of that
 workout's day, so workouts from later days are excluded), through the same
 `DialogConfig.PerformanceTrendDetails`, which also carries the comparison reference:
@@ -19,7 +19,7 @@ the default null screenPresentation. Dialog sessions have no presentation contra
 |---|---|---|---|
 | DialogConfig.PerformanceTrendDetails / sheet | PerformanceTrendDetailsComponent | Retained PerformanceTrendDetailsViewModel | Default null under the live-dialog policy; no independent screen |
 | `HomeRouter.Home` / Dashboard PerformanceMetricCard entry | HomeComponent | Retained HomeViewModel | Existing typed `HomeScreen.Home` hook; full inventory in `analytics/home/COVERAGE.md` |
-| `TrainingRouter.Completed` / PerformanceComparisonCard growth-bar entry | TrainingCompletedComponent | Retained TrainingCompletedViewModel | Existing typed `TrainingScreen.Completed` hook; full inventory in `analytics/training/COVERAGE.md` |
+| `TrainingRouter.Completed` / PerformanceComparisonSection metric-row entry | TrainingCompletedComponent | Retained TrainingCompletedViewModel | Existing typed `TrainingScreen.Completed` hook; full inventory in `analytics/training/COVERAGE.md` |
 
 | Owner / callback | Observation | Eligibility / payload |
 |---|---|---|

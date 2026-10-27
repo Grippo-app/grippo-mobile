@@ -143,6 +143,7 @@ public object LightColor : AppColor {
         override val infoBackground = lerp(background.card, info, 0.10f)
         override val noticeBackground = lerp(background.card, notice, 0.10f)
         override val declineBackground = lerp(background.card, decline, 0.10f)
+        override val neutralBackground = lerp(background.card, AppPalette.NeutralLight.N500, 0.10f)
     }
 
     override val shimmer: AppColor.ShimmerColors = object : AppColor.ShimmerColors {
@@ -363,11 +364,12 @@ public object LightColor : AppColor {
                 override val colors: List<Color> = listOf(AppPalette.NeutralLight.N500)
                 override val track: Color = AppPalette.NeutralLight.N250.copy(alpha = 0.2f)
             }
-
-            override val before = object : AppColor.Charts.IndicatorColors.IndicatorColors {
-                override val colors: List<Color> = listOf(AppPalette.NeutralLight.N400)
-                override val track: Color = muted.track
-            }
+        }
+        override val comparison = object : AppColor.Charts.ComparisonColors {
+            override val track: Color = AppPalette.NeutralLight.N200
+            override val shared: Color = AppPalette.NeutralLight.N400
+            override val lossAlpha: Float = 0.3f
+            override val marker: Color = AppPalette.NeutralLight.N800
         }
     }
 

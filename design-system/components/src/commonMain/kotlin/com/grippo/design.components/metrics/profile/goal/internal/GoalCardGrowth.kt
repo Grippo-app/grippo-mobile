@@ -23,9 +23,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.core.state.metrics.profile.stubGoalProgressList
+import com.grippo.design.components.indicators.ComparisonIndicator
 import com.grippo.design.components.indicators.LineIndicator
-import com.grippo.design.components.metrics.internal.MetricSectionPanel
-import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.metrics.profile.goal.GoalCardStyle
 import com.grippo.design.components.utils.ValueSlot
@@ -66,15 +65,16 @@ internal fun GoalCardGrowth(
         animationSpec = tween(durationMillis = GOAL_GROWTH_DURATION_MS, easing = FastOutSlowInEasing),
         label = GOAL_GROWTH_ALPHA_LABEL,
     )
+    val scoreChange = if (score != null && previousScore != null) score.compareTo(previousScore) else 0
     val scoreColor = when {
-        score == null || previousScore == null || previousScore == score -> AppTokens.colors.text.primary
-        score > previousScore -> AppTokens.colors.semantic.success
-        else -> AppTokens.colors.semantic.decline
+        scoreChange > 0 -> AppTokens.colors.semantic.success
+        scoreChange < 0 -> AppTokens.colors.semantic.decline
+        else -> AppTokens.colors.text.primary
     }
 
-    MetricSectionPanel(
+    Column(
         modifier = modifier,
-        style = MetricSectionPanelStyle.Large,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.metrics.section.spacer),
     ) {
         GoalIdentity(value = value)
 
@@ -102,7 +102,9 @@ internal fun GoalCardGrowth(
                 GoalScoreBar(
                     modifier = Modifier.fillMaxWidth(),
                     animatedScore = animatedScore,
-                    colors = value.statusIndicatorColors(),
+                    previousScore = previousScore,
+                    scoreChange = scoreChange,
+                    statusColors = value.statusIndicatorColors(),
                 )
             }
 
@@ -183,12 +185,30 @@ private fun scoreRuns(text: String, numberStyle: SpanStyle, unitStyle: SpanStyle
 private fun GoalScoreBar(
     modifier: Modifier = Modifier,
     animatedScore: State<Int>,
-    colors: AppColor.Charts.IndicatorColors.IndicatorColors,
+    previousScore: Int?,
+    scoreChange: Int,
+    statusColors: AppColor.Charts.IndicatorColors.IndicatorColors,
 ) {
-    LineIndicator(
+    if (previousScore == null) {
+        LineIndicator(
+            modifier = modifier,
+            progress = animatedScore.value / 100f,
+            colors = statusColors,
+        )
+        return
+    }
+
+    val changeColors = when {
+        scoreChange > 0 -> AppTokens.colors.charts.indicator.success
+        scoreChange < 0 -> AppTokens.colors.charts.indicator.decline
+        else -> AppTokens.colors.charts.indicator.muted
+    }
+
+    ComparisonIndicator(
         modifier = modifier,
-        progress = animatedScore.value / 100f,
-        colors = colors,
+        value = { animatedScore.value / 100f },
+        reference = { previousScore / 100f },
+        colors = changeColors,
     )
 }
 

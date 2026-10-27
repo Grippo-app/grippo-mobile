@@ -154,6 +154,7 @@ public interface AppColor {
         public val infoBackground: Color
         public val noticeBackground: Color
         public val declineBackground: Color
+        public val neutralBackground: Color
     }
 
     public interface OverlayColors {
@@ -297,6 +298,7 @@ public interface AppColor {
         public val tooltip: TooltipColor
         public val ring: RingColor
         public val indicator: IndicatorColors
+        public val comparison: ComparisonColors
 
         public interface RingColor {
             public val success: RingPalette
@@ -319,7 +321,6 @@ public interface AppColor {
             public val error: IndicatorColors
             public val decline: IndicatorColors
             public val muted: IndicatorColors
-            public val before: IndicatorColors
 
             public interface IndicatorColors {
                 public val colors: List<Color>
@@ -327,6 +328,13 @@ public interface AppColor {
                 public val track: Color
                 public val dominant: Color get() = colors.last()
             }
+        }
+
+        public interface ComparisonColors {
+            public val track: Color
+            public val shared: Color
+            public val lossAlpha: Float
+            public val marker: Color
         }
 
         public interface SparklineColors {

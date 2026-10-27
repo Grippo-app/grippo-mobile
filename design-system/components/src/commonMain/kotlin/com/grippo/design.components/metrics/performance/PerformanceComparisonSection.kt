@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Transition
@@ -38,10 +37,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -58,15 +55,14 @@ import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
 import com.grippo.core.state.metrics.performance.stubPerformanceMetricsByType
 import com.grippo.core.state.metrics.performance.stubPerformanceMetricsWithoutReference
 import com.grippo.design.components.divider.ContentDivider
-import com.grippo.design.components.metrics.internal.MetricSectionPanel
-import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
+import com.grippo.design.components.indicators.ComparisonIndicator
 import com.grippo.design.components.metrics.performance.internal.PerformanceTrendChip
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
-import com.grippo.design.components.skeleton.SkeletonPanel
-import com.grippo.design.components.skeleton.SkeletonPanelStyle
+import com.grippo.design.components.skeleton.SkeletonBone
+import com.grippo.design.components.skeleton.SkeletonText
 import com.grippo.design.components.utils.ValueSlot
 import com.grippo.design.components.utils.buildValueSlotString
 import com.grippo.design.components.utils.rememberTextHeight
@@ -92,19 +88,17 @@ private val comparisonDisplayOrder: ImmutableList<PerformanceMetricTypeState> = 
     PerformanceMetricTypeState.Density,
 )
 
-private const val GROWTH_REVEAL_DURATION_MS = 900
-private const val GROWTH_REVEAL_STAGGER_MS = 120
-private const val GROWTH_SWITCH_DURATION_MS = 250
-private const val GROWTH_REVEAL_LABEL = "PerformanceGrowthReveal"
-private const val GROWTH_VALUE_LABEL = "PerformanceGrowthValue"
-private const val GROWTH_AFTER_LABEL = "PerformanceGrowthAfter"
-private const val GROWTH_FILL_LABEL = "PerformanceGrowthFill"
-private const val GROWTH_TRACK_LABEL = "PerformanceGrowthTrack"
-private const val GROWTH_BEFORE_LABEL = "PerformanceGrowthBefore"
-private const val GROWTH_CROSSFADE_LABEL = "PerformanceGrowthCrossfade"
+private const val COMPARISON_REVEAL_DURATION_MS = 900
+private const val COMPARISON_REVEAL_STAGGER_MS = 120
+private const val COMPARISON_SWITCH_DURATION_MS = 250
+private const val COMPARISON_REVEAL_LABEL = "PerformanceComparisonReveal"
+private const val COMPARISON_VALUE_LABEL = "PerformanceComparisonValue"
+private const val COMPARISON_AFTER_LABEL = "PerformanceComparisonAfter"
+private const val COMPARISON_BEFORE_LABEL = "PerformanceComparisonBefore"
+private const val COMPARISON_CROSSFADE_LABEL = "PerformanceComparisonCrossfade"
 
 @Composable
-public fun PerformanceComparisonCard(
+public fun PerformanceComparisonSection(
     modifier: Modifier = Modifier,
     metrics: ImmutableList<PerformanceMetricState>,
     reference: PerformanceReferenceState,
@@ -123,19 +117,20 @@ public fun PerformanceComparisonCard(
 
     var revealed by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) { revealed = true }
-    val reveal = updateTransition(targetState = revealed, label = GROWTH_REVEAL_LABEL)
+    val reveal = updateTransition(targetState = revealed, label = COMPARISON_REVEAL_LABEL)
 
-    MetricSectionPanel(
+    Column(
         modifier = modifier,
-        style = MetricSectionPanelStyle.Large,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.metrics.section.spacer),
     ) {
         Text(
+            modifier = Modifier.semantics { heading() },
             text = if (hasValues && !hasReference) {
                 AnnotatedString(AppTokens.strings.res(Res.string.performance_comparison_first_title))
             } else {
                 comparisonTitle()
             },
-            style = AppTokens.typography.h5(),
+            style = AppTokens.typography.h4(),
             color = AppTokens.colors.text.primary,
         )
 
@@ -145,7 +140,7 @@ public fun PerformanceComparisonCard(
                 style = AppTokens.typography.b13Med(),
                 color = AppTokens.colors.text.secondary,
             )
-            return@MetricSectionPanel
+            return@Column
         }
 
         if (hasReference) {
@@ -163,16 +158,21 @@ public fun PerformanceComparisonCard(
             orderedMetrics.forEachIndexed { index, metric ->
                 key(metric.type) {
                     if (index > 0) {
-                        ContentDivider()
+                        ContentDivider(
+                            modifier = Modifier.padding(
+                                start = AppTokens.dp.metrics.performance.trend.icon +
+                                    AppTokens.dp.contentPadding.subContent,
+                            ),
+                        )
                     }
 
-                    PerformanceGrowthBlock(
+                    PerformanceComparisonRow(
                         modifier = Modifier.fillMaxWidth(),
                         metric = metric,
                         reference = reference,
                         nameLineHeight = nameLineHeight,
                         reveal = reveal,
-                        entranceDelayMillis = index * GROWTH_REVEAL_STAGGER_MS,
+                        entranceDelayMillis = index * COMPARISON_REVEAL_STAGGER_MS,
                         onClick = { onMetricClick(metric.type) },
                     )
                 }
@@ -196,7 +196,7 @@ private fun comparisonTitle(): AnnotatedString {
 }
 
 @Composable
-private fun PerformanceGrowthBlock(
+private fun PerformanceComparisonRow(
     modifier: Modifier = Modifier,
     metric: PerformanceMetricState,
     reference: PerformanceReferenceState,
@@ -212,8 +212,7 @@ private fun PerformanceGrowthBlock(
     val statusChip = (metric.status to reference).takeIf { showsComparison }
     val delta = metric.currentVsAveragePercentage?.takeIf { showsComparison }
 
-    val mood = metric.indicatorColors()
-    val muted = AppTokens.colors.charts.indicator.muted
+    val indicatorColors = metric.indicatorColors()
 
     val startValue = if (current == null) 0f else average ?: 0f
     val endValue = current ?: 0f
@@ -225,24 +224,16 @@ private fun PerformanceGrowthBlock(
     // The settled Transition keeps its false → true segment; only currentState != targetState means entering.
     val isEntering = reveal.currentState != reveal.targetState
     val animatedValue = reveal.animateFloat(
-        transitionSpec = { growthSpec(isEntering = isEntering, entranceDelayMillis = entranceDelayMillis) },
-        label = GROWTH_VALUE_LABEL,
+        transitionSpec = { comparisonSpec(isEntering = isEntering, entranceDelayMillis = entranceDelayMillis) },
+        label = COMPARISON_VALUE_LABEL,
     ) { isRevealed -> if (isRevealed) endValue else startValue }
     val animatedAfterFraction = reveal.animateFloat(
-        transitionSpec = { growthSpec(isEntering = isEntering, entranceDelayMillis = entranceDelayMillis) },
-        label = GROWTH_AFTER_LABEL,
+        transitionSpec = { comparisonSpec(isEntering = isEntering, entranceDelayMillis = entranceDelayMillis) },
+        label = COMPARISON_AFTER_LABEL,
     ) { isRevealed -> if (isRevealed) afterFraction else startFraction }
-    val fillColor = reveal.animateColor(
-        transitionSpec = { growthSpec(isEntering = isEntering, entranceDelayMillis = entranceDelayMillis) },
-        label = GROWTH_FILL_LABEL,
-    ) { isRevealed -> if (isRevealed) mood.dominant else muted.dominant }
-    val trackColor = reveal.animateColor(
-        transitionSpec = { growthSpec(isEntering = isEntering, entranceDelayMillis = entranceDelayMillis) },
-        label = GROWTH_TRACK_LABEL,
-    ) { isRevealed -> if (isRevealed) mood.track else muted.track }
     val animatedBeforeFraction = reveal.animateFloat(
-        transitionSpec = { growthSpec(isEntering = isEntering, entranceDelayMillis = entranceDelayMillis) },
-        label = GROWTH_BEFORE_LABEL,
+        transitionSpec = { comparisonSpec(isEntering = isEntering, entranceDelayMillis = entranceDelayMillis) },
+        label = COMPARISON_BEFORE_LABEL,
     ) { beforeFraction }
 
     Column(
@@ -275,8 +266,8 @@ private fun PerformanceGrowthBlock(
                     style = AppTokens.typography.b13Semi(),
                     color = AppTokens.colors.text.primary,
                 )
-                GrowthOptionalPart(value = metric.takeIf { average != null }) { shown ->
-                    GrowthCrossfade(
+                ComparisonOptionalPart(value = metric.takeIf { average != null }) { shown ->
+                    ComparisonCrossfade(
                         targetState = AppTokens.strings.res(
                             Res.string.performance_growth_before,
                             shown.averageDisplay(),
@@ -289,8 +280,8 @@ private fun PerformanceGrowthBlock(
                         )
                     }
                 }
-                GrowthOptionalPart(value = statusChip) { shownChip ->
-                    GrowthCrossfade(targetState = shownChip) { (status, statusReference) ->
+                ComparisonOptionalPart(value = statusChip) { shownChip ->
+                    ComparisonCrossfade(targetState = shownChip) { (status, statusReference) ->
                         PerformanceTrendChip(status = status, reference = statusReference)
                     }
                 }
@@ -298,9 +289,9 @@ private fun PerformanceGrowthBlock(
 
             if (!metric.isEmpty()) {
                 Column(horizontalAlignment = Alignment.End) {
-                    GrowthValue(metric = metric, value = animatedValue)
-                    GrowthOptionalPart(value = delta) { shownDelta ->
-                        GrowthCrossfade(
+                    ComparisonValue(metric = metric, value = animatedValue)
+                    ComparisonOptionalPart(value = delta) { shownDelta ->
+                        ComparisonCrossfade(
                             targetState = PercentageFormatState.shortDelta(shownDelta),
                             contentAlignment = Alignment.TopEnd,
                         ) { deltaText ->
@@ -323,49 +314,48 @@ private fun PerformanceGrowthBlock(
             )
         }
 
-        GrowthOptionalPart(
+        ComparisonOptionalPart(
             value = animatedBeforeFraction.takeIf { average != null && !metric.isEmpty() },
             padding = PaddingValues(top = AppTokens.dp.contentPadding.subContent),
         ) { shownBeforeFraction ->
-            GrowthBars(
+            ComparisonIndicator(
                 modifier = Modifier.fillMaxWidth(),
-                afterFraction = animatedAfterFraction,
-                fillColor = fillColor,
-                trackColor = trackColor,
-                beforeFraction = shownBeforeFraction,
+                value = { animatedAfterFraction.value },
+                reference = { shownBeforeFraction.value },
+                colors = indicatorColors,
             )
         }
     }
 }
 
-private fun <T> growthSpec(isEntering: Boolean, entranceDelayMillis: Int): FiniteAnimationSpec<T> =
+private fun <T> comparisonSpec(isEntering: Boolean, entranceDelayMillis: Int): FiniteAnimationSpec<T> =
     if (isEntering) {
         tween(
-            durationMillis = GROWTH_REVEAL_DURATION_MS,
+            durationMillis = COMPARISON_REVEAL_DURATION_MS,
             delayMillis = entranceDelayMillis,
             easing = FastOutSlowInEasing,
         )
     } else {
-        growthSwitchTween()
+        comparisonSwitchTween()
     }
 
-private fun <T> growthSwitchTween(): FiniteAnimationSpec<T> = tween(
-    durationMillis = GROWTH_SWITCH_DURATION_MS,
+private fun <T> comparisonSwitchTween(): FiniteAnimationSpec<T> = tween(
+    durationMillis = COMPARISON_SWITCH_DURATION_MS,
     easing = FastOutSlowInEasing,
 )
 
-private val growthPartEnter: EnterTransition = expandVertically(
-    animationSpec = growthSwitchTween(),
+private val comparisonPartEnter: EnterTransition = expandVertically(
+    animationSpec = comparisonSwitchTween(),
     expandFrom = Alignment.Top,
-) + fadeIn(animationSpec = growthSwitchTween())
+) + fadeIn(animationSpec = comparisonSwitchTween())
 
-private val growthPartExit: ExitTransition = shrinkVertically(
-    animationSpec = growthSwitchTween(),
+private val comparisonPartExit: ExitTransition = shrinkVertically(
+    animationSpec = comparisonSwitchTween(),
     shrinkTowards = Alignment.Top,
-) + fadeOut(animationSpec = growthSwitchTween())
+) + fadeOut(animationSpec = comparisonSwitchTween())
 
 @Composable
-private fun <T : Any> GrowthOptionalPart(
+private fun <T : Any> ComparisonOptionalPart(
     value: T?,
     padding: PaddingValues = PaddingValues(top = AppTokens.dp.contentPadding.text),
     content: @Composable (T) -> Unit,
@@ -377,8 +367,8 @@ private fun <T : Any> GrowthOptionalPart(
 
     AnimatedVisibility(
         visible = value != null,
-        enter = growthPartEnter,
-        exit = growthPartExit,
+        enter = comparisonPartEnter,
+        exit = comparisonPartExit,
     ) {
         shown?.let { part ->
             Box(modifier = Modifier.padding(padding)) {
@@ -389,7 +379,7 @@ private fun <T : Any> GrowthOptionalPart(
 }
 
 @Composable
-private fun <T> GrowthCrossfade(
+private fun <T> ComparisonCrossfade(
     targetState: T,
     contentAlignment: Alignment = Alignment.TopStart,
     content: @Composable (T) -> Unit,
@@ -397,18 +387,18 @@ private fun <T> GrowthCrossfade(
     AnimatedContent(
         targetState = targetState,
         transitionSpec = {
-            (fadeIn(animationSpec = growthSwitchTween()) togetherWith fadeOut(animationSpec = growthSwitchTween()))
+            (fadeIn(animationSpec = comparisonSwitchTween()) togetherWith fadeOut(animationSpec = comparisonSwitchTween()))
                 .using(sizeTransform = null)
         },
         contentAlignment = contentAlignment,
-        label = GROWTH_CROSSFADE_LABEL,
+        label = COMPARISON_CROSSFADE_LABEL,
     ) { state ->
         content(state)
     }
 }
 
 @Composable
-private fun GrowthValue(
+private fun ComparisonValue(
     metric: PerformanceMetricState,
     value: State<Float>,
 ) {
@@ -421,62 +411,8 @@ private fun GrowthValue(
 }
 
 @Composable
-private fun GrowthBars(
-    modifier: Modifier = Modifier,
-    afterFraction: State<Float>,
-    fillColor: State<Color>,
-    trackColor: State<Color>,
-    beforeFraction: State<Float>,
-) {
-    val before = AppTokens.colors.charts.indicator.before
-
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-    ) {
-        GrowthBar(
-            fraction = { beforeFraction.value },
-            fill = { before.dominant },
-            track = { before.track },
-        )
-        GrowthBar(
-            fraction = { afterFraction.value },
-            fill = { fillColor.value },
-            track = { trackColor.value },
-        )
-    }
-}
-
-@Composable
-private fun GrowthBar(
-    fraction: () -> Float,
-    fill: () -> Color,
-    track: () -> Color,
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(AppTokens.dp.metrics.charts.indicator.height)
-            .drawBehind {
-                val corner = CornerRadius(size.height / 2f, size.height / 2f)
-                val fillWidth = size.width * fraction().coerceIn(0f, 1f)
-
-                drawRoundRect(color = track(), cornerRadius = corner)
-                if (fillWidth > 0f) {
-                    drawRoundRect(
-                        color = fill(),
-                        size = Size(maxOf(fillWidth, size.height).coerceAtMost(size.width), size.height),
-                        cornerRadius = corner,
-                    )
-                }
-            },
-    )
-}
-
-@Composable
-public fun PerformanceComparisonCardSkeleton(modifier: Modifier = Modifier) {
+public fun PerformanceComparisonSectionSkeleton(modifier: Modifier = Modifier) {
     val textMeasurer = rememberTextMeasurer()
-    val titleLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
     val nameLine = rememberTextHeight(style = AppTokens.typography.b13Semi(), textMeasurer = textMeasurer)
     val beforeLine = rememberTextHeight(style = AppTokens.typography.b11Med(), textMeasurer = textMeasurer)
     val chipLine = rememberTextHeight(style = AppTokens.typography.b11Semi(), textMeasurer = textMeasurer)
@@ -486,29 +422,43 @@ public fun PerformanceComparisonCardSkeleton(modifier: Modifier = Modifier) {
     val textGap = AppTokens.dp.contentPadding.text
     val labelColumnHeight = nameLine + textGap + beforeLine
     val chipHeight = chipLine + AppTokens.dp.metrics.status.verticalPadding * 2
-    val barsHeight = AppTokens.dp.metrics.charts.indicator.height * 2 + textGap
+    val indicatorHeight = maxOf(
+        AppTokens.dp.metrics.charts.comparison.height,
+        AppTokens.dp.metrics.charts.comparison.marker.height,
+    )
     val blockFrameHeight = AppTokens.dp.contentPadding.subContent * 3
     val blockHeight = maxOf(
         labelColumnHeight + textGap + chipHeight,
         valueLine + textGap + deltaLine,
         AppTokens.dp.metrics.overview.detailsIcon,
-    ) + barsHeight + blockFrameHeight
-    val panelSpacer = AppTokens.dp.metrics.panel.large.spacer
+    ) + indicatorHeight + blockFrameHeight
+    val spacer = AppTokens.dp.metrics.section.spacer
+    val contentHeight = AppTokens.dp.segment.outline.height + spacer +
+        blockHeight * comparisonDisplayOrder.size +
+        AppTokens.dp.divider.thickness * (comparisonDisplayOrder.size - 1)
 
-    SkeletonPanel(
+    Column(
         modifier = modifier,
-        contentHeight = titleLine + panelSpacer + AppTokens.dp.segment.outline.height + panelSpacer +
-            blockHeight * comparisonDisplayOrder.size +
-            AppTokens.dp.divider.thickness * (comparisonDisplayOrder.size - 1),
-        style = SkeletonPanelStyle.Large,
-    )
+        verticalArrangement = Arrangement.spacedBy(spacer),
+    ) {
+        SkeletonText(
+            modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.medium),
+            style = AppTokens.typography.h4(),
+            textMeasurer = textMeasurer,
+        )
+        SkeletonBone(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(contentHeight),
+        )
+    }
 }
 
 @AppPreview
 @Composable
-private fun PerformanceComparisonCardSkeletonPreview() {
+private fun PerformanceComparisonSectionSkeletonPreview() {
     PreviewContainer {
-        PerformanceComparisonCardSkeleton(modifier = Modifier.fillMaxWidth())
+        PerformanceComparisonSectionSkeleton(modifier = Modifier.fillMaxWidth())
     }
 }
 
@@ -553,9 +503,9 @@ private fun previewPreviousMetrics(): ImmutableList<PerformanceMetricState> =
 
 @AppPreview
 @Composable
-private fun PerformanceComparisonCardPreview() {
+private fun PerformanceComparisonSectionPreview() {
     PreviewContainer {
-        PerformanceComparisonCard(
+        PerformanceComparisonSection(
             modifier = Modifier.fillMaxWidth(),
             metrics = previewMixedMetrics(),
             reference = PerformanceReferenceState.Average,
@@ -567,9 +517,9 @@ private fun PerformanceComparisonCardPreview() {
 
 @AppPreview
 @Composable
-private fun PerformanceComparisonCardPreviousReferencePreview() {
+private fun PerformanceComparisonSectionPreviousReferencePreview() {
     PreviewContainer {
-        PerformanceComparisonCard(
+        PerformanceComparisonSection(
             modifier = Modifier.fillMaxWidth(),
             metrics = previewPreviousMetrics(),
             reference = PerformanceReferenceState.Previous,
@@ -620,9 +570,9 @@ private fun previewFarBelowBestMetrics(): ImmutableList<PerformanceMetricState> 
 
 @AppPreview
 @Composable
-private fun PerformanceComparisonCardFarBelowBestPreview() {
+private fun PerformanceComparisonSectionFarBelowBestPreview() {
     PreviewContainer {
-        PerformanceComparisonCard(
+        PerformanceComparisonSection(
             modifier = Modifier.fillMaxWidth(),
             metrics = previewFarBelowBestMetrics(),
             reference = PerformanceReferenceState.Average,
@@ -663,9 +613,9 @@ private fun previewZeroReferenceMetrics(): ImmutableList<PerformanceMetricState>
 
 @AppPreview
 @Composable
-private fun PerformanceComparisonCardZeroReferencePreview() {
+private fun PerformanceComparisonSectionZeroReferencePreview() {
     PreviewContainer {
-        PerformanceComparisonCard(
+        PerformanceComparisonSection(
             modifier = Modifier.fillMaxWidth(),
             metrics = previewZeroReferenceMetrics(),
             reference = PerformanceReferenceState.Average,
@@ -677,9 +627,9 @@ private fun PerformanceComparisonCardZeroReferencePreview() {
 
 @AppPreview
 @Composable
-private fun PerformanceComparisonCardFirstWorkoutPreview() {
+private fun PerformanceComparisonSectionFirstWorkoutPreview() {
     PreviewContainer {
-        PerformanceComparisonCard(
+        PerformanceComparisonSection(
             modifier = Modifier.fillMaxWidth(),
             metrics = stubPerformanceMetricsWithoutReference(),
             reference = PerformanceReferenceState.Average,
@@ -691,9 +641,9 @@ private fun PerformanceComparisonCardFirstWorkoutPreview() {
 
 @AppPreview
 @Composable
-private fun PerformanceComparisonCardEmptyPreview() {
+private fun PerformanceComparisonSectionEmptyPreview() {
     PreviewContainer {
-        PerformanceComparisonCard(
+        PerformanceComparisonSection(
             modifier = Modifier.fillMaxWidth(),
             metrics = stubEmptyPerformanceMetrics(),
             reference = PerformanceReferenceState.Average,
@@ -705,9 +655,9 @@ private fun PerformanceComparisonCardEmptyPreview() {
 
 @AppPreview
 @Composable
-private fun PerformanceComparisonCardEmptyMetricPreview() {
+private fun PerformanceComparisonSectionEmptyMetricPreview() {
     PreviewContainer {
-        PerformanceComparisonCard(
+        PerformanceComparisonSection(
             modifier = Modifier.fillMaxWidth(),
             metrics = stubPerformanceMetricsByType().map { metric ->
                 if (metric is PerformanceMetricState.Density) {
@@ -729,13 +679,13 @@ private fun PerformanceComparisonCardEmptyMetricPreview() {
 
 @AppPreview
 @Composable
-private fun PerformanceComparisonCardLargeAndFractionalPreview() {
+private fun PerformanceComparisonSectionLargeAndFractionalPreview() {
     PreviewContainer {
         val stubs = stubPerformanceMetrics()
         val volume = stubs.filterIsInstance<PerformanceMetricState.Volume>().first()
         val repetitions = stubs.filterIsInstance<PerformanceMetricState.Repetitions>().first()
         val emptyDensity = stubEmptyPerformanceMetrics().filterIsInstance<PerformanceMetricState.Density>().first()
-        PerformanceComparisonCard(
+        PerformanceComparisonSection(
             modifier = Modifier.fillMaxWidth(),
             metrics = persistentListOf(
                 volume.copy(

@@ -17,9 +17,9 @@ import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLo
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardStyle
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardSkeleton
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardStyle
-import com.grippo.design.components.metrics.performance.PerformanceComparisonCardSkeleton
-import com.grippo.design.components.metrics.volume.WeeklyVolumeCardSkeleton
-import com.grippo.design.components.training.TrainingRecapHeroSkeleton
+import com.grippo.design.components.metrics.performance.PerformanceComparisonSectionSkeleton
+import com.grippo.design.components.metrics.volume.WeeklyVolumeSectionSkeleton
+import com.grippo.design.components.skeleton.SkeletonText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -32,7 +32,7 @@ internal fun TrainingCompletedSkeleton(
     contentPadding: PaddingValues,
 ) {
     val loadingDescription = AppTokens.strings.res(Res.string.loading)
-    val cardModifier = Modifier
+    val sectionModifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
 
@@ -41,42 +41,46 @@ internal fun TrainingCompletedSkeleton(
             contentDescription = loadingDescription
             progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
         },
-        // The hero runs up under the top overlay and clears it on its own.
-        contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
+        contentPadding = PaddingValues(
+            top = AppTokens.dp.contentPadding.block,
+            bottom = contentPadding.calculateBottomPadding(),
+        ),
     ) {
-        item(key = "completion_hero_skeleton") {
-            TrainingRecapHeroSkeleton(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(top = contentPadding.calculateTopPadding()),
-            )
-
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
+        item(key = "performance_comparison_skeleton") {
+            PerformanceComparisonSectionSkeleton(modifier = sectionModifier)
         }
 
-        item(key = "performance_comparison_skeleton") {
-            PerformanceComparisonCardSkeleton(modifier = cardModifier)
+        item(key = "progress_heading_skeleton") {
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
+
+            SkeletonText(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .fillMaxWidth(AppTokens.dp.skeleton.line.short),
+                style = AppTokens.typography.h4(),
+            )
+
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
         }
 
         item(key = "weekly_volume_skeleton") {
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
-
-            WeeklyVolumeCardSkeleton(modifier = cardModifier)
+            WeeklyVolumeSectionSkeleton(modifier = sectionModifier)
         }
 
         item(key = "training_streak_skeleton") {
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+            ProgressDivider(modifier = sectionModifier)
 
             TrainingStreakCardSkeleton(
-                modifier = cardModifier,
+                modifier = sectionModifier,
                 style = TrainingStreakCardStyle.Growth(previous = null),
             )
         }
 
         item(key = "muscle_load_skeleton") {
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
 
             MuscleLoadingCardSkeleton(
-                modifier = cardModifier,
+                modifier = sectionModifier,
                 style = MuscleLoadingCardStyle.Session,
             )
         }

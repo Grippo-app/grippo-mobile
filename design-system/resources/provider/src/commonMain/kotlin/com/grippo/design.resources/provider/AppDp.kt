@@ -219,6 +219,7 @@ public data object AppDp {
             val ring: Ring = Ring
             val sparkline: Sparkline = Sparkline
             val indicator: Indicator = Indicator
+            val comparison: Comparison = Comparison
 
             public data object Axis {
                 val strokeWidth: Dp = 1.dp
@@ -291,9 +292,20 @@ public data object AppDp {
                 val height: Dp = 8.dp
                 val labelSpacing: Dp = 6.dp
             }
+
+            public data object Comparison {
+                val height: Dp = Indicator.height
+                val marker: Marker = Marker
+
+                public data object Marker {
+                    val width: Dp = 2.dp
+                    val height: Dp = 16.dp
+                }
+            }
         }
 
         val panel: Panel = Panel
+        val section: Section = Section
         val status: Status = Status
         val overview: Overview = Overview
         val performance: Performance = Performance
@@ -324,6 +336,10 @@ public data object AppDp {
                 val verticalPadding: Dp = padding.large
                 val spacer: Dp = padding.medium
             }
+        }
+
+        public data object Section {
+            val spacer: Dp = padding.medium
         }
 
         public data object Overview {
@@ -484,9 +500,17 @@ public data object AppDp {
 
         public data object Recap {
             public val backdrop: Backdrop = Backdrop
+            public val collapsed: Collapsed = Collapsed
 
             public data object Backdrop {
                 public val rise: Dp = padding.medium
+            }
+
+            public data object Collapsed {
+                public val backdrop: Dp = 48.dp
+                public val verticalPadding: Dp = padding.medium
+                public val radius: Dp = AppDp.radius.xxLarge
+                public val rise: Dp = padding.small
             }
         }
     }

@@ -45,7 +45,7 @@ public enum class PerformanceTrendStatusState {
     @Composable
     public fun backgroundColor(): Color = when (this) {
         Record, Improved -> AppTokens.colors.semantic.successBackground
-        Stable, Empty -> AppTokens.colors.background.screen
+        Stable, Empty -> AppTokens.colors.semantic.neutralBackground
         Declined -> AppTokens.colors.semantic.declineBackground
     }
 }

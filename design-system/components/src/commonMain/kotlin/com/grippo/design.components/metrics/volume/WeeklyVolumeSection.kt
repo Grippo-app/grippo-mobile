@@ -1,11 +1,20 @@
 package com.grippo.design.components.metrics.volume
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
@@ -15,11 +24,8 @@ import androidx.compose.ui.text.withStyle
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.volume.WeeklyVolumeState
 import com.grippo.core.state.metrics.volume.stubWeeklyVolume
-import com.grippo.design.components.indicators.LineIndicator
-import com.grippo.design.components.metrics.internal.MetricSectionPanel
-import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
-import com.grippo.design.components.skeleton.SkeletonPanel
-import com.grippo.design.components.skeleton.SkeletonPanelStyle
+import com.grippo.design.components.indicators.ComparisonIndicator
+import com.grippo.design.components.skeleton.SkeletonBone
 import com.grippo.design.components.utils.ValueSlot
 import com.grippo.design.components.utils.buildValueSlotString
 import com.grippo.design.components.utils.rememberTextHeight
@@ -32,18 +38,33 @@ import com.grippo.design.resources.provider.weekly_volume_progress
 import com.grippo.design.resources.provider.weekly_volume_title
 import com.grippo.design.resources.provider.weekly_volume_trainings
 
+private const val WEEKLY_VOLUME_REVEAL_DURATION_MS = 900
+private const val WEEKLY_VOLUME_REVEAL_LABEL = "WeeklyVolumeReveal"
+
 @Composable
-public fun WeeklyVolumeCard(
+public fun WeeklyVolumeSection(
     modifier: Modifier = Modifier,
     value: WeeklyVolumeState,
 ) {
     val typical = value.typicalVolume?.value
+    val current = value.currentVolume.value ?: 0f
     val progress = value.progress()
     val currentText = VolumeFormatState.shortTotal(value.currentVolume.value)
+    val scale = maxOf(current, typical ?: 0f)
+    val currentFraction = if (scale > 0f) current / scale else 0f
+    val typicalFraction = if (typical != null && scale > 0f) typical / scale else 0f
 
-    MetricSectionPanel(
+    var revealed by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) { revealed = true }
+    val animatedCurrentFraction = animateFloatAsState(
+        targetValue = if (revealed) currentFraction else typicalFraction,
+        animationSpec = tween(durationMillis = WEEKLY_VOLUME_REVEAL_DURATION_MS, easing = FastOutSlowInEasing),
+        label = WEEKLY_VOLUME_REVEAL_LABEL,
+    )
+
+    Column(
         modifier = modifier,
-        style = MetricSectionPanelStyle.Large,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.metrics.section.spacer),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -89,9 +110,10 @@ public fun WeeklyVolumeCard(
         }
 
         if (progress != null) {
-            LineIndicator(
+            ComparisonIndicator(
                 modifier = Modifier.fillMaxWidth(),
-                progress = progress,
+                value = { animatedCurrentFraction.value },
+                reference = { typicalFraction },
                 colors = if (progress >= 1f) {
                     AppTokens.colors.charts.indicator.success
                 } else {
@@ -121,34 +143,37 @@ private fun weeklyProgressText(current: String, typical: String): AnnotatedStrin
 }
 
 @Composable
-public fun WeeklyVolumeCardSkeleton(modifier: Modifier = Modifier) {
+public fun WeeklyVolumeSectionSkeleton(modifier: Modifier = Modifier) {
     val textMeasurer = rememberTextMeasurer()
     val titleLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
     val captionLine = rememberTextHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
     val sentenceLine = rememberTextHeight(style = AppTokens.typography.h3(), textMeasurer = textMeasurer)
-    val spacer = AppTokens.dp.metrics.panel.large.spacer
+    val indicatorHeight = maxOf(
+        AppTokens.dp.metrics.charts.comparison.height,
+        AppTokens.dp.metrics.charts.comparison.marker.height,
+    )
+    val spacer = AppTokens.dp.metrics.section.spacer
 
-    SkeletonPanel(
-        modifier = modifier,
-        contentHeight = maxOf(titleLine, captionLine) + sentenceLine +
-            AppTokens.dp.metrics.charts.indicator.height + captionLine + spacer * 3,
-        style = SkeletonPanelStyle.Large,
+    SkeletonBone(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(maxOf(titleLine, captionLine) + sentenceLine + indicatorHeight + captionLine + spacer * 3),
     )
 }
 
 @AppPreview
 @Composable
-private fun WeeklyVolumeCardSkeletonPreview() {
+private fun WeeklyVolumeSectionSkeletonPreview() {
     PreviewContainer {
-        WeeklyVolumeCardSkeleton(modifier = Modifier.fillMaxWidth())
+        WeeklyVolumeSectionSkeleton(modifier = Modifier.fillMaxWidth())
     }
 }
 
 @AppPreview
 @Composable
-private fun WeeklyVolumeCardBelowTypicalPreview() {
+private fun WeeklyVolumeSectionBelowTypicalPreview() {
     PreviewContainer {
-        WeeklyVolumeCard(
+        WeeklyVolumeSection(
             modifier = Modifier.fillMaxWidth(),
             value = stubWeeklyVolume(),
         )
@@ -157,9 +182,9 @@ private fun WeeklyVolumeCardBelowTypicalPreview() {
 
 @AppPreview
 @Composable
-private fun WeeklyVolumeCardAboveTypicalPreview() {
+private fun WeeklyVolumeSectionAboveTypicalPreview() {
     PreviewContainer {
-        WeeklyVolumeCard(
+        WeeklyVolumeSection(
             modifier = Modifier.fillMaxWidth(),
             value = stubWeeklyVolume().copy(
                 currentVolume = VolumeFormatState.ofTotal(11_250f),
@@ -171,9 +196,9 @@ private fun WeeklyVolumeCardAboveTypicalPreview() {
 
 @AppPreview
 @Composable
-private fun WeeklyVolumeCardNoTypicalPreview() {
+private fun WeeklyVolumeSectionNoTypicalPreview() {
     PreviewContainer {
-        WeeklyVolumeCard(
+        WeeklyVolumeSection(
             modifier = Modifier.fillMaxWidth(),
             value = stubWeeklyVolume().copy(
                 currentVolume = VolumeFormatState.ofTotal(3_120f),
@@ -186,9 +211,9 @@ private fun WeeklyVolumeCardNoTypicalPreview() {
 
 @AppPreview
 @Composable
-private fun WeeklyVolumeCardZeroTypicalPreview() {
+private fun WeeklyVolumeSectionZeroTypicalPreview() {
     PreviewContainer {
-        WeeklyVolumeCard(
+        WeeklyVolumeSection(
             modifier = Modifier.fillMaxWidth(),
             value = stubWeeklyVolume().copy(
                 currentVolume = VolumeFormatState.ofTotal(0f),
@@ -201,9 +226,9 @@ private fun WeeklyVolumeCardZeroTypicalPreview() {
 
 @AppPreview
 @Composable
-private fun WeeklyVolumeCardZeroPreview() {
+private fun WeeklyVolumeSectionZeroPreview() {
     PreviewContainer {
-        WeeklyVolumeCard(
+        WeeklyVolumeSection(
             modifier = Modifier.fillMaxWidth(),
             value = stubWeeklyVolume().copy(
                 currentVolume = VolumeFormatState.ofTotal(0f),

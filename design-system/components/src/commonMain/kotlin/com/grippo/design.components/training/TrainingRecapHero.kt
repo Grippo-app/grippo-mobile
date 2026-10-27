@@ -4,42 +4,69 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
@@ -61,10 +88,20 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.joined_pair
 import com.grippo.design.resources.provider.listed_pair
 import com.grippo.design.resources.provider.sets
+import com.grippo.design.resources.provider.show_more
+import com.grippo.design.resources.provider.training_recap_sets
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
@@ -73,6 +110,14 @@ private const val RECAP_BACKDROP_REVEAL_MS = 900
 private const val RECAP_BACKDROP_SWITCH_MS = 250
 private const val RECAP_BACKDROP_REVEAL_LABEL = "RecapBackdropReveal"
 private const val RECAP_BACKDROP_SWITCH_LABEL = "RecapBackdropSwitch"
+
+private const val RECAP_COLLAPSE_PARALLAX = 0.5f
+private const val RECAP_COLLAPSE_TITLE_SCALE = 0.86f
+private const val RECAP_COLLAPSE_FACTS_FADE_END = 0.35f
+private const val RECAP_COLLAPSE_CROSSFADE_START = 0.4f
+private const val RECAP_COLLAPSE_CROSSFADE_END = 0.6f
+private const val RECAP_COLLAPSE_SEMANTICS_SWITCH = 0.5f
+private const val RECAP_MAX_HEIGHT_SHARE = 0.5f
 
 @Immutable
 public sealed interface TrainingRecapHeroStyle {
@@ -87,8 +132,13 @@ public sealed interface TrainingRecapHeroStyle {
     ) : TrainingRecapHeroStyle
 }
 
+private class CollapseInterruptedException : CancellationException()
+
 @Stable
-public class TrainingRecapHeroState internal constructor(revealed: Boolean) {
+public class TrainingRecapHeroState internal constructor(
+    revealed: Boolean,
+    initialCollapseOffset: Float,
+) {
     internal val backdropReveal: Animatable<Float, AnimationVector1D> = Animatable(
         initialValue = if (revealed) 1f else 0f,
         typeConverter = Float.VectorConverter,
@@ -96,6 +146,53 @@ public class TrainingRecapHeroState internal constructor(revealed: Boolean) {
     )
     internal var backdropGeneration: Int by mutableIntStateOf(0)
         private set
+
+    internal var collapseOffset: Float by mutableFloatStateOf(initialCollapseOffset)
+        private set
+    // Written by the measure pass: scrolling and the semantics switch need the laid-out bounds.
+    internal var collapseFloor: Float by mutableFloatStateOf(0f)
+    internal var collapseRange: Float by mutableFloatStateOf(0f)
+    private var collapseGeneration: Int = 0
+    internal val collapseFraction: Float
+        get() = if (collapseRange > 0f) {
+            (collapseOffset.coerceIn(collapseFloor, collapseRange) / collapseRange).coerceIn(0f, 1f)
+        } else {
+            0f
+        }
+
+    public val nestedScrollConnection: NestedScrollConnection = object : NestedScrollConnection {
+        override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+            if (available.y >= 0f) return Offset.Zero
+            return Offset(x = 0f, y = -collapseBy(-available.y))
+        }
+
+        override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+            if (available.y <= 0f) return Offset.Zero
+            return Offset(x = 0f, y = -collapseBy(-available.y))
+        }
+
+        override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+            settleCollapse()
+            return Velocity.Zero
+        }
+    }
+
+    public suspend fun whileExpanded(block: suspend () -> Unit) {
+        expand()
+        val expandedOffset = collapseOffset
+        coroutineScope {
+            launch {
+                snapshotFlow { collapseOffset }.first { offset -> offset != expandedOffset }
+                this@coroutineScope.cancel()
+            }
+            block()
+            coroutineContext.cancelChildren()
+        }
+    }
+
+    internal suspend fun expand() {
+        animateCollapse(target = collapseFloor)
+    }
 
     public suspend fun settle() {
         backdropReveal.snapTo(targetValue = 1f)
@@ -114,10 +211,48 @@ public class TrainingRecapHeroState internal constructor(revealed: Boolean) {
         )
     }
 
+    internal fun collapseBy(delta: Float): Float {
+        collapseGeneration++
+        val previous = collapseOffset.coerceIn(collapseFloor, collapseRange)
+        collapseOffset = (previous + delta).coerceIn(collapseFloor, collapseRange)
+        return collapseOffset - previous
+    }
+
+    internal suspend fun settleCollapse() {
+        val offset = collapseOffset
+        if (offset <= collapseFloor || offset >= collapseRange) return
+
+        val isNearerExpanded = offset - collapseFloor < (collapseRange - collapseFloor) / 2f
+        try {
+            animateCollapse(target = if (isNearerExpanded) collapseFloor else collapseRange)
+        } catch (_: CollapseInterruptedException) {
+        }
+    }
+
+    private suspend fun animateCollapse(target: Float) {
+        val generation = ++collapseGeneration
+        val start = collapseOffset.coerceIn(collapseFloor, collapseRange)
+        if (start == target) {
+            collapseOffset = target
+            return
+        }
+
+        animate(
+            initialValue = start,
+            targetValue = target,
+            animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        ) { value, _ ->
+            if (generation != collapseGeneration) throw CollapseInterruptedException()
+            collapseOffset = value
+        }
+    }
+
     internal companion object {
-        val Saver: Saver<TrainingRecapHeroState, Boolean> = Saver(
-            save = { state -> state.backdropReveal.targetValue == 1f },
-            restore = { revealed -> TrainingRecapHeroState(revealed = revealed) },
+        val Saver: Saver<TrainingRecapHeroState, Any> = listSaver(
+            save = { state -> listOf(state.backdropReveal.targetValue == 1f, state.collapseOffset) },
+            restore = { saved ->
+                TrainingRecapHeroState(revealed = saved[0] as Boolean, initialCollapseOffset = saved[1] as Float)
+            },
         )
     }
 }
@@ -125,7 +260,7 @@ public class TrainingRecapHeroState internal constructor(revealed: Boolean) {
 @Composable
 public fun rememberTrainingRecapHeroState(): TrainingRecapHeroState {
     return rememberSaveable(saver = TrainingRecapHeroState.Saver) {
-        TrainingRecapHeroState(revealed = false)
+        TrainingRecapHeroState(revealed = false, initialCollapseOffset = 0f)
     }
 }
 
@@ -141,20 +276,46 @@ public fun TrainingRecapHero(
     val volumeValue = training.total.volume.value
     val setsCount = training.exercises.sumOf { exercise -> exercise.iterations.size }
     val resolvedVerdict = (style as? TrainingRecapHeroStyle.Resolved)?.verdict
+    val textMeasurer = rememberTextMeasurer()
+    val compactFacts = listOfNotNull(
+        durationValue?.let { value -> DurationFormatState.shortMinutes(value) },
+        volumeValue?.let { value -> VolumeFormatState.shortTotal(value) },
+        AppTokens.strings.res(Res.plurals.training_recap_sets, setsCount, setsCount),
+    ).reduce { line, fact -> AppTokens.strings.res(Res.string.joined_pair, line, fact) }
+    val isCollapsed by remember(state) {
+        derivedStateOf { state.collapseFraction >= RECAP_COLLAPSE_SEMANTICS_SWITCH }
+    }
+    val isExpandable by remember(state) {
+        derivedStateOf { state.collapseFloor < state.collapseRange }
+    }
+    val expandLabel = AppTokens.strings.res(Res.string.show_more)
+    val coroutineScope = rememberCoroutineScope()
+    val expandedSemantics = if (isCollapsed) Modifier.clearAndSetSemantics { } else Modifier
+    val barSemantics = when {
+        !isCollapsed -> Modifier.clearAndSetSemantics { }
+        isExpandable -> Modifier.semantics(mergeDescendants = true) {
+            customActions = listOf(
+                CustomAccessibilityAction(label = expandLabel) {
+                    coroutineScope.launch { state.expand() }
+                    true
+                },
+            )
+        }
 
-    RecapHeroSurface(modifier = modifier, contentPadding = contentPadding) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        ) {
+        else -> Modifier.semantics(mergeDescendants = true) { }
+    }
+
+    RecapCollapsingSurface(
+        modifier = modifier,
+        state = state,
+        contentPadding = contentPadding,
+        text = {
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = expandedSemantics,
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
             ) {
                 when (style) {
                     TrainingRecapHeroStyle.Pending -> {
-                        val textMeasurer = rememberTextMeasurer()
-
                         RecapTitleSkeleton(textMeasurer = textMeasurer)
                         RecapDescriptionSkeleton(textMeasurer = textMeasurer)
                     }
@@ -177,39 +338,71 @@ public fun TrainingRecapHero(
                     }
                 }
             }
-
+        },
+        backdrop = {
             RecapBackdrop(
                 verdict = resolvedVerdict,
                 state = state,
             )
-        }
+        },
+        facts = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(expandedSemantics),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            ) {
+                if (durationValue != null) {
+                    RecapFact(
+                        modifier = Modifier.weight(1f),
+                        value = DurationFormatState.shortMinutes(durationValue),
+                        label = PerformanceMetricTypeState.Duration.label(),
+                    )
+                }
+                if (volumeValue != null) {
+                    RecapFact(
+                        modifier = Modifier.weight(1f),
+                        value = VolumeFormatState.shortTotal(volumeValue),
+                        label = PerformanceMetricTypeState.Volume.label(),
+                    )
+                }
+                RecapFact(
+                    modifier = Modifier.weight(1f),
+                    value = setsCount.toString(),
+                    label = AppTokens.strings.res(Res.string.sets),
+                    dimmed = setsCount == 0,
+                )
+            }
+        },
+        bar = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(barSemantics),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+            ) {
+                when (style) {
+                    TrainingRecapHeroStyle.Pending -> RecapBarTitleSkeleton(textMeasurer = textMeasurer)
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        ) {
-            if (durationValue != null) {
-                RecapFact(
-                    modifier = Modifier.weight(1f),
-                    value = DurationFormatState.shortMinutes(durationValue),
-                    label = PerformanceMetricTypeState.Duration.label(),
+                    is TrainingRecapHeroStyle.Resolved -> Text(
+                        modifier = Modifier.semantics { heading() },
+                        text = style.verdict.title(reference = style.reference),
+                        style = AppTokens.typography.h4(),
+                        color = AppTokens.colors.text.primary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                Text(
+                    text = compactFacts,
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.text.secondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
-            if (volumeValue != null) {
-                RecapFact(
-                    modifier = Modifier.weight(1f),
-                    value = VolumeFormatState.shortTotal(volumeValue),
-                    label = PerformanceMetricTypeState.Volume.label(),
-                )
-            }
-            RecapFact(
-                modifier = Modifier.weight(1f),
-                value = setsCount.toString(),
-                label = AppTokens.strings.res(Res.string.sets),
-                dimmed = setsCount == 0,
-            )
-        }
-    }
+        },
+    )
 }
 
 @Composable
@@ -218,51 +411,187 @@ public fun TrainingRecapHeroSkeleton(
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val textMeasurer = rememberTextMeasurer()
+    val state = remember { TrainingRecapHeroState(revealed = true, initialCollapseOffset = 0f) }
 
-    RecapHeroSurface(modifier = modifier, contentPadding = contentPadding) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        ) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            ) {
+    RecapCollapsingSurface(
+        modifier = modifier,
+        state = state,
+        contentPadding = contentPadding,
+        isDraggable = false,
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)) {
                 RecapTitleSkeleton(textMeasurer = textMeasurer)
                 RecapDescriptionSkeleton(textMeasurer = textMeasurer)
             }
-
+        },
+        backdrop = {
             Spacer(modifier = Modifier.size(AppTokens.dp.illustration.compact))
-        }
+        },
+        facts = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            ) {
+                repeat(RECAP_FACT_COUNT) {
+                    RecapFactSkeleton(modifier = Modifier.weight(1f), textMeasurer = textMeasurer)
+                }
+            }
+        },
+        bar = {
+            Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
+                RecapBarTitleSkeleton(textMeasurer = textMeasurer)
+                SkeletonText(
+                    modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.long),
+                    style = AppTokens.typography.b12Med(),
+                    textMeasurer = textMeasurer,
+                )
+            }
+        },
+    )
+}
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        ) {
-            repeat(RECAP_FACT_COUNT) {
-                RecapFactSkeleton(modifier = Modifier.weight(1f), textMeasurer = textMeasurer)
+@Composable
+private fun RecapCollapsingSurface(
+    modifier: Modifier = Modifier,
+    state: TrainingRecapHeroState,
+    contentPadding: PaddingValues,
+    isDraggable: Boolean = true,
+    text: @Composable () -> Unit,
+    backdrop: @Composable () -> Unit,
+    facts: @Composable () -> Unit,
+    bar: @Composable () -> Unit,
+) {
+    val horizontalPadding = AppTokens.dp.screen.horizontalPadding + AppTokens.dp.brandHeader.horizontalPadding
+    val expandedPadding = AppTokens.dp.brandHeader.verticalPadding
+    val rowGap = AppTokens.dp.contentPadding.content
+    val backdropSize = AppTokens.dp.illustration.compact
+    val collapsed = AppTokens.dp.training.recap.collapsed
+    val dragState = rememberDraggableState { delta -> state.collapseBy(-delta) }
+
+    LaunchedEffect(state) {
+        snapshotFlow { state.collapseFloor to state.collapseRange }.collect { state.settleCollapse() }
+    }
+
+    Layout(
+        contents = listOf(
+            { Box(modifier = Modifier.illustrationBackground(RectangleShape)) },
+            text,
+            backdrop,
+            facts,
+            bar,
+        ),
+        modifier = modifier
+            .clipToBounds()
+            .draggable(
+                state = dragState,
+                orientation = Orientation.Vertical,
+                enabled = isDraggable,
+                onDragStopped = { state.settleCollapse() },
+            ),
+    ) { (surfaceMeasurables, textMeasurables, backdropMeasurables, factsMeasurables, barMeasurables), constraints ->
+        val startPadding = (contentPadding.calculateStartPadding(layoutDirection) + horizontalPadding).roundToPx()
+        val endPadding = (contentPadding.calculateEndPadding(layoutDirection) + horizontalPadding).roundToPx()
+        val topInset = contentPadding.calculateTopPadding().roundToPx()
+        val bottomInset = contentPadding.calculateBottomPadding().roundToPx()
+        val expandedPaddingPx = expandedPadding.roundToPx()
+        val collapsedPaddingPx = collapsed.verticalPadding.roundToPx()
+        val rowGapPx = rowGap.roundToPx()
+        val backdropPx = backdropSize.roundToPx()
+        val collapsedBackdropPx = collapsed.backdrop.roundToPx()
+
+        val width = if (constraints.hasBoundedWidth) constraints.maxWidth else constraints.minWidth
+        val contentWidth = (width - startPadding - endPadding).coerceAtLeast(0)
+        val textPlaceable = textMeasurables.first().measure(
+            Constraints(maxWidth = (contentWidth - backdropPx - rowGapPx).coerceAtLeast(0)),
+        )
+        val backdropPlaceable = backdropMeasurables.first().measure(Constraints.fixed(backdropPx, backdropPx))
+        val factsPlaceable = factsMeasurables.first().measure(Constraints(maxWidth = contentWidth))
+        val barPlaceable = barMeasurables.first().measure(
+            Constraints(maxWidth = (contentWidth - collapsedBackdropPx - rowGapPx).coerceAtLeast(0)),
+        )
+
+        val topRowHeight = maxOf(textPlaceable.height, backdropPx)
+        val expandedHeight = topInset + expandedPaddingPx + topRowHeight + rowGapPx +
+            factsPlaceable.height + expandedPaddingPx + bottomInset
+        val barRowHeight = maxOf(barPlaceable.height, collapsedBackdropPx)
+        val collapsedHeight = topInset + collapsedPaddingPx + barRowHeight + collapsedPaddingPx + bottomInset
+        val range = (expandedHeight - collapsedHeight).coerceAtLeast(0).toFloat()
+        val heightLimit = if (constraints.hasBoundedHeight) {
+            (constraints.maxHeight * RECAP_MAX_HEIGHT_SHARE).roundToInt()
+        } else {
+            expandedHeight
+        }
+        val floor = if (expandedHeight > heightLimit) range else 0f
+        state.collapseRange = range
+        state.collapseFloor = floor
+
+        val offset = state.collapseOffset.coerceIn(floor, range)
+        val fraction = if (range > 0f) offset / range else 0f
+        val height = (expandedHeight - offset.roundToInt()).coerceIn(constraints.minHeight, constraints.maxHeight)
+        val surfacePlaceable = surfaceMeasurables.first().measure(Constraints.fixed(width, height))
+
+        val expandedTop = topInset + expandedPaddingPx
+        val collapsedTop = topInset + collapsedPaddingPx
+        val surfaceRadius = collapsed.radius.toPx() * fraction
+        val parallax = (offset * RECAP_COLLAPSE_PARALLAX).roundToInt()
+        val titleScale = lerp(1f, RECAP_COLLAPSE_TITLE_SCALE, fraction)
+        val titleOrigin = TransformOrigin(if (layoutDirection == LayoutDirection.Ltr) 0f else 1f, 0f)
+        val backdropScale = lerp(1f, collapsedBackdropPx / backdropPx.toFloat(), fraction)
+        val backdropInset = backdropPx * (1f - backdropScale) / 2f
+        val backdropX = lerp(
+            start = (width - endPadding - backdropPx).toFloat(),
+            stop = (width - endPadding - collapsedBackdropPx).toFloat(),
+            fraction = fraction,
+        )
+        val backdropY = lerp(
+            start = expandedTop.toFloat(),
+            stop = (collapsedTop + (barRowHeight - collapsedBackdropPx) / 2).toFloat(),
+            fraction = fraction,
+        )
+        val barAlpha = collapsePhase(
+            fraction = fraction,
+            start = RECAP_COLLAPSE_CROSSFADE_START,
+            end = RECAP_COLLAPSE_CROSSFADE_END,
+        )
+        val barRise = collapsed.rise.toPx()
+
+        layout(width, height) {
+            surfacePlaceable.placeWithLayer(x = 0, y = 0) {
+                shape = RoundedCornerShape(bottomStart = surfaceRadius, bottomEnd = surfaceRadius)
+                clip = true
+            }
+            textPlaceable.placeRelativeWithLayer(x = startPadding, y = expandedTop - parallax) {
+                alpha = 1f - barAlpha
+                scaleX = titleScale
+                scaleY = titleScale
+                transformOrigin = titleOrigin
+            }
+            factsPlaceable.placeRelativeWithLayer(
+                x = startPadding,
+                y = expandedTop + topRowHeight + rowGapPx - parallax,
+            ) {
+                alpha = 1f - collapsePhase(fraction = fraction, start = 0f, end = RECAP_COLLAPSE_FACTS_FADE_END)
+            }
+            backdropPlaceable.placeRelativeWithLayer(
+                x = (backdropX - backdropInset).roundToInt(),
+                y = (backdropY - backdropInset).roundToInt(),
+            ) {
+                scaleX = backdropScale
+                scaleY = backdropScale
+            }
+            barPlaceable.placeRelativeWithLayer(
+                x = startPadding,
+                y = collapsedTop + (barRowHeight - barPlaceable.height) / 2,
+            ) {
+                alpha = barAlpha
+                translationY = (1f - barAlpha) * barRise
             }
         }
     }
 }
 
-@Composable
-private fun RecapHeroSurface(
-    modifier: Modifier = Modifier,
-    contentPadding: PaddingValues,
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    Column(
-        modifier = modifier
-            .illustrationBackground(RectangleShape)
-            .padding(contentPadding)
-            .padding(
-                horizontal = AppTokens.dp.screen.horizontalPadding + AppTokens.dp.brandHeader.horizontalPadding,
-                vertical = AppTokens.dp.brandHeader.verticalPadding,
-            ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        content = content,
-    )
+private fun collapsePhase(fraction: Float, start: Float, end: Float): Float {
+    return ((fraction - start) / (end - start)).coerceIn(0f, 1f)
 }
 
 @Composable
@@ -310,6 +639,15 @@ private fun RecapDescriptionSkeleton(textMeasurer: TextMeasurer) {
     SkeletonText(
         modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.long),
         style = AppTokens.typography.b14Med(),
+        textMeasurer = textMeasurer,
+    )
+}
+
+@Composable
+private fun RecapBarTitleSkeleton(textMeasurer: TextMeasurer) {
+    SkeletonText(
+        modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.medium),
+        style = AppTokens.typography.h4(),
         textMeasurer = textMeasurer,
     )
 }
@@ -506,6 +844,44 @@ private fun TrainingRecapHeroMissingFactsPreview() {
                 total = training.total.copy(volume = VolumeFormatState.Empty()),
             ),
             style = previewResolvedStyle(metrics = stubPerformanceMetricsWithoutReference()),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingRecapHeroCollapsedPreview() {
+    PreviewContainer {
+        TrainingRecapHero(
+            modifier = Modifier.fillMaxWidth(),
+            training = stubRecapTraining(),
+            style = previewResolvedStyle(metrics = stubPerformanceMetricsImproved()),
+            state = remember { TrainingRecapHeroState(revealed = true, initialCollapseOffset = Float.MAX_VALUE) },
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingRecapHeroCollapsedPendingPreview() {
+    PreviewContainer {
+        TrainingRecapHero(
+            modifier = Modifier.fillMaxWidth(),
+            training = stubRecapTraining(),
+            style = TrainingRecapHeroStyle.Pending,
+            state = remember { TrainingRecapHeroState(revealed = true, initialCollapseOffset = Float.MAX_VALUE) },
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingRecapHeroSkeletonCollapsedPreview() {
+    PreviewContainer {
+        TrainingRecapHeroSkeleton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 200.dp),
         )
     }
 }
