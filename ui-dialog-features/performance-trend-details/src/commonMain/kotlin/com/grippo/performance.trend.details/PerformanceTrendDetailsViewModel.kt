@@ -3,6 +3,7 @@ package com.grippo.performance.trend.details
 import com.grippo.analytics.performance.trend.details.PerformanceTrendDetailsAnalytics
 import com.grippo.analytics.performance.trend.details.models.PerformanceTrendDetailsEvent
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
@@ -37,7 +38,7 @@ public class PerformanceTrendDetailsViewModel(
     init {
         trainingFeature.observeTrainings(start = range.from, end = range.to)
             .onEach(::providePerformance)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
     }
 
     private fun providePerformance(trainings: List<Training>) {

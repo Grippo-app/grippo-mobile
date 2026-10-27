@@ -5,6 +5,7 @@ import com.grippo.analytics.authorization.models.AuthEvent
 import com.grippo.analytics.authorization.models.AuthOperation
 import com.grippo.analytics.authorization.models.AuthScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
@@ -28,23 +29,20 @@ internal class SplashViewModel(
     }
 
     init {
-        loadContent()
+        safeLaunch(
+            loader = SplashLoader.AppContent,
+            recovery = ErrorRecovery.Retry,
+        ) {
+            muscleFeature.getMuscles()
+            equipmentFeature.getEquipments()
+            val direction = resolveDirection()
+            navigateTo(direction)
+        }
     }
 
     override fun onBack() {
         analytics.trackEvent(AuthEvent.Splash.DismissRequested)
         navigateTo(SplashDirection.Back)
-    }
-
-    private fun loadContent() {
-        safeLaunch(
-            loader = SplashLoader.AppContent,
-            onError = ::loadContent,
-        ) {
-            muscleFeature.getMuscles()
-            equipmentFeature.getEquipments()
-            navigateTo(resolveDirection())
-        }
     }
 
     private suspend fun resolveDirection(): SplashDirection {

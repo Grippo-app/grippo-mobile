@@ -5,6 +5,7 @@ import com.grippo.analytics.profile.models.ProfileEvent
 import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.user.UserFeature
@@ -34,10 +35,10 @@ internal class ProfileExperienceViewModel(
                 .mapNotNull { it?.experience }
                 .take(1)
                 .onEach(::provideExperience)
-                .safeLaunch(processing = Processing.Infinity)
+                .safeLaunch(processing = Processing.Infinity, recovery = ErrorRecovery.Retry)
         }
 
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.RefreshUser) {
                 userFeature.getUser()
             }
@@ -58,7 +59,7 @@ internal class ProfileExperienceViewModel(
         val selected = state.value.selected ?: return
 
         analytics.trackEvent(ProfileEvent.Experience.Apply)
-        safeLaunch(loader = ProfileExperienceLoader.ApplyButton) {
+        safeLaunch(loader = ProfileExperienceLoader.ApplyButton, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.SaveExperience) {
                 userFeature.setExperience(selected.toDomain())
             }

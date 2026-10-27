@@ -4,6 +4,7 @@ import com.grippo.analytics.statistics.StatisticsAnalytics
 import com.grippo.analytics.statistics.models.StatisticsEvent
 import com.grippo.analytics.statistics.models.StatisticsOperation
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.data.features.api.metrics.distribution.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadSummary
@@ -49,9 +50,9 @@ public class StatisticsViewModel(
                     }
                     .buffer(0)
                     .onEach(::provideMuscleLoad)
-                    .safeLaunch()
+                    .safeLaunch(recovery = ErrorRecovery.Retry)
 
-                safeLaunch {
+                safeLaunch(recovery = ErrorRecovery.Retry) {
                     withLoader(StatisticsLoader.Charts) {
                         analytics.trackOperation(StatisticsOperation.RefreshTrainings) {
                             trainingFeature.getTrainings(start = config.range.from, end = config.range.to)
@@ -65,7 +66,7 @@ public class StatisticsViewModel(
                     .flatMapLatest(::observeExerciseStatistics)
                     .buffer(0)
                     .onEach(::provideMuscleLoad)
-                    .safeLaunch()
+                    .safeLaunch(recovery = ErrorRecovery.Retry)
             }
         }
     }

@@ -4,6 +4,7 @@ import com.grippo.analytics.start.training.StartTrainingAnalytics
 import com.grippo.analytics.start.training.models.StartTrainingEvent
 import com.grippo.analytics.start.training.models.StartTrainingOperation
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
@@ -38,7 +39,7 @@ public class StartTrainingViewModel(
 ), StartTrainingContract {
 
     init {
-        safeLaunch(loader = StartTrainingLoader.Options) {
+        safeLaunch(loader = StartTrainingLoader.Options, recovery = ErrorRecovery.Retry) {
             val recentRange = state.value.recentRange
 
             trainingFeature.getTrainings(start = recentRange.from, end = recentRange.to)
@@ -46,7 +47,7 @@ public class StartTrainingViewModel(
 
         observeOptions(range = state.value.recentRange)
             .onEach(::provideOptions)
-            .safeLaunch(processing = Processing.Infinity)
+            .safeLaunch(processing = Processing.Infinity, recovery = ErrorRecovery.Retry)
     }
 
     private fun observeOptions(

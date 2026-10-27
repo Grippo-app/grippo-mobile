@@ -4,6 +4,7 @@ import com.grippo.analytics.exercises.ExercisesAnalytics
 import com.grippo.analytics.exercises.models.ExercisesEvent
 import com.grippo.analytics.exercises.models.ExercisesScreen
 import com.grippo.analytics.exercises.models.LibraryFilter
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.UiText
@@ -51,19 +52,19 @@ internal class ExerciseLibraryViewModel(
         if (mode is ExercisesRouter.Mode.SimilarTo) {
             exerciseExampleFeature.observeExerciseExample(mode.targetExerciseExampleId)
                 .onEach(::provideTarget)
-                .safeLaunch()
+                .safeLaunch(recovery = ErrorRecovery.Retry)
         }
 
         muscleFeature.observeMuscles()
             .onEach(::provideMuscles)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         state
             .map(::buildParams)
             .distinctUntilChanged()
             .flatMapLatest(::observeExerciseExamples)
             .onEach(::provideExerciseExamples)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
     }
 
     private fun observeExerciseExamples(params: ExampleParams): Flow<Pair<ExampleParams, List<ExerciseExample>>> {

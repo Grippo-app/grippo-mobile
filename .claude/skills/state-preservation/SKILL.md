@@ -70,7 +70,7 @@ Verified example rows for the trainings calendar (`TrainingsComponent`,
 |---|---|---|---|---|
 | TrainingsComponent / TrainingsViewModel | `date` (selected range) and `period` (Daily/Monthly) | Preserve | Component-owned `DRAFT` with address `TrainingsDraft` and `TrainingsState.serializer()` | Component passes `restoreState(DRAFT)`; ViewModel creates the monthly default only for a null archive and rebuilds range-derived presentation through `selectRange`; check the restored month and mode on a fresh Component |
 | TrainingsViewModel | `limitations`, monthly `weeks`/`digest`, daily `items` | Rebuild | `@Transient`; `DateTimeUtils.trailingYear()` and the `observeTrainings` flow | Recomputed from the restored range; never in the archive |
-| TrainingsViewModel | `TrainingsLoader.Trainings` and the refresh job | Runtime only | `loaders` flow and `safeLaunch` | Not saved; the refresh restarts from the restored range |
+| TrainingsViewModel | `TrainingsLoader.Trainings` and the range refresh step | Runtime only | `loaders` flow; `withLoader` inside the `mapLatest` refresh chain | Not saved; the refresh runs again for the restored range |
 
 ## Ownership and implementation
 

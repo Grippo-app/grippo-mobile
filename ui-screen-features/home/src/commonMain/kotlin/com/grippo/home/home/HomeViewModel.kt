@@ -5,6 +5,7 @@ import com.grippo.analytics.home.models.HomeEvent
 import com.grippo.analytics.home.models.HomeOperation
 import com.grippo.analytics.home.models.HomeScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
@@ -65,8 +66,6 @@ import com.grippo.toolkit.local.notification.NotificationManager
 import com.grippo.toolkit.permission.AppPermission
 import com.grippo.toolkit.permission.PermissionManager
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
@@ -75,7 +74,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.days
 
 internal class HomeViewModel(
@@ -107,34 +105,38 @@ internal class HomeViewModel(
     init {
         userFeature.observeUser()
             .onEach(::provideUser)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         excludedMusclesFeature.observeExcludedMuscles()
             .onEach(::provideExcludedMuscles)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         excludedEquipmentsFeature.observeExcludedEquipments()
             .onEach(::provideExcludedEquipments)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         goalFeature.observeGoal()
             .onEach(::provideGoalPresence)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         localSettingsFeature.observeRange()
             .combine(currentDateFlow()) { range, _ -> range }
             .onEach(::provideRange)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             permissionManager.request(AppPermission.Notifications)
         }
 
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             scheduleWeightReminder()
         }
 
-        refreshExerciseExamples()
+        safeLaunch(recovery = ErrorRecovery.Retry) {
+            analytics.trackOperation(operation = HomeOperation.RefreshExerciseExamples) {
+                exerciseExampleFeature.getExerciseExamples()
+            }
+        }
 
         val selectedPeriods = state
             .map { it.range.value }
@@ -156,7 +158,7 @@ internal class HomeViewModel(
                     }
             }
             .onEach(::provideTrainings)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         metricPeriods
             .flatMapLatest { period ->
@@ -164,7 +166,7 @@ internal class HomeViewModel(
                     .flatMapLatest(muscleLoadingSummaryUseCase::observeFromTrainings)
             }
             .onEach(::provideMuscleLoad)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         metricPeriods
             .flatMapLatest { period ->
@@ -178,23 +180,15 @@ internal class HomeViewModel(
                     }
             }
             .mapLatest(::provideGoalProgress)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         selectedPeriods
             .mapLatest(::refreshTrainings)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             val status = localSettingsFeature.observeHomeWelcomeStatus().first()
             provideWelcomeStatus(status)
-        }
-    }
-
-    private fun refreshExerciseExamples() {
-        safeLaunch(onError = ::refreshExerciseExamples) {
-            analytics.trackOperation(operation = HomeOperation.RefreshExerciseExamples) {
-                exerciseExampleFeature.getExerciseExamples()
-            }
         }
     }
 
@@ -226,19 +220,8 @@ internal class HomeViewModel(
 
     private suspend fun refreshTrainings(period: DateRange) {
         withLoader(HomeLoader.Trainings) {
-            val refresh = safeLaunch {
-                analytics.trackOperation(operation = HomeOperation.RefreshTrainings) {
-                    trainingFeature.getTrainings(start = period.from, end = period.to)
-                }
-            }
-
-            try {
-                refresh.join()
-            } finally {
-                // A handled request failure must leave this period subscription alive.
-                withContext(NonCancellable) {
-                    refresh.cancelAndJoin()
-                }
+            analytics.trackOperation(operation = HomeOperation.RefreshTrainings) {
+                trainingFeature.getTrainings(start = period.from, end = period.to)
             }
         }
     }
@@ -377,7 +360,7 @@ internal class HomeViewModel(
             initial = state.value.range.kind,
             onResult = { result ->
                 analytics.trackEvent(event = HomeEvent.PeriodConfirmed)
-                safeLaunch {
+                safeLaunch(recovery = ErrorRecovery.Retry) {
                     analytics.trackOperation(operation = HomeOperation.SavePeriod) {
                         val range = result.toDomain()
                         localSettingsFeature.setRange(range)

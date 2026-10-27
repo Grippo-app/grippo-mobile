@@ -5,6 +5,7 @@ import com.grippo.analytics.trainings.models.TrainingsEvent
 import com.grippo.analytics.trainings.models.TrainingsOperation
 import com.grippo.analytics.trainings.models.TrainingsScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.menu.TrainingMenu
@@ -32,14 +33,11 @@ import com.grippo.trainings.trainings.TrainingsDirection.Back
 import com.grippo.trainings.trainings.TrainingsDirection.EditTraining
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -78,7 +76,7 @@ internal class TrainingsViewModel(
 
         rangeFlow
             .mapLatest(::refreshTrainings)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         rangeFlow
             .flatMapLatest { range ->
@@ -86,27 +84,16 @@ internal class TrainingsViewModel(
                     .map { trainings -> range to trainings }
             }
             .onEach(::provideTrainings)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
     }
 
     private suspend fun refreshTrainings(range: DateRange) {
-        withLoader(loader = TrainingsLoader.Trainings) {
-            val refresh = safeLaunch {
-                analytics.trackOperation(operation = TrainingsOperation.RefreshTrainings) {
-                    trainingFeature.getTrainings(
-                        start = range.from,
-                        end = range.to,
-                    )
-                }
-            }
-
-            try {
-                refresh.join()
-            } finally {
-                // A handled request failure must leave this range subscription alive.
-                withContext(NonCancellable) {
-                    refresh.cancelAndJoin()
-                }
+        withLoader(TrainingsLoader.Trainings) {
+            analytics.trackOperation(operation = TrainingsOperation.RefreshTrainings) {
+                trainingFeature.getTrainings(
+                    start = range.from,
+                    end = range.to,
+                )
             }
         }
     }
@@ -163,7 +150,7 @@ internal class TrainingsViewModel(
     }
 
     private fun deleteTraining(id: String) {
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(operation = TrainingsOperation.DeleteTraining) {
                 deleteTrainingUseCase.execute(id)
             }

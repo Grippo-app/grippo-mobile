@@ -4,6 +4,7 @@ import com.grippo.analytics.training.TrainingAnalytics
 import com.grippo.analytics.training.models.TrainingEvent
 import com.grippo.analytics.training.models.TrainingScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.foundation.models.Result
 import com.grippo.core.foundation.models.ResultKey
 import com.grippo.core.foundation.models.ResultKeys
@@ -38,7 +39,6 @@ import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.flow.Flow
@@ -72,11 +72,11 @@ internal class TrainingExerciseViewModel(
             .distinctUntilChanged()
             .flatMapLatest(exerciseExampleFeature::observeExerciseExample)
             .onEach(::provideExerciseExample)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         observeValidation(excludedExerciseId = exercise.id)
             .onEach(::provideValidation)
-            .safeLaunch(onError = ::clearValidation)
+            .safeLaunch(recovery = ErrorRecovery.Retry)
     }
 
     private fun observeValidation(excludedExerciseId: String): Flow<TrainingExerciseValidation> {
@@ -115,22 +115,6 @@ internal class TrainingExerciseViewModel(
             } else {
                 validateTrainingExercise(source = source, context = snapshot.value)
             }
-        }
-    }
-
-    private fun clearValidation() {
-        val previousIterations = persistentListOf<IterationState>()
-
-        val volumeArtifactIds = persistentSetOf<String>()
-
-        val repetitionArtifactIds = persistentSetOf<String>()
-
-        update {
-            it.copy(
-                previousIterations = previousIterations,
-                volumeArtifactIds = volumeArtifactIds,
-                repetitionArtifactIds = repetitionArtifactIds,
-            )
         }
     }
 
@@ -186,7 +170,7 @@ internal class TrainingExerciseViewModel(
             IterationFocusState.UNIDENTIFIED -> Unit
         }
 
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             val initial = iterations[index]
                 .withResolvedBodyWeight(example)
 
@@ -413,7 +397,7 @@ internal class TrainingExerciseViewModel(
 
         analytics.trackEvent(event = TrainingEvent.Exercise.AddIteration)
 
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             val blankIteration = buildBlankIteration(example)
 
             val initial = blankIteration.withResolvedBodyWeight(example)

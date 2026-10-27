@@ -16,13 +16,9 @@ visible-screen context and correlate outcomes by `operation_id`; the typed catal
 ## Startup and navigation
 
 - Splash loads muscles, then equipment (direct throwing calls), then navigates to
-  `resolveDirection()` under the `AppContent` loader with
-  `ErrorRecovery.Retry(onClose = ::openFromCache)`: the error popup's Retry repeats
-  both catalog requests and the resolution; closing it continues through
-  `resolveCachedDirection()` under the same loader, which reads only the onboarding
-  flag, token and cached user (no SessionCheck; a session without a cached user
-  goes to AuthProcess, never to ProfileCreation). If that local read itself fails,
-  its popup's Retry repeats it, and closing goes to AuthProcess.
+  `resolveDirection()` under the `AppContent` loader with `ErrorRecovery.Retry`: the
+  error popup's Retry repeats both catalog requests and the resolution; closing it
+  leaves Splash in place (system Back exits), so a cold start needs the network.
   Resolution order: onboarding not yet shown → Onboarding; no token → AuthProcess;
   `hasProfile()` → Home, otherwise ProfileCreation. The SessionCheck decorator
   lives inside `hasProfile()` and encloses the cached-user read
@@ -43,11 +39,11 @@ visible-screen context and correlate outcomes by `operation_id`; the typed catal
   `DataStore.edit`), then marks onboarding shown. Existing saved true/false values
   are preserved. Shown is an entry-based flag: closing or restarting after that
   write never shows onboarding again. Consent is then observed with
-  `Processing.Infinity`; a failed initial write prevents marking shown, the error
-  popup's Retry repeats preparation, and closing it continues with the consent
-  observation. A failed consent read is re-collected by Retry; closing it while the
-  value is still unknown continues to Login through `continueWithoutConsent`
-  (programmatic, no event).
+  `Processing.Infinity`; a failed initial write prevents marking shown and the error
+  popup's Retry repeats preparation. A failed consent read is re-collected by Retry.
+  Closing either popup leaves the screen as it is; while consent is unknown, Get
+  started and Back (including system Back) stay inactive, so after a local storage
+  failure only Retry or an app restart continues (accepted).
 - AuthProcess starts at Login; Registration is pushed with the optional valid
   email seed. Alternative entry: `RootDirection.Login` opens
   `Auth(AuthRouter.AuthProcess())` from Root's token-null observer when the active
@@ -113,7 +109,7 @@ not telemetry.
 
 | Owner | Observed callbacks / inputs → typed event → wire | Complete operations and eligibility |
 |---|---|---|
-| SplashViewModel | System Back → Splash.DismissRequested → `auth_control_clicked` {auth_splash, dismiss_requested}; no busy guard | SessionCheck → `auth_session_check_*`, no parameters besides terminal `duration_ms`; wraps `hasProfile()` only (see above); cache hit and remote lookup both complete normally; the error popup's Retry repeats the full startup with a new SessionCheck, while the close path (`openFromCache`) emits none |
+| SplashViewModel | System Back → Splash.DismissRequested → `auth_control_clicked` {auth_splash, dismiss_requested}; no busy guard | SessionCheck → `auth_session_check_*`, no parameters besides terminal `duration_ms`; wraps `hasProfile()` only (see above); cache hit and remote lookup both complete normally; the error popup's Retry repeats the full startup with a new SessionCheck; closing it emits nothing |
 | OnboardingViewModel | Accepted Get started → Onboarding.GetStarted → `auth_control_clicked` {auth_onboarding, next}; Back → Onboarding.DismissRequested → {auth_onboarding, dismiss_requested}; both require a known consent source (non-null) and no active loaders, then navigate to Login | None. Preparation initializes absent consent and marks shown without persistence telemetry; `onAnalyticsConsentChange` rejects busy, pending and unchanged values, then persists directly inside safeLaunch and deliberately emits nothing |
 | LoginViewModel | Email/password validation-status transitions → Login.InputChanged → `auth_input_changed` {auth_login, input_field, input_status}; focus → `auth_input_focused`; email clear → `auth_input_cleared`; Next/Done IME → `auth_keyboard_action` {field, next/done}; password visibility → `auth_password_visibility_changed` {password_visible}; Submit by Email/Google/Apple → `auth_submit_clicked` {auth_method} after the guards and before safeLaunch, so the error popup's Retry does not re-emit it (a Google/Apple Retry reuses the captured UI context: after an Activity recreation it fails into a new popup); Register → `auth_control_clicked` {register} after the busy guard, passing the valid email display as the route seed; Back → {dismiss_requested}, no guard | Login(Email) → `auth_attempt_*` {auth_method=email, auth_action=login}: busy guard plus valid email and password; block is the throwing `loginEmail` use case (Boolean). Login(Google)/Login(Apple): busy guard; block includes direct throwing provider UI sign-in and `loginGoogle(token)`/`loginApple(code)`. `mapAuthError` is presentation-only |
 | RegistrationViewModel | Same input family under Registration.* with `interaction_screen=auth_registration`; Submit → `auth_submit_clicked` {email} emitted after busy and validity guards, before safeLaunch; toolbar/system Back → {dismiss_requested}, no guard | Register → `auth_attempt_*` {email, register}; block is `createAccount(email, password)` including its private preparation; `ErrorRecovery.Close`: the account may already exist when a later step fails, so the error popup offers only Got it |
@@ -244,7 +240,7 @@ modes, and that transport change adds no screen, preserved input or payload.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | SplashComponent / SplashViewModel | No editable data (`SplashState` is a data object); catalogs and loading | Runtime only / Rebuild | No DRAFT; `AppContent` loader; Room-backed MuscleFeature/EquipmentFeature | A fresh VM re-runs the startup load from `init`; the direction is re-resolved from DataStore, token and user |
-| OnboardingViewModel / OnboardingState | `analyticsConsent: Boolean?` | Rebuild | `observeAnalyticsConsent()` with Processing.Infinity; no DRAFT, State not serializable | Null while pending; switch checked unless false, enabled only with a known source and no loaders; accepted toggles commit immediately, so no unfinished draft exists; a failed source read keeps the last value (null before the first emission) and disables dependent controls while null; Retry re-collects the source, closing the popup while still null continues to Login; a failed write retains the actual stored value |
+| OnboardingViewModel / OnboardingState | `analyticsConsent: Boolean?` | Rebuild | `observeAnalyticsConsent()` with Processing.Infinity; no DRAFT, State not serializable | Null while pending; switch checked unless false, enabled only with a known source and no loaders; accepted toggles commit immediately, so no unfinished draft exists; a failed source read keeps the last value (null before the first emission) and disables dependent controls while null; Retry re-collects the source, closing the popup keeps that state; a failed write retains the actual stored value |
 | OnboardingViewModel | Shown flag read in preparation | Rebuild | `observeOnboardingShown().first()` | A restored route re-runs preparation; writes are skipped when already shown; the screen stays interactive |
 | Onboarding | `Preparation`/`AnalyticsConsent` loaders, error and Back sessions | Runtime only | OnboardingLoader | Not archived |
 | LoginComponent / LoginState | `email: EmailFormatState` (display and value, including invalid/empty) | Preserve | `DRAFT = PersistenceKey("LoginDraft", LoginState.serializer())` | `restoreState(DRAFT) ?: LoginState()` (non-null); `saveState` in init |

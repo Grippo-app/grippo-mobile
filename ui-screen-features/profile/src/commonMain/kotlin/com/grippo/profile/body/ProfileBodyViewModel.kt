@@ -6,6 +6,7 @@ import com.grippo.analytics.profile.models.ProfileEvent
 import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.formatters.WeightFormatState
@@ -59,16 +60,16 @@ internal class ProfileBodyViewModel(
                 .filterNotNull()
                 .take(1)
                 .onEach(::provideInitialUser)
-                .safeLaunch(processing = Processing.Infinity)
+                .safeLaunch(processing = Processing.Infinity, recovery = ErrorRecovery.Retry)
         }
 
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.RefreshWeightHistory) {
                 weightHistoryFeature.getWeightHistory()
             }
         }
 
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.RefreshUser) {
                 userFeature.getUser()
             }
@@ -77,12 +78,12 @@ internal class ProfileBodyViewModel(
         userFeature
             .observeUser()
             .onEach(::provideUser)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         weightHistoryFeature
             .observeWeightHistory()
             .onEach(::provideWeightHistory)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
     }
 
     private fun provideWeightHistory(value: List<WeightHistory>) {
@@ -152,7 +153,8 @@ internal class ProfileBodyViewModel(
 
         analytics.trackEvent(ProfileEvent.Body.Apply)
         safeLaunch(
-            loader = ProfileBodyLoader.ApplyBodyChanges
+            loader = ProfileBodyLoader.ApplyBodyChanges,
+            recovery = ErrorRecovery.Close(onClose = {}),
         ) {
             analytics.trackOperation(ProfileOperation.SaveBody) {
                 val hasNewWeight = user.weight.value != weight

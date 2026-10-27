@@ -89,9 +89,9 @@ session navigation and result delivery.
 init {
     notesFeature.observeNotes(start = state.value.range.from, end = state.value.range.to)
         .onEach(::provideNotes)
-        .safeLaunch()
+        .safeLaunch(recovery = ErrorRecovery.Retry)
 
-    safeLaunch(loader = NotesListLoader.LoadingNotes) {
+    safeLaunch(loader = NotesListLoader.LoadingNotes, recovery = ErrorRecovery.Retry) {
         notesFeature.getNotes(start = state.value.range.from, end = state.value.range.to)
     }
 }

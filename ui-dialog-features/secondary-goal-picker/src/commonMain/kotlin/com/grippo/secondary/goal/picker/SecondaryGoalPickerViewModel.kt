@@ -3,8 +3,10 @@ package com.grippo.secondary.goal.picker
 import com.grippo.analytics.secondary.goal.picker.SecondaryGoalPickerAnalytics
 import com.grippo.analytics.secondary.goal.picker.models.SecondaryGoalPickerEvent
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.profile.GoalSecondaryGoalEnumState
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 public class SecondaryGoalPickerViewModel(
     private val analytics: SecondaryGoalPickerAnalytics,
@@ -16,10 +18,11 @@ public class SecondaryGoalPickerViewModel(
 ), SecondaryGoalPickerContract {
 
     override fun onSelectGoal(goal: GoalSecondaryGoalEnumState) {
-        safeLaunch {
-            analytics.trackEvent(SecondaryGoalPickerEvent.GoalClicked)
+        analytics.trackEvent(SecondaryGoalPickerEvent.GoalClicked)
+
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             update { it.copy(value = goal) }
-            delay(300)
+            delay(300.milliseconds)
             navigateTo(SecondaryGoalPickerDirection.BackWithResult(goal))
         }
     }

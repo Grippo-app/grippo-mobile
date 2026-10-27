@@ -9,24 +9,28 @@ translates failures into UI-friendly dialogs.
 ## The default pipeline
 
 ```
-throw inside safeLaunch
-  → operationManager catches via CoroutineExceptionHandler
-  → BaseViewModel.sendError(exception, recovery, relaunch, mapError)
+throw inside a safeLaunch attempt
+  → BaseViewModel.attempt returns the failure        // CancellationException is rethrown
+  → BaseViewModel.resolve(failure, retryable = recovery == ErrorRecovery.Retry, mapError)
   → AppLogger.General.error(...)                     // file log
   → CrashReporting.reportException(...)              // toolkit core collection policy
-  → ErrorProvider.provide(mapError(exception), onRetry, onClose = recovery.onClose) // UI presentation only
+  → ErrorProvider.resolve(mapError(failure), retryable) // UI presentation; suspends for the decision
   → ErrorProviderImpl maps AppError → AppErrorState
-  → DialogController.open(DialogConfig.ErrorDisplay(title, state, onRetry, onClose = recovery.onClose))
+  → DialogController.open(DialogConfig.ErrorDisplay(title, state, onRetry, onClose)), awaits the decision
+  → ErrorDecision.Retry: next attempt in the same Job
+  → ErrorDecision.Close: close(recovery), the Job completes
 ```
 
-`relaunch` repeats the same `safeLaunch` call with identical arguments. `onRetry` is
-that relaunch for `ErrorRecovery.Retry` (the default) and `null` for
+`onRetry` completes the decision with `ErrorDecision.Retry` and exists only when
+`retryable` (`ErrorRecovery.Retry`); `onClose` completes it with `ErrorDecision.Close`.
+The first completion wins. Each failure opens its own popup and awaits its own
+decision; failures are not merged. `close(recovery)` runs `onClose` only for
 `ErrorRecovery.Close`.
 
 Every unhandled failure follows this path automatically. The ViewModel author writes only:
 
 ```kotlin
-safeLaunch(loader = MyLoader.Fetch) {
+safeLaunch(loader = MyLoader.Fetch, recovery = ErrorRecovery.Retry) {
     feature.fetch()
 }
 ```
@@ -40,28 +44,49 @@ Inspect the current [ErrorProviderImpl](../../../../ui-core/error/error-provider
 
 `AppErrorState` is the UI mirror of `AppError`. It lives in `:ui-core:state` (package `core.state.error`) — **not** in `:ui-core:error:error-provider`, which is kept UI-free so `:data-services:*` and `:toolkit:http-client` can depend on `AppError` without dragging in UI. Inspect `AppErrorState.kt`; current shape: `Network.Expected(title, description?)`, `data object`s `Network.NoInternet`, `Network.Timeout`, `Network.IncompleteResponse` and `Network.Unexpected`, a top-level `Expected(title, description?)` declared `: Network`, and `data object Unknown`. Fields are plain `String`s; `title()`/`description()` build the dialog's `UiText`, and the four transport objects take both from localized resources, so an exception's English message never reaches the dialog. On the `AppError` side, `Network.IncompleteResponse` and `Unknown` are no-argument plain classes; the other subtypes are data classes. `ErrorDisplay` is a `DialogConfig` subtype in `:ui-dialog-features:dialog-api`.
 
-## Inside `BaseViewModel` — `sendError`
+## Inside `BaseViewModel` — `resolve`
 
 Inspect [BaseViewModel](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/BaseViewModel.kt)
 and [OperationManagerImpl](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/internal/operation/OperationManagerImpl.kt).
-Current shape: `OperationManagerImpl.launch` installs a `CoroutineExceptionHandler`
-that ignores `CancellationException` and re-launches `onError(t)` on the VM scope;
-that `onError` is `BaseViewModel.sendError` (`private suspend`), which runs
-`AppLogger.General.error(...)` → `crashReporting.reportException(exception)` →
-`displayError = if (exception is Exception) mapError(exception) else exception` →
-`errorProvider.provide(displayError, onRetry, onClose = recovery.onClose)`. Original failures are
-logged and reported; only `Exception` receives the pure `mapError` for the dialog,
-and a fatal `Error` is not transformed. `recovery.onClose` runs after the popup
-closes without Retry (Back, swipe, outside tap, toolbar Close or the Got-it button
-of an `ErrorRecovery.Close` popup); Retry runs the relaunch instead. Neither is
-immediate recovery.
+Current shape:
 
-Keep the error contract unified across block and Flow `safeLaunch`: both expose
-`recovery: ErrorRecovery = ErrorRecovery.Retry()` (inspect
-`ui-core/foundation/.../models/ErrorRecovery.kt`: `Retry(onClose)` offers Retry,
-`Close(onClose)` offers only Got it) and `mapError: (Throwable) -> Throwable = { it }`,
-with the same names, defaults and shared error pipeline. Pass them only when the
-operation needs them; otherwise use the defaults.
+- **Block `safeLaunch`** starts one Job through `OperationManager.launch` and loops
+  inside it over `withLoader(loader) { attempt(block) }`. `attempt` runs
+  `supervisorScope { block() }`, rethrows `CancellationException` and returns any
+  other failure. This foundation catch is the documented infrastructure boundary;
+  feature code still MUST NOT catch. The loader is shown during each attempt, not
+  while the popup waits.
+- **`resolve(failure, retryable, mapError)`** (`private suspend`) runs
+  `AppLogger.General.error(...)` → `crashReporting.reportException(failure)` →
+  `error = if (failure is Exception) mapError(failure) else failure` →
+  `errorProvider.resolve(error, retryable)`, which suspends until the user decides.
+  On `ErrorDecision.Retry` the loop starts the next attempt; on `ErrorDecision.Close`
+  it runs `close(recovery)` and the Job completes.
+- **Flow `safeLaunch`** collects `source.retryWhen { ... }.catch { ... }`, where
+  `source` is the `whileActive` wrapper (`WhileActive`) or the flow itself
+  (`Infinity`). `retryWhen` calls `resolve` and re-collects the same source on
+  `Retry`; `catch` rethrows `CancellationException` and otherwise runs
+  `close(recovery)`; the collection has ended. A later activation does not
+  restart a closed collection.
+- **`OperationManagerImpl.launch`** still installs a `CoroutineExceptionHandler` that
+  ignores `CancellationException`. It now receives only stray failures of the block
+  overload: a failing child coroutine launched inside the block, or a failure of the
+  pipeline itself. Those get a popup without Retry, then `close(recovery)`. In the Flow
+  overload a failure of the pipeline inside `retryWhen` reaches `.catch`, which ends
+  the collection with `close(recovery)` and no second popup; the original failure was
+  already logged and reported.
+
+Original failures are logged and reported; only `Exception` receives the pure
+`mapError` for the dialog, and a fatal `Error` is not transformed. While the popup is
+open, the Job stays active and suspended on the decision; cancellation follows
+[Retry and close](#retry-and-close).
+
+Keep the error contract unified across block and Flow `safeLaunch`: both take a
+required `recovery: ErrorRecovery` with no default (inspect
+`ui-core/foundation/.../models/ErrorRecovery.kt`; current shape: `data object Retry`
+and `class Close(val onClose: () -> Unit)`) and `mapError: (Throwable) -> Throwable = { it }`,
+with the same names and the shared error pipeline. Every call passes `recovery`
+explicitly; the choice follows [Retry and close](#retry-and-close).
 `mapError` defaults to returning the original error. Use it only when a concrete boundary
 exception needs an existing `AppError` representation for the standard dialog.
 Keep it pure and non-throwing: no requests, state changes, navigation, reporting,
@@ -72,12 +97,10 @@ logging and crash reporting must receive the original exception; only
 ## Authoring rules (MUST)
 
 ```kotlin
-// Good — errors flow through the pipeline; onClose cleans up when the popup is closed without Retry
+// Good — errors flow through the pipeline; the popup offers Retry
 safeLaunch(
     loader = MyLoader.SavingForm,
-    recovery = ErrorRecovery.Retry(onClose = {
-        update { it.copy(isSubmitted = false) }
-    }),
+    recovery = ErrorRecovery.Retry,
 ) {
     val body = state.value.form.toDomain()
     feature.save(body)
@@ -87,7 +110,7 @@ safeLaunch(
 
 ```kotlin
 // BAD — manual catch bypasses the shared error path
-safeLaunch {
+safeLaunch(recovery = ErrorRecovery.Retry) {
     try {
         feature.save(...)
         navigateTo(...)
@@ -102,32 +125,28 @@ Do not hide, replace or present unhandled failures through local catches,
 or its helpers. Call throwing Feature/UseCase commands directly inside `safeLaunch`.
 Keep all required work inside the decorated business block, including direct throwing credential
 adapter calls ([platform ownership](../../data-layer/references/auth-session.md#credential-adapters-canonical)). Use pure
-`mapError` only for dialog presentation and `recovery.onClose` only after a close
-without Retry.
-Foundation's loader cleanup via `try/finally` and documented infrastructure boundaries
-remain valid. Business contracts follow
+`mapError` only for dialog presentation and `ErrorRecovery.Close.onClose` only for
+what follows a closed popup.
+Foundation's loader cleanup via `try/finally` and documented infrastructure boundaries,
+including foundation's `attempt` catch, remain valid. Business contracts follow
 [throwing suspend operations](../../data-layer/references/operation-outcomes.md#throwing-suspend-contracts-canonical).
 
 ## Requests driven by a long-lived source
 
-An exception in `mapLatest` terminates its collection; only the popup's Retry
-re-collects it, and closing leaves it terminated. When a period/filter observation must accept
-later user choices after one request fails, keep the request in its own existing
-`safeLaunch` error boundary and await it from the latest-value handler. If that
-VM-owned job outlives a replaced value, cancel and join it in `finally` before
-releasing the loader; noncancellable context is limited to that cleanup. Keep
-the Job local to this operation, without a member, retry loop, stage flag or
-new coroutine scope. This is failure isolation, not a recovery wrapper. A Retry of
-such a request is a new VM-scoped job outside that boundary: it runs for its captured
-value until it ends or the ViewModel is destroyed, a replaced value does not cancel
-it, and if it overlaps the next request their shared loader clears when the first one
-ends. This is accepted; do not add a member Job to own the retried request.
+A request that follows a latest-value source (a selected period or range) is a plain
+suspend step of that source's chain: `.mapLatest(::refreshX)` collected by one
+`Flow.safeLaunch(recovery = ErrorRecovery.Retry)`, with `trackOperation` (and
+`withLoader` when the screen shows a loader) inside the step. Inspect
+`refreshTrainings` in `HomeViewModel`, `TrainingsViewModel` and
+`TrainingCompletedViewModel`. A new value cancels the running request, and
+`withLoader` clears its loader on cancellation.
 
-Before adding this boundary, trace the actual source and failure contract;
-ordinary suspend helpers still propagate to their caller's `safeLaunch`.
-Before removing it, check first failure -> next selection -> new request, rapid
-replacement/cancellation and loader cleanup. Do not simplify a live subscription
-into a pipeline that stops permanently after its first handled request error.
+A failed request fails the whole chain. Retry re-collects it and requests the
+current value again; closing the popup ends it, so later selections no longer refresh from the
+server until the ViewModel is recreated. This is the owner's accepted trade-off: the
+separate Room observation chains keep showing cached data for every selection.
+Do not isolate the request in a nested `safeLaunch` that the handler joins and
+cancels in `finally`, and add no member Job, retry loop, stage flag or new scope.
 
 ## Splash profile loading
 
@@ -138,40 +157,49 @@ Onboarding/AuthProcess first; only an existing session reaches `hasProfile()`.
 
 `hasProfile()` decorates its cached-user read and required remote `getUser()` with
 SessionCheck. Its Boolean selects Home or ProfileCreation. Lookup failures use the
-shared log/crash/dialog pipeline and do not become an absent profile. Retry
-relaunches the complete startup sequence. Closing the popup continues through
-`ErrorRecovery.Retry(onClose = ::openFromCache)`: `resolveCachedDirection()` uses only local data
-(onboarding flag, token, cached user) without SessionCheck; a session without a
-cached user goes to AuthProcess, never to ProfileCreation. If that local read fails
-too, its Retry repeats it and closing goes to AuthProcess. Session-loss navigation
-follows its [owning session observer](navigation.md#direction--navigation-translation).
+shared log/crash/dialog pipeline and do not become an absent profile. The block
+uses `ErrorRecovery.Retry`: Retry runs the complete startup sequence again, and
+closing the popup leaves Splash on screen; Back then leaves through Splash's
+existing back path. Session-loss navigation follows its
+[owning session observer](navigation.md#direction--navigation-translation).
 
 ## Retry and close
 
-Retry is the user's choice, never automatic. The popup's Retry button relaunches the
-failed `safeLaunch` call with identical arguments in the same ViewModel scope: the
-block overload re-runs the same lambda with the same loader and callbacks, the Flow
-overload re-collects the same flow instance. There is no retry loop, backoff or
-analytics retry policy in the ViewModel; infrastructure retries with attempt limits
-stay in their owning layer (for example the backend TokenProvider).
+Retry is the user's choice, never automatic. The popup's Retry button starts the next
+attempt of the failed `safeLaunch` inside the same Job: the block overload re-runs the
+same block with the same loader and recovery, the Flow overload re-collects the same
+source, including its `WhileActive` wrapper. Feature ViewModels add no retry loop,
+backoff or analytics retry policy; infrastructure retries with attempt limits stay in
+their owning layer (for example the backend TokenProvider).
 
-- **Retryable by default.** The safeLaunch block is the retried operation. Values
-  captured before `safeLaunch` are reused; read state inside the block when a retry
-  must see current state. Captured UI-bound handles (Login's Google/Apple UI context,
-  the Completed share capture) stay alive while the popup is open; after an Activity
-  recreation such a retry fails into a new popup. Intent events (clicks, submits) stay before `safeLaunch`
+- **`ErrorRecovery.Retry`** is the choice for every operation that can safely run
+  again. The popup offers Retry; closing it ends the operation with no continuation,
+  and the screen stays as the failure left it (Splash stays on screen until system
+  Back exits; Onboarding keeps an unknown consent, so Get started and Back stay
+  inactive until the app restarts after a local storage failure; TrainingExercise keeps
+  its last validation hints; a failed Flow collection stays ended). Values captured before `safeLaunch` are reused; read state
+  inside the block when a retry must see current state. Captured UI-bound handles
+  (Login's Google/Apple UI context, the Completed share capture) are held by the
+  suspended Job while the popup is open; after an Activity recreation such a retry
+  fails into a new popup. Intent events (clicks, submits) stay before `safeLaunch`
   so Retry does not repeat them; `trackOperation` inside the block reports each
   attempt.
-- **`ErrorRecovery.Close`** when a remote create may already have succeeded before a
-  later step of the same block fails, so a relaunch could duplicate it. The popup then
-  shows Got it. Current owners: TrainingCompleted save, Registration submit,
-  ProfileCompleted profile creation, ProfileBody apply and Debug training generation.
-- **Closing never re-runs the failed operation.** `onClose` continues the flow
-  instead: navigation (TrainingCompleted and ProfileCompleted go Back), cleanup
-  (TrainingExercise validation) or a local fallback (Splash `openFromCache`,
-  Onboarding consent observation and `continueWithoutConsent`). Do not pass the
-  enclosing function as `onClose`.
-- A retry after the owning ViewModel is destroyed is a no-op on its cancelled scope.
+- **`ErrorRecovery.Close(onClose)`** when a remote create may already have succeeded
+  before a later step of the same block fails, so another attempt could duplicate
+  it. The popup shows only Got it, and the required `onClose` runs after it closes.
+  Current owners: TrainingCompleted save and ProfileCompleted profile creation
+  (`onClose` navigates Back), Registration submit, ProfileBody apply and Debug
+  training generation (`onClose = {}`).
+- **Closing never re-runs the failed operation.** Do not start it again from
+  `onClose`, and do not pass the enclosing function as `onClose`.
+- **Cancellation while the popup is open.** Cancelling the Job cancels the pending
+  decision. Feature code holds no `safeLaunch` Job, so this happens when the owning
+  ViewModel is destroyed: its screen leaves the stack, or its dialog session is
+  released. The popup stays on screen, but its buttons only close it (Retry still
+  emits its intent event).
+- **Host invariant.** The dialog host's own openings collection (`DialogViewModel`)
+  is a pure state update and must not throw: a failure there would wait for a popup
+  that only this collection can open.
 
 Session-token observations (the `authorizationFeature.getToken()` chains in
 `RootViewModel` and `ProfileCreationViewModel`) are long-lived routing sources on the
@@ -181,19 +209,19 @@ which for Root means a process restart.
 Destinations follow [navigation ownership](navigation.md#direction--navigation-translation).
 
 While a bottom sheet is open, the host shows the error above its active step, so a
-dialog ViewModel stays alive for Retry; see
+dialog ViewModel and its suspended Job stay alive for Retry; see
 [dialogs](dialogs.md#dialogcontroller--dialogprovider).
 Error delivery and dismissal callbacks follow the
 [dialog host retention policy](dialogs.md#dialogcontroller--dialogprovider); a later opening must
-not discard the pending error that owns this recovery callback.
+not discard the pending error whose callbacks complete this decision.
 
 File logging isolation belongs to the
 [logger sink](../../platform-build-toolkit/references/toolkit-utilities-core.md).
 
 ## Anti-patterns (MUST avoid)
 
-- **Local catches that hide or present failures** — call throwing commands inside the shared pipeline, including private suspend helpers; request isolation follows the source contract above.
-- **Retrying from `onClose`** — closing the popup must not relaunch the failed operation; Retry is the button.
+- **Local catches that hide or present failures** — call throwing commands inside the shared pipeline, including private suspend helpers; requests driven by a latest-value source follow the source contract above.
+- **Retrying from `onClose`** — closing the popup must not start the failed operation again; Retry is the button.
 - **Converting a required credential failure into an absent account or early-success return.**
   Call the adapter directly inside the existing owned error/analytics block.
 - **Adding Flow<Result<T>> for ordinary cached observations** instead of preserving Flow<Domain>. Observation failures still propagate through Flow.safeLaunch; cached data does not guarantee a successful stream.
@@ -210,6 +238,6 @@ Data-layer classification and payload completeness follow the
 Adding a new error type touches three places **atomically**:
 1. `AppError.<New>` — the sealed hierarchy in `:ui-core:error:error-provider`.
 2. `AppErrorState.<New>` — the UI mirror in `:ui-core:state` (package `core.state.error`).
-3. The `when` branch in `ErrorProviderImpl.provide(...)` mapping `AppError.<New>` → `AppErrorState.<New>`.
+3. The `when` branch in `ErrorProviderImpl.resolve(...)` mapping `AppError.<New>` → `AppErrorState.<New>`.
 
 Unknown exceptions fall through as `AppErrorState.Unknown` (the `else` branch).

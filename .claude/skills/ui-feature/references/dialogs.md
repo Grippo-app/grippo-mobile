@@ -109,17 +109,18 @@ the host (inspect `DialogViewModel.open`, `onDismiss` and `onRelease`):
 
 - **Above an open dialog.** An `ErrorDisplay` opened while an ordinary session is
   presented (its top step is not an error) is pushed above the active step. The
-  dialog and its ViewModel stay underneath, so Retry relaunches the failed operation
-  in that ViewModel. Back and Retry pop the error and return to the dialog; toolbar
+  dialog, its ViewModel and the suspended operation stay underneath, so Retry
+  resumes that operation's next attempt in that ViewModel. Back and Retry pop the
+  error and return to the dialog; toolbar
   Close, a swipe or an outside tap closes the whole session.
 - **Queued.** An `ErrorDisplay` opened while an error is on top or while the session
   is dismissing waits in `pendingErrors`, first in, first out. Popping a nested error
   pushes the next pending error in its place; when none is pending, a pending
   ordinary opening starts dismissing the session. At release, pending errors open
   before the latest pending ordinary opening. A Retry that pops an error in that last
-  case relaunches in a dialog ViewModel the release then destroys, so a retry owned by
-  that dialog does nothing; while an error is above a dialog, the dialog's own
-  `finish`/`back`/`push` calls are ignored as for any covered step.
+  case resumes the attempt in the dialog ViewModel, whose release then cancels it.
+  While an error is above a dialog, the dialog's own `finish`/`back`/`push` calls are
+  ignored as for any covered step.
 - **No early replacement.** An active error waits for the user; later openings
   neither replace it nor invoke its callbacks early. An ordinary opening that
   arrives while an error is on top waits without dismissing it. Ordinary pending
@@ -142,9 +143,8 @@ Two components, both in `:shared/dialog/...` (inspect `DialogComponent.kt`, `con
 The bridge's internal `finish(pendingResult)` passes a result closure to the owning
 `DialogViewModel`. At the root it hides/releases the sheet before running callbacks;
 for a nested step it pops that step while the sheet remains visible. In both cases
-the removed step runs one callback: its pending result, or its config's `onDismiss`
-when it leaves without a result. A result replaces the dismissal callback; it does
-not follow it. The dialog feature does not resolve or construct this bridge.
+the removed config's `onDismiss` runs before the pending result. The dialog feature
+does not resolve or construct this bridge.
 
 Inspect `shared/.../dialog/content/DialogContentScreen.kt`: its `AnimatedContent`
 targets the active stack child, so local expansion does not trigger that step
@@ -178,19 +178,22 @@ dialogController.open(
 The picker VM emits a result Direction; its Component forwards the value through
 the existing `onResult` callback. The shared child factory translates that callback
 into `dialogNavigation.finish { router.onResult(value) }` and plain Back into
-`dialogNavigation.finish(null)`. The `ErrorDisplay` branch wires Retry the same way:
-`retry = router.onRetry?.let { retry -> { dialogNavigation.finish(retry) } }`, so Retry
-is the step's pending result and runs instead of `onClose`; a null `onRetry` leaves the
-popup without a Retry action.
+`dialogNavigation.finish(null)`. The `ErrorDisplay` branch forwards
+`retry = router.onRetry` like any config callback; `ErrorDisplayComponent` handles its
+Retry direction by calling `retry?.invoke()` and then `back()`. The error decision is
+completed with Retry first, so the `onClose` that the removal then runs is ignored
+(the first completion wins). A Retry tapped while the sheet is already hiding after
+Back, Close or a swipe can still win; this rare case is accepted. A null `onRetry`
+leaves the popup without a Retry action.
 
 Dialogs keep these typed config callbacks. Separate screen results use
 `ResultManager` (`references/results.md`); a dialog result does not require a relay.
 
 ## Dismissal behavior
 
-- **Whole-session release:** after hiding, `DialogViewModel.onRelease(session)` invalidates the old session by publishing the next session with its remaining queue, or empty State when nothing is pending. It then walks the old stack top-to-bottom and runs, for each step, its pending result or, when it has none, its `onDismiss`. Reentrant openings see the new state and cannot discard pending errors. Swipe/scrim or Close supplies no result; `onDismiss` alone does not establish confirmation/cancellation/user exit.
-- **Nested Back/result:** the top step is removed, then its pending result runs, or its `onDismiss` when it leaves without a result. The sheet stays open unless the error retention policy above starts dismissing it. `replaceCurrent` runs the replaced config's `onDismiss` after updating the stack and does not create a result.
-- **Caller cleanup:** use `onDismiss` for cleanup or returning an observed dismissal fact to its owning VM. It runs only when its step leaves without a result. Shared host/config plumbing does not construct telemetry; caller-VM-owned result callbacks may observe accepted results under the analytics skill.
+- **Whole-session release:** after hiding, `DialogViewModel.onRelease(session)` invalidates the old session by publishing the next session with its remaining queue, or empty State when nothing is pending. It then runs the old stack's `onDismiss` callbacks top-to-bottom and then the top step's pending result. Reentrant openings see the new state and cannot discard pending errors. Swipe/scrim or Close supplies no result; `onDismiss` alone does not establish confirmation/cancellation/user exit.
+- **Nested Back/result:** the top step is removed, then its `onDismiss` and pending result run in that order. The sheet stays open unless the error retention policy above starts dismissing it. `replaceCurrent` runs the replaced config's `onDismiss` after updating the stack and does not create a result.
+- **Caller cleanup:** use `onDismiss` for cleanup or returning an observed dismissal fact to its owning VM; it runs whenever its step is removed, before any pending result. Shared host/config plumbing does not construct telemetry; caller-VM-owned result callbacks may observe accepted results under the analytics skill.
 - **`dismissBySwipe`:** governs swipe/scrim hiding for the active config. Hardware/toolbar Back still follows the stack; toolbar Close closes the session. It does not turn a generic dismissal into a typed outcome.
 
 ## Rules summary (MUST)
@@ -369,7 +372,7 @@ already runs first; exclude `onResult` and other callbacks from content equality
 The existing `createChild(step: DialogStep, context)` obtains `router = step.config`
 and `dialogNavigation = navigationFor(step)`. Add the branch using that bound
 bridge; `finish` removes the active step or closes at the root, then runs the
-caller callback in place of `onDismiss`:
+caller callback after `onDismiss`:
 ```kotlin
 is DialogConfig.TagPicker -> Child.TagPicker(
     TagPickerComponent(

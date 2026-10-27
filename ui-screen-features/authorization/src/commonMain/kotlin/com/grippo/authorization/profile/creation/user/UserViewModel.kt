@@ -9,6 +9,7 @@ import com.grippo.analytics.common.models.ControlAction
 import com.grippo.analytics.common.models.InputKeyboardAction
 import com.grippo.authorization.analytics.AuthInputMapping
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.NameFormatState
 import com.grippo.core.state.formatters.UiText
@@ -129,7 +130,7 @@ internal class UserViewModel(
         }
 
         analytics.trackEvent(AuthEvent.User.Control(ControlAction.DismissRequested))
-        safeLaunch(loader = UserLoader.Logout) {
+        safeLaunch(loader = UserLoader.Logout, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(AuthOperation.Logout) {
                 logoutUseCase.execute()
             }

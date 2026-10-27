@@ -5,6 +5,7 @@ import com.grippo.analytics.profile.models.ProfileEvent
 import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.settings.LanguageEnumState
 import com.grippo.data.features.api.authorization.DeleteProfileUseCase
@@ -43,9 +44,11 @@ internal class ProfileSettingsViewModel(
     init {
         userFeature.observeUser()
             .onEach(::provideUser)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
-        observeAnalyticsConsent()
+        localSettingsFeature.observeAnalyticsConsent()
+            .onEach(::provideAnalyticsConsent)
+            .safeLaunch(processing = Processing.Infinity, recovery = ErrorRecovery.Retry)
     }
 
     private fun provideUser(value: User?) {
@@ -54,11 +57,10 @@ internal class ProfileSettingsViewModel(
         update { it.copy(user = user) }
     }
 
-    private fun observeAnalyticsConsent() {
-        update { it.copy(analyticsConsent = null) }
-        localSettingsFeature.observeAnalyticsConsent()
-            .onEach { consent -> update { it.copy(analyticsConsent = consent == AnalyticsConsent.Granted) } }
-            .safeLaunch(processing = Processing.Infinity, onError = ::observeAnalyticsConsent)
+    private fun provideAnalyticsConsent(value: AnalyticsConsent) {
+        val analyticsConsent = value == AnalyticsConsent.Granted
+
+        update { it.copy(analyticsConsent = analyticsConsent) }
     }
 
     private fun currentLanguage(): LanguageEnumState {
@@ -70,7 +72,7 @@ internal class ProfileSettingsViewModel(
     override fun onAnalyticsConsentChange(granted: Boolean) {
         val current = state.value.analyticsConsent ?: return
         if (current == granted || ProfileSettingsLoader.AnalyticsConsent in loaders.value) return
-        safeLaunch(loader = ProfileSettingsLoader.AnalyticsConsent) {
+        safeLaunch(loader = ProfileSettingsLoader.AnalyticsConsent, recovery = ErrorRecovery.Retry) {
             localSettingsFeature.setAnalyticsConsent(granted)
         }
     }
@@ -91,7 +93,7 @@ internal class ProfileSettingsViewModel(
 
                 val language = value.toDomain()
 
-                safeLaunch {
+                safeLaunch(recovery = ErrorRecovery.Retry) {
                     analytics.trackOperation(ProfileOperation.SaveLanguage) {
                         localSettingsFeature.setLanguage(language)
                     }
@@ -104,7 +106,7 @@ internal class ProfileSettingsViewModel(
 
     override fun onLogoutClick() {
         analytics.trackEvent(ProfileEvent.Settings.Logout)
-        safeLaunch(loader = ProfileSettingsLoader.LogoutButton) {
+        safeLaunch(loader = ProfileSettingsLoader.LogoutButton, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.Logout) {
                 logoutUseCase.execute()
             }
@@ -118,7 +120,7 @@ internal class ProfileSettingsViewModel(
             description = UiText.Res(Res.string.account_deletion_description),
             onResult = {
                 analytics.trackEvent(ProfileEvent.Settings.DeleteConfirmed)
-                safeLaunch(loader = ProfileSettingsLoader.DeleteAccountButton) {
+                safeLaunch(loader = ProfileSettingsLoader.DeleteAccountButton, recovery = ErrorRecovery.Retry) {
                     analytics.trackOperation(ProfileOperation.DeleteAccount) {
                         deleteProfileUseCase.execute()
                     }

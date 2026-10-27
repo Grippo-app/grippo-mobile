@@ -23,9 +23,9 @@ An existing deviation in the code never authorizes copying it.
   `provide*` handler with more than one `update`.
   See [ViewModel layout](code-style.md#viewmodel-layout).
 - **A private method extracted only to restart a failed startup operation**, or a
-  hand-written retry loop or new scope for it. The error popup's Retry relaunches
-  the failed `safeLaunch` call; a startup operation with no other caller stays in
-  `init`. See [Kotlin blocks](code-style.md#kotlin-blocks).
+  hand-written retry loop or new scope for it. Foundation runs the next attempt of
+  a failed `safeLaunch` when the user taps Retry; a startup operation with no other
+  caller stays in `init`. See [Kotlin blocks](code-style.md#kotlin-blocks).
 - **Blank lines between related declarations** (parameters, model, State, interface,
   token or style members). The positive rule is in [code style](code-style.md#kotlin-blocks).
 
@@ -48,8 +48,8 @@ An existing deviation in the code never authorizes copying it.
 - **Manual `CoroutineExceptionHandler`** inside a VM. The pipeline handles errors.
 - **Local exception handling that hides, replaces or presents unhandled failures
   in a ViewModel** (`try/catch`, `runCatching`, result failure branches). Call throwing
-  commands inside `safeLaunch`, including private suspend helpers.
-  Request isolation, recovery wrappers and stage flags follow
+  commands inside `safeLaunch`, including private suspend helpers. Recovery
+  wrappers and stage flags follow
   [the error pipeline](../../ui-feature/references/error-pipeline.md).
 - **`async { }.await()`** to start a single piece of async work. Use `safeLaunch { ... }`. `async` is for parallel forks.
 
@@ -133,17 +133,21 @@ Screen-result rules are defined in the ui-feature skill,
 - **Local `try/catch`, `runCatching`, `Result.onFailure`, `recover`, `fold` or
   `getOrElse` that hide, replace or present unhandled failures in a ViewModel**,
   including private helpers and extensions. Use `safeLaunch` → `ErrorProvider`.
-  Private suspend helpers propagate original errors through the same pipeline;
-  request isolation follows the [error pipeline](../../ui-feature/references/error-pipeline.md#requests-driven-by-a-long-lived-source), with no new scopes, recovery wrappers or stage flags.
+  Private suspend helpers propagate original errors through the same pipeline,
+  with no new scopes, recovery wrappers or stage flags.
   Business and credential-adapter commands throw directly inside the owned error
   pipeline; failure MUST NOT be silently discarded.
+- **A nested `safeLaunch` joined from a latest-value handler** (a `mapLatest` step
+  that launches its request and cancels and joins it in `finally`). The request is
+  a plain step of the chain; see
+  [requests driven by a long-lived source](../../ui-feature/references/error-pipeline.md#requests-driven-by-a-long-lived-source).
 - **Impure `safeLaunch.mapError`** or replacing original errors before analytics,
   logging or crash reporting. Mapping only supplies a standard dialog representation
   for known exceptions; return unknown errors unchanged and preserve cancellation/fatal errors.
-- **Treating `ErrorRecovery.onClose` as an immediate handler or relaunching the
-  failed operation from it**, including passing the enclosing function as `onClose`.
-  It runs only after the popup closes without Retry and does not suppress the
-  popup. The choice between `ErrorRecovery.Retry` and `Close` follows
+- **Treating `ErrorRecovery.Close.onClose` as an immediate handler or starting the
+  failed operation again from it**, including passing the enclosing function as `onClose`.
+  It runs only after the Got-it popup closes and does not suppress the popup. The
+  choice between `ErrorRecovery.Retry` and `Close` follows
   [Retry and close](../../ui-feature/references/error-pipeline.md#retry-and-close).
 - **Custom error dialogs** outside `DialogConfig.ErrorDisplay`.
 - **Recording exceptions to Firebase manually.** Pipeline does it.

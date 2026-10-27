@@ -5,6 +5,7 @@ import com.grippo.analytics.profile.models.ProfileEvent
 import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.menu.ProfileMenu
 import com.grippo.core.state.menu.SettingsMenu
 import com.grippo.data.features.api.equipment.models.Equipment
@@ -34,7 +35,7 @@ internal class ProfileMenuViewModel(
     }
 
     init {
-        safeLaunch(loader = ProfileMenuLoader.User) {
+        safeLaunch(loader = ProfileMenuLoader.User, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.RefreshUser) {
                 userFeature.getUser()
             }
@@ -42,33 +43,33 @@ internal class ProfileMenuViewModel(
 
         userFeature.observeUser()
             .onEach(::provideUser)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         goalFeature.observeGoal()
             .onEach(::provideGoal)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         excludedMusclesFeature.observeExcludedMuscles()
             .onEach(::provideExcludedMuscles)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         excludedEquipmentsFeature.observeExcludedEquipments()
             .onEach(::provideExcludedEquipments)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
-        safeLaunch(loader = ProfileMenuLoader.Goal) {
+        safeLaunch(loader = ProfileMenuLoader.Goal, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.RefreshGoal) {
                 goalFeature.getGoal()
             }
         }
 
-        safeLaunch(loader = ProfileMenuLoader.Muscles) {
+        safeLaunch(loader = ProfileMenuLoader.Muscles, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.RefreshMuscles) {
                 excludedMusclesFeature.getExcludedMuscles()
             }
         }
 
-        safeLaunch(loader = ProfileMenuLoader.Equipments) {
+        safeLaunch(loader = ProfileMenuLoader.Equipments, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.RefreshEquipments) {
                 excludedEquipmentsFeature.getExcludedEquipments()
             }

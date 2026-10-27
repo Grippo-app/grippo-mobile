@@ -4,6 +4,7 @@ import com.grippo.analytics.exercise.ExerciseAnalytics
 import com.grippo.analytics.exercise.models.ExerciseEvent
 import com.grippo.analytics.exercise.models.ExerciseOperation
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.data.features.api.training.SelectExerciseHistoryUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Exercise
@@ -26,10 +27,11 @@ public class ExerciseViewModel(
     init {
         trainingFeature.observeExercise(id)
             .onEach(::provideExercise)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         safeLaunch(
             loader = ExerciseLoader.History,
+            recovery = ErrorRecovery.Retry,
         ) {
             val content = state.first { it !is ExerciseState.Loading }
             if (content !is ExerciseState.Available) {

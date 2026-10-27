@@ -1,6 +1,7 @@
 package com.grippo.shared.root
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.stage.StageState
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.screen.api.ExercisesRouter
@@ -14,13 +15,9 @@ public class RootViewModel(
     RootContract {
 
     init {
-        observeToken()
-    }
-
-    private fun observeToken() {
         authorizationFeature.getToken()
             .onEach(::provideToken)
-            .safeLaunch(onError = ::observeToken)
+            .safeLaunch(recovery = ErrorRecovery.Retry)
     }
 
     private fun provideToken(value: String?) {

@@ -5,6 +5,7 @@ import com.grippo.analytics.authorization.models.AuthEvent
 import com.grippo.analytics.authorization.models.AuthScreen
 import com.grippo.analytics.common.models.ControlAction
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.equipment.models.EquipmentGroup
 import com.grippo.domain.state.equipment.toState
@@ -28,7 +29,7 @@ internal class MissingEquipmentsViewModel(
         equipmentFeature
             .observeEquipments()
             .onEach(::provideEquipments)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
     }
 
     private fun provideEquipments(list: List<EquipmentGroup>) {

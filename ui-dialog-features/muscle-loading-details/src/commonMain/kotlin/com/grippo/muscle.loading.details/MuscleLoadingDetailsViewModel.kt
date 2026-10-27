@@ -3,6 +3,7 @@ package com.grippo.muscle.loading.details
 import com.grippo.analytics.muscle.loading.details.MuscleLoadingDetailsAnalytics
 import com.grippo.analytics.muscle.loading.details.models.MuscleLoadingDetailsEvent
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.data.features.api.metrics.distribution.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.distribution.models.MuscleLoadSummary
@@ -26,7 +27,7 @@ public class MuscleLoadingDetailsViewModel(
         trainingFeature.observeTrainings(start = range.from, end = range.to)
             .flatMapLatest(muscleLoadingSummaryUseCase::observeFromTrainings)
             .onEach(::provideMuscleLoad)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
     }
 
     private fun provideMuscleLoad(value: MuscleLoadSummary) {

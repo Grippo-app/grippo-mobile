@@ -10,6 +10,7 @@ import com.grippo.analytics.common.models.InputKeyboardAction
 import com.grippo.authorization.analytics.AuthInputMapping
 import com.grippo.core.error.provider.AppError
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.data.features.api.authorization.LoginUseCase
@@ -128,9 +129,9 @@ internal class LoginViewModel(
             return
         }
 
-        safeLaunch(loader = LoginLoader.LoginByEmailButton) {
-            analytics.trackEvent(AuthEvent.Login.Submit(method = Method.Email))
+        analytics.trackEvent(AuthEvent.Login.Submit(method = Method.Email))
 
+        safeLaunch(loader = LoginLoader.LoginByEmailButton, recovery = ErrorRecovery.Retry) {
             val hasProfile = analytics.trackOperation(AuthOperation.Login(method = Method.Email)) {
                 loginUseCase.loginEmail(
                     email = email.value,
@@ -147,12 +148,13 @@ internal class LoginViewModel(
             return
         }
 
+        analytics.trackEvent(AuthEvent.Login.Submit(method = Method.Google))
+
         safeLaunch(
             loader = LoginLoader.LoginByGoogleButton,
             mapError = ::mapAuthError,
+            recovery = ErrorRecovery.Retry,
         ) {
-            analytics.trackEvent(AuthEvent.Login.Submit(method = Method.Google))
-
             val hasProfile = analytics.trackOperation(AuthOperation.Login(method = Method.Google)) {
                 val account = googleAuthProvider
                     .getUiProvider(context)
@@ -170,12 +172,13 @@ internal class LoginViewModel(
             return
         }
 
+        analytics.trackEvent(AuthEvent.Login.Submit(method = Method.Apple))
+
         safeLaunch(
             loader = LoginLoader.LoginByAppleButton,
             mapError = ::mapAuthError,
+            recovery = ErrorRecovery.Retry,
         ) {
-            analytics.trackEvent(AuthEvent.Login.Submit(method = Method.Apple))
-
             val hasProfile = analytics.trackOperation(AuthOperation.Login(method = Method.Apple)) {
                 val account = appleAuthProvider
                     .getUiProvider(context)

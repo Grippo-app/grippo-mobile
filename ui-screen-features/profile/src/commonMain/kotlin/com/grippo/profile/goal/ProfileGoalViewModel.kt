@@ -6,6 +6,7 @@ import com.grippo.analytics.profile.models.ProfileEvent
 import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.profile.PersonalizationKeyEnumState
@@ -46,10 +47,10 @@ internal class ProfileGoalViewModel(
                 .filterNotNull()
                 .take(1)
                 .onEach(::provideGoal)
-                .safeLaunch(processing = Processing.Infinity)
+                .safeLaunch(processing = Processing.Infinity, recovery = ErrorRecovery.Retry)
         }
 
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.RefreshGoal) {
                 goalFeature.getGoal()
             }
@@ -85,24 +86,25 @@ internal class ProfileGoalViewModel(
     }
 
     override fun onSave() {
-        safeLaunch(loader = ProfileGoalLoader.SaveButton) {
-            val current = state.value
-            val targetDate = current.targetDate as? DateTimeFormatState.Valid ?: return@safeLaunch
+        val current = state.value
+        val targetDate = current.targetDate as? DateTimeFormatState.Valid ?: return
 
-            val primaryGoal = current.selectedPrimary?.toDomain() ?: return@safeLaunch
+        val primaryGoal = current.selectedPrimary?.toDomain() ?: return
 
-            val secondaryGoal = current.selectedSecondary?.toDomain()
+        val secondaryGoal = current.selectedSecondary?.toDomain()
 
-            val personalizations = current.selectedPersonalization.map { it.toDomain() }
+        val personalizations = current.selectedPersonalization.map { it.toDomain() }
 
-            val request = SetGoal(
-                primaryGoal = primaryGoal,
-                secondaryGoal = secondaryGoal,
-                target = targetDate.value,
-                personalizations = personalizations,
-            )
+        val request = SetGoal(
+            primaryGoal = primaryGoal,
+            secondaryGoal = secondaryGoal,
+            target = targetDate.value,
+            personalizations = personalizations,
+        )
 
-            analytics.trackEvent(ProfileEvent.Goal.Save)
+        analytics.trackEvent(ProfileEvent.Goal.Save)
+
+        safeLaunch(loader = ProfileGoalLoader.SaveButton, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.SaveGoal) {
                 goalFeature.setGoal(request)
             }

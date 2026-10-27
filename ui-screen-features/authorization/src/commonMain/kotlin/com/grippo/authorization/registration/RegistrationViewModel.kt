@@ -8,6 +8,7 @@ import com.grippo.analytics.authorization.models.CredentialField
 import com.grippo.analytics.common.models.InputKeyboardAction
 import com.grippo.authorization.analytics.AuthInputMapping
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.data.features.api.authorization.RegisterUseCase
@@ -99,7 +100,7 @@ internal class RegistrationViewModel(
 
         analytics.trackEvent(AuthEvent.Registration.Submit)
 
-        safeLaunch(loader = RegistrationLoader.RegisterButton) {
+        safeLaunch(loader = RegistrationLoader.RegisterButton, recovery = ErrorRecovery.Close(onClose = {})) {
             val hasProfile = analytics.trackOperation(AuthOperation.Register) {
                 registerUseCase.createAccount(
                     email = email.value,

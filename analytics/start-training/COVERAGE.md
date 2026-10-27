@@ -48,7 +48,7 @@ The range refresh calls the throwing `getTrainings` in its own startup safeLaunc
 under the Options loader, in parallel with the Room observation that builds options
 from the current cache and rebuilds them when the refresh lands. Refresh,
 observation and preset failures use the shared error pipeline; the dialog host shows
-the error above the open sheet, its Retry relaunches the failed job in this VM and
+the error above the open sheet, its Retry repeats the failed job in this VM and
 Back returns to the sheet with the current options; a refresh failure emits no BuildOptions
 start, failure or duration. BuildOptions completed means the preset was
 generated, not that a workout started. The Options loader indicates history refresh;

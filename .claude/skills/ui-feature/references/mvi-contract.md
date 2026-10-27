@@ -162,11 +162,11 @@ Rules:
 - Run async work via `safeLaunch { ... }` or `Flow.safeLaunch()`. **Never** `viewModelScope.launch`, `GlobalScope`, or raw `CoroutineScope`.
 - Call throwing Feature/UseCase commands inside `safeLaunch`; do not hide or
   present unhandled failures with local catches or result failure handlers. Pure
-  `mapError` changes only dialog presentation; Retry and `ErrorRecovery.onClose`
-  follow [Retry and close](error-pipeline.md#retry-and-close). Suspend helpers
+  `mapError` changes only dialog presentation; the required `ErrorRecovery` follows
+  [Retry and close](error-pipeline.md#retry-and-close). Suspend helpers
   propagate failures to the caller's `safeLaunch`; no local catches or
-  telemetry-owned recovery. Request isolation follows
-  [the shared error rules](error-pipeline.md).
+  telemetry-owned recovery. Requests driven by a latest-value source follow
+  [the shared error rules](error-pipeline.md#requests-driven-by-a-long-lived-source).
 
 (Full `BaseViewModel` API: `references/base-classes.md`.)
 
@@ -223,7 +223,7 @@ The seven-file pattern is the **uniform** cost: every feature looks the same.
 - **Dialogs** — `DialogComponent` in `:shared` hosts a separate `SlotNavigation<DialogSession>` parallel to the screen stack; its content uses the internal `StackNavigation<DialogStep>`. Both use `serializer = null`. Plain `DialogConfig` carries the required `title: UiText`, typed content and live callbacks; `hasSameContentAs` compares content/titles excluding callbacks. Ordinary screen ViewModels call `DialogController.open`; nested features forward semantic directions and typed callbacks to the host's step-bound Session. The host removes the step or closes the root sheet; callback ordering follows [dismissal behavior](dialogs.md#dismissal-behavior). These sessions are not restored after process death. See [dialogs.md](dialogs.md).
 - **Screen results** — use `ResultManager` / `ResultKey` through BaseComponent. Receiver companion definitions own keys; pass explicit serializable `resultKey` to the producer, which sends then requests ordinary Back. Observers handle data without closing the sender. No result relays, caller inference or runtime selection flags. Action types stay inside the producer's `Router.<Screen>.Action`. Read `references/results.md` for SharedFlow semantics and verification.
 - **Error pipeline** — one path for failures from `safeLaunch`, including suspend
-  helpers; request isolation follows the error-pipeline owner, without local catches or recovery wrappers. Presentation mapping
+  helpers; latest-value requests follow the error-pipeline owner, without local catches or recovery wrappers. Presentation mapping
   cannot change business results, cancellation or original analytics/log/crash
   failures. Read [error-pipeline.md](error-pipeline.md).
 - **Process-death restoration** — Decompose `StateKeeper` serializes screen router stacks; every `*Router` sealed class **and** every payload inside it must be `@Serializable` (a `ResultKey` serializes as its address; the `Action` protocol it names is not serialized — see [results.md](results.md)). Restoration requires saved state from the platform shell; live dialog sessions are excluded. See [process-death.md](process-death.md) for the implemented platform behavior.

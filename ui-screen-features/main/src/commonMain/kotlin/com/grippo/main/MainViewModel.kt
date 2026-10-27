@@ -3,6 +3,7 @@ package com.grippo.main
 import com.grippo.analytics.main.MainAnalytics
 import com.grippo.analytics.main.models.MainEvent
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.stage.StageState
 import com.grippo.data.features.api.goal.GoalSetupSuggestionUseCase
@@ -34,7 +35,7 @@ public class MainViewModel(
     }
 
     private fun resumeOrStartTraining() {
-        safeLaunch(loader = MainLoader.StartTraining) {
+        safeLaunch(loader = MainLoader.StartTraining, recovery = ErrorRecovery.Retry) {
             if (trainingFeature.getDraftTraining().first() != null) {
                 dialogController.open(
                     DialogConfig.DraftTraining(

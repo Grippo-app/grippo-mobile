@@ -17,7 +17,7 @@ there rather than duplicated in each recipe.
 | Cross-feature navigation jump (recipe) | `navigation.md` (§ Cross-feature navigation) → `module-structure.md` (§ feature-to-feature anti-pattern) |
 | Cross-component results (`ResultManager`, receiver-owned keys, SharedFlow semantics) | `results.md` |
 | Process-death / restoration (7 hard rules) | `process-death.md` |
-| Error pipeline (sendError, ErrorProvider, dialog mapping, error triad) | `error-pipeline.md` |
+| Error pipeline (`safeLaunch` attempts, `resolve`, Retry/Close, ErrorProvider, dialog mapping, error triad) | `error-pipeline.md` |
 | Data-side operation outcomes, cancellation, cache reconciliation | [operation-outcomes](../../data-layer/references/operation-outcomes.md) (data-layer owns it) |
 | Kotlin style, naming, packages, ViewModel layout | [code-style](../../validation-gates/references/code-style.md) (validation-gates owns it) |
 | `:ui-core:state` models / `UiText` / `*FormatState` / state conventions / `stub*` | `state.md` → `module-structure.md` (§ ui-core), `error-pipeline.md` (§ error triad) |
@@ -36,7 +36,7 @@ there rather than duplicated in each recipe.
 | `navigation.md` | Decompose 3 layers, `*Router` sealed classes, `ChildStack`/`createChild`/`Child`, Direction→nav, **cross-feature nav recipe**, animations, deeplinks, back, anti-patterns |
 | `dialogs.md` | `SlotNavigation`/`DialogConfig`/`DialogController`/`DialogProvider`, `DialogComponent`/`DialogContentComponent`, in-sheet nav, returning a result, dismissal, **add-dialog recipe** |
 | `results.md` | receiver-owned companion keys, serialized resultKey, sendResult → back, SharedFlow semantics/lifecycle, Action protocols, verification, ViewModel data flow |
-| `error-pipeline.md` | single error path, `ErrorProvider`/`ErrorProviderImpl` mapping, `sendError`, authoring rules, the `AppError`→`AppErrorState`→`ErrorProviderImpl` triad |
+| `error-pipeline.md` | single error path, `ErrorProvider`/`ErrorProviderImpl` mapping, `BaseViewModel.resolve` and Retry/Close, authoring rules, the `AppError`→`AppErrorState`→`ErrorProviderImpl` triad |
 | `process-death.md` | StateKeeper mechanism, 7 hard rules, `retainedInstance`, iOS specifics, anti-patterns |
 | `base-classes.md` | `BaseViewModel`/`BaseComponent`/`BaseComposeScreen` API + rules, marker interfaces, `OperationManager`, platform helpers, current source ownership |
 | `state.md` | `UiText`, `*FormatState`, state conventions, sealed-interface states, no flat scalar piles, `stub*` |

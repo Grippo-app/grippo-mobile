@@ -4,6 +4,7 @@ import com.grippo.analytics.exercise.example.ExerciseExampleAnalytics
 import com.grippo.analytics.exercise.example.models.ExerciseExampleEvent
 import com.grippo.analytics.exercise.example.models.ExerciseExampleOperation
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.data.features.api.achievements.Achievement
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -43,22 +44,22 @@ public class ExerciseExampleDetailsViewModel(
 
         example
             .onEach(::provideExerciseExample)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         example
             .combine(observeRecentExercises(id)) { example, exercises ->
                 example to exercises
             }
             .onEach(::provideEstimatedOneRepMax)
-            .safeLaunch(processing = Processing.Infinity)
+            .safeLaunch(processing = Processing.Infinity, recovery = ErrorRecovery.Retry)
 
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ExerciseExampleOperation.LoadExample) {
                 exerciseExampleFeature.getExerciseExampleById(id)
             }
         }
 
-        safeLaunch(loader = ExerciseExampleDetailsLoader.Achievements) {
+        safeLaunch(loader = ExerciseExampleDetailsLoader.Achievements, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ExerciseExampleOperation.LoadAchievements) {
                 val achievements = exerciseMetricsFeature.getAchievementsByExampleId(id)
                 provideAchievements(achievements)

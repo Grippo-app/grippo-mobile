@@ -5,6 +5,7 @@ import com.grippo.analytics.authorization.models.AuthEvent
 import com.grippo.analytics.authorization.models.AuthScreen
 import com.grippo.analytics.common.models.ControlAction
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.domain.state.muscles.toState
@@ -27,7 +28,7 @@ internal class ExcludedMusclesViewModel(
     init {
         muscleFeature.observeMuscles()
             .onEach(::provideMuscles)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
     }
 
     private fun provideMuscles(list: List<MuscleGroup>) {

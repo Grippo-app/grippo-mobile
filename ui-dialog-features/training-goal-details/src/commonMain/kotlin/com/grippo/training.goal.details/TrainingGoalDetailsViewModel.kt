@@ -3,6 +3,7 @@ package com.grippo.training.goal.details
 import com.grippo.analytics.training.goal.details.TrainingGoalDetailsAnalytics
 import com.grippo.analytics.training.goal.details.models.TrainingGoalDetailsEvent
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.goal.GoalFeature
 import com.grippo.data.features.api.goal.models.Goal
@@ -40,7 +41,7 @@ public class TrainingGoalDetailsViewModel(
                 exerciseExampleFeature.observeExerciseExamples(ids).map { source }
             }
             .mapLatest(::provideProgress)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
     }
 
     private suspend fun provideProgress(value: Pair<List<Training>, Goal?>) {

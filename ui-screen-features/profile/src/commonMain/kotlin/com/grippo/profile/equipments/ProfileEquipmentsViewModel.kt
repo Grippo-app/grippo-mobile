@@ -5,6 +5,7 @@ import com.grippo.analytics.profile.models.ProfileEvent
 import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.api.equipment.models.EquipmentGroup
@@ -33,9 +34,9 @@ internal class ProfileEquipmentsViewModel(
             flow2 = excludedEquipmentsFeature.observeExcludedEquipments(),
             transform = ::provideEquipments
         )
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.RefreshEquipments) {
                 excludedEquipmentsFeature.getExcludedEquipments()
             }
@@ -111,7 +112,7 @@ internal class ProfileEquipmentsViewModel(
         val excludedEquipmentIds = allIds - current.selectedEquipmentIds
 
         analytics.trackEvent(ProfileEvent.Equipments.Apply)
-        safeLaunch(loader = ProfileEquipmentsLoader.ApplyButton) {
+        safeLaunch(loader = ProfileEquipmentsLoader.ApplyButton, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.SaveEquipments) {
                 excludedEquipmentsFeature.setExcludedEquipments(excludedEquipmentIds)
             }

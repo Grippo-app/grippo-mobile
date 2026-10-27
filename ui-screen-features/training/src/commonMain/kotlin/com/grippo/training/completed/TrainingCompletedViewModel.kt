@@ -6,6 +6,7 @@ import com.grippo.analytics.training.models.TrainingEvent
 import com.grippo.analytics.training.models.TrainingOperation
 import com.grippo.analytics.training.models.TrainingScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.metrics.engagement.TrainingStreakState
@@ -57,8 +58,6 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.date.utils.currentDateFlow
 import com.grippo.toolkit.share.ImageSharer
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -71,7 +70,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDateTime
 
 internal class TrainingCompletedViewModel(
@@ -114,29 +112,29 @@ internal class TrainingCompletedViewModel(
 
         savedTrainings
             .onEach(::provideTraining)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         savedTrainings
             .filterNotNull()
             .take(1)
             .mapLatest(::loadRecords)
-            .safeLaunch(processing = Processing.Infinity)
+            .safeLaunch(processing = Processing.Infinity, recovery = ErrorRecovery.Retry)
 
         savedIds
             .take(1)
             .mapLatest { refreshExamples() }
-            .safeLaunch(processing = Processing.Infinity)
+            .safeLaunch(processing = Processing.Infinity, recovery = ErrorRecovery.Retry)
 
         localSettingsFeature.observeRange()
             .combine(currentDateFlow()) { range, _ -> range }
             .onEach(::provideRange)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         savedIds
             .combine(currentDateFlow()) { _, _ -> DateTimeUtils.now() }
             .flatMapLatest(::observeWeeklyTrainings)
             .onEach(::provideWeeklyVolume)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         val savedPeriods = savedIds
             .flatMapLatest { observePeriods() }
@@ -156,12 +154,12 @@ internal class TrainingCompletedViewModel(
             .distinctUntilChanged()
             .flatMapLatest(::observePeriodTrainings)
             .onEach(::provideTrainings)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         savedPeriods
             .flatMapLatest(::observePeriodGoal)
             .mapLatest(::provideGoalProgress)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         savedPeriods
             .combine(comparisonPeriods.mapNotNull { it.value }) { period, comparisonPeriod ->
@@ -169,13 +167,11 @@ internal class TrainingCompletedViewModel(
             }
             .distinctUntilChanged()
             .mapLatest(::refreshTrainings)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         safeLaunch(
             loader = TrainingCompletedLoader.SaveTraining,
-            onError = {
-                navigateTo(TrainingCompletedDirection.Back)
-            },
+            recovery = ErrorRecovery.Close(onClose = { navigateTo(TrainingCompletedDirection.Back) }),
         ) {
             val id = state.value.savedTrainingId ?: saveTraining(
                 exercises = exercises,
@@ -308,19 +304,8 @@ internal class TrainingCompletedViewModel(
 
         val end = maxOf(period.to, comparisonPeriod.to, window.to)
 
-        val refresh = safeLaunch {
-            analytics.trackOperation(operation = TrainingOperation.RefreshTrainings) {
-                trainingFeature.getTrainings(start = start, end = end)
-            }
-        }
-
-        try {
-            refresh.join()
-        } finally {
-            // A handled request failure must leave this period subscription alive.
-            withContext(NonCancellable) {
-                refresh.cancelAndJoin()
-            }
+        analytics.trackOperation(operation = TrainingOperation.RefreshTrainings) {
+            trainingFeature.getTrainings(start = start, end = end)
         }
     }
 
@@ -505,7 +490,7 @@ internal class TrainingCompletedViewModel(
 
         analytics.trackEvent(event = TrainingEvent.Completed.ShareClicked)
 
-        safeLaunch(loader = TrainingCompletedLoader.ShareRecap) {
+        safeLaunch(loader = TrainingCompletedLoader.ShareRecap, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(operation = TrainingOperation.ShareRecap) {
                 val image = capture()
                 imageSharer.share(image = image, fileName = SHARE_FILE_NAME)

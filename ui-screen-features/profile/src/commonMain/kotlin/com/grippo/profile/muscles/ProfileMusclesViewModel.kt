@@ -5,6 +5,7 @@ import com.grippo.analytics.profile.models.ProfileEvent
 import com.grippo.analytics.profile.models.ProfileOperation
 import com.grippo.analytics.profile.models.ProfileScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.Muscle
@@ -33,9 +34,9 @@ internal class ProfileMusclesViewModel(
             flow2 = excludedMusclesFeature.observeExcludedMuscles(),
             transform = ::provideMuscles
         )
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.RefreshMuscles) {
                 excludedMusclesFeature.getExcludedMuscles()
             }
@@ -105,7 +106,7 @@ internal class ProfileMusclesViewModel(
         val excludedMuscleIds = allIds - current.selectedMuscleIds
 
         analytics.trackEvent(ProfileEvent.Muscles.Apply)
-        safeLaunch(loader = ProfileMusclesLoader.ApplyButton) {
+        safeLaunch(loader = ProfileMusclesLoader.ApplyButton, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.SaveMuscles) {
                 excludedMusclesFeature.setExcludedMuscles(excludedMuscleIds)
             }

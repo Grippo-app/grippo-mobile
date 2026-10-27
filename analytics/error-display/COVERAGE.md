@@ -15,11 +15,14 @@ screen hook or feature lifecycle wiring. Analytics is injected through the norma
 retainedInstance factory. Shared registers the generated annotated module and its
 uniquely qualified `error_display_analytics` schema catalog once.
 
-`BaseViewModel.safeLaunch` passes `ErrorRecovery.Retry` (default) or
-`ErrorRecovery.Close` through `ErrorProvider.provide(exception, onRetry, onClose)`
-into `DialogConfig.ErrorDisplay(onRetry, onClose)`. The config's `onRetry` is a
-relaunch of the failed call, or null for `Close`; the host child factory turns it into
-`finish(onRetry)`, so the relaunch runs instead of `onClose` once the error leaves.
+`BaseViewModel.safeLaunch` asks `ErrorProvider.resolve(error, retryable)` for an
+`ErrorDecision` (`retryable` is false for `ErrorRecovery.Close`), which opens
+`DialogConfig.ErrorDisplay(onRetry, onClose)`. The config's `onRetry` is a
+completion of the failed operation's pending `ErrorDecision.Retry`, or null for `Close`;
+`onClose` completes `ErrorDecision.Close`. The host forwards `onRetry` to the component,
+which calls it before its Back, and the first completion wins, so a Retry is never
+followed by `onClose`. The failed operation's Job waits for that decision and repeats or
+ends itself; only `ErrorRecovery.Close(onClose)` runs a continuation after a close.
 The controller delivers openings without conflation. An error opened while an
 ordinary sheet is presented is pushed above its active step; otherwise errors open a
 root session or queue FIFO before the latest ordinary opening. An active error
@@ -28,12 +31,12 @@ retry, dismissal or result facts.
 
 | Callback / path | Observation | Meaning and eligibility |
 |---|---|---|
-| ErrorDisplayViewModel.onRetry | RetryRequested / error_display_retry_requested v1 | Primary button labelled Retry, rendered only when `retryable` (config `onRetry != null`); emitted before the Retry direction. Intent, not a successful retry; it names no operation or error |
+| ErrorDisplayViewModel.onRetry | RetryRequested / error_display_retry_requested v1 | Primary button labelled Retry, rendered only when `retryable` (config `onRetry != null`); emitted before the Retry direction. Intent, not a successful retry; it names no operation or error. If the failed operation's Job was cancelled while the popup was open (ViewModel destroyed or its collection cancelled) it is still emitted, but no attempt follows and no `onClose` runs |
 | ErrorDisplayViewModel.onDismiss | DismissRequested / error_display_dismiss_requested v1 | Emitted before the unchanged Back direction |
 | Got it button | DismissRequested through onDismiss | Rendered only for `ErrorRecovery.Close` popups (TrainingCompleted save, Registration submit, ProfileCompleted creation, ProfileBody apply, Debug generate training) |
 | Component BackCallback | DismissRequested through onDismiss when dispatched to this component | No inferred button/back source; host Back can bypass the leaf |
 | Host Back, toolbar back arrow or Close, swipe/outside dismissal, programmatic closure | Deliberate omission | May bypass the leaf; shared plumbing does not construct feature events. They run `onClose`, never the retry |
-| Open intent, dialog view/close, retry outcome | Deliberate omission | No owning feature callback/presentation contract in this scope; the relaunched operation reports its own attempt through its feature's `trackOperation` |
+| Open intent, dialog view/close, retry outcome | Deliberate omission | No owning feature callback/presentation contract in this scope; the repeated operation reports its own attempt through its feature's `trackOperation` |
 
 The payloads have no parameters: no error type/classifier, message, title,
 exception, URL, route ID, operation, input length, credential or reporting history
@@ -49,7 +52,7 @@ remain repeated observations; no exactly-once telemetry guard is introduced.
 | ErrorDisplayComponent / VM | ErrorDisplayState.error, ErrorDisplayState.retryable | Runtime only; retained in live session | Existing error route input and the presence of the config's `onRetry` seed a fresh VM; retainedInstance keeps the current VM while its InstanceKeeper survives |
 | ErrorDisplayScreen | Localized description, button label | Rebuild | Existing AppErrorState.description() / UiText.text(); `retry_btn` or `got_it_btn` from `retryable` at rendering |
 | Dialog host / component | Live session, pushed error step, pending error FIFO, latest ordinary opening, Back callback, retry and close callbacks | Runtime only | Retained DialogState; slot and content stack use serializer = null; fresh process has no restored dialog session, pending error or callback |
-| Foundation VM | Jobs/loaders, relaunch closures and telemetry | Runtime only | No StateKeeper supplier, snapshot, secret or analytics provenance added |
+| Foundation VM | Jobs suspended on a pending `ErrorDecision`, per-attempt loaders and telemetry | Runtime only | No StateKeeper supplier, snapshot, secret or analytics provenance added |
 
 Preservation source gate: the dialog has no editable inputs, selections, filters,
 child results or accepted parent draft. Error presentation and its retry/close

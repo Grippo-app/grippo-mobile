@@ -5,6 +5,7 @@ import com.grippo.analytics.training.models.TrainingEvent
 import com.grippo.analytics.training.models.TrainingOperation
 import com.grippo.analytics.training.models.TrainingScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.foundation.models.Result
 import com.grippo.core.foundation.models.ResultKey
 import com.grippo.core.foundation.models.ResultKeys
@@ -90,7 +91,7 @@ internal class TrainingRecordingViewModel(
     init {
         muscleFeature.observeMuscles()
             .onEach(::provideMuscles)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         state
             .map { current ->
@@ -101,11 +102,11 @@ internal class TrainingRecordingViewModel(
             .distinctUntilChanged()
             .flatMapLatest(exerciseExampleFeature::observeExerciseExamples)
             .onEach(::provideExerciseExamples)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
         when (initialState?.exercises) {
             null -> {
-                safeLaunch {
+                safeLaunch(recovery = ErrorRecovery.Retry) {
                     when (val stage = state.value.stage) {
                         StageState.Add -> {
                             analytics.trackOperation(TrainingOperation.DeleteDraft) {
@@ -313,7 +314,7 @@ internal class TrainingRecordingViewModel(
     }
 
     private fun clearDraftTraining() {
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(TrainingOperation.DeleteDraft) {
                 trainingFeature.deleteDraftTraining()
             }
@@ -390,7 +391,7 @@ internal class TrainingRecordingViewModel(
     }
 
     private fun discardDraftAndExit() {
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(TrainingOperation.DeleteDraft) {
                 trainingFeature.deleteDraftTraining()
             }
@@ -400,7 +401,7 @@ internal class TrainingRecordingViewModel(
     }
 
     private fun saveDraftTraining() {
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             val snapshot = state.value
 
             val duration = DateTimeUtils.ago(snapshot.startAt)

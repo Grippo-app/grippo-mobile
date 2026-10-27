@@ -3,6 +3,7 @@ package com.grippo.language.picker
 import com.grippo.analytics.language.picker.LanguagePickerAnalytics
 import com.grippo.analytics.language.picker.models.LanguagePickerEvent
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.settings.LanguageEnumState
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
@@ -18,7 +19,7 @@ public class LanguagePickerViewModel(
 
     override fun onSelectLanguage(language: LanguageEnumState) {
         analytics.trackEvent(LanguagePickerEvent.LanguageClicked)
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             update { it.copy(value = language) }
             delay(300.milliseconds)
             navigateTo(LanguagePickerDirection.BackWithResult(language))

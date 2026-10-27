@@ -1,6 +1,7 @@
 package com.grippo.authorization.profile.creation
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import kotlinx.collections.immutable.toPersistentList
@@ -14,13 +15,9 @@ internal class ProfileCreationViewModel(
 ), ProfileCreationContract {
 
     init {
-        observeToken()
-    }
-
-    private fun observeToken() {
         authorizationFeature.getToken()
             .onEach(::provideToken)
-            .safeLaunch(onError = ::observeToken)
+            .safeLaunch(recovery = ErrorRecovery.Retry)
     }
 
     private fun provideToken(value: String?) {

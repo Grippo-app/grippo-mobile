@@ -57,7 +57,7 @@ actual signatures; an existing deviation does not weaken a rule.
   call. Keep short single-expression state updates and simple Flow operators
   compact: `update { it.copy(value = value) }`, `.map { it.range.value }`,
   `.filter { it.isSelected }`, `.flatMapLatest { it }`. Expand multi-operation
-  lambdas. Empty defaults such as `onClose: () -> Unit = {}` may stay inline.
+  lambdas. Empty lambdas such as `ErrorRecovery.Close(onClose = {})` may stay inline.
 - Declarations stay contiguous: constructor and function parameters, model and
   State properties, interface members, token, palette and style fields follow
   each other without blank lines, annotated and multi-line members included. A
@@ -71,7 +71,7 @@ actual signatures; an existing deviation does not weaken a rule.
   An operation that `init` and another member both run is one private
   class-level method that both call; it is not a local function and not a copy
   of the sequence. A failed startup operation is not such a reason: the error
-  popup's Retry button already relaunches the failed `safeLaunch` call (see
+  popup's Retry button already runs the failed `safeLaunch` block again (see
   [Retry and close](../../ui-feature/references/error-pipeline.md#retry-and-close)).
 - ViewModel coroutines: only `safeLaunch` / `Flow.safeLaunch`. Never
   `viewModelScope.launch`, `GlobalScope`, `runBlocking`, raw `CoroutineScope`,
@@ -128,7 +128,7 @@ Apply the order when creating or changing a constructor and migrate its
 `init` is a flat list of statements separated by one blank line. Only these
 statements are allowed there:
 
-- a Flow chain ending in `.safeLaunch()`: the source call on the first line,
+- a Flow chain ending in `.safeLaunch(...)`: the source call on the first line,
   one operator per line below it, the value handed to a handler by method
   reference (`.onEach(::provideNote)`);
 - a `safeLaunch { }` block for a startup load: it either binds the returned
@@ -181,7 +181,7 @@ shape: guards, then the analytics event, then the business step or
   `provideHistory(history)`.
 - Use named arguments for State constructors, `copy`, analytics and dialog
   config models and every call with two or more arguments; a trailing lambda
-  does not count (`safeLaunch(loader = NoteLoader.History) { }`,
+  does not count (`safeLaunch(loader = NoteLoader.History, recovery = ErrorRecovery.Retry) { }`,
   `analytics.trackOperation(NoteOperation.LoadHistory) { }`). A single argument
   whose meaning the callee's name states stays positional (`provideNote(note)`).
   The foundation hook `analytics.presentScreen(<Feature>Screen.X, reason)` keeps
@@ -203,9 +203,9 @@ internal class NoteViewModel(
     init {
         noteFeature.observeNote(id)
             .onEach(::provideNote)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
 
-        safeLaunch(loader = NoteLoader.History) {
+        safeLaunch(loader = NoteLoader.History, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(NoteOperation.LoadHistory) {
                 val history = noteFeature.getHistory(id)
                 provideHistory(history)

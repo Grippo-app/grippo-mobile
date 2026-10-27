@@ -3,6 +3,7 @@ package com.grippo.training.streak.details
 import com.grippo.analytics.training.streak.details.TrainingStreakDetailsAnalytics
 import com.grippo.analytics.training.streak.details.models.TrainingStreakDetailsEvent
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.data.features.api.metrics.engagement.TrainingStreakUseCase
 import com.grippo.data.features.api.training.TrainingFeature
@@ -26,7 +27,7 @@ public class TrainingStreakDetailsViewModel(
         trainingFeature.observeTrainings(start = range.from, end = range.to)
             .combine(currentDateFlow()) { trainings, _ -> trainings }
             .onEach(::provideTrainingStreak)
-            .safeLaunch()
+            .safeLaunch(recovery = ErrorRecovery.Retry)
     }
 
     private fun provideTrainingStreak(trainings: List<Training>) {

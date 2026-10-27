@@ -5,6 +5,7 @@ import com.grippo.analytics.authorization.models.AuthEvent
 import com.grippo.analytics.authorization.models.AuthOperation
 import com.grippo.analytics.authorization.models.AuthScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
 import com.grippo.data.features.api.local.settings.models.HomeWelcomeStatus
@@ -40,9 +41,7 @@ internal class ProfileCompletedViewModel(
         } else {
             safeLaunch(
                 loader = ProfileCompletedLoader.ProfileCreation,
-                onError = {
-                    navigateTo(ProfileCompletedDirection.Back)
-                }
+                recovery = ErrorRecovery.Close(onClose = { navigateTo(ProfileCompletedDirection.Back) }),
             ) {
                 analytics.trackOperation(AuthOperation.CreateProfile) {
                     val profile = CreateUserProfile(
