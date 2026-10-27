@@ -25,8 +25,9 @@ is never followed by a close. The failed operation's Job waits for that decision
 repeats or ends itself; only `ErrorRecovery.Close(onClose)` runs a continuation after a
 close. The host treats it like any opening: with no sheet it starts a session, over
 a presented sheet it is pushed onto that sheet's stack, and while a sheet is closing it
-waits in the FIFO `pending` queue, so no error is dropped. These host changes emit no
-synthetic presentation, retry, dismissal or result facts.
+waits in the FIFO `pending` queue. `ErrorDisplay` never matches another config in
+`hasSameContentAs`, so the host's duplicate check never drops an error. These host
+changes emit no synthetic presentation, retry, dismissal or result facts.
 
 | Callback / path | Observation | Meaning and eligibility |
 |---|---|---|

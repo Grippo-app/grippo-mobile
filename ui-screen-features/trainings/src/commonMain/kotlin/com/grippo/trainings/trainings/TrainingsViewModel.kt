@@ -210,6 +210,7 @@ internal class TrainingsViewModel(
 
         val dialog = DialogConfig.TrainingMenuPicker(
             title = UiText.Res(value = Res.string.menu),
+            id = id,
             onResult = { item ->
                 when (item) {
                     TrainingMenu.Delete -> {

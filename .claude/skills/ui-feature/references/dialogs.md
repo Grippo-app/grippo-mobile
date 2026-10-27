@@ -78,7 +78,7 @@ public sealed class DialogConfig(
 Rules (MUST):
 - **Keep configs and callbacks in memory.** No `@Serializable` / `@Transient` or process-death callback restoration is required; sessions use `serializer = null`.
 - **Caller-owned `title: UiText`** supplies the shared host toolbar. Keep input data as ordinary typed fields and callbacks as live closures.
-- **Update `hasSameContentAs` for every new subtype/content field.** The existing exhaustive comparison checks title first, compares typed content and excludes callbacks. Session navigation uses it to reject duplicate content already in the stack.
+- **Update `hasSameContentAs` for every new subtype/content field.** The existing exhaustive comparison checks title first, compares typed content and excludes callbacks. `Session` navigation and the host's global openings use it to skip duplicate content. `ErrorDisplay` never matches another config, because each error awaits its own decision.
 - **Runtime identity belongs to the host.** `DialogSession` / `DialogStep` IDs preserve live child instances; configs have no `key` / `buildKey` contract.
 - **`onDismiss` and `dismissBySwipe` are `open val`** in the base class; subtypes supply them through super-class arguments. `ErrorDisplay` wires `onDismiss = onClose` and is currently the only subtype that sets it; its `mode` and `onClose` come from the [error pipeline](error-pipeline.md#retry-and-close), and its `Mode` follows the existing `ExerciseExampleDetails.Mode` pattern. Set swipe policy only when the requested behavior needs it.
 
@@ -109,15 +109,18 @@ controller. The host handles every opening the same way, by sheet phase, and nev
 checks a subtype (inspect `DialogViewModel.open`, `onDismiss` and `onRelease`):
 
 - **No sheet (Released):** the opening starts a new session.
-- **Sheet presented:** the opening is pushed onto the session's stack above the
-  active step, like an in-sheet step. The step underneath, its ViewModel and, for an
-  error, the suspended operation stay alive, so Retry resumes that operation in its
-  ViewModel. Back or Retry pop the pushed step and return to the one underneath;
-  toolbar Close, a swipe or an outside tap closes the whole session. While a step is
-  covered, its own `finish`/`back`/`push` calls are ignored.
-- **Sheet dismissing:** the opening waits in `pending`, first in, first out. At
-  release, all pending openings start the next session as one stack in arrival order
-  (the latest on top), so no opening and no error is dropped.
+- **Sheet presented:** an opening whose content matches a step already in the stack
+  is skipped, as in `Session.push`. Otherwise it is pushed onto the session's stack
+  above the active step, like an in-sheet step. The step underneath, its ViewModel
+  and, for an error, the suspended operation stay alive, so Retry resumes that
+  operation in its ViewModel. Back or Retry pop the pushed step and return to the one underneath;
+  toolbar Close, a swipe or an outside tap closes the whole session and runs every
+  step's `onDismiss`, so a covered error completes as Close. While a step is covered,
+  its own `finish`/`back`/`push` calls are ignored.
+- **Sheet dismissing:** the opening waits in `pending`, first in, first out, unless
+  its content matches one already pending. At release, all pending openings start
+  the next session as one stack in arrival order (the latest on top). Errors never
+  match, so no error is dropped.
 
 The pending queue is live runtime State, discarded on process death like the
 sessions it feeds.
@@ -195,7 +198,7 @@ Dialogs keep these typed config callbacks. Separate screen results use
 - **One `DialogConfig` per dialog flow.** Don't multiplex configs for similar flows.
 - **Configs and callbacks stay live in memory; sessions are not restored after process death.**
 - **`onResult` callbacks fire only on explicit success.** Dismiss vs result are separate.
-- **Cross-dialog flows use the originating step's `Session` and the shared `StackNavigation<DialogStep>`.** Global `open` starts a new session when no sheet is shown and is pushed onto the presented session otherwise.
+- **Cross-dialog flows use the originating step's `Session` and the shared `StackNavigation<DialogStep>`.** Global `open` is handled by sheet phase as described in [DialogController + DialogProvider](#dialogcontroller--dialogprovider).
 - **Single-dialog multi-mode** lives in the dialog's own `State` as a `sealed interface`.
 - **Scrolling dialog bodies go through `OverlayContainer`** with the navigation inset in its `bottom` slot (see step 3 of the recipe); non-scrolling bodies end with the two spacers directly.
 - Dialogs MAY read/write domain data through Feature/UseCase contracts in `:data-features:feature-api`, when their behavior requires it; never access services/DAOs directly. Value pickers return their accepted value through `onResult`; the caller owns its business persistence. A dialog-owned side effect MUST complete through safeLaunch and the shared error pipeline before emitting success.
@@ -427,5 +430,5 @@ check Back and swipe dismissal — follow
 - **Forgetting `hasSameContentAs`.** Every new subtype/content field needs a typed comparison excluding callbacks; host runtime IDs remain separate from content.
 - **Forgetting to wire in `DialogContentComponent.createChild`.** Showing the config crashes at runtime.
 - **Redundant outer `Column`, toolbar or duplicate host title in a leaf dialog.** Use the `BaseComposeScreen(...background.dialog)` + `Spacer`/body/`Spacer` convention. The host owns `BottomSheetToolbar`; leaf horizontal padding is `AppTokens.dp.dialog.horizontalPadding`, not `contentPadding.content`.
-- **Using global `open` for nested navigation.** It starts a new session; use the originating step's `Session.push` / `replaceCurrent` for in-sheet navigation.
+- **Using global `open` for nested navigation.** It is not bound to the originating step, so it pushes even after that step was covered or removed; use the originating step's `Session.push` / `replaceCurrent` for in-sheet navigation.
 - **Inventing `DialogController.dismiss()` or `DialogContentViewModel.onBack`.** Emit `Direction.BackWithResult(value)` / `Direction.Back`; the existing child factory calls its bound `dialogNavigation.finish` with the pending result or null.

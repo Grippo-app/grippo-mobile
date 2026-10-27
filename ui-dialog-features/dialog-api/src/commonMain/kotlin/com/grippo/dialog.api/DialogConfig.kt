@@ -28,8 +28,13 @@ public sealed class DialogConfig(
     public fun hasSameContentAs(other: DialogConfig): Boolean {
         if (title != other.title) return false
         return when (this) {
-            is ErrorDisplay -> other is ErrorDisplay && error == other.error
-            is ExerciseExampleDetails -> other is ExerciseExampleDetails && id == other.id && mode.hasSameContentAs(other.mode)
+            // Each error awaits its own decision; a dropped duplicate would leave its operation waiting forever.
+            is ErrorDisplay -> false
+            is ExerciseExampleDetails -> other is ExerciseExampleDetails && id == other.id && when (mode) {
+                ExerciseExampleDetails.Mode.Default -> other.mode == ExerciseExampleDetails.Mode.Default
+                is ExerciseExampleDetails.Mode.Action -> other.mode is ExerciseExampleDetails.Mode.Action &&
+                    mode.title == other.mode.title
+            }
             is Exercise -> other is Exercise && id == other.id
             is MuscleLoadingDetails -> other is MuscleLoadingDetails && range == other.range
             is TrainingStreakDetails -> other is TrainingStreakDetails && range == other.range
@@ -53,7 +58,7 @@ public sealed class DialogConfig(
                 format == other.format && limitations == other.limitations
             is DraftTraining -> other is DraftTraining
             is StartTraining -> other is StartTraining
-            is TrainingMenuPicker -> other is TrainingMenuPicker
+            is TrainingMenuPicker -> other is TrainingMenuPicker && id == other.id
             is Confirmation -> other is Confirmation && description == other.description
             is ConfirmTrainingCompletion -> other is ConfirmTrainingCompletion &&
                 initial == other.initial && exercises == other.exercises
@@ -62,16 +67,19 @@ public sealed class DialogConfig(
         }
     }
 
-    private fun ExerciseExampleDetails.Mode.hasSameContentAs(other: ExerciseExampleDetails.Mode): Boolean = when (this) {
-        ExerciseExampleDetails.Mode.Default -> other == ExerciseExampleDetails.Mode.Default
-        is ExerciseExampleDetails.Mode.Action -> other is ExerciseExampleDetails.Mode.Action && title == other.title
-    }
-
     public data class ErrorDisplay(
         public override val title: UiText,
         val error: AppErrorState,
-        val onClose: () -> Unit = {},
-    ) : DialogConfig(onDismiss = onClose)
+        val mode: Mode,
+        val onClose: () -> Unit,
+    ) : DialogConfig(onDismiss = onClose) {
+        public sealed interface Mode {
+            public data class Retry(
+                val onRetry: () -> Unit,
+            ) : Mode
+            public data object Inform : Mode
+        }
+    }
 
     public data class ExerciseExampleDetails(
         public override val title: UiText,
@@ -206,6 +214,7 @@ public sealed class DialogConfig(
 
     public data class TrainingMenuPicker(
         public override val title: UiText,
+        val id: String,
         val onResult: (TrainingMenu) -> Unit = {},
     ) : DialogConfig()
 

@@ -22,22 +22,26 @@ internal class DialogViewModel(
 
     private fun open(config: DialogConfig) {
         update { current ->
-            val entry = DialogEntry(config = config)
-
             when (current.phase) {
                 SheetPhase.Released -> current.copy(
                     session = DialogSession(id = Uuid.random().toString()),
-                    stack = persistentListOf(entry),
+                    stack = persistentListOf(DialogEntry(config = config)),
                     phase = SheetPhase.Present,
                 )
 
-                SheetPhase.Present -> current.copy(
-                    stack = current.stack.adding(entry)
-                )
+                SheetPhase.Present -> {
+                    if (current.stack.any { it.config.hasSameContentAs(config) }) {
+                        return@update current
+                    }
+                    current.copy(stack = current.stack.adding(DialogEntry(config = config)))
+                }
 
-                SheetPhase.Dismissing -> current.copy(
-                    pending = current.pending.adding(config)
-                )
+                SheetPhase.Dismissing -> {
+                    if (current.pending.any { it.hasSameContentAs(config) }) {
+                        return@update current
+                    }
+                    current.copy(pending = current.pending.adding(config))
+                }
             }
         }
     }

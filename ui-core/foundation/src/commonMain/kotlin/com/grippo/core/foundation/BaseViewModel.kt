@@ -124,9 +124,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         return operationManager.launch(
             dispatcher = dispatcher,
             onError = { exception -> inform(failure = exception, mapError = mapError) },
-            block = {
-                flow.collect()
-                    },
+            block = { flow.collect() },
         )
     }
 
@@ -141,16 +139,16 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
             dispatcher = dispatcher,
             onError = { exception -> inform(failure = exception, mapError = mapError) },
             block = {
-                while (true) {
-                    try {
+                do {
+                    val retry = try {
                         withLoader(loader) { block() }
-                        break
+                        false
                     } catch (cancellation: CancellationException) {
                         throw cancellation
                     } catch (failure: Throwable) {
-                        if (!recover(failure = failure, recovery = recovery, mapError = mapError)) break
+                        recover(failure = failure, recovery = recovery, mapError = mapError)
                     }
-                }
+                } while (retry)
             },
         )
     }
