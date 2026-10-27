@@ -61,6 +61,7 @@
     <string name="cm">см</string>
     <string name="apply_btn">Застосувати</string>
     <string name="got_it_btn">Зрозуміло</string>
+    <string name="retry_btn">Повторити</string>
     <string name="confirm_btn">Підтвердити</string>
     <string name="empty_training_exercises">Додай першу вправу, щоб почати відстежувати тренування.</string>
     <string name="empty_daily_trainings">Цього дня тренувань немає.</string>

@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +25,7 @@ import com.grippo.core.state.metrics.profile.stubGoalFitFindings
 import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.core.state.profile.GoalPrimaryGoalEnumState
 import com.grippo.design.components.divider.ContentDivider
+import com.grippo.design.components.indicators.Dot
 import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -100,11 +99,7 @@ private fun FindingRow(
             modifier = Modifier.height(titleLineHeight),
             contentAlignment = Alignment.Center,
         ) {
-            Box(
-                modifier = Modifier
-                    .size(AppTokens.dp.metrics.profile.goal.breakdown.severityDot)
-                    .background(finding.dotColor(), CircleShape),
-            )
+            Dot(color = finding.dotColor())
         }
 
         Column(

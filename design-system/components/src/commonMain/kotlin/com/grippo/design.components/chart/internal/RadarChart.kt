@@ -110,7 +110,7 @@ internal fun RadarChart(
             fillAlpha = charts.radar.fillAlpha,
         ),
         vertices = RadarStyle.Vertices.Visible(
-            radius = AppTokens.dp.metrics.charts.radar.dotRadius,
+            radius = AppTokens.dp.metrics.charts.radar.vertexRadius,
             colorOverride = null,
         ),
         values = RadarStyle.Values.None,

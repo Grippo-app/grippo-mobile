@@ -153,8 +153,7 @@ Rules:
 - Constructor parameter order, the `init` layout, `provide*` handlers, the
   `update` shape and named arguments are owned by
   [ViewModel layout](../../validation-gates/references/code-style.md#viewmodel-layout);
-  block style, the named-local-function ban and the startup-operation pattern
-  (one private class-level method called from `init` and `onError`) by
+  block style, the named-local-function ban and shared class-level methods by
   [Kotlin blocks](../../validation-gates/references/code-style.md#kotlin-blocks).
   Apply both as written there.
 - Initial state in the `BaseViewModel` constructor.
@@ -163,9 +162,10 @@ Rules:
 - Run async work via `safeLaunch { ... }` or `Flow.safeLaunch()`. **Never** `viewModelScope.launch`, `GlobalScope`, or raw `CoroutineScope`.
 - Call throwing Feature/UseCase commands inside `safeLaunch`; do not hide or
   present unhandled failures with local catches or result failure handlers. Pure
-  `mapError` changes only dialog presentation; `onError` runs after dismissal.
-  Suspend helpers propagate failures to the caller's `safeLaunch`; no local
-  catches or telemetry-owned recovery. Request isolation follows
+  `mapError` changes only dialog presentation; Retry and `ErrorRecovery.onClose`
+  follow [Retry and close](error-pipeline.md#retry-and-close). Suspend helpers
+  propagate failures to the caller's `safeLaunch`; no local catches or
+  telemetry-owned recovery. Request isolation follows
   [the shared error rules](error-pipeline.md).
 
 (Full `BaseViewModel` API: `references/base-classes.md`.)
@@ -220,7 +220,7 @@ The seven-file pattern is the **uniform** cost: every feature looks the same.
 
 - **MVI** — every screen/dialog is this seven-file package; apply the linked Compose extraction criteria and [feature file layout](module-structure.md#file-layout-for-a-feature).
 - **Navigation (Decompose)** — type-safe per-feature `*Router` `sealed class` (`@Serializable`) in `:ui-screen-features:screen-api`. The root component holds a `StackNavigation<RootRouter>`; multi-screen features expose a container root with an internal stack; a single-screen feature may expose its screen Component directly. (`references/navigation.md`.)
-- **Dialogs** — `DialogComponent` in `:shared` hosts a separate `SlotNavigation<DialogSession>` parallel to the screen stack; its content uses the internal `StackNavigation<DialogStep>`. Both use `serializer = null`. Plain `DialogConfig` carries the required `title: UiText`, typed content and live callbacks; `hasSameContentAs` compares content/titles excluding callbacks. Ordinary screen ViewModels call `DialogController.open`; nested features forward semantic directions and typed callbacks to the host's step-bound Session. The host removes the step or closes the root sheet, invokes dismissal callbacks, then delivers the pending typed result. These sessions are not restored after process death. See [dialogs.md](dialogs.md).
+- **Dialogs** — `DialogComponent` in `:shared` hosts a separate `SlotNavigation<DialogSession>` parallel to the screen stack; its content uses the internal `StackNavigation<DialogStep>`. Both use `serializer = null`. Plain `DialogConfig` carries the required `title: UiText`, typed content and live callbacks; `hasSameContentAs` compares content/titles excluding callbacks. Ordinary screen ViewModels call `DialogController.open`; nested features forward semantic directions and typed callbacks to the host's step-bound Session. The host removes the step or closes the root sheet; callback ordering follows [dismissal behavior](dialogs.md#dismissal-behavior). These sessions are not restored after process death. See [dialogs.md](dialogs.md).
 - **Screen results** — use `ResultManager` / `ResultKey` through BaseComponent. Receiver companion definitions own keys; pass explicit serializable `resultKey` to the producer, which sends then requests ordinary Back. Observers handle data without closing the sender. No result relays, caller inference or runtime selection flags. Action types stay inside the producer's `Router.<Screen>.Action`. Read `references/results.md` for SharedFlow semantics and verification.
 - **Error pipeline** — one path for failures from `safeLaunch`, including suspend
   helpers; request isolation follows the error-pipeline owner, without local catches or recovery wrappers. Presentation mapping

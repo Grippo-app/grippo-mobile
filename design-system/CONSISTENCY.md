@@ -251,8 +251,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   is absent, without an inferred score or status. Progress bars use linear
   proportions and outside values; pie slices preserve their actual shares.
 - Timeline points use `timeline.marker/markerBackground` for a warm chronological
-  anchor with a soft halo; connectors stay `divider.default`. The marker does not
-  represent selection or workout completion. Keep content and rail geometry stable.
+  anchor: a shared `Dot` with a soft halo; connectors stay `divider.default`. The
+  marker does not represent selection or workout completion. Keep content and
+  rail geometry stable.
 - Step progress uses its own `stepProgressIndicator.fillStart/fillEnd/track` colors:
   a restrained orange-to-copper fill and a readable neutral remaining track in both
   themes. Equal 6 dp capsules with 4 dp gaps keep toolbar geometry stable; progress
@@ -891,14 +892,14 @@ and Latin text in both themes; each role keeps its existing size and line height
   The sealed GoalCard family owns Overview, Assessment and Calendar styles.
   Goal details use its open Assessment style on `background.dialog`, with the shared
   copper GoalMark, an `h4` goal name, a modest neutral `h3` alignment value and a
-  secondary status label with its existing semantic marker. Actual
+  secondary status label with its semantic status `Dot`. Actual
   analyzed dates, workouts/days/sets remain quiet secondary `b12Med` context.
   At most two non-PASS diagnostics lead in severity/rule order, followed by one
   PASS fact when available. Diagnostic sections use one quiet `background.card`
   surface with the existing breakdown radius/padding and no outline. Each fact
   keeps the same text edge: a full-width `b14Semi` rule title, optional secondary
   `b12Med` muscle context, a `b14Semi` actual value and a separate secondary
-  `b12Med` target line. Existing semantic dots align with the first title line;
+  `b12Med` target line. Severity `Dot`s align with the first title line;
   ContentDivider separates facts without nested cards or context indentation.
   Actual values retain the existing severity color mapping and threshold-rounding
   qualifiers. Partial-data limitations remain visible; unavailable assessments
@@ -1511,6 +1512,29 @@ and Latin text in both themes; each role keeps its existing size and line height
 - Let tags wrap. Do not hide a weight type just because the preceding tags are long.
 - Preserve readable content when lists scroll behind a pinned action. Pass the
   bottom overlay's resolved padding into the list.
+
+## Dots
+
+- Small decorative and status dots use the shared `Dot` at `dot.size` (8 dp) in
+  both themes: the goal status label (Overview and Assessment), goal diagnostic
+  severity, the category, force-type and weight-type chip markers and timeline
+  points. The caller supplies the color from its existing owner (`statusColor()`,
+  `dotColor()`, the enum `color()`, `timeline.marker`); the dot is decorative and
+  the neighbouring text states the meaning.
+- Beside a one-line label the dot sits in a `CenterVertically` row with a
+  `contentPadding.text` gap; beside a wrapping title it is centred in a box one
+  measured title line tall; in a chip it is centred in the leading slot.
+- Timeline points draw the soft `timeline.markerBackground` halo of
+  `timeline.markerHalo` around the same dot, and the rail is one dot wide.
+  `PagerIndicator` keeps its animated capsule: inactive pages are `dot.size`
+  circles and the active page widens to `pagerIndicator.activeWidth`.
+- Chart points (`metrics.charts.radar.vertexRadius`, sparkline, area and bar
+  points), the minimum fill of `LineIndicator` and `ComparisonIndicator` (a dot
+  of bar height), progress markers, check marks, avatars, circular buttons,
+  skeleton circles and pill backgrounds are not dots and keep their own geometry.
+  The compose-libs pie legend draws its marker from the chart style, because
+  compose-libs cannot use design-system components; its design-system wrapper
+  has no product consumer yet.
 
 ## Content dividers
 

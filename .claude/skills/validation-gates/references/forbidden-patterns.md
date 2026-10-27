@@ -22,10 +22,10 @@ An existing deviation in the code never authorizes copying it.
   precomputed locals (unless the result depends on the current state), or a
   `provide*` handler with more than one `update`.
   See [ViewModel layout](code-style.md#viewmodel-layout).
-- **Duplicating a startup request to keep it literally in `init`** when the same
-  operation must also run after error-dialog dismissal. Use one private
-  class-level method called from `init` and `onError`; no local function, new
-  scope or retry loop.
+- **A private method extracted only to restart a failed startup operation**, or a
+  hand-written retry loop or new scope for it. The error popup's Retry relaunches
+  the failed `safeLaunch` call; a startup operation with no other caller stays in
+  `init`. See [Kotlin blocks](code-style.md#kotlin-blocks).
 - **Blank lines between related declarations** (parameters, model, State, interface,
   token or style members). The positive rule is in [code style](code-style.md#kotlin-blocks).
 
@@ -140,8 +140,11 @@ Screen-result rules are defined in the ui-feature skill,
 - **Impure `safeLaunch.mapError`** or replacing original errors before analytics,
   logging or crash reporting. Mapping only supplies a standard dialog representation
   for known exceptions; return unknown errors unchanged and preserve cancellation/fatal errors.
-- **Using `safeLaunch.onError` as an immediate handler.** It runs after the error
-  dialog is dismissed, not when the exception is thrown, and does not suppress the dialog.
+- **Treating `ErrorRecovery.onClose` as an immediate handler or relaunching the
+  failed operation from it**, including passing the enclosing function as `onClose`.
+  It runs only after the popup closes without Retry and does not suppress the
+  popup. The choice between `ErrorRecovery.Retry` and `Close` follows
+  [Retry and close](../../ui-feature/references/error-pipeline.md#retry-and-close).
 - **Custom error dialogs** outside `DialogConfig.ErrorDisplay`.
 - **Recording exceptions to Firebase manually.** Pipeline does it.
 - **Required credential failure converted to an absent account or fallback success**

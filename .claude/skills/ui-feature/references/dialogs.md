@@ -64,6 +64,7 @@ public sealed class DialogConfig(
     public data class ErrorDisplay(
         public override val title: UiText,
         val error: AppErrorState,
+        val onRetry: (() -> Unit)? = null,
         val onClose: () -> Unit = {},
     ) : DialogConfig(onDismiss = onClose)
 }
@@ -74,7 +75,7 @@ Rules (MUST):
 - **Caller-owned `title: UiText`** supplies the shared host toolbar. Keep input data as ordinary typed fields and callbacks as live closures.
 - **Update `hasSameContentAs` for every new subtype/content field.** The existing exhaustive comparison checks title first, compares typed content and excludes callbacks. Session navigation uses it to reject duplicate content already in the stack.
 - **Runtime identity belongs to the host.** `DialogSession` / `DialogStep` IDs preserve live child instances; configs have no `key` / `buildKey` contract.
-- **`onDismiss` and `dismissBySwipe` are `open val`** in the base class; subtypes supply them through super-class arguments (`ErrorDisplay` wires `onDismiss = onClose`). Set swipe policy only when the requested behavior needs it.
+- **`onDismiss` and `dismissBySwipe` are `open val`** in the base class; subtypes supply them through super-class arguments. `ErrorDisplay` wires `onDismiss = onClose` and is currently the only subtype with a non-null `onDismiss`; its `onRetry` and `onClose` come from the [error pipeline](error-pipeline.md#retry-and-close). Set swipe policy only when the requested behavior needs it.
 
 ## `DialogController` + `DialogProvider`
 
@@ -99,14 +100,33 @@ The internal implementation in `:ui-dialog-features:dialog-api` is
 
 Inject the controller into ordinary caller ViewModels and call
 `dialogController.open(DialogConfig.X(...))` to start a new sheet session. An existing
-ordinary session closes before the pending opening starts; `open` never implicitly pushes a step.
+session closes before a pending ordinary opening starts; `open` never pushes an ordinary
+config into an existing session. Only error openings join an open session, as described below.
 There is **no `dismiss()`** on this controller.
 
 Error openings retain their presentation and recovery callbacks from the controller through
-the host. Pending `ErrorDisplay` configs are FIFO and run before the latest pending ordinary
-opening. An active error waits for user dismissal; later openings neither replace it nor
-invoke its callback early. Ordinary pending openings keep latest-wins behavior. These queues
-are live runtime State, discarded on process death like the sessions they contain.
+the host (inspect `DialogViewModel.open`, `onDismiss` and `onRelease`):
+
+- **Above an open dialog.** An `ErrorDisplay` opened while an ordinary session is
+  presented (its top step is not an error) is pushed above the active step. The
+  dialog and its ViewModel stay underneath, so Retry relaunches the failed operation
+  in that ViewModel. Back and Retry pop the error and return to the dialog; toolbar
+  Close, a swipe or an outside tap closes the whole session.
+- **Queued.** An `ErrorDisplay` opened while an error is on top or while the session
+  is dismissing waits in `pendingErrors`, first in, first out. Popping a nested error
+  pushes the next pending error in its place; when none is pending, a pending
+  ordinary opening starts dismissing the session. At release, pending errors open
+  before the latest pending ordinary opening. A Retry that pops an error in that last
+  case relaunches in a dialog ViewModel the release then destroys, so a retry owned by
+  that dialog does nothing; while an error is above a dialog, the dialog's own
+  `finish`/`back`/`push` calls are ignored as for any covered step.
+- **No early replacement.** An active error waits for the user; later openings
+  neither replace it nor invoke its callbacks early. An ordinary opening that
+  arrives while an error is on top waits without dismissing it. Ordinary pending
+  openings keep latest-wins behavior.
+
+These queues are live runtime State, discarded on process death like the sessions
+they contain.
 
 The host supplies `Session` bound to the originating session and active step.
 Use its methods on the UI thread; calls from inactive/removed steps are ignored.
@@ -122,8 +142,9 @@ Two components, both in `:shared/dialog/...` (inspect `DialogComponent.kt`, `con
 The bridge's internal `finish(pendingResult)` passes a result closure to the owning
 `DialogViewModel`. At the root it hides/releases the sheet before running callbacks;
 for a nested step it pops that step while the sheet remains visible. In both cases
-the removed config's `onDismiss` runs before the pending result. The dialog feature
-does not resolve or construct this bridge.
+the removed step runs one callback: its pending result, or its config's `onDismiss`
+when it leaves without a result. A result replaces the dismissal callback; it does
+not follow it. The dialog feature does not resolve or construct this bridge.
 
 Inspect `shared/.../dialog/content/DialogContentScreen.kt`: its `AnimatedContent`
 targets the active stack child, so local expansion does not trigger that step
@@ -157,16 +178,19 @@ dialogController.open(
 The picker VM emits a result Direction; its Component forwards the value through
 the existing `onResult` callback. The shared child factory translates that callback
 into `dialogNavigation.finish { router.onResult(value) }` and plain Back into
-`dialogNavigation.finish(null)`.
+`dialogNavigation.finish(null)`. The `ErrorDisplay` branch wires Retry the same way:
+`retry = router.onRetry?.let { retry -> { dialogNavigation.finish(retry) } }`, so Retry
+is the step's pending result and runs instead of `onClose`; a null `onRetry` leaves the
+popup without a Retry action.
 
 Dialogs keep these typed config callbacks. Separate screen results use
 `ResultManager` (`references/results.md`); a dialog result does not require a relay.
 
 ## Dismissal behavior
 
-- **Whole-session release:** after hiding, `DialogViewModel.onRelease(session)` invalidates the old session by publishing the next session with its remaining queue, or empty State when nothing is pending. It then runs the old stack's `onDismiss` callbacks top-to-bottom and the top step's pending result. Reentrant openings see the new state and cannot discard pending errors. Swipe/scrim or Close supplies no result; `onDismiss` alone does not establish confirmation/cancellation/user exit.
-- **Nested Back/result:** the top step is removed, then its `onDismiss` and pending result run in that order; the sheet stays open. `replaceCurrent` dismisses the replaced config after updating the stack and does not create a result.
-- **Caller cleanup:** use `onDismiss` for cleanup or returning an observed dismissal fact to its owning VM. Shared host/config plumbing does not construct telemetry; caller-VM-owned result callbacks may observe accepted results under the analytics skill.
+- **Whole-session release:** after hiding, `DialogViewModel.onRelease(session)` invalidates the old session by publishing the next session with its remaining queue, or empty State when nothing is pending. It then walks the old stack top-to-bottom and runs, for each step, its pending result or, when it has none, its `onDismiss`. Reentrant openings see the new state and cannot discard pending errors. Swipe/scrim or Close supplies no result; `onDismiss` alone does not establish confirmation/cancellation/user exit.
+- **Nested Back/result:** the top step is removed, then its pending result runs, or its `onDismiss` when it leaves without a result. The sheet stays open unless the error retention policy above starts dismissing it. `replaceCurrent` runs the replaced config's `onDismiss` after updating the stack and does not create a result.
+- **Caller cleanup:** use `onDismiss` for cleanup or returning an observed dismissal fact to its owning VM. It runs only when its step leaves without a result. Shared host/config plumbing does not construct telemetry; caller-VM-owned result callbacks may observe accepted results under the analytics skill.
 - **`dismissBySwipe`:** governs swipe/scrim hiding for the active config. Hardware/toolbar Back still follows the stack; toolbar Close closes the session. It does not turn a generic dismissal into a typed outcome.
 
 ## Rules summary (MUST)
@@ -174,7 +198,7 @@ Dialogs keep these typed config callbacks. Separate screen results use
 - **One `DialogConfig` per dialog flow.** Don't multiplex configs for similar flows.
 - **Configs and callbacks stay live in memory; sessions are not restored after process death.**
 - **`onResult` callbacks fire only on explicit success.** Dismiss vs result are separate.
-- **Cross-dialog flows use the originating step's `Session` and the shared `StackNavigation<DialogStep>`.** Global `open` always starts a new session.
+- **Cross-dialog flows use the originating step's `Session` and the shared `StackNavigation<DialogStep>`.** Global `open` of an ordinary config always starts a new session; only the error pipeline's `ErrorDisplay` joins an open one.
 - **Single-dialog multi-mode** lives in the dialog's own `State` as a `sealed interface`.
 - **Scrolling dialog bodies go through `OverlayContainer`** with the navigation inset in its `bottom` slot (see step 3 of the recipe); non-scrolling bodies end with the two spacers directly.
 - Dialogs MAY read/write domain data through Feature/UseCase contracts in `:data-features:feature-api`, when their behavior requires it; never access services/DAOs directly. Value pickers return their accepted value through `onResult`; the caller owns its business persistence. A dialog-owned side effect MUST complete through safeLaunch and the shared error pipeline before emitting success.
@@ -345,7 +369,7 @@ already runs first; exclude `onResult` and other callbacks from content equality
 The existing `createChild(step: DialogStep, context)` obtains `router = step.config`
 and `dialogNavigation = navigationFor(step)`. Add the branch using that bound
 bridge; `finish` removes the active step or closes at the root, then runs the
-caller callback after `onDismiss`:
+caller callback in place of `onDismiss`:
 ```kotlin
 is DialogConfig.TagPicker -> Child.TagPicker(
     TagPickerComponent(

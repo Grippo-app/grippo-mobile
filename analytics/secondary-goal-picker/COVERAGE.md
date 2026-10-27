@@ -15,7 +15,7 @@ binding. ProfileGoal's existing ProfileScreen.Goal hook remains unchanged.
 
 | Owner/callback | Observation | Eligibility/payload |
 |---|---|---|
-| SecondaryGoalPickerViewModel.onSelectGoal | GoalClicked / secondary_goal_picker_goal_clicked v1 | Existing unconditional card callback, including clicking the current goal; inside existing safeLaunch before state update, 300ms delay and BackWithResult; empty payload |
+| SecondaryGoalPickerViewModel.onSelectGoal | GoalClicked / secondary_goal_picker_goal_clicked v1 | Existing unconditional card callback, including clicking the current goal; before the existing safeLaunch (state update, 300ms delay and BackWithResult), so an error-popup Retry never repeats it; empty payload |
 | SecondaryGoalPickerViewModel.onDismiss | DismissRequested / secondary_goal_picker_dismiss_requested v1 | Existing hardware Back callback; emitted before Back direction; empty payload |
 | ProfileGoalViewModel | Existing PickerOpened(Secondary), SecondaryConfirmed | Opening callback and accepted result closure; unchanged, owned by parent |
 

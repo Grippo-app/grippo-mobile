@@ -65,7 +65,7 @@ public fun PagerIndicator(
                         vertical = AppTokens.dp.contentPadding.subContent,
                     ),
                 horizontalArrangement = Arrangement.spacedBy(
-                    AppTokens.dp.pagerIndicator.dotSpacing,
+                    AppTokens.dp.pagerIndicator.spacing,
                     Alignment.CenterHorizontally,
                 ),
                 verticalAlignment = Alignment.CenterVertically,
@@ -75,9 +75,9 @@ public fun PagerIndicator(
 
                     val width by animateDpAsState(
                         targetValue = if (selected) {
-                            AppTokens.dp.pagerIndicator.dotSizeActive
+                            AppTokens.dp.pagerIndicator.activeWidth
                         } else {
-                            AppTokens.dp.pagerIndicator.dotSize
+                            AppTokens.dp.dot.size
                         },
                         animationSpec = tween(durationMillis = ANIMATION_DURATION_MS),
                         label = "indicatorWidth"
@@ -95,7 +95,7 @@ public fun PagerIndicator(
 
                     Box(
                         modifier = Modifier
-                            .height(AppTokens.dp.pagerIndicator.dotSize)
+                            .height(AppTokens.dp.dot.size)
                             .width(width)
                             .clip(CircleShape)
                             .background(color)
@@ -105,7 +105,7 @@ public fun PagerIndicator(
         } else {
             Spacer(
                 modifier = Modifier.height(
-                    AppTokens.dp.pagerIndicator.dotSize +
+                    AppTokens.dp.dot.size +
                             AppTokens.dp.contentPadding.subContent * 2
                 )
             )

@@ -17,7 +17,7 @@ production entry and rendered surface; no nested screens or business operations.
 | Surface / callback owner | Observation | Boundary |
 |---|---|---|
 | PrimaryGoalPickerScreen / Component / VM | Default null screenPresentation | Live bottom sheet, no dedicated presentation contract; no screen enum required |
-| VM.onSelectGoal | PrimaryGoalPickerEvent.GoalClicked / primary_goal_picker_goal_selected v1 | Inside existing safeLaunch, before state update and unchanged 300 ms delay/result direction; unconditional callback |
+| VM.onSelectGoal | PrimaryGoalPickerEvent.GoalClicked / primary_goal_picker_goal_selected v1 | Before the existing safeLaunch (state update and unchanged 300 ms delay/result direction), so an error-popup Retry never repeats it; unconditional callback |
 | VM.onDismiss | PrimaryGoalPickerEvent.DismissRequested / primary_goal_picker_dismiss_requested v1 | Before unchanged Back direction; request, not completed dismissal |
 | ProfileGoalViewModel | Existing Goal.PickerOpened(Primary), Goal.PrimaryConfirmed | Open intent and accepted result remain at the parent owner |
 

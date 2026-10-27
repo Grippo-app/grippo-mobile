@@ -61,6 +61,7 @@
     <string name="cm">cm</string>
     <string name="apply_btn">Aplicar</string>
     <string name="got_it_btn">Entendi</string>
+    <string name="retry_btn">Tentar novamente</string>
     <string name="confirm_btn">Confirmar</string>
     <string name="empty_training_exercises">Adicione seu primeiro exercício para começar a acompanhar este treino.</string>
     <string name="empty_daily_trainings">Nenhum treino neste dia.</string>

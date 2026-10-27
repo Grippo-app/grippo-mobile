@@ -1,18 +1,13 @@
 package com.grippo.design.components.metrics.profile.goal.internal
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import com.grippo.core.state.metrics.profile.GoalProgressState
 import com.grippo.core.state.metrics.profile.stubGoalProgress
 import com.grippo.design.components.goal.GoalMark
@@ -79,22 +74,7 @@ internal fun GoalCardAssessment(
                     color = AppTokens.colors.text.primary,
                 )
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(AppTokens.dp.metrics.profile.goal.statusMarker)
-                        .clip(CircleShape)
-                        .background(value.statusColor()),
-                )
-                Text(
-                    text = value.statusLabel(),
-                    style = AppTokens.typography.b12Med(),
-                    color = AppTokens.colors.text.secondary,
-                )
-            }
+            GoalStatusLabel(value = value)
             if (score != null &&
                 (value.evidence.excludedSetCount > 0 || value.evidence.missingMetadataSetCount > 0)
             ) {

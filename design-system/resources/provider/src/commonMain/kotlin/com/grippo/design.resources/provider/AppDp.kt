@@ -64,6 +64,7 @@ public data object AppDp {
 
     val bottomSheet: BottomSheet = BottomSheet
     public val divider: Divider = Divider
+    val dot: Dot = Dot
     val contentPadding: ContentPadding = ContentPadding
     val screen: Screen = Screen
     val muscleSelection: MuscleSelection = MuscleSelection
@@ -114,6 +115,10 @@ public data object AppDp {
 
     public data object Divider {
         public val thickness: Dp = 1.dp
+    }
+
+    public data object Dot {
+        val size: Dp = 8.dp
     }
 
     public data object Goal {
@@ -273,7 +278,7 @@ public data object AppDp {
             public data object Radar {
                 val labelPadding: Dp = 3.dp
                 val seriesWidth: Dp = 1.5.dp
-                val dotRadius: Dp = 2.dp
+                val vertexRadius: Dp = 2.dp
                 val focusRingWidth: Dp = Axis.strokeWidth
                 val focusHaloRadius: Dp = 10.dp
             }
@@ -373,14 +378,12 @@ public data object AppDp {
             val goal: Goal = Goal
 
             public data object Goal {
-                val statusMarker: Dp = 6.dp
                 val breakdown: Breakdown = Breakdown
 
                 public data object Breakdown {
                     val radius: Dp = Panel.Small.radius
                     val horizontalPadding: Dp = Panel.Small.horizontalPadding
                     val verticalPadding: Dp = Panel.Small.verticalPadding
-                    val severityDot: Dp = padding.small
                 }
             }
         }
@@ -582,7 +585,6 @@ public data object AppDp {
 
     public data object Timeline {
         val lineWidth: Dp = 2.dp
-        val dot: Dp = 10.dp
         val markerHalo: Dp = 3.dp
     }
 
@@ -771,9 +773,8 @@ public data object AppDp {
     public data object PagerIndicator {
         val radius: Dp = AppDp.radius.xLarge
         val borderWidth: Dp = 1.dp
-        val dotSize: Dp = 8.dp
-        val dotSizeActive: Dp = 24.dp
-        val dotSpacing: Dp = padding.small
+        val activeWidth: Dp = 24.dp
+        val spacing: Dp = padding.small
     }
 
     public data object Loader {
@@ -818,7 +819,6 @@ public data object AppDp {
     public data object Chip {
         val verticalPadding: Dp = padding.extraSmall
         val borderWidth: Dp = 1.dp
-        val markerSize: Dp = 8.dp
         val small: Small = Small
         val medium: Medium = Medium
 

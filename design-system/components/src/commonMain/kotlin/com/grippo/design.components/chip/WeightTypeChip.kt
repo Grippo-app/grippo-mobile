@@ -1,16 +1,13 @@
 package com.grippo.design.components.chip
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import com.grippo.core.state.examples.WeightTypeEnumState
+import com.grippo.design.components.indicators.Dot
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -27,16 +24,12 @@ public fun WeightTypeChip(
         value = value.title().text(),
         leading = ChipLeading.Content(
             content = {
-                Box(
-                    Modifier
+                Dot(
+                    modifier = Modifier
                         .fillMaxHeight()
                         .aspectRatio(1f)
-                        .wrapContentSize()
-                        .size(AppTokens.dp.chip.markerSize)
-                        .background(
-                            color = value.color(),
-                            shape = CircleShape
-                        )
+                        .wrapContentSize(),
+                    color = value.color(),
                 )
             }
         ),

@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -25,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.grippo.design.components.indicators.Dot
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -55,7 +54,7 @@ public fun TimelineIndicator(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .width(AppTokens.dp.timeline.dot),
+                .width(AppTokens.dp.dot.size),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (style) {
@@ -154,9 +153,8 @@ private fun TimelineMarker() {
     val background = AppTokens.colors.timeline.markerBackground
     val halo = AppTokens.dp.timeline.markerHalo
 
-    Box(
+    Dot(
         modifier = Modifier
-            .size(AppTokens.dp.timeline.dot)
             // Keep the halo above both adjacent connectors without changing their geometry.
             .zIndex(1f)
             .drawBehind {
@@ -164,8 +162,8 @@ private fun TimelineMarker() {
                     color = background,
                     radius = size.minDimension / 2f + halo.toPx(),
                 )
-            }
-            .background(AppTokens.colors.timeline.marker, CircleShape)
+            },
+        color = AppTokens.colors.timeline.marker,
     )
 }
 

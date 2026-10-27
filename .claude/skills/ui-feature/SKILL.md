@@ -33,9 +33,9 @@ avoid mechanical cancellation checks and new recovery wrappers. Keep work in the
 existing `safeLaunch`/Flow pipeline and preserve cancellation propagation; explicit
 checks require a real cancellation gap under that canonical rule.
 
-Kotlin block style, the ban on named local functions and the startup-operation
-pattern (one private class-level method called from `init` and `onError`) are
-owned by [code style](../validation-gates/references/code-style.md#kotlin-blocks);
+Kotlin block style, the ban on named local functions and when an operation
+becomes a shared class-level method are owned by
+[code style](../validation-gates/references/code-style.md#kotlin-blocks);
 apply them as written there. Constructor order, `init`, handlers, `update` and
 named arguments are owned by
 [ViewModel layout](../validation-gates/references/code-style.md#viewmodel-layout);

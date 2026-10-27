@@ -113,6 +113,13 @@ behavior and cover the added variant under the existing preview rules.
   label and selected state, and Check adds no second interactive/accessibility target.
   Reuse this owner rather than adding card-specific check indicators. Toggle keeps
   its separate switch role.
+- [Dot](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/indicators/Dot.kt)
+  is the single owner of a small decorative or status dot: one `dot.size` circle
+  in a caller-supplied color, without semantics of its own. The caller owns
+  placement and may add drawing through the modifier (the timeline halo). MUST
+  NOT hand-roll a static dot as a sized circle box or add a per-site dot size
+  token; `PagerIndicator`'s animated capsule is the one exception and shares
+  `dot.size`. Dot roles stay in [CONSISTENCY.md](../../../../design-system/CONSISTENCY.md#dots).
 - MuscleSelection's measured bottom slot reserves list space before adaptive hero
   sizing. Keep bounded layout, immutable inputs and caller-owned selection. Group
   changes may restart scrolling without clearing caller selection.

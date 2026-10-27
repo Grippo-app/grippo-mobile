@@ -46,14 +46,14 @@ protected enum class Processing {
 protected fun safeLaunch(
     dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
     loader: LOADER? = null,
-    onError: (() -> Unit) = {},
+    recovery: ErrorRecovery = ErrorRecovery.Retry(),
     mapError: (Throwable) -> Throwable = { it },
     block: suspend CoroutineScope.() -> Unit,
 ): Job
 protected fun <T> Flow<T>.safeLaunch(
     dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
     processing: Processing = Processing.WhileActive,
-    onError: (() -> Unit) = {},
+    recovery: ErrorRecovery = ErrorRecovery.Retry(),
     mapError: (Throwable) -> Throwable = { it },
 ): Job
 
@@ -70,16 +70,16 @@ them. `onDestroy()` is the public `InstanceKeeper.Instance` override.
 ### Rules
 
 - Kotlin block style and the named-local-function ban: see [code style](../../validation-gates/references/code-style.md#kotlin-blocks); constructor order, `init`, handlers, `update` and named arguments: see [ViewModel layout](../../validation-gates/references/code-style.md#viewmodel-layout).
-- `init` normally starts startup requests/subscriptions directly through
-  `safeLaunch`/Flow. A complete operation reused for initial loading and a retry
-  after dialog dismissal belongs in a private class-level method called by `init`
-  and `onError`. Do not duplicate its request sequence or use a local declaration.
-  Other helpers must represent meaningful business operations, not hide startup.
-  Reuse the existing VM scope and follow the [error rules](error-pipeline.md).
+- `init` starts startup requests/subscriptions directly through `safeLaunch`/Flow.
+  The statements it may contain, including method calls, are listed in
+  [ViewModel layout](../../validation-gates/references/code-style.md#init). Other
+  helpers must represent meaningful business operations, not hide startup. A failed
+  operation restarts only through the error popup's Retry, in the existing VM scope
+  ([Retry and close](error-pipeline.md#retry-and-close)).
 - **`state`** is read-only outside the VM. `update { it.copy(...) }` is the **only** mutator (atomic compare-and-swap; thread-safe). **Never** capture `state.value` before a slow op then `update { it.copy(... = capturedValue + ...) }` — a concurrent update is lost; the lambda receives the **current** value.
 - **`loaders`** is an `ImmutableSet` (multiple concurrent). `withLoader(MyLoader.X) { block() }` adds X, runs `block`, removes X on completion (success **or** failure via `try/finally`); `loader == null` runs without modifying the set. Useful inside `mapLatest`/`flatMapLatest` chains.
 - **`navigator` is conflated** (`Channel.CONFLATED`). Rapid-fire pending `navigateTo()` events may collapse; this is not strict double-tap debounce or an exactly-once guarantee. Do not route navigation commands through ResultManager; it carries business result payloads. Verify the normal Direction chain when ordering matters.
-- **`safeLaunch { }`**: launches on the VM scope with `SupervisorJob` + a `CoroutineExceptionHandler`. If `loader != null`, adds before launch / removes via `job.invokeOnCompletion`. `OperationManagerImpl`'s `CoroutineExceptionHandler` ignores `CancellationException` and re-launches `sendError` on the VM scope, so unhandled non-cancellation failures use the shared log/crash/dialog pipeline. `mapError` optionally maps only the dialog representation; logs/crash reporting and analytics keep the original exception. It is pure, returns unknown errors unchanged and cannot recover or navigate. `onError` runs after dialog dismissal. The owned job runs until completion or cancellation, including ViewModel destruction; the block overload has no lifecycle mode. See [error rules](error-pipeline.md).
+- **`safeLaunch { }`**: launches on the VM scope with `SupervisorJob` + a `CoroutineExceptionHandler`. If `loader != null`, adds before launch / removes via `job.invokeOnCompletion`. `OperationManagerImpl`'s `CoroutineExceptionHandler` ignores `CancellationException` and re-launches `sendError` on the VM scope, so unhandled non-cancellation failures use the shared log/crash/dialog pipeline. `mapError` optionally maps only the dialog representation; logs/crash reporting and analytics keep the original exception. It is pure, returns unknown errors unchanged and cannot recover or navigate. `recovery` (default `ErrorRecovery.Retry()`) decides whether the popup offers Retry and what runs after a close without Retry; see [Retry and close](error-pipeline.md#retry-and-close). The owned job runs until completion or cancellation, including ViewModel destruction; the block overload has no lifecycle mode. See [error rules](error-pipeline.md).
 - **Suspend helpers**: run in the caller's coroutine and propagate failures to its `safeLaunch`. Local catches, stage flags and recovery wrappers are forbidden; request isolation for a long-lived source follows [error rules](error-pipeline.md#requests-driven-by-a-long-lived-source). Analytics decorates the business operation and preserves its original error.
 - **`screenPresentation`** defaults to null for containers. Every independent screen must override the reason-aware presenter; BaseComponent/foundation owns its lifecycle binding. Graph/null resolves no ScreenAnalytics. VM stores no Lifecycle/ComponentContext and adds no activationFlow visibility observer or scope. Verify every new/affected screen through the [mandatory screen coverage gate](../../feature-analytics/SKILL.md#mandatory-screen-coverage-gate).
 - **`Flow<T>.safeLaunch()`**: default `Processing.WhileActive` keeps upstream subscribed for a **1-second grace** after leaving RESUMED, then drops it (`emptyFlow()`); re-subscribes when RESUMED again. `Processing.Infinity` keeps emitting off-screen.

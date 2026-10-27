@@ -145,15 +145,17 @@ behavior and reports to the owning ViewModel, which decides what to observe.
   presentation through, without duplicate catches, no-op fallbacks or wrappers.
 - ViewModels call commands directly inside the existing `safeLaunch`.
   Follow the [error pipeline](../ui-feature/references/error-pipeline.md): no local
-  recovery catch or wrapper. A pure `mapError` changes dialog presentation only,
-  and `onError` runs after dismissal. Both `safeLaunch` overloads keep the same
-  hooks.
+  recovery catch or wrapper. A pure `mapError` changes dialog presentation only.
+  Retry relaunches the whole `safeLaunch` block; where intent events and
+  `trackOperation` sit relative to it follows
+  [Retry and close](../ui-feature/references/error-pipeline.md#retry-and-close).
+  Both `safeLaunch` overloads keep the same hooks.
 - Do not add cancellation checks solely for analytics. Business cancellation follows
   the [canonical coroutine rules](../validation-gates/references/forbidden-patterns.md#coroutines).
   Keep business lambdas multiline; keep short `update` calls and simple Flow
   operators compact, per [Kotlin blocks](../validation-gates/references/code-style.md#kotlin-blocks).
-  Named local functions are forbidden. Startup and retry use the existing VM scope
-  and class-level private methods.
+  Named local functions are forbidden. Startup uses the existing VM scope; retry is
+  the error popup's relaunch, not analytics-owned machinery.
 
 ## UI wiring and events
 

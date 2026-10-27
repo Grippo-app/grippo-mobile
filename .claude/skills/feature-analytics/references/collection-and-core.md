@@ -29,7 +29,7 @@ Current shape (verified against these files; re-inspect before relying on it):
   `onboarding_shown` and `language` values after `preferences.clear()`.
 - Onboarding lives in `:ui-screen-features:authorization`, package
   `com.grippo.authorization.onboarding` (no separate module).
-  `OnboardingViewModel.prepare()` initializes consent to granted only when
+  The startup operation in `OnboardingViewModel` initializes consent to granted only when
   onboarding was never shown, then sets the shown flag, then observes the durable
   value. Its control is the shared `Check` (`components/OnboardingAnalyticsConsent.kt`);
   Profile Settings uses `Toggle`.

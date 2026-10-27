@@ -99,9 +99,11 @@ the same caption/chart geometry as loaded or empty history. It introduces no
 draft, timer, request, retry or business selection.
 
 History refresh failures use the standard `safeLaunch` / ErrorProvider pipeline.
-The user explicitly kept the general error dialog after being informed that the
-host replaces and closes the Exercise session. There is no local retry/failure
-state or retry event; re-entry rebuilds the record and history. Cancellation uses
+The host shows the general error popup above the open Exercise session; its Retry
+relaunches the history job in this VM (each attempt is a new LoadHistory operation)
+and Back returns to the session with the cached record. There is no local
+retry/failure state or retry event in this feature; re-entry rebuilds the record
+and history. Cancellation uses
 the standard interrupted operation outcome, without a synthetic failure UI.
 
 ## Admin synchronization

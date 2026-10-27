@@ -61,6 +61,7 @@
     <string name="cm">cm</string>
     <string name="apply_btn">Apply</string>
     <string name="got_it_btn">Got it</string>
+    <string name="retry_btn">Retry</string>
     <string name="confirm_btn">Confirm</string>
     <string name="empty_training_exercises">Add your first exercise to start tracking this workout.</string>
     <string name="empty_daily_trainings">No workouts on this day.</string>

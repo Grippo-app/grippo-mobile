@@ -73,8 +73,8 @@ A successful return establishes the complete operation outcome, not just an acce
   compatibility decision as a new equipment type.
   Splash is the only catalog refresh. A process restored straight into Home skips it, so
   after the server adds a muscle or equipment row an exercise-example refresh fails on the
-  missing foreign-key parent (the generic error dialog and a crash report; Home's retry repeats
-  it after each dismissal, any Completed screen in that process shows it once) until a cold start passes
+  missing foreign-key parent (the generic error dialog and a crash report; each Retry on Home's
+  popup repeats it, any Completed screen in that process shows it once) until a cold start passes
   Splash again. This is an accepted risk:
   the owner adds catalog reloads where they are needed.
   Required children must belong to the enclosing parent; primary IDs must be unique across

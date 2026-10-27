@@ -57,7 +57,7 @@ actual signatures; an existing deviation does not weaken a rule.
   call. Keep short single-expression state updates and simple Flow operators
   compact: `update { it.copy(value = value) }`, `.map { it.range.value }`,
   `.filter { it.isSelected }`, `.flatMapLatest { it }`. Expand multi-operation
-  lambdas. Empty defaults such as `onError = {}` may stay inline.
+  lambdas. Empty defaults such as `onClose: () -> Unit = {}` may stay inline.
 - Declarations stay contiguous: constructor and function parameters, model and
   State properties, interface members, token, palette and style fields follow
   each other without blank lines, annotated and multi-line members included. A
@@ -68,9 +68,11 @@ actual signatures; an existing deviation does not weaken a rule.
 - No named local function declarations inside `init`, constructors, functions
   or lambdas (`fun helper()` nested in a body). Ordinary callbacks, lambdas and
   DSL blocks are fine. Declare methods at class scope or functions at file scope.
-  A startup operation reused after error-dialog dismissal is a private
-  class-level method called from `init` and from `onError`; it is not a local
-  function and not a copy of the sequence.
+  An operation that `init` and another member both run is one private
+  class-level method that both call; it is not a local function and not a copy
+  of the sequence. A failed startup operation is not such a reason: the error
+  popup's Retry button already relaunches the failed `safeLaunch` call (see
+  [Retry and close](../../ui-feature/references/error-pipeline.md#retry-and-close)).
 - ViewModel coroutines: only `safeLaunch` / `Flow.safeLaunch`. Never
   `viewModelScope.launch`, `GlobalScope`, `runBlocking`, raw `CoroutineScope`,
   a manual `CoroutineExceptionHandler` or `async { }.await()` for a single task.
@@ -133,8 +135,9 @@ statements are allowed there:
   value to a local and passes it to a handler, or discards it when a Flow chain
   in the same `init` delivers the data (cache refresh). Instrumentation follows
   the [analytics observation boundary](../../feature-analytics/SKILL.md#observation-boundary-must);
-- a call to the private startup method shared with `onError`
-  ([Kotlin blocks](#kotlin-blocks));
+- a call to a private class-level method that another member also calls
+  ([Kotlin blocks](#kotlin-blocks)); a startup operation with no other caller
+  is written in `init` directly;
 - an `if (initialState == null)` or a `when` over a caller-supplied input whose
   branches contain only the statements above (one-time population under
   [state-preservation](../../state-preservation/SKILL.md#data-backed-form-synchronization),
