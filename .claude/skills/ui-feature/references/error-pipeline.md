@@ -10,19 +10,19 @@ translates failures into UI-friendly dialogs.
 
 ```
 throw inside a safeLaunch attempt
-  → BaseViewModel.attempt returns the failure          // CancellationException is rethrown
+  → the safeLaunch loop catches the failure            // CancellationException is rethrown
   → BaseViewModel.recover(failure, recovery, mapError)
   → report: AppLogger.General.error(...) + CrashReporting.reportException(...)
   → error = mapError(failure) for an Exception         // UI presentation only
   → ErrorRecovery.Retry: ErrorProvider.retry(error)    // popup with Retry; returns Retry or Close
-    ErrorRecovery.Close: ErrorProvider.acknowledge(error), then onClose()  // popup with Got it
+    ErrorRecovery.Close: ErrorProvider.inform(error), then onClose()  // popup with Got it
   → ErrorProviderImpl maps AppError → AppErrorState, opens DialogConfig.ErrorDisplay(title, state, mode, onClose)
   → ErrorDecision.Retry: next attempt in the same Job; otherwise the Job completes
 ```
 
 `ErrorProviderImpl.retry` opens `ErrorDisplay.Mode.Retry(onRetry)` and returns
-`ErrorDecision.Retry` or `ErrorDecision.Close`; `acknowledge` opens
-`ErrorDisplay.Mode.Acknowledge` and returns when the popup closes. Both build the
+`ErrorDecision.Retry` or `ErrorDecision.Close`; `inform` opens
+`ErrorDisplay.Mode.Inform` and returns when the popup closes. Both build the
 config through one private `open(...)` and await a `CompletableDeferred`, so the
 first completion wins. Each failure opens its own popup and awaits it; failures are
 not merged.
@@ -51,16 +51,17 @@ and [OperationManagerImpl](../../../../ui-core/foundation/src/commonMain/kotlin/
 Current shape:
 
 - **Block `safeLaunch`** starts one Job through `OperationManager.launch` and runs
-  `do { val failure = withLoader(loader) { attempt(block) } ?: break } while (recover(...))`
-  inside it. `attempt` runs `supervisorScope { block() }`, rethrows
-  `CancellationException` and returns any other failure. This foundation catch is the
-  documented infrastructure boundary; feature code still MUST NOT catch. The loader is
+  a loop inside it: each attempt runs `withLoader(loader) { block() }` in a `try`; success
+  ends the loop, `CancellationException` is rethrown, and any other failure goes to
+  `recover(...)`, whose `true` starts the next attempt and `false` ends the loop. This
+  foundation catch is the documented infrastructure boundary; feature code still MUST
+  NOT catch. The loader is
   shown during each attempt, not while the popup waits.
 - **`recover(failure, recovery, mapError)`** (`private suspend`) rethrows
   `CancellationException`, calls `report` (file log and crash report) and applies
   `mapError` only to an `Exception`. For `ErrorRecovery.Retry` it returns
   `errorProvider.retry(error) == ErrorDecision.Retry`; for `ErrorRecovery.Close` it
-  awaits `errorProvider.acknowledge(error)`, runs `onClose` and returns `false`.
+  awaits `errorProvider.inform(error)`, runs `onClose` and returns `false`.
   `true` starts the next attempt; `false` completes the Job.
 - **Flow `safeLaunch`** collects `source.retryWhen { recover(...) }.catch { ... }`,
   where `source` is the `whileActive` wrapper (`WhileActive`) or the flow itself
@@ -72,7 +73,7 @@ Current shape:
 - **`OperationManagerImpl.launch`** still installs a `CoroutineExceptionHandler` that
   ignores `CancellationException`. It receives only stray failures: a failing child
   coroutine launched inside a block, or a failure of the block overload's own
-  recovery. The handler only acknowledges them (report, mapError, a Got-it popup);
+  recovery. The handler only informs about them (report, mapError, a Got-it popup);
   it runs no `onClose`.
 
 Original failures are logged and reported; only `Exception` receives the pure
@@ -127,7 +128,7 @@ adapter calls ([platform ownership](../../data-layer/references/auth-session.md#
 `mapError` only for dialog presentation and `ErrorRecovery.Close.onClose` only for
 what follows a closed popup.
 Foundation's loader cleanup via `try/finally` and documented infrastructure boundaries,
-including foundation's `attempt` catch, remain valid. Business contracts follow
+including the foundation `safeLaunch` loop's catch, remain valid. Business contracts follow
 [throwing suspend operations](../../data-layer/references/operation-outcomes.md#throwing-suspend-contracts-canonical).
 
 ## Requests driven by a long-lived source

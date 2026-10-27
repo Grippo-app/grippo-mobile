@@ -70,7 +70,7 @@ public sealed class DialogConfig(
     ) : DialogConfig(onDismiss = onClose, overlay = true) {
         public sealed interface Mode {
             public data class Retry(val onRetry: () -> Unit) : Mode
-            public data object Acknowledge : Mode
+            public data object Inform : Mode
         }
     }
 }
@@ -192,7 +192,7 @@ and an `onRetry` that invokes `(router.mode as? Mode.Retry)?.onRetry` and then
 `dialogNavigation.finish(null)`. The error decision is completed with Retry first, so
 the `onClose` that the removal then runs is ignored (the first completion wins). A
 Retry tapped while the sheet is already hiding after Back, Close or a swipe can still
-win; this rare case is accepted. `Mode.Acknowledge` offers only Got it, which closes
+win; this rare case is accepted. `Mode.Inform` offers only Got it, which closes
 the popup.
 
 Dialogs keep these typed config callbacks. Separate screen results use

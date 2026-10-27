@@ -23,7 +23,7 @@ public class ErrorDisplayViewModel(
                 navigateTo(ErrorDisplayDirection.Retry)
             }
 
-            ErrorDisplayModeState.Acknowledge -> {
+            ErrorDisplayModeState.Inform -> {
                 onDismiss()
             }
         }

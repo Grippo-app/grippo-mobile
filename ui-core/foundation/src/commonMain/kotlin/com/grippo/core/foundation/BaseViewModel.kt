@@ -2,11 +2,13 @@ package com.grippo.core.foundation
 
 import com.arkivanov.essenty.instancekeeper.InstanceKeeper
 import com.arkivanov.essenty.lifecycle.Lifecycle
+import com.grippo.core.error.provider.ErrorDecision
 import com.grippo.core.error.provider.ErrorProvider
 import com.grippo.core.foundation.analytics.ScreenAnalytics
 import com.grippo.core.foundation.internal.operation.OperationManager
 import com.grippo.core.foundation.models.BaseDirection
 import com.grippo.core.foundation.models.BaseLoader
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.toolkit.analytics.context.NavigationReason
 import com.grippo.toolkit.analytics.lifecycle.ScreenPresentation
 import com.grippo.toolkit.crashreporting.CrashReporting
@@ -14,6 +16,7 @@ import com.grippo.toolkit.logger.AppLogger
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,12 +28,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -104,46 +109,50 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     protected fun <T> Flow<T>.safeLaunch(
         dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
         processing: Processing = Processing.WhileActive,
-        onError: (() -> Unit) = {},
+        recovery: ErrorRecovery,
         mapError: (Throwable) -> Throwable = { it },
     ): Job {
-        val flow = when (processing) {
+        val source = when (processing) {
             Processing.WhileActive -> operationManager.whileActive(this@safeLaunch, activation)
             Processing.Infinity -> this@safeLaunch
         }
 
+        val flow = source
+            .retryWhen { cause, _ -> recover(failure = cause, recovery = recovery, mapError = mapError) }
+            .catch { cause -> if (cause is CancellationException) throw cause }
+
         return operationManager.launch(
             dispatcher = dispatcher,
-            onError = { exception ->
-                sendError(exception, onError, mapError)
-            },
+            onError = { exception -> inform(failure = exception, mapError = mapError) },
             block = {
                 flow.collect()
-            }
+                    },
         )
     }
 
     protected fun safeLaunch(
         dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
         loader: LOADER? = null,
-        onError: (() -> Unit) = {},
+        recovery: ErrorRecovery,
         mapError: (Throwable) -> Throwable = { it },
         block: suspend CoroutineScope.() -> Unit,
     ): Job {
-        addLoader(loader)
-
-        val job = operationManager.launch(
+        return operationManager.launch(
             dispatcher = dispatcher,
-            onError = { exception ->
-                sendError(exception, onError, mapError)
+            onError = { exception -> inform(failure = exception, mapError = mapError) },
+            block = {
+                while (true) {
+                    try {
+                        withLoader(loader) { block() }
+                        break
+                    } catch (cancellation: CancellationException) {
+                        throw cancellation
+                    } catch (failure: Throwable) {
+                        if (!recover(failure = failure, recovery = recovery, mapError = mapError)) break
+                    }
+                }
             },
-            block = block,
         )
-
-        job.invokeOnCompletion {
-            removeLoader(loader)
-        }
-        return job
     }
 
     // ------------ ACTIVATION API ------------
@@ -178,25 +187,46 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     private val errorProvider by inject<ErrorProvider>()
     private val crashReporting by inject<CrashReporting>()
 
-    private suspend fun sendError(
-        exception: Throwable,
-        onError: () -> Unit,
+    private suspend fun recover(
+        failure: Throwable,
+        recovery: ErrorRecovery,
         mapError: (Throwable) -> Throwable,
-    ) {
+    ): Boolean {
+        if (failure is CancellationException) throw failure
+
+        report(failure)
+
+        val error = if (failure is Exception) mapError(failure) else failure
+
+        return when (recovery) {
+            ErrorRecovery.Retry -> {
+                errorProvider.retry(error) == ErrorDecision.Retry
+            }
+            is ErrorRecovery.Close -> {
+                errorProvider.inform(error)
+                recovery.onClose()
+                false
+            }
+        }
+    }
+
+    private suspend fun inform(failure: Throwable, mapError: (Throwable) -> Throwable) {
+        report(failure)
+
+        val error = if (failure is Exception) mapError(failure) else failure
+
+        errorProvider.inform(error)
+    }
+
+    private fun report(failure: Throwable) {
         val log = buildString {
             append("─────── ViewModel error ──────\n")
-            append("│ message: ${exception.message}\n")
-            append("│ cause: ${exception.cause?.message}\n")
+            append("│ message: ${failure.message}\n")
+            append("│ cause: ${failure.cause?.message}\n")
             append("└──────────────────────────")
         }
         AppLogger.General.error(log)
-        crashReporting.reportException(exception)
-        val displayError = if (exception is Exception) {
-            mapError(exception)
-        } else {
-            exception
-        }
-        errorProvider.provide(displayError, callback = onError)
+        crashReporting.reportException(failure)
     }
 
     // ------------ RELEASE API ------------

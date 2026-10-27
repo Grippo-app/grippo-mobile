@@ -93,12 +93,12 @@ private fun ScreenPreview() {
 
 @AppPreview
 @Composable
-private fun ScreenAcknowledgePreview() {
+private fun ScreenInformPreview() {
     PreviewContainer {
         ErrorDisplayScreen(
             state = ErrorDisplayState(
                 error = AppErrorState.Expected("Text error title", "Text error description"),
-                mode = ErrorDisplayModeState.Acknowledge,
+                mode = ErrorDisplayModeState.Inform,
             ),
             contract = ErrorDisplayContract.Empty,
             loaders = persistentSetOf()

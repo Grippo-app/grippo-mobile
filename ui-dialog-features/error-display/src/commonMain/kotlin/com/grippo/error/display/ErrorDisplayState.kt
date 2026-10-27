@@ -17,17 +17,17 @@ public data class ErrorDisplayState(
 @Immutable
 public enum class ErrorDisplayModeState {
     Retry,
-    Acknowledge;
+    Inform;
 
     public fun labelText(): UiText = when (this) {
         Retry -> UiText.Res(Res.string.retry_btn)
-        Acknowledge -> UiText.Res(Res.string.got_it_btn)
+        Inform -> UiText.Res(Res.string.got_it_btn)
     }
 
     public companion object {
         internal fun of(value: DialogConfig.ErrorDisplay.Mode): ErrorDisplayModeState = when (value) {
             is DialogConfig.ErrorDisplay.Mode.Retry -> Retry
-            DialogConfig.ErrorDisplay.Mode.Acknowledge -> Acknowledge
+            DialogConfig.ErrorDisplay.Mode.Inform -> Inform
         }
     }
 }
