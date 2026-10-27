@@ -22,7 +22,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.error_dialog
-import com.grippo.design.resources.provider.got_it_btn
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -66,10 +65,10 @@ internal fun ErrorDisplayScreen(
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
         content = ButtonContent.Text(
-            text = AppTokens.strings.res(Res.string.got_it_btn),
+            text = state.mode.labelText().text(),
         ),
         style = ButtonStyle.Error,
-        onClick = contract::onDismiss
+        onClick = contract::onAction
     )
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
@@ -83,7 +82,23 @@ private fun ScreenPreview() {
     PreviewContainer {
         ErrorDisplayScreen(
             state = ErrorDisplayState(
-                error = AppErrorState.Expected("Text error title", "Text error description")
+                error = AppErrorState.Expected("Text error title", "Text error description"),
+                mode = ErrorDisplayModeState.Retry,
+            ),
+            contract = ErrorDisplayContract.Empty,
+            loaders = persistentSetOf()
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenAcknowledgePreview() {
+    PreviewContainer {
+        ErrorDisplayScreen(
+            state = ErrorDisplayState(
+                error = AppErrorState.Expected("Text error title", "Text error description"),
+                mode = ErrorDisplayModeState.Acknowledge,
             ),
             contract = ErrorDisplayContract.Empty,
             loaders = persistentSetOf()

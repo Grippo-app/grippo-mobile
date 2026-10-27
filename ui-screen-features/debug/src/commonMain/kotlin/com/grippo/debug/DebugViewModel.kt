@@ -3,6 +3,7 @@ package com.grippo.debug
 import com.grippo.analytics.debug.DebugAnalytics
 import com.grippo.analytics.debug.models.DebugScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.training.GenerateTrainingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
@@ -29,7 +30,7 @@ public class DebugViewModel(
     init {
         loadLogs()
 
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             val token = authorizationFeature.getPushToken()
             update { it.copy(pushToken = token) }
         }
@@ -40,14 +41,14 @@ public class DebugViewModel(
     }
 
     override fun clearLogs() {
-        safeLaunch {
+        safeLaunch(recovery = ErrorRecovery.Retry) {
             AppLogger.clearLogFile()
             loadLogs()
         }
     }
 
     override fun generateTraining() {
-        safeLaunch(loader = DebugLoader.GenerateTraining) {
+        safeLaunch(loader = DebugLoader.GenerateTraining, recovery = ErrorRecovery.Close(onClose = {})) {
             val training = generateTrainingUseCase.execute(DateTimeUtils.now()) ?: return@safeLaunch
             AppLogger.General.warning(
                 "Training intensity=${training.intensity}, volume=${training.volume}, repetitions=${training.repetitions}, exercises=${training.exercises.joinToString { "${it.name}:${it.intensity}" }}"
@@ -73,7 +74,7 @@ public class DebugViewModel(
     }
 
     private fun loadLogs() {
-        safeLaunch(loader = DebugLoader.Logs) {
+        safeLaunch(loader = DebugLoader.Logs, recovery = ErrorRecovery.Retry) {
             val logsByCategory = AppLogger.logFileContentsByCategory()
 
             update { state ->

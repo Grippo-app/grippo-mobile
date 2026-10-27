@@ -4,6 +4,7 @@ import com.grippo.analytics.draft.training.DraftTrainingAnalytics
 import com.grippo.analytics.draft.training.models.DraftTrainingEvent
 import com.grippo.analytics.draft.training.models.DraftTrainingOperation
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.stage.StageState
 import com.grippo.data.features.api.training.TrainingFeature
@@ -21,7 +22,7 @@ public class DraftTrainingViewModel(
 ), DraftTrainingContract {
 
     init {
-        safeLaunch(loader = DraftTrainingLoader.Draft) {
+        safeLaunch(loader = DraftTrainingLoader.Draft, recovery = ErrorRecovery.Retry) {
             val draft = trainingFeature.getDraftTraining().first()
             provideDraftTraining(draft)
         }
@@ -69,7 +70,7 @@ public class DraftTrainingViewModel(
         }
 
         analytics.trackEvent(DraftTrainingEvent.StartNewClicked)
-        safeLaunch(loader = DraftTrainingLoader.DeleteDraft) {
+        safeLaunch(loader = DraftTrainingLoader.DeleteDraft, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(DraftTrainingOperation.DeleteDraft) {
                 trainingFeature.deleteDraftTraining()
             }

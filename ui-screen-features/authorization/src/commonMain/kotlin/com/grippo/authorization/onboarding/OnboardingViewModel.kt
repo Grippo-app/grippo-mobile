@@ -4,6 +4,7 @@ import com.grippo.analytics.authorization.AuthAnalytics
 import com.grippo.analytics.authorization.models.AuthEvent
 import com.grippo.analytics.authorization.models.AuthScreen
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
 import com.grippo.data.features.api.local.settings.models.AnalyticsConsent
 import com.grippo.toolkit.analytics.context.NavigationReason
@@ -21,26 +22,16 @@ internal class OnboardingViewModel(
     }
 
     init {
-        prepare()
-    }
+        localSettingsFeature.observeAnalyticsConsent()
+            .onEach(::provideAnalyticsConsent)
+            .safeLaunch(processing = Processing.Infinity, recovery = ErrorRecovery.Retry)
 
-    private fun prepare() {
-        safeLaunch(loader = OnboardingLoader.Preparation, onError = ::prepare) {
+        safeLaunch(loader = OnboardingLoader.Preparation, recovery = ErrorRecovery.Retry) {
             if (!localSettingsFeature.observeOnboardingShown().first()) {
                 localSettingsFeature.setDefaultAnalyticsConsent(granted = true)
                 localSettingsFeature.setOnboardingShown()
             }
-
-            observeAnalyticsConsent()
         }
-    }
-
-    private fun observeAnalyticsConsent() {
-        update { it.copy(analyticsConsent = null) }
-
-        localSettingsFeature.observeAnalyticsConsent()
-            .onEach(::provideAnalyticsConsent)
-            .safeLaunch(processing = Processing.Infinity, onError = ::observeAnalyticsConsent)
     }
 
     private fun provideAnalyticsConsent(value: AnalyticsConsent) {
@@ -54,7 +45,7 @@ internal class OnboardingViewModel(
         val current = state.value.analyticsConsent ?: return
         if (current == granted) return
 
-        safeLaunch(loader = OnboardingLoader.AnalyticsConsent) {
+        safeLaunch(loader = OnboardingLoader.AnalyticsConsent, recovery = ErrorRecovery.Retry) {
             localSettingsFeature.setAnalyticsConsent(granted)
         }
     }

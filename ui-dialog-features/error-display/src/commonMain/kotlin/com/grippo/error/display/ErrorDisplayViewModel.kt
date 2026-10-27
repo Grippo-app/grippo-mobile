@@ -7,12 +7,27 @@ import com.grippo.core.state.error.AppErrorState
 
 public class ErrorDisplayViewModel(
     error: AppErrorState,
+    mode: ErrorDisplayModeState,
     private val analytics: ErrorDisplayAnalytics,
 ) : BaseViewModel<ErrorDisplayState, ErrorDisplayDirection, ErrorDisplayLoader>(
     ErrorDisplayState(
         error = error,
+        mode = mode,
     )
 ), ErrorDisplayContract {
+
+    override fun onAction() {
+        when (state.value.mode) {
+            ErrorDisplayModeState.Retry -> {
+                analytics.trackEvent(ErrorDisplayEvent.RetryRequested)
+                navigateTo(ErrorDisplayDirection.Retry)
+            }
+
+            ErrorDisplayModeState.Acknowledge -> {
+                onDismiss()
+            }
+        }
+    }
 
     override fun onDismiss() {
         analytics.trackEvent(ErrorDisplayEvent.DismissRequested)

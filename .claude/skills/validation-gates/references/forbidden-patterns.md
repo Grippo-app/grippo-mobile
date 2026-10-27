@@ -17,8 +17,9 @@ An existing deviation in the code never authorizes copying it.
   `trackOperation` bodies. Keep them multiline; short single-expression `update`
   and simple Flow operators stay compact. See [Kotlin blocks](code-style.md#kotlin-blocks).
 - **ViewModel layout drift** - constructor groups out of order, a statement in
-  `init` outside the permitted list, a mapper/use-case/feature call inside an
-  `update` lambda, an `update` lambda that computes values instead of copying
+  `init` outside the permitted list, a load's `safeLaunch` block that starts a
+  subscription (directly or through a helper), a mapper/use-case/feature call
+  inside an `update` lambda, an `update` lambda that computes values instead of copying
   precomputed locals (unless the result depends on the current state), or a
   `provide*` handler with more than one `update`.
   See [ViewModel layout](code-style.md#viewmodel-layout).

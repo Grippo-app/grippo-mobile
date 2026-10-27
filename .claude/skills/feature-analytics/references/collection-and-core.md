@@ -29,9 +29,11 @@ Current shape (verified against these files; re-inspect before relying on it):
   `onboarding_shown` and `language` values after `preferences.clear()`.
 - Onboarding lives in `:ui-screen-features:authorization`, package
   `com.grippo.authorization.onboarding` (no separate module).
-  The startup operation in `OnboardingViewModel` initializes consent to granted only when
-  onboarding was never shown, then sets the shown flag, then observes the durable
-  value. Its control is the shared `Check` (`components/OnboardingAnalyticsConsent.kt`);
+  `OnboardingViewModel` observes the durable consent from `init`; in parallel, its
+  preparation load initializes consent to granted only when onboarding was never
+  shown, then sets the shown flag. On a first onboarding the observation may emit
+  Denied before the default write lands, then Granted. Its control is the shared
+  `Check` (`components/OnboardingAnalyticsConsent.kt`);
   Profile Settings uses `Toggle`.
 - `ApplicationBootstrap` (`shared/.../bootstrap/ApplicationBootstrap.kt`, a class
   constructed by `Koin.init`) collects `observeAnalyticsConsent().distinctUntilChanged()`
@@ -70,7 +72,7 @@ UI value from LocalSettings under
 [state preservation](../../state-preservation/SKILL.md#initialization-from-persistent-settings).
 Login has no consent control. Consent is editable in Onboarding and Profile
 Settings. Onboarding initializes absent consent before marking its shown flag and
-reads the durable choice; restored onboarding routes rebuild this value instead
+observes the durable choice; restored onboarding routes rebuild this value instead
 of resetting it or immediately redirecting. Get started/Back do not write consent.
 The display flag itself never grants analytics permission. Consent controls and
 initialization are deliberately unreported.

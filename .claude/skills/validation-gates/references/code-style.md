@@ -144,6 +144,11 @@ statements are allowed there:
   a dialog config with several modes);
 - a `val` holding a source Flow that two or more chains share.
 
+Long-lived observations (Flow chains ending in `.safeLaunch(...)`) start directly
+in `init`, in parallel with the startup loads. A load's `safeLaunch` block MUST NOT
+start a subscription, directly or through a helper that does: a failed load would
+leave the observation unstarted, and Retry would start it a second time.
+
 Keep data-to-State conversion and assembly out of `init`: a
 `.map { it.toState() }` inside an `init` chain is the conversion this rule
 forbids; the mapper call belongs in the handler.

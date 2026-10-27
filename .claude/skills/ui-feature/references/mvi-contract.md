@@ -150,8 +150,9 @@ Rules:
   commands - see [data boundary](results.md#data-boundary-for-result-producers-and-receivers)).
   Authorization's documented
   Google/Apple credential-provider exception stays local to that feature.
-- Constructor parameter order, the `init` layout, `provide*` handlers, the
-  `update` shape and named arguments are owned by
+- Constructor parameter order, the `init` layout (including
+  [where long-lived observations start](../../validation-gates/references/code-style.md#init)),
+  `provide*` handlers, the `update` shape and named arguments are owned by
   [ViewModel layout](../../validation-gates/references/code-style.md#viewmodel-layout);
   block style, the named-local-function ban and shared class-level methods by
   [Kotlin blocks](../../validation-gates/references/code-style.md#kotlin-blocks).

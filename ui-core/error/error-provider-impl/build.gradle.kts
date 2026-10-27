@@ -13,5 +13,7 @@ kotlin {
         implementation(projects.uiDialogFeatures.dialogApi)
         implementation(projects.uiCore.error.errorProvider)
         implementation(projects.uiCore.state)
+
+        implementation(libs.kotlinx.coroutines.core)
     }
 }

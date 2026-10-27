@@ -12,7 +12,7 @@ internal class ErrorDisplayAnalyticsImpl(private val analytics: Analytics) : Err
         try {
             analytics.track(ErrorDisplayEventMatrix.event(event))
         } catch (_: Exception) {
-            // Reporting cannot block error dismissal.
+            // Reporting cannot block retry or dismissal.
         }
     }
 }

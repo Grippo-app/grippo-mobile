@@ -38,12 +38,13 @@ visible-screen context and correlate outcomes by `operation_id`; the typed catal
   `setDefaultAnalyticsConsent(true)` write (absent key only, inside
   `DataStore.edit`), then marks onboarding shown. Existing saved true/false values
   are preserved. Shown is an entry-based flag: closing or restarting after that
-  write never shows onboarding again. Consent is then observed with
-  `Processing.Infinity`; a failed initial write prevents marking shown and the error
-  popup's Retry repeats preparation. A failed consent read is re-collected by Retry.
-  Closing either popup leaves the screen as it is; while consent is unknown, Get
-  started and Back (including system Back) stay inactive, so after a local storage
-  failure only Retry or an app restart continues (accepted).
+  write never shows onboarding again. Consent is observed with
+  `Processing.Infinity` from `init`, in parallel with preparation, so on a first
+  onboarding it may emit Denied before the default write lands and Granted after it.
+  A failed preparation does not mark shown; the error popup's Retry repeats it and
+  closing leaves the screen usable with the observed consent. A failed consent read is
+  re-collected by Retry; closing it while the value is still unknown keeps Get started
+  and Back inactive until the app restarts (local storage failure only, accepted).
 - AuthProcess starts at Login; Registration is pushed with the optional valid
   email seed. Alternative entry: `RootDirection.Login` opens
   `Auth(AuthRouter.AuthProcess())` from Root's token-null observer when the active
@@ -240,7 +241,7 @@ modes, and that transport change adds no screen, preserved input or payload.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | SplashComponent / SplashViewModel | No editable data (`SplashState` is a data object); catalogs and loading | Runtime only / Rebuild | No DRAFT; `AppContent` loader; Room-backed MuscleFeature/EquipmentFeature | A fresh VM re-runs the startup load from `init`; the direction is re-resolved from DataStore, token and user |
-| OnboardingViewModel / OnboardingState | `analyticsConsent: Boolean?` | Rebuild | `observeAnalyticsConsent()` with Processing.Infinity; no DRAFT, State not serializable | Null while pending; switch checked unless false, enabled only with a known source and no loaders; accepted toggles commit immediately, so no unfinished draft exists; a failed source read keeps the last value (null before the first emission) and disables dependent controls while null; Retry re-collects the source, closing the popup keeps that state; a failed write retains the actual stored value |
+| OnboardingViewModel / OnboardingState | `analyticsConsent: Boolean?` | Rebuild | `observeAnalyticsConsent()` with Processing.Infinity, started in `init` in parallel with preparation; no DRAFT, State not serializable | Null while pending; switch checked unless false, enabled only with a known source and no loaders; accepted toggles commit immediately, so no unfinished draft exists; a failed source read keeps the last value (null before the first emission) and disables dependent controls while null; Retry re-collects the source, closing the popup keeps that state; a failed write retains the actual stored value |
 | OnboardingViewModel | Shown flag read in preparation | Rebuild | `observeOnboardingShown().first()` | A restored route re-runs preparation; writes are skipped when already shown; the screen stays interactive |
 | Onboarding | `Preparation`/`AnalyticsConsent` loaders, error and Back sessions | Runtime only | OnboardingLoader | Not archived |
 | LoginComponent / LoginState | `email: EmailFormatState` (display and value, including invalid/empty) | Preserve | `DRAFT = PersistenceKey("LoginDraft", LoginState.serializer())` | `restoreState(DRAFT) ?: LoginState()` (non-null); `saveState` in init |

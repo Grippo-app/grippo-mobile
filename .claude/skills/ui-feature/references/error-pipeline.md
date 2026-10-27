@@ -10,22 +10,22 @@ translates failures into UI-friendly dialogs.
 
 ```
 throw inside a safeLaunch attempt
-  → BaseViewModel.attempt returns the failure        // CancellationException is rethrown
-  → BaseViewModel.resolve(failure, retryable = recovery == ErrorRecovery.Retry, mapError)
-  → AppLogger.General.error(...)                     // file log
-  → CrashReporting.reportException(...)              // toolkit core collection policy
-  → ErrorProvider.resolve(mapError(failure), retryable) // UI presentation; suspends for the decision
-  → ErrorProviderImpl maps AppError → AppErrorState
-  → DialogController.open(DialogConfig.ErrorDisplay(title, state, onRetry, onClose)), awaits the decision
-  → ErrorDecision.Retry: next attempt in the same Job
-  → ErrorDecision.Close: close(recovery), the Job completes
+  → BaseViewModel.attempt returns the failure          // CancellationException is rethrown
+  → BaseViewModel.recover(failure, recovery, mapError)
+  → report: AppLogger.General.error(...) + CrashReporting.reportException(...)
+  → error = mapError(failure) for an Exception         // UI presentation only
+  → ErrorRecovery.Retry: ErrorProvider.retry(error)    // popup with Retry; returns Retry or Close
+    ErrorRecovery.Close: ErrorProvider.acknowledge(error), then onClose()  // popup with Got it
+  → ErrorProviderImpl maps AppError → AppErrorState, opens DialogConfig.ErrorDisplay(title, state, mode, onClose)
+  → ErrorDecision.Retry: next attempt in the same Job; otherwise the Job completes
 ```
 
-`onRetry` completes the decision with `ErrorDecision.Retry` and exists only when
-`retryable` (`ErrorRecovery.Retry`); `onClose` completes it with `ErrorDecision.Close`.
-The first completion wins. Each failure opens its own popup and awaits its own
-decision; failures are not merged. `close(recovery)` runs `onClose` only for
-`ErrorRecovery.Close`.
+`ErrorProviderImpl.retry` opens `ErrorDisplay.Mode.Retry(onRetry)` and returns
+`ErrorDecision.Retry` or `ErrorDecision.Close`; `acknowledge` opens
+`ErrorDisplay.Mode.Acknowledge` and returns when the popup closes. Both build the
+config through one private `open(...)` and await a `CompletableDeferred`, so the
+first completion wins. Each failure opens its own popup and awaits it; failures are
+not merged.
 
 Every unhandled failure follows this path automatically. The ViewModel author writes only:
 
@@ -44,37 +44,36 @@ Inspect the current [ErrorProviderImpl](../../../../ui-core/error/error-provider
 
 `AppErrorState` is the UI mirror of `AppError`. It lives in `:ui-core:state` (package `core.state.error`) — **not** in `:ui-core:error:error-provider`, which is kept UI-free so `:data-services:*` and `:toolkit:http-client` can depend on `AppError` without dragging in UI. Inspect `AppErrorState.kt`; current shape: `Network.Expected(title, description?)`, `data object`s `Network.NoInternet`, `Network.Timeout`, `Network.IncompleteResponse` and `Network.Unexpected`, a top-level `Expected(title, description?)` declared `: Network`, and `data object Unknown`. Fields are plain `String`s; `title()`/`description()` build the dialog's `UiText`, and the four transport objects take both from localized resources, so an exception's English message never reaches the dialog. On the `AppError` side, `Network.IncompleteResponse` and `Unknown` are no-argument plain classes; the other subtypes are data classes. `ErrorDisplay` is a `DialogConfig` subtype in `:ui-dialog-features:dialog-api`.
 
-## Inside `BaseViewModel` — `resolve`
+## Inside `BaseViewModel` — `recover`
 
 Inspect [BaseViewModel](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/BaseViewModel.kt)
 and [OperationManagerImpl](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/internal/operation/OperationManagerImpl.kt).
 Current shape:
 
-- **Block `safeLaunch`** starts one Job through `OperationManager.launch` and loops
-  inside it over `withLoader(loader) { attempt(block) }`. `attempt` runs
-  `supervisorScope { block() }`, rethrows `CancellationException` and returns any
-  other failure. This foundation catch is the documented infrastructure boundary;
-  feature code still MUST NOT catch. The loader is shown during each attempt, not
-  while the popup waits.
-- **`resolve(failure, retryable, mapError)`** (`private suspend`) runs
-  `AppLogger.General.error(...)` → `crashReporting.reportException(failure)` →
-  `error = if (failure is Exception) mapError(failure) else failure` →
-  `errorProvider.resolve(error, retryable)`, which suspends until the user decides.
-  On `ErrorDecision.Retry` the loop starts the next attempt; on `ErrorDecision.Close`
-  it runs `close(recovery)` and the Job completes.
-- **Flow `safeLaunch`** collects `source.retryWhen { ... }.catch { ... }`, where
-  `source` is the `whileActive` wrapper (`WhileActive`) or the flow itself
-  (`Infinity`). `retryWhen` calls `resolve` and re-collects the same source on
-  `Retry`; `catch` rethrows `CancellationException` and otherwise runs
-  `close(recovery)`; the collection has ended. A later activation does not
-  restart a closed collection.
+- **Block `safeLaunch`** starts one Job through `OperationManager.launch` and runs
+  `do { val failure = withLoader(loader) { attempt(block) } ?: break } while (recover(...))`
+  inside it. `attempt` runs `supervisorScope { block() }`, rethrows
+  `CancellationException` and returns any other failure. This foundation catch is the
+  documented infrastructure boundary; feature code still MUST NOT catch. The loader is
+  shown during each attempt, not while the popup waits.
+- **`recover(failure, recovery, mapError)`** (`private suspend`) rethrows
+  `CancellationException`, calls `report` (file log and crash report) and applies
+  `mapError` only to an `Exception`. For `ErrorRecovery.Retry` it returns
+  `errorProvider.retry(error) == ErrorDecision.Retry`; for `ErrorRecovery.Close` it
+  awaits `errorProvider.acknowledge(error)`, runs `onClose` and returns `false`.
+  `true` starts the next attempt; `false` completes the Job.
+- **Flow `safeLaunch`** collects `source.retryWhen { recover(...) }.catch { ... }`,
+  where `source` is the `whileActive` wrapper (`WhileActive`) or the flow itself
+  (`Infinity`). `true` re-collects the same source; on `false` the failure reaches
+  `catch`, which rethrows only `CancellationException`, so the collection ends. A
+  failure inside `recover` ends there too, without a second popup; the original
+  failure was already reported. A later activation does not restart an ended
+  collection.
 - **`OperationManagerImpl.launch`** still installs a `CoroutineExceptionHandler` that
-  ignores `CancellationException`. It now receives only stray failures of the block
-  overload: a failing child coroutine launched inside the block, or a failure of the
-  pipeline itself. Those get a popup without Retry, then `close(recovery)`. In the Flow
-  overload a failure of the pipeline inside `retryWhen` reaches `.catch`, which ends
-  the collection with `close(recovery)` and no second popup; the original failure was
-  already logged and reported.
+  ignores `CancellationException`. It receives only stray failures: a failing child
+  coroutine launched inside a block, or a failure of the block overload's own
+  recovery. The handler only acknowledges them (report, mapError, a Got-it popup);
+  it runs no `onClose`.
 
 Original failures are logged and reported; only `Exception` receives the pure
 `mapError` for the dialog, and a fatal `Error` is not transformed. While the popup is
@@ -175,10 +174,11 @@ their owning layer (for example the backend TokenProvider).
 - **`ErrorRecovery.Retry`** is the choice for every operation that can safely run
   again. The popup offers Retry; closing it ends the operation with no continuation,
   and the screen stays as the failure left it (Splash stays on screen until system
-  Back exits; Onboarding keeps an unknown consent, so Get started and Back stay
-  inactive until the app restarts after a local storage failure; TrainingExercise keeps
-  its last validation hints; a failed Flow collection stays ended). Values captured before `safeLaunch` are reused; read state
-  inside the block when a retry must see current state. Captured UI-bound handles
+  Back exits; Onboarding keeps the consent its own observation delivers, because
+  that observation starts in `init` beside the preparation load; TrainingExercise
+  keeps its last validation hints; a failed Flow collection stays ended). Values
+  captured before `safeLaunch` are reused; read state inside the block when a retry
+  must see current state. Captured UI-bound handles
   (Login's Google/Apple UI context, the Completed share capture) are held by the
   suspended Job while the popup is open; after an Activity recreation such a retry
   fails into a new popup. Intent events (clicks, submits) stay before `safeLaunch`
@@ -208,9 +208,9 @@ popup, token-loss navigation stays inactive until the owning ViewModel is recrea
 which for Root means a process restart.
 Destinations follow [navigation ownership](navigation.md#direction--navigation-translation).
 
-While a bottom sheet is open, the host shows the error above its active step, so a
-dialog ViewModel and its suspended Job stay alive for Retry; see
-[dialogs](dialogs.md#dialogcontroller--dialogprovider).
+`ErrorDisplay` is an overlay config: while a bottom sheet is open, the host shows the
+error above its active step, so a dialog ViewModel and its suspended Job stay alive
+for Retry; see [dialogs](dialogs.md#dialogcontroller--dialogprovider).
 Error delivery and dismissal callbacks follow the
 [dialog host retention policy](dialogs.md#dialogcontroller--dialogprovider); a later opening must
 not discard the pending error whose callbacks complete this decision.
@@ -238,6 +238,6 @@ Data-layer classification and payload completeness follow the
 Adding a new error type touches three places **atomically**:
 1. `AppError.<New>` — the sealed hierarchy in `:ui-core:error:error-provider`.
 2. `AppErrorState.<New>` — the UI mirror in `:ui-core:state` (package `core.state.error`).
-3. The `when` branch in `ErrorProviderImpl.resolve(...)` mapping `AppError.<New>` → `AppErrorState.<New>`.
+3. The `when` branch in `ErrorProviderImpl`'s private `open(...)` mapping `AppError.<New>` → `AppErrorState.<New>`.
 
 Unknown exceptions fall through as `AppErrorState.Unknown` (the `else` branch).
