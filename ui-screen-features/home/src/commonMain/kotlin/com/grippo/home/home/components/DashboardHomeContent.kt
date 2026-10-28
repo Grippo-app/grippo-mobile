@@ -45,7 +45,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.home_exercise_highlights_title
 import com.grippo.design.resources.provider.home_metrics_empty_description
 import com.grippo.design.resources.provider.home_metrics_title
-import com.grippo.design.resources.provider.home_progress_details_hint
 import com.grippo.design.resources.provider.home_unlock_banner_header
 import com.grippo.home.home.HomeContract
 import com.grippo.home.home.HomeState
@@ -121,14 +120,6 @@ internal fun DashboardHomeContent(
                     range = state.range,
                     onPeriodChange = contract::onOpenPeriodPicker,
                 )
-
-                if (state.goalProgress != null || state.muscleLoad != null || state.streak != null) {
-                    Text(
-                        text = AppTokens.strings.res(Res.string.home_progress_details_hint),
-                        style = AppTokens.typography.b13Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-                }
             }
         }
 
