@@ -19,9 +19,9 @@ uniquely qualified `error_display_analytics` schema catalog once.
 or `ErrorProvider.inform(error)` (for `ErrorRecovery.Close`), which open
 `DialogConfig.ErrorDisplay(mode, onClose)` with `Mode.Retry(onRetry)` or
 `Mode.Inform`. `onRetry` completes the failed operation's pending
-`ErrorDecision.Retry`; `onClose` completes the close. The host child factory runs the
-mode's `onRetry` before finishing the step, and the first completion wins, so a Retry
-is never followed by a close. The failed operation's Job waits for that decision and
+`ErrorDecision.Retry`; `onClose` completes the close. While its step is active, the host
+child factory runs the mode's `onRetry` before finishing the step, and the first
+completion wins, so a Retry is never followed by a close. The failed operation's Job waits for that decision and
 repeats or ends itself; only `ErrorRecovery.Close(onClose)` runs a continuation after a
 close. The host treats it like any opening: with no sheet it starts a session, over
 a presented sheet it is pushed onto that sheet's stack, and while a sheet is closing it
@@ -31,7 +31,7 @@ changes emit no synthetic presentation, retry, dismissal or result facts.
 
 | Callback / path | Observation | Meaning and eligibility |
 |---|---|---|
-| ErrorDisplayViewModel.onAction in `ErrorDisplayModeState.Retry` | RetryRequested / error_display_retry_requested v1 | Primary button labelled Retry (`Mode.Retry`); emitted before the Retry direction. Intent, not a successful retry; it names no operation or error. If the failed operation's Job was cancelled while the popup was open (ViewModel destroyed or its collection cancelled) it is still emitted, but no attempt follows and no `onClose` runs. It is also emitted for a tap while the sheet is already hiding after Back, Close or a swipe; the host then ignores the Retry and the popup completes as Close |
+| ErrorDisplayViewModel.onAction in `ErrorDisplayModeState.Retry` | RetryRequested / error_display_retry_requested v1 | Primary button labelled Retry (`Mode.Retry`); emitted before the Retry direction. Intent, not a successful retry; it names no operation or error. If the failed operation's Job was cancelled while the popup was open (ViewModel destroyed or its collection cancelled) it is still emitted, but no attempt follows and no `onClose` runs. It is also emitted for a tap after the step stopped being active (the sheet hiding after Back or toolbar Close, or a newer step covering it); the host then ignores the Retry and the popup completes as Close. During a swipe or outside-tap hide the step stays active, so a tap that reaches the button still retries (accepted rare case) |
 | ErrorDisplayViewModel.onDismiss | DismissRequested / error_display_dismiss_requested v1 | Emitted before the unchanged Back direction |
 | ErrorDisplayViewModel.onAction in `ErrorDisplayModeState.Inform` (Got it button) | DismissRequested through onDismiss | Rendered only for `Mode.Inform` popups, opened for `ErrorRecovery.Close` and by the foundation fallback for a failure outside the attempt (practically unreachable) (TrainingCompleted save, Registration submit, ProfileCompleted creation, ProfileBody apply, Debug generate training) |
 | Component BackCallback | DismissRequested through onDismiss when dispatched to this component | No inferred button/back source; host Back can bypass the leaf |

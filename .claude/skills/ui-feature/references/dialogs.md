@@ -116,7 +116,7 @@ checks a subtype (inspect `DialogViewModel.open`, `onDismiss` and `onRelease`):
   operation in its ViewModel. Back or Retry pop the pushed step and return to the one underneath;
   toolbar Close, a swipe or an outside tap closes the whole session and runs every
   step's `onDismiss`, so a covered error completes as Close. While a step is covered,
-  its own `finish`/`back`/`push` calls are ignored.
+  its own `finish`/`back`/`push` calls and an error step's Retry are ignored.
 - **Sheet dismissing:** the opening waits in `pending`, first in, first out, unless
   its content matches one already pending. At release, all pending openings start
   the next session as one stack in arrival order (the latest on top). Errors never
@@ -180,9 +180,11 @@ and an `onRetry` that, only while its step is active (`stepIsActive()`, the chec
 `finish` uses), invokes `(router.mode as? Mode.Retry)?.onRetry` and then
 `dialogNavigation.finish(null)`. The error decision is completed with Retry first, so
 the `onClose` that the removal then runs is ignored (the first completion wins). A
-Retry tapped while the sheet is already hiding after Back, Close or a swipe is
-ignored, so that popup completes as Close. `Mode.Inform` offers only Got it, which
-closes the popup.
+Retry from a step that is no longer active (the sheet is hiding after Back or toolbar
+Close, or a newer step covers it) is ignored, so that popup completes as Close. A swipe
+or outside tap keeps the sheet `Present` until Material reports it hidden, so a Retry
+reaching the button during that hide can still win; this rare case is accepted.
+`Mode.Inform` offers only Got it, which closes the popup.
 
 Dialogs keep these typed config callbacks. Separate screen results use
 `ResultManager` (`references/results.md`); a dialog result does not require a relay.
