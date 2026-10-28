@@ -127,9 +127,11 @@ internal class DialogContentComponent(
                     error = router.error,
                     mode = router.mode,
                     onRetry = {
-                        val retry = router.mode as? DialogConfig.ErrorDisplay.Mode.Retry
-                        retry?.onRetry?.invoke()
-                        navigation.finish(null)
+                        if (navigation.stepIsActive()) {
+                            val retry = router.mode as? DialogConfig.ErrorDisplay.Mode.Retry
+                            retry?.onRetry?.invoke()
+                            navigation.finish(null)
+                        }
                     },
                     back = { navigation.finish(null) },
                 )

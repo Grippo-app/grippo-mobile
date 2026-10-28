@@ -15,7 +15,7 @@ internal class SessionDialogNavigation(
     private val onFinish: ((() -> Unit)?) -> Unit,
     private val onClose: () -> Unit,
 ) : Session {
-    private fun stepIsActive(): Boolean {
+    fun stepIsActive(): Boolean {
         val state = currentState()
         return state.session?.id == sessionId &&
             state.phase == SheetPhase.Present &&

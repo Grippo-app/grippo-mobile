@@ -176,12 +176,13 @@ the existing `onResult` callback. The shared child factory translates that callb
 into `dialogNavigation.finish { router.onResult(value) }` and plain Back into
 `dialogNavigation.finish(null)`. The child factory is the only host code that knows
 `ErrorDisplay`. Like `ExerciseExampleDetails`' `onAction`, it passes `mode = router.mode`
-and an `onRetry` that invokes `(router.mode as? Mode.Retry)?.onRetry` and then
+and an `onRetry` that, only while its step is active (`stepIsActive()`, the check
+`finish` uses), invokes `(router.mode as? Mode.Retry)?.onRetry` and then
 `dialogNavigation.finish(null)`. The error decision is completed with Retry first, so
 the `onClose` that the removal then runs is ignored (the first completion wins). A
-Retry tapped while the sheet is already hiding after Back, Close or a swipe can still
-win; this rare case is accepted. `Mode.Inform` offers only Got it, which closes
-the popup.
+Retry tapped while the sheet is already hiding after Back, Close or a swipe is
+ignored, so that popup completes as Close. `Mode.Inform` offers only Got it, which
+closes the popup.
 
 Dialogs keep these typed config callbacks. Separate screen results use
 `ResultManager` (`references/results.md`); a dialog result does not require a relay.
