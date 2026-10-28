@@ -5,12 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.core.state.profile.UserState
 import com.grippo.design.components.banner.BannerCard
@@ -37,8 +33,8 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.empty_workouts
 import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_description
 import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_title
-import com.grippo.design.resources.provider.icons.LineUp
 import com.grippo.design.resources.provider.icons.Compass
+import com.grippo.design.resources.provider.icons.LineUp
 import com.grippo.design.resources.provider.icons.Sparkle
 import com.grippo.design.resources.provider.icons.Stack
 import com.grippo.design.resources.provider.welcome_benefit_history_subtitle
@@ -230,8 +226,6 @@ private fun WelcomeBody(
                     )
                 }
             }
-
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
         }
     }
 }
