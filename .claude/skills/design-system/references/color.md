@@ -33,7 +33,7 @@ them in `@Immutable` state.
   the [hierarchy rule in dimension tokens](dp.md). Inspect current chart groups
   rather than inventing signatures.
 - AppColor has no card groups: the colors a card family paints for its entity,
-  including role-specific ones, live in that entity's group, nested by role under
+  including role-specific ones, live in that entity's group, nested by role or drawing context under
   the hierarchy rule (`muscle.compact.background/inactive`,
   `equipment.compact.highlight`). Another group, such as `example` (exercise-example
   attribute colors), does not hold them. A role reuses the entity's identity color
