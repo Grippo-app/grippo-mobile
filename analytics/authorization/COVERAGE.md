@@ -15,17 +15,17 @@ visible-screen context and correlate outcomes by `operation_id`; the typed catal
 
 ## Startup and navigation
 
-- Splash loads muscles, then equipment (direct throwing calls), then navigates to
-  `resolveDirection()` under the `AppContent` loader with `ErrorRecovery.Retry`: the
-  error popup's Retry repeats both catalog requests and the resolution; closing it
-  leaves Splash in place (system Back exits), so a cold start needs the network.
+- Splash requests no catalog: it navigates to
+  `resolveDirection()` under the `AppContent` loader with `ErrorRecovery.Retry`, so
+  a cold start resolves offline from local data unless a session exists without a
+  cached user. The error popup's Retry repeats the resolution; closing it leaves
+  Splash in place (system Back exits).
   Resolution order: onboarding not yet shown → Onboarding; no token → AuthProcess;
   `hasProfile()` → Home, otherwise ProfileCreation. The SessionCheck decorator
   lives inside `hasProfile()` and encloses the cached-user read
   (`observeUser().firstOrNull()`, early true) and the optional
   `getUser()` call, once per invocation. It therefore runs only after
-  onboarding has been shown and a token exists; no-session catalog fetches are not
-  SessionCheck operations.
+  onboarding has been shown and a token exists.
 - `AuthRouter.Onboarding` is a payload-free serializable object; no destination
   enum, generic Continue or cross-leaf dispatcher exists. Onboarding is the
   one-time first screen: Get started and Back both continue to Login through
@@ -65,17 +65,24 @@ visible-screen context and correlate outcomes by `operation_id`; the typed catal
   parent replaces the stack with AuthProcess. Successful login or registration
   navigates to Home or ProfileCreation without adding screen owners; Root replaces
   authorization with Home.
-- A fresh HomeViewModel owns the startup exercise-example request after entering
-  Home, including after successful auth/profile completion. Root owns no catalog
-  request, Job, route guard or locale/foreground refresh subscription. Ordinary
+- A fresh HomeViewModel owns the startup catalog refresh after entering Home,
+  including after successful auth/profile completion: one tracked operation
+  (`refresh_catalogs`) that refreshes muscles, then equipment, then the exercise
+  examples. Root owns no catalog request, Job, route guard or locale/foreground
+  refresh subscription. Ordinary
   foreground or locale changes do not repeat the request on a retained Home VM.
   Failed/offline refreshes keep the last Room snapshot; the error popup's Retry
-  repeats the Home startup operation, closing it does not. Home continues observing Room
+  repeats the whole block, closing it does not. Home continues observing Room
   ([home](../home/COVERAGE.md)).
-  LoginUseCase, RegisterUseCase and CreateProfileUseCase inject no
-  ExerciseExampleFeature and request no examples; their Koin factories are
-  reconciled. Required profile, exclusion, weight-history, goal and push-token
-  steps keep their original error contracts. Login's consent UI, callback,
+  LoginUseCase and RegisterUseCase refresh muscles, then equipment, before the
+  credential request, so a stored session always has a local catalog (also when
+  Splash later routes a profile-less session to ProfileCreation) and the excluded-set
+  writes in their preparation find their foreign-key parents. A successful sign-in
+  refreshes both again in Home's startup operation. CreateProfileUseCase writes
+  exclusions chosen from that local catalog. None of the three injects
+  ExerciseExampleFeature or requests examples; their Koin factories are reconciled.
+  Required profile, exclusion, weight-history, goal and push-token steps keep
+  their original error contracts. Login's consent UI, callback,
   observation, loader, transient field and localized label were removed; its
   authentication button group is unchanged.
 
@@ -110,10 +117,10 @@ not telemetry.
 
 | Owner | Observed callbacks / inputs → typed event → wire | Complete operations and eligibility |
 |---|---|---|
-| SplashViewModel | System Back → Splash.DismissRequested → `auth_control_clicked` {auth_splash, dismiss_requested}; no busy guard | SessionCheck → `auth_session_check_*`, no parameters besides terminal `duration_ms`; wraps `hasProfile()` only (see above); cache hit and remote lookup both complete normally; the error popup's Retry repeats the full startup with a new SessionCheck; closing it emits nothing |
+| SplashViewModel | System Back → Splash.DismissRequested → `auth_control_clicked` {auth_splash, dismiss_requested}; no busy guard | SessionCheck → `auth_session_check_*`, no parameters besides terminal `duration_ms`; wraps `hasProfile()` only (see above); cache hit and remote lookup both complete normally; the error popup's Retry repeats the resolution with a new SessionCheck; closing it emits nothing |
 | OnboardingViewModel | Accepted Get started → Onboarding.GetStarted → `auth_control_clicked` {auth_onboarding, next}; Back → Onboarding.DismissRequested → {auth_onboarding, dismiss_requested}; both require a known consent source (non-null) and no active loaders, then navigate to Login | None. Preparation initializes absent consent and marks shown without persistence telemetry; `onAnalyticsConsentChange` rejects busy, pending and unchanged values, then persists directly inside safeLaunch and deliberately emits nothing |
-| LoginViewModel | Email/password validation-status transitions → Login.InputChanged → `auth_input_changed` {auth_login, input_field, input_status}; focus → `auth_input_focused`; email clear → `auth_input_cleared`; Next/Done IME → `auth_keyboard_action` {field, next/done}; password visibility → `auth_password_visibility_changed` {password_visible}; Submit by Email/Google/Apple → `auth_submit_clicked` {auth_method} after the guards and before safeLaunch, so the error popup's Retry does not re-emit it (a Google/Apple Retry reuses the captured UI context: after an Activity recreation it fails into a new popup); Register → `auth_control_clicked` {register} after the busy guard, passing the valid email display as the route seed; Back → {dismiss_requested}, no guard | Login(Email) → `auth_attempt_*` {auth_method=email, auth_action=login}: busy guard plus valid email and password; block is the throwing `loginEmail` use case (Boolean). Login(Google)/Login(Apple): busy guard; block includes direct throwing provider UI sign-in and `loginGoogle(token)`/`loginApple(code)`. `mapAuthError` is presentation-only |
-| RegistrationViewModel | Same input family under Registration.* with `interaction_screen=auth_registration`; Submit → `auth_submit_clicked` {email} emitted after busy and validity guards, before safeLaunch; toolbar/system Back → {dismiss_requested}, no guard | Register → `auth_attempt_*` {email, register}; block is `createAccount(email, password)` including its private preparation; `ErrorRecovery.Close`: the account may already exist when a later step fails, so the error popup offers only Got it |
+| LoginViewModel | Email/password validation-status transitions → Login.InputChanged → `auth_input_changed` {auth_login, input_field, input_status}; focus → `auth_input_focused`; email clear → `auth_input_cleared`; Next/Done IME → `auth_keyboard_action` {field, next/done}; password visibility → `auth_password_visibility_changed` {password_visible}; Submit by Email/Google/Apple → `auth_submit_clicked` {auth_method} after the guards and before safeLaunch, so the error popup's Retry does not re-emit it (a Google/Apple Retry reuses the captured UI context: after an Activity recreation it fails into a new popup); Register → `auth_control_clicked` {register} after the busy guard, passing the valid email display as the route seed; Back → {dismiss_requested}, no guard | Login(Email) → `auth_attempt_*` {auth_method=email, auth_action=login}: busy guard plus valid email and password; block is the throwing `loginEmail` use case (Boolean), which first refreshes muscles and equipment, before the credential request. Login(Google)/Login(Apple): busy guard; block includes direct throwing provider UI sign-in and `loginGoogle(token)`/`loginApple(code)`. `mapAuthError` is presentation-only |
+| RegistrationViewModel | Same input family under Registration.* with `interaction_screen=auth_registration`; Submit → `auth_submit_clicked` {email} emitted after busy and validity guards, before safeLaunch; toolbar/system Back → {dismiss_requested}, no guard | Register → `auth_attempt_*` {email, register}; block is `createAccount(email, password)` including the muscle and equipment refresh before the registration request and its private preparation; `ErrorRecovery.Close`: the account may already exist when a later step fails, so the error popup offers only Got it |
 | UserViewModel | Name status transitions → `auth_input_changed` {profile_creation_user, name, status}; focus, clear, Done IME as above; Weight/Height picker open → User.PickerOpened → `auth_picker_opened` {input_field} after the busy guard; each accepted picker result → state update, then User.PickerConfirmed → `auth_picker_confirmed` {input_field, input_status} (including unchanged values); Next → `auth_control_clicked` {next} after the busy guard and valid name/weight/height; Back → {dismiss_requested} after the busy guard | Logout → `profile_operation_*` {profile_action=logout}; block is `logoutUseCase.execute()`, then Back → parent replaces the stack with AuthProcess |
 | ExperienceViewModel | Selection → Experience.Selected → `auth_experience_selected` {profile_experience}; Next → {next} only with a selected experience; Back → {dismiss_requested} | None |
 | ExcludedMusclesViewModel | Group click → `auth_control_clicked` {group_selected}; item toggle → Muscles.SelectionChanged → `auth_selection_changed` {selected, selected_count}; Next → {next}, no guard; Back → {dismiss_requested} | None; catalog observations rebuild state without interaction events |
@@ -210,10 +217,17 @@ codes use `dismiss_requested` consistently. The typed catalog has not shipped in
 store build, so no typed reporting population requires a migration; the legacy
 store-build events (`registration_completed`, `workout_*`) are retained separately
 from the current operation definitions. Durations and failure populations across older installed
-builds are not an unchanged baseline, because exercise-example refresh failures
-now belong to Home. Admin consumers of `auth_attempt_*`, `auth_session_check_*`,
-`profile_operation_*`, `auth_control_clicked` and `screen_view` are reconciled in
-the [Live GA4 setup review](../COVERAGE.md#live-ga4-setup-review--2026-10-14).
+builds are not an unchanged baseline: exercise-example refresh failures belong to
+Home; Splash requests no catalog, so offline cold starts reach Onboarding,
+SessionCheck, Login or Home instead of stopping there, and Login/Register attempts include the muscle
+and equipment refresh before the credential request (Google/Apple: after the
+provider sign-in UI), so `auth_attempt_failed` no longer implies a rejected
+credential. Admin consumers of `auth_attempt_*`, `auth_session_check_*`,
+`profile_operation_*`, `auth_control_clicked` and `screen_view` were reconciled
+before this change in the
+[Live GA4 setup review](../COVERAGE.md#live-ga4-setup-review--2026-10-14); the
+`Grippo Auth method`, `События и экраны` and `Сбои операций` descriptions were
+updated for this change on 2026-10-28 (root SessionCheck and auth_attempt rows).
 
 ## Omissions and privacy
 
@@ -240,7 +254,7 @@ modes, and that transport change adds no screen, preserved input or payload.
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
-| SplashComponent / SplashViewModel | No editable data (`SplashState` is a data object); catalogs and loading | Runtime only / Rebuild | No DRAFT; `AppContent` loader; Room-backed MuscleFeature/EquipmentFeature | A fresh VM re-runs the startup load from `init`; the direction is re-resolved from DataStore, token and user |
+| SplashComponent / SplashViewModel | No editable data (`SplashState` is a data object); loading | Runtime only / Rebuild | No DRAFT; `AppContent` loader | A fresh VM re-resolves the direction from `init` using DataStore, token and user; no catalog request |
 | OnboardingViewModel / OnboardingState | `analyticsConsent: Boolean?` | Rebuild | `observeAnalyticsConsent()` with Processing.Infinity, started in `init` in parallel with preparation; no DRAFT, State not serializable | Null while pending; switch checked unless false, enabled only with a known source and no loaders; accepted toggles commit immediately, so no unfinished draft exists; a failed source read keeps the last value (null before the first emission) and disables dependent controls while null; Retry re-collects the source, closing the popup keeps that state; a failed write retains the actual stored value |
 | OnboardingViewModel | Shown flag read in preparation | Rebuild | `observeOnboardingShown().first()` | A restored route re-runs preparation; writes are skipped when already shown; the screen stays interactive |
 | Onboarding | `Preparation`/`AnalyticsConsent` loaders, error and Back sessions | Runtime only | OnboardingLoader | Not archived |
@@ -264,7 +278,7 @@ modes, and that transport change adds no screen, preserved input or payload.
 | ProfileCreationComponent stack | `ProfileCreationRouter` (five objects) | Preserve (navigation) | `ProfileCreationRouter.serializer()`, key `ProfileCreationComponent` | Initial User; push/pop |
 | RootComponent stack | `RootRouter.Auth(AuthRouter)` | Preserve (navigation) | `RootRouter.serializer()`, key `RootComponent` | Initial `Auth(AuthRouter.Splash)` |
 | RootViewModel / ProfileCreationViewModel | Session prerequisite and token observation | Rebuild / Runtime | Existing AuthorizationFeature.getToken source; no token in State, routes or drafts | Each retained owner observes its own prerequisite and re-subscribes only through the error popup's Retry (a closed popup leaves the observation inactive until the owner is recreated); a fresh restored ProfileCreation rechecks the source |
-| RootComponent / RootViewModel | Catalog startup ownership | None in Root | HomeViewModel starts `ExerciseExampleFeature.getExerciseExamples` from init | Root only routes the completed auth/profile flow to Home; a fresh Home VM owns its startup request. Root has no catalog dependency, Job, locale/foreground subscription or route guard. Existing token-loss routing is unchanged; Root renders its stack immediately; `AppLocale.isResolved` only keeps the Android system splash (MainActivity) until the stored language is read (or the read fails), and date formatting follows `AppLocale` with no install step; no catalog metadata enters an archive |
+| RootComponent / RootViewModel | Catalog startup ownership | None in Root | HomeViewModel starts the muscle, equipment and `ExerciseExampleFeature.getExerciseExamples` refresh from init | Root only routes the completed auth/profile flow to Home; a fresh Home VM owns its startup request. Root has no catalog dependency, Job, locale/foreground subscription or route guard. Existing token-loss routing is unchanged; Root renders its stack immediately; `AppLocale.isResolved` only keeps the Android system splash (MainActivity) until the stored language is read (or the read fails), and date formatting follows `AppLocale` with no install step; no catalog metadata enters an archive |
 | LocalSettingsRepository (DataStore) | `onboarding_shown` | Durable installation preference | `booleanPreferencesKey("onboarding_shown")` | Absent → false; one-way true write; `clearUserSettings` clears account preferences and restores it atomically with `analytics_consent` and `language` across logout/delete |
 | LocalSettingsRepository (DataStore) | `analytics_consent` | Durable installation preference | `booleanPreferencesKey("analytics_consent")` | Absent/false → Denied, true → Granted; `setDefaultAnalyticsConsent` writes only when absent; `setAnalyticsConsent` writes unconditionally; preserved across `clearUserSettings`, which LogoutUseCase and DeleteProfileUseCase call; applied to collection by ApplicationBootstrap |
 | All authorization VMs | Restoration flags, previous-source caches | None | No `var`/`lateinit` member in any authorization ViewModel | Conditions derive from State |
@@ -324,8 +338,16 @@ was part of that audit). Checks recorded for the implementing revisions:
   component for the consent checkbox. The current screen composition is recorded
   in the surface table; detailed enlarged-text, interactive toggle, process
   recreation, live app and iOS visual checks were unverified in that pass.
-- Sequential startup revision (2026-10-14, the revision the current code
-  matches): source checks covered three destinations with and without onboarding,
+- Catalog revision (the revision the current code matches): Splash requests no
+  catalog, Login/Register refresh muscles and equipment before the credential
+  request, Home's startup operation became `refresh_catalogs`. On the final tree
+  `./gradlew :androidApp:assembleDebug` and
+  `./gradlew :shared:assembleSharedDebugXCFramework` passed and the independent code
+  review passed; the gate audit ran on the snapshot before the rename. Runtime
+  behavior (offline cold start, sign-in, ProfileCreation after a restart) was not
+  run.
+- Sequential startup revision (2026-10-14; Splash's catalog requests were removed
+  later): source checks covered three destinations with and without onboarding,
   captured route restoration inputs, accepted/busy callbacks, replacement
   callbacks, obsolete wiring/dependencies, leaf/container hooks and unchanged
   storage/error ownership. Authorization Android and iOS Simulator Kotlin

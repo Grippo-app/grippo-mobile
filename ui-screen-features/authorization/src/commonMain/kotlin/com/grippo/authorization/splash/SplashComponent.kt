@@ -19,8 +19,6 @@ internal class SplashComponent(
     override val viewModel = componentContext.retainedInstance {
         SplashViewModel(
             analytics = getKoin().get(),
-            equipmentFeature = getKoin().get(),
-            muscleFeature = getKoin().get(),
             authorizationFeature = getKoin().get(),
             localSettingsFeature = getKoin().get(),
             userFeature = getKoin().get()

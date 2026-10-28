@@ -151,9 +151,11 @@ cancels in `finally`, and add no member Job, retry loop, stage flag or new scope
 ## Splash profile loading
 
 Inspect `ui-screen-features/authorization/.../splash/SplashViewModel.kt`.
-Its startup `safeLaunch` with `AppContent` loads the reference catalogs and calls
-`resolveDirection()` in that same coroutine. Onboarding and token presence select
-Onboarding/AuthProcess first; only an existing session reaches `hasProfile()`.
+Its startup `safeLaunch` with `AppContent` calls `resolveDirection()`, which reads local
+data and looks the profile up remotely only on a cache miss. It requests no reference
+catalog (Login/Register refresh them before the credential request and Home's startup
+operation refreshes them), so an offline cold start with a cached user reaches Home.
+Onboarding and token presence select Onboarding/AuthProcess first; only an existing session reaches `hasProfile()`.
 
 `hasProfile()` decorates its cached-user read and required remote `getUser()` with
 SessionCheck. Its Boolean selects Home or ProfileCreation. Lookup failures use the

@@ -10,6 +10,7 @@ import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.performance.PerformanceReferenceState
+import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
@@ -27,6 +28,7 @@ import com.grippo.data.features.api.metrics.performance.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.performance.PerformanceTrendUseCase
 import com.grippo.data.features.api.metrics.performance.models.PerformanceReference
 import com.grippo.data.features.api.metrics.profile.GoalFollowingUseCase
+import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
@@ -73,6 +75,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlin.time.Duration.Companion.days
 
@@ -94,6 +97,8 @@ internal class HomeViewModel(
     excludedMusclesFeature: ExcludedMusclesFeature,
     excludedEquipmentsFeature: ExcludedEquipmentsFeature,
     goalFeature: GoalFeature,
+    muscleFeature: MuscleFeature,
+    equipmentFeature: EquipmentFeature,
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState(range = DateRangeFormatState.Empty(kind = DateRangeKind.Last30Days))
 ), HomeContract {
@@ -133,14 +138,15 @@ internal class HomeViewModel(
         }
 
         safeLaunch(recovery = ErrorRecovery.Retry) {
-            analytics.trackOperation(operation = HomeOperation.RefreshExerciseExamples) {
+            analytics.trackOperation(operation = HomeOperation.RefreshCatalogs) {
+                muscleFeature.getMuscles()
+                equipmentFeature.getEquipments()
                 exerciseExampleFeature.getExerciseExamples()
             }
         }
 
         val selectedPeriods = state
-            .map { it.range.value }
-            .filterNotNull()
+            .mapNotNull { it.range.value }
             .distinctUntilChanged()
 
         val metricPeriods = selectedPeriods

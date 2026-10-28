@@ -116,7 +116,10 @@ Ten typed operations decorate complete throwing Feature/UseCase/toolkit calls in
   it ends `interrupted` when the screen closes first or when the app language
   changes before the response is written (the repository discards it); the catalog's usage counts
   and last-used dates then keep their pre-save values until Home next refreshes
-  the examples, a known trade-off of running the refresh outside the save.
+  the examples, a known trade-off of running the refresh outside the save. It does
+  not reload muscles or equipment, so when the server added a row after the last
+  successful Home catalog refresh, an example that references it fails on the missing
+  parent (the accepted risk in the data-layer operation outcomes).
 - RefreshTrainings: one `getTrainings(start, end)` per distinct pair of Home and
   comparison periods (`RefreshPeriods`) on Completed, started once the Home period has resolved and the saved training's
   first non-null local row has given its comparison period (so it does not run

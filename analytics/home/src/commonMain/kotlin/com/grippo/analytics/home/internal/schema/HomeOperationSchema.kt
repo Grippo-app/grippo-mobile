@@ -8,7 +8,7 @@ internal object HomeOperationSchema {
     val Operation = AnalyticsParameterKey.code<HomeOperation>("home_operation") {
         when (it) {
             HomeOperation.RefreshTrainings -> "refresh_trainings"
-            HomeOperation.RefreshExerciseExamples -> "refresh_exercise_examples"
+            HomeOperation.RefreshCatalogs -> "refresh_catalogs"
             HomeOperation.SavePeriod -> "save_period"
         }
     }

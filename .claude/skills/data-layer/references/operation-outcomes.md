@@ -55,7 +55,7 @@ A successful return establishes the complete operation outcome, not just an acce
   before writing. A non-null entity is insufficient when those mappings reject its value.
   Exception: the equipment and muscle catalogs (`EquipmentRepositoryImpl.getEquipments`,
   `MuscleRepositoryImpl.getMuscles`) store group and item rows whose `type` key this app
-  version does not know, so Splash's catalog refresh keeps succeeding when the
+  version does not know, so the catalog refresh keeps succeeding when the
   server adds a type, and exercise-example snapshots written after that refresh find their
   foreign-key parents. The entity-to-domain mappers hide those rows; an unknown group type
   hides the whole group from the catalog projection, including its items of known types. Missing fields,
@@ -71,11 +71,16 @@ A successful return establishes the complete operation outcome, not just an acce
   Splash, and builds that refresh catalogs only before sign-in fail a signed-in user's
   exercise-example refresh on the missing bundle parent, so a new muscle type needs the same
   compatibility decision as a new equipment type.
-  Splash is the only catalog refresh. A process restored straight into Home skips it, so
-  after the server adds a muscle or equipment row an exercise-example refresh fails on the
-  missing foreign-key parent (the generic error dialog and a crash report; each Retry on Home's
-  popup repeats it, any Completed screen in that process shows it once) until a cold start passes
-  Splash again. This is an accepted risk:
+  Splash requests no catalog. Login and Register refresh muscles, then equipment, before the
+  credential request, so a stored session always has a local catalog and the excluded-set
+  writes in their preparation find their foreign-key parents; Home's startup operation
+  refreshes muscles, equipment, then the exercise examples. Other writers that depend on those
+  parents run without their own catalog refresh: the Completed screen's and Debug's
+  exercise-example refresh and the profile muscle/equipment exclusion loads and saves. When the
+  server added a muscle or equipment row after the last successful Home catalog refresh (for
+  example in a process restored straight into another route, or after Home's popup was closed),
+  such a write fails on the missing parent (the generic error dialog and a crash report; Retry
+  repeats it) until a later Home instance's catalog refresh succeeds. This is an accepted risk:
   the owner adds catalog reloads where they are needed.
   Required children must belong to the enclosing parent; primary IDs must be unique across
   each table's snapshot. Row-count equality alone does not establish completeness.

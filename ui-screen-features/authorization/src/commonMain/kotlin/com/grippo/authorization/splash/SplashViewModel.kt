@@ -7,9 +7,7 @@ import com.grippo.analytics.authorization.models.AuthScreen
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.foundation.models.ErrorRecovery
 import com.grippo.data.features.api.authorization.AuthorizationFeature
-import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.local.settings.LocalSettingsFeature
-import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.toolkit.analytics.context.NavigationReason
 import kotlinx.coroutines.flow.first
@@ -17,8 +15,6 @@ import kotlinx.coroutines.flow.firstOrNull
 
 internal class SplashViewModel(
     private val analytics: AuthAnalytics,
-    private val muscleFeature: MuscleFeature,
-    private val equipmentFeature: EquipmentFeature,
     private val authorizationFeature: AuthorizationFeature,
     private val localSettingsFeature: LocalSettingsFeature,
     private val userFeature: UserFeature
@@ -33,8 +29,6 @@ internal class SplashViewModel(
             loader = SplashLoader.AppContent,
             recovery = ErrorRecovery.Retry,
         ) {
-            muscleFeature.getMuscles()
-            equipmentFeature.getEquipments()
             val direction = resolveDirection()
             navigateTo(direction)
         }

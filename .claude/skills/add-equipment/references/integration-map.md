@@ -78,8 +78,10 @@ Store and TestFlight builds without the exception react differently; inspect
 Splash. A build that refreshes the catalogs only before sign-in fails a signed-in
 user's exercise-example refresh on the missing equipment parent. Publishing a new
 dictionary value therefore requires a compatibility decision for every store or
-TestFlight build still in use that lacks the exception, not only a backend enum edit. The
-[backend task](backend-task-prompt.md) owns the contents of the handoff for
+TestFlight build still in use that lacks the exception, not only a backend enum
+edit. Where the current build refreshes the catalogs is owned by the
+[operation outcomes exception](../../data-layer/references/operation-outcomes.md#operation-outcomes-and-cache-reconciliation-canonical).
+The [backend task](backend-task-prompt.md) owns the contents of the handoff for
 remaining server work.
 
 `stubEquipments` supplies preview data. Use a real known ID or an explicitly
