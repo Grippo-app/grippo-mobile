@@ -15,7 +15,7 @@
     <string name="home_progress_details_hint">Tap a card for details.</string>
     <string name="home_metrics_title">Workout numbers</string>
     <string name="home_metrics_empty_description">No workout data for this period yet. Try another period.</string>
-    <string name="home_last_workout_in_period">Latest workout in period</string>
+    <string name="home_last_workout_in_period">Latest workout</string>
     <string name="metric_overview_muscle_distribution">Muscle load distribution</string>
     <string name="metric_overview_muscle_primary">Most loaded muscle: %1$s</string>
     <string name="metric_overview_muscle_details">All groups and muscles</string>

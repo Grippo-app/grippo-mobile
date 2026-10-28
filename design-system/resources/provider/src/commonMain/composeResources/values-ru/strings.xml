@@ -15,7 +15,7 @@
     <string name="home_progress_details_hint">Нажми на карточку, чтобы увидеть подробности.</string>
     <string name="home_metrics_title">Цифры тренировки</string>
     <string name="home_metrics_empty_description">За этот период пока нет показателей. Попробуй другой период.</string>
-    <string name="home_last_workout_in_period">Последняя тренировка за период</string>
+    <string name="home_last_workout_in_period">Последняя тренировка</string>
     <string name="metric_overview_muscle_distribution">Как распределилась нагрузка</string>
     <string name="metric_overview_muscle_primary">Наибольшая нагрузка: %1$s</string>
     <string name="metric_overview_muscle_details">Все группы и мышцы</string>

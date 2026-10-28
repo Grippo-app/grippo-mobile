@@ -16,19 +16,14 @@ import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.stubTraining
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonSize
-import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.illustration.Illustration
 import com.grippo.design.components.illustration.IllustrationStyle
 import com.grippo.design.components.modifiers.illustrationBackground
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.available_exercises_label
-import com.grippo.design.resources.provider.calendar
 import com.grippo.design.resources.provider.empty_workouts
 import com.grippo.design.resources.provider.home_last_workout_in_period
 import com.grippo.design.resources.provider.metric_overview_duration
@@ -58,6 +53,7 @@ public fun LastTrainingCard(
 
     Column(
         modifier = modifier
+            .scalableClick(onClick = onClick)
             .illustrationBackground(shape)
             .padding(
                 horizontal = AppTokens.dp.metrics.panel.large.horizontalPadding,
@@ -108,23 +104,6 @@ public fun LastTrainingCard(
                 modifier = Modifier.width(AppTokens.dp.illustration.compact),
                 painter = AppTokens.drawables.res(Res.drawable.empty_workouts),
                 style = IllustrationStyle.Compact,
-            )
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            RecapMetric(
-                modifier = Modifier.weight(1f),
-                value = value.exercises.size.toString(),
-                label = AppTokens.strings.res(Res.string.available_exercises_label),
-            )
-            Button(
-                content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.calendar)),
-                size = ButtonSize.Small,
-                style = ButtonStyle.Secondary,
-                onClick = onClick,
             )
         }
     }

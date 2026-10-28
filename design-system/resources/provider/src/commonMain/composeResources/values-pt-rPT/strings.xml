@@ -15,7 +15,7 @@
     <string name="home_progress_details_hint">Toque num cartão para ver os detalhes.</string>
     <string name="home_metrics_title">Números do treino</string>
     <string name="home_metrics_empty_description">Ainda não há dados de treino neste período. Tente outro período.</string>
-    <string name="home_last_workout_in_period">Último treino no período</string>
+    <string name="home_last_workout_in_period">Último treino</string>
     <string name="metric_overview_muscle_distribution">Distribuição da carga muscular</string>
     <string name="metric_overview_muscle_primary">Músculo mais trabalhado: %1$s</string>
     <string name="metric_overview_muscle_details">Todos os grupos e músculos</string>
