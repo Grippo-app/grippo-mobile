@@ -22,15 +22,14 @@ import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.illustration.Illustration
 import com.grippo.design.components.illustration.IllustrationStyle
-import com.grippo.design.components.modifiers.IllustrationBackgroundStyle
 import com.grippo.design.components.modifiers.illustrationBackground
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.available_exercises_label
 import com.grippo.design.resources.provider.calendar
 import com.grippo.design.resources.provider.empty_workouts
-import com.grippo.design.resources.provider.available_exercises_label
 import com.grippo.design.resources.provider.home_last_workout_in_period
 import com.grippo.design.resources.provider.metric_overview_duration
 import com.grippo.design.resources.provider.metric_overview_volume
@@ -59,7 +58,7 @@ public fun LastTrainingCard(
 
     Column(
         modifier = modifier
-            .illustrationBackground(shape, style = IllustrationBackgroundStyle.Solid)
+            .illustrationBackground(shape)
             .padding(
                 horizontal = AppTokens.dp.metrics.panel.large.horizontalPadding,
                 vertical = AppTokens.dp.metrics.panel.large.verticalPadding,

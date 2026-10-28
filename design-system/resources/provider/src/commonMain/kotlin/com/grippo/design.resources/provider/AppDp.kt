@@ -70,6 +70,8 @@ public data object AppDp {
     val muscleSelection: MuscleSelection = MuscleSelection
     val muscle: Muscle = Muscle
     val muscleCard: MuscleCard = MuscleCard
+    val equipment: Equipment = Equipment
+    val equipmentCard: EquipmentCard = EquipmentCard
     val dialog: Dialog = Dialog
     val input: Input = Input
     val button: Button = Button
@@ -82,8 +84,6 @@ public data object AppDp {
     val toggleSelectableCard: ToggleSelectableCard = ToggleSelectableCard
     val wheelPicker: WheelPicker = WheelPicker
     val achievementCard: AchievementCard = AchievementCard
-    val equipment: Equipment = Equipment
-    val equipmentCard: EquipmentCard = EquipmentCard
     val timeline: Timeline = Timeline
     val exerciseCard: ExerciseCard = ExerciseCard
     val exerciseExampleCard: ExerciseExampleCard = ExerciseExampleCard
@@ -185,6 +185,30 @@ public data object AppDp {
             public val padding: Dp = AppDp.padding.tiny
             public val size: Dp = muscle.image.small + padding * 2
             public val radius: Dp = AppDp.radius.small
+        }
+    }
+
+    public data object Equipment {
+        public val image: Image = Image
+
+        public data object Image {
+            public val small: Dp = icon.xLarge
+            public val medium: Dp = size.medium
+        }
+    }
+
+    public data object EquipmentCard {
+        public val compact: Compact = Compact
+        public val detail: Detail = Detail
+
+        public data object Compact {
+            public val icon: Dp = equipment.image.small
+            public val freeWeightPadding: Dp = padding.tiny
+        }
+
+        public data object Detail {
+            public val icon: Dp = equipment.image.medium
+            public val width: Dp = 144.dp
         }
     }
 
@@ -706,30 +730,6 @@ public data object AppDp {
             val size: Dp = icon.xxxLarge
             val radius: Dp = AppDp.radius.xLarge
             val placeholderPadding: Dp = 32.dp
-        }
-    }
-
-    public data object Equipment {
-        public val image: Image = Image
-
-        public data object Image {
-            public val small: Dp = icon.xLarge
-            public val medium: Dp = size.medium
-        }
-    }
-
-    public data object EquipmentCard {
-        public val compact: Compact = Compact
-        public val detail: Detail = Detail
-
-        public data object Compact {
-            public val icon: Dp = equipment.image.small
-            public val freeWeightPadding: Dp = padding.tiny
-        }
-
-        public data object Detail {
-            public val icon: Dp = equipment.image.medium
-            public val width: Dp = 144.dp
         }
     }
 

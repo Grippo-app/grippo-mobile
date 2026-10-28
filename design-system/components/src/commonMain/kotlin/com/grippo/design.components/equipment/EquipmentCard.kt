@@ -107,7 +107,7 @@ private fun EquipmentCardCompact(
 ) {
     val title = value.type.title().text()
     val sourceIcon = value.type.icon()
-    val highlight = AppTokens.colors.example.equipmentCompactHighlight
+    val highlight = AppTokens.colors.equipment.compact.highlight
     val icon = remember(sourceIcon, highlight) {
         compactEquipmentImage(source = sourceIcon, highlight = highlight)
     }

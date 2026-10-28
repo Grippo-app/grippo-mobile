@@ -213,8 +213,6 @@ public object DarkColor : AppColor {
     }
 
     public override val example: AppColor.ExampleColors = object : AppColor.ExampleColors {
-        override val equipmentCompactHighlight: Color =
-            lerp(AppPalette.NeutralDark.N700, AppPalette.NeutralDark.N800, 0.5f)
         override val category: AppColor.ExampleColors.CategoryColors =
             object : AppColor.ExampleColors.CategoryColors {
                 override val compound: Color = AppPalette.DarkAccent.Red
@@ -256,10 +254,19 @@ public object DarkColor : AppColor {
         override val inactive = AppPalette.NeutralDark.N400.copy(alpha = 0.90f)
         override val background = AppPalette.NeutralDark.N300
         override val outline = Color.Transparent
-        override val compactBackground = AppPalette.NeutralDark.N450
-        override val compactInactive = AppPalette.NeutralDark.N500
-        override val compactHighlight = AppPalette.NeutralDark.N700
+        override val compact: AppColor.MuscleColors.CompactColors =
+            object : AppColor.MuscleColors.CompactColors {
+                override val background = AppPalette.NeutralDark.N450
+                override val inactive = AppPalette.NeutralDark.N500
+            }
         override val palette6MuscleCalm: List<Color> = AppPalette.Gradient.Palette6MuscleDark
+    }
+
+    override val equipment: AppColor.EquipmentColors = object : AppColor.EquipmentColors {
+        override val compact: AppColor.EquipmentColors.CompactColors =
+            object : AppColor.EquipmentColors.CompactColors {
+                override val highlight = lerp(AppPalette.NeutralDark.N700, AppPalette.NeutralDark.N800, 0.5f)
+            }
     }
 
     override val charts: AppColor.Charts = object : AppColor.Charts {

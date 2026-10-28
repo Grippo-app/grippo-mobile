@@ -22,7 +22,6 @@ import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.illustration.Illustration
 import com.grippo.design.components.illustration.IllustrationStyle
 import com.grippo.design.components.konfetti.KonfettiParade
-import com.grippo.design.components.modifiers.IllustrationBackgroundStyle
 import com.grippo.design.components.modifiers.illustrationBackground
 import com.grippo.design.components.welcome.WelcomeBlock
 import com.grippo.design.components.welcome.WelcomeChecklist
@@ -239,7 +238,7 @@ private fun HeroBlock(
     val shape = RoundedCornerShape(AppTokens.dp.welcome.card.radius)
     Column(
         modifier = modifier
-            .illustrationBackground(shape, style = IllustrationBackgroundStyle.Solid)
+            .illustrationBackground(shape)
             .padding(AppTokens.dp.contentPadding.block),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {

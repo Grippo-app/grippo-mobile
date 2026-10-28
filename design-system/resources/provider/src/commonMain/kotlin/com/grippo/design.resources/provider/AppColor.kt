@@ -23,6 +23,7 @@ public interface AppColor {
     public val icon: IconColors
     public val toggle: ToggleColors
     public val muscle: MuscleColors
+    public val equipment: EquipmentColors
     public val segment: SegmentColors
     public val konfetti: Konfetti
     public val charts: Charts
@@ -220,7 +221,6 @@ public interface AppColor {
     }
 
     public interface ExampleColors {
-        public val equipmentCompactHighlight: Color
         public val category: CategoryColors
         public val weightType: WeightTypeColors
         public val forceType: ForceTypeColors
@@ -249,10 +249,21 @@ public interface AppColor {
         public val inactive: Color
         public val background: Color
         public val outline: Color
-        public val compactBackground: Color
-        public val compactInactive: Color
-        public val compactHighlight: Color
+        public val compact: CompactColors
         public val palette6MuscleCalm: List<Color>
+
+        public interface CompactColors {
+            public val background: Color
+            public val inactive: Color
+        }
+    }
+
+    public interface EquipmentColors {
+        public val compact: CompactColors
+
+        public interface CompactColors {
+            public val highlight: Color
+        }
     }
 
     public interface SegmentColors {

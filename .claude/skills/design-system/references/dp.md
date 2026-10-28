@@ -30,11 +30,9 @@ are the elevation steps.
 - An entity drawn by a card family keeps its drawing sizes in an entity group,
   and each card variant that sizes the drawing itself references them instead of
   the private scales, through the entity group's val (`muscle.image`, not the
-  `Muscle.image` object path), as producers read `size` or `padding`:
-  `muscle.image.small` feeds `muscleCard.inline` and the Load
-  drawing, `muscle.image.medium` feeds `muscleCard.compact`;
-  `equipment.image.small` feeds `equipmentCard.compact`, and
-  `equipment.image.medium` feeds `equipmentCard.detail`. The
+  `Muscle.image` object path), as producers read `size` or `padding`; for
+  example `muscleCard.compact.icon = muscle.image.medium`. The full role-to-token
+  mapping lives in [CONSISTENCY.md](../../../../design-system/CONSISTENCY.md). The
   steps are per entity, so equal sizes across entities are not implied. Card-only
   geometry (tile radius, padding, width, optical padding) stays in the card
   variant and may be derived from the drawing (`muscleCard.load.size` is the
@@ -42,6 +40,11 @@ are the elevation steps.
   component, such as Selection through ToggleSelectableCard, keeps that
   component's slot. Entity-wide properties such as `muscle.figure.aspectRatio`
   also live in the entity group.
+- MUST declare an entity val above its card group's val (`muscle` before
+  `muscleCard`, `equipment` before `equipmentCard`). `AppDp` initializes its vals
+  in declaration order, so a card group declared above its entity reads an
+  uninitialized entity and crashes on the first access to `AppDp` at app start;
+  a build does not catch it.
 - Producers reuse private scales where their meaning fits. An isolated demanded
   dimension may have a literal inside its semantic group. A new base-scale entry
   requires an authorized design-grid change with concrete consumers.

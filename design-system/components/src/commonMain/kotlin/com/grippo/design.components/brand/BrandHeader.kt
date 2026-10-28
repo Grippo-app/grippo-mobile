@@ -61,7 +61,9 @@ public fun BrandHeader(
             color = AppTokens.colors.text.primary,
             textAlign = textAlign,
         )
+
         Spacer(Modifier.size(AppTokens.dp.contentPadding.subContent))
+
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = description,

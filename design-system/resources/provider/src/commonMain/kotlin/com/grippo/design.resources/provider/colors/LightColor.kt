@@ -213,7 +213,6 @@ public object LightColor : AppColor {
     }
 
     public override val example: AppColor.ExampleColors = object : AppColor.ExampleColors {
-        override val equipmentCompactHighlight: Color = Color.White
         override val category: AppColor.ExampleColors.CategoryColors =
             object : AppColor.ExampleColors.CategoryColors {
                 override val compound: Color = AppPalette.LightAccent.Red
@@ -255,10 +254,19 @@ public object LightColor : AppColor {
         override val inactive = AppPalette.NeutralLight.N300
         override val background = AppPalette.NeutralLight.N200
         override val outline = AppPalette.NeutralLight.N400
-        override val compactBackground = AppPalette.NeutralLight.N200
-        override val compactInactive = AppPalette.NeutralLight.N300
-        override val compactHighlight = AppPalette.NeutralLight.N550
+        override val compact: AppColor.MuscleColors.CompactColors =
+            object : AppColor.MuscleColors.CompactColors {
+                override val background = AppPalette.NeutralLight.N200
+                override val inactive = AppPalette.NeutralLight.N300
+            }
         override val palette6MuscleCalm: List<Color> = AppPalette.Gradient.Palette6MuscleLight
+    }
+
+    override val equipment: AppColor.EquipmentColors = object : AppColor.EquipmentColors {
+        override val compact: AppColor.EquipmentColors.CompactColors =
+            object : AppColor.EquipmentColors.CompactColors {
+                override val highlight = Color.White
+            }
     }
 
     override val charts: AppColor.Charts = object : AppColor.Charts {

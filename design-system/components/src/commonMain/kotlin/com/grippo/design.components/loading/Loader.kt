@@ -55,8 +55,7 @@ public fun Loader(modifier: Modifier = Modifier) {
     ) {
         Box(
             modifier = Modifier
-                .size(AppTokens.dp.loader.container)
-                .illustrationBackground(CircleShape),
+                .size(AppTokens.dp.loader.container),
             contentAlignment = Alignment.Center,
         ) {
             Icon(

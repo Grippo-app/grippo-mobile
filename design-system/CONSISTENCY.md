@@ -195,8 +195,8 @@ and Latin text in both themes; each role keeps its existing size and line height
 
   | Role | Image and geometry | Label and state |
   | --- | --- | --- |
-  | Compact library metadata | `muscleCard.compact.icon` (`muscle.image.medium`, 32 dp), no tile or padding; `muscle.compactBackground/compactInactive` context highlighted with `muscle.compactHighlight`; a group list draws one upper-body drawing and, when present, one legs drawing with `text` gaps | Image only, with complete localized text semantics |
-  | Inline filters | `muscleCard.inline.icon` (`muscle.image.small`, 28 dp), no tile or padding; `muscle.compactBackground/compactInactive` context highlighted with the neutral `muscle.highlight` | The CheckSelectableCard Small chip owns the label and selection |
+  | Compact library metadata | `muscleCard.compact.icon` (`muscle.image.medium`, 32 dp), no tile or padding; `muscle.compact.background/inactive` context highlighted with the neutral `muscle.highlight`; a group list draws one upper-body drawing and, when present, one legs drawing with `text` gaps | Image only, with complete localized text semantics |
+  | Inline filters | `muscleCard.inline.icon` (`muscle.image.small`, 28 dp), no tile or padding; `muscle.compact.background/inactive` context highlighted with the neutral `muscle.highlight` | The CheckSelectableCard Small chip owns the label and selection |
   | Load measured rows | `muscleCard.load.size` 32 dp `background.card` tile: a `muscle.image.small` (28 dp) drawing inside 2 dp padding, 8 dp radius; `muscle.inactive/background/outline` paints with the caller's load color | Label, share and bar belong to the MuscleLoading row |
   | Availability/exclusion selection | The same ToggleSelectableCard Medium geometry as equipment Selection | Full `h5`, `text.primary`; Switch at the row |
 
@@ -212,11 +212,11 @@ and Latin text in both themes; each role keeps its existing size and line height
   group keeps its familiar anatomical crop; multiple upper-body groups share one
   existing front/back torso drawing with all involved zones highlighted. Legs
   use their own drawing when present, keeping the summary to at most two marks.
-  Inline and Compact drawings use `muscle.compactBackground/compactInactive`
+  Inline and Compact drawings use `muscle.compact.background/inactive`
   for their anatomical context: Light NeutralLight.N200/N300; Dark
-  NeutralDark.N450/N500. Compact highlights use `muscle.compactHighlight`
-  (Light NeutralLight.N550; Dark NeutralDark.N700), matching the shared neutral
-  identity highlight used by Inline marks and Selection rows. Measured anatomy retains
+  NeutralDark.N450/N500. Both highlight with the shared neutral identity
+  `muscle.highlight` (Light NeutralLight.N550; Dark NeutralDark.N700), as
+  Selection rows do. Measured anatomy retains
   its relative-load paints.
   The summary keeps `text` gaps. Both
   image types retain complete localized accessibility names without visible captions. This
@@ -226,11 +226,6 @@ and Latin text in both themes; each role keeps its existing size and line height
   separates the two clusters without a divider or container. The clusters wrap
   with `text` vertical gaps, matching the right column's vertical spacing. List
   dividers follow the content gutters.
-- Compact equipment caps only near-white vector fill/stroke channels through
-  `example.equipmentCompactHighlight`: Light is unchanged (`Color.White`);
-  Dark uses the midpoint of NeutralDark.N700/N800. Native dark and middle shades,
-  path geometry and alpha are preserved. Detail and Selection equipment keep
-  their original vector colors.
 - MuscleSelection keeps one large hero and existing group tabs, with no duplicate
   small group mark/title above the hero. Muscle rows keep their anatomical identity cues:
   `MuscleCardStyle.Selection` draws `MuscleEnumState.icon()` in the 64 dp image slot
@@ -359,10 +354,15 @@ and Latin text in both themes; each role keeps its existing size and line height
 
   | Role | Image and geometry | Label and state |
   | --- | --- | --- |
-  | Compact library metadata | `equipmentCard.compact.icon` (`equipment.image.small`, 32 dp) cell, no tile or border; dense dumbbell/kettlebell/barbell/EZ-bar/trap-bar artwork uses `equipmentCard.compact.freeWeightPadding` (2 dp) inside the cell; other types retain the full fit; an equipment list wraps with `text` gaps | Image only, with complete localized text semantics; one entry per distinct type in source order; full silhouettes keep their aspect ratio |
+  | Compact library metadata | `equipmentCard.compact.icon` (`equipment.image.small`, 32 dp) cell, no tile or border; dense dumbbell/kettlebell/barbell/EZ-bar/trap-bar artwork uses `equipmentCard.compact.freeWeightPadding` (2 dp) inside the cell; other types retain the full fit; `equipment.compact.highlight` caps near-white channels; an equipment list wraps with `text` gaps | Image only, with complete localized text semantics; one entry per distinct type in source order; full silhouettes keep their aspect ratio |
   | Detail information gallery | `equipmentCard.detail.icon` (`equipment.image.medium`, 50 dp), `equipmentCard.detail.width` (144 dp), unframed; `content` gap and caller edge gutters | Full centered `b14Semi`, `text.primary`; horizontal scrolling retains every supplied item |
   | Availability/exclusion selection | Existing ToggleSelectableCard Medium geometry: 64 dp image, 12 dp padding, 16 dp neutral frame and reserved passive switch | Full `h5`, `text.primary`; existing Switch action/state at the row, image unchanged when excluded |
 
+- Compact equipment caps only near-white vector fill/stroke channels through
+  `equipment.compact.highlight`: Light is unchanged (`Color.White`);
+  Dark uses the midpoint of NeutralDark.N700/N800. Native dark and middle shades,
+  path geometry and alpha are preserved. Detail and Selection equipment keep
+  their original vector colors.
 - Profile and onboarding share the same selection variant and bottom-overlay
   padding. Selected IDs and their inverse exclusions remain caller-owned.
   Equipment identity does not indicate selection, recommendation, severity or
@@ -1276,7 +1276,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   no orange or feedback tint. Equipment uses the shared Compact treatment;
   missing equipment shows the declared weight type as its plain value.
   All muscle groups are represented by one upper-body mark and, when needed,
-  one legs drawing at `muscleCard.compact.icon` (32 dp), with neutral `muscle.compactHighlight`
+  one legs drawing at `muscleCard.compact.icon` (32 dp), with neutral `muscle.highlight`
   highlights and complete localized accessibility names. The equipment and
   anatomy clusters stay in the right
   column with `content` spacing between them and `text` wrapping gaps. Missing

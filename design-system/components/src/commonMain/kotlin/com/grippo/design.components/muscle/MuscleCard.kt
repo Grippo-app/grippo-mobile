@@ -68,7 +68,7 @@ public fun MuscleCard(
             icon = value.image(
                 rememberCompactPreset(
                     muscles = setOf(value),
-                    highlight = AppTokens.colors.muscle.compactHighlight,
+                    highlight = value.color(),
                 )
             ),
         )
@@ -110,7 +110,7 @@ public fun MuscleCard(
             icon = value.image(
                 rememberCompactPreset(
                     muscles = rememberGroupMuscles(groups = listOf(value)),
-                    highlight = AppTokens.colors.muscle.compactHighlight,
+                    highlight = value.color(),
                 )
             ),
         )
@@ -161,7 +161,7 @@ public fun MuscleCard(
             else -> {
                 val preset = rememberCompactPreset(
                     muscles = rememberGroupMuscles(groups = upperGroups),
-                    highlight = AppTokens.colors.muscle.compactHighlight,
+                    highlight = AppTokens.colors.muscle.highlight,
                 )
 
                 MuscleCardCompact(
@@ -186,10 +186,10 @@ private fun rememberCompactPreset(
     val colors = AppTokens.colors.muscle
     return remember(muscles, colors, highlight) {
         MuscleEnumState.colorPreset(
-            fallback = colors.compactInactive,
+            fallback = colors.compact.inactive,
             outline = colors.outline,
-            background = colors.compactBackground,
-            colorFor = { muscle -> if (muscle in muscles) highlight else colors.compactInactive },
+            background = colors.compact.background,
+            colorFor = { muscle -> if (muscle in muscles) highlight else colors.compact.inactive },
         )
     }
 }

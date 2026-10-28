@@ -83,7 +83,6 @@ import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.stubRecapTraining
 import com.grippo.design.components.illustration.Illustration
 import com.grippo.design.components.illustration.IllustrationStyle
-import com.grippo.design.components.modifiers.IllustrationBackgroundStyle
 import com.grippo.design.components.modifiers.illustrationBackground
 import com.grippo.design.components.skeleton.SkeletonText
 import com.grippo.design.core.AppTokens
@@ -152,6 +151,7 @@ public class TrainingRecapHeroState internal constructor(
 
     internal var collapseOffset: Float by mutableFloatStateOf(initialCollapseOffset)
         private set
+
     // Written by the measure pass: scrolling and the semantics switch need the laid-out bounds.
     internal var collapseFloor: Float by mutableFloatStateOf(0f)
     internal var collapseRange: Float by mutableFloatStateOf(0f)
@@ -169,7 +169,11 @@ public class TrainingRecapHeroState internal constructor(
             return Offset(x = 0f, y = -collapseBy(-available.y))
         }
 
-        override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+        override fun onPostScroll(
+            consumed: Offset,
+            available: Offset,
+            source: NestedScrollSource
+        ): Offset {
             if (available.y <= 0f) return Offset.Zero
             return Offset(x = 0f, y = -collapseBy(-available.y))
         }
@@ -210,7 +214,10 @@ public class TrainingRecapHeroState internal constructor(
 
         backdropReveal.animateTo(
             targetValue = 1f,
-            animationSpec = tween(durationMillis = RECAP_BACKDROP_REVEAL_MS, easing = FastOutSlowInEasing),
+            animationSpec = tween(
+                durationMillis = RECAP_BACKDROP_REVEAL_MS,
+                easing = FastOutSlowInEasing
+            ),
         )
     }
 
@@ -252,9 +259,17 @@ public class TrainingRecapHeroState internal constructor(
 
     internal companion object {
         val Saver: Saver<TrainingRecapHeroState, Any> = listSaver(
-            save = { state -> listOf(state.backdropReveal.targetValue == 1f, state.collapseOffset) },
+            save = { state ->
+                listOf(
+                    state.backdropReveal.targetValue == 1f,
+                    state.collapseOffset
+                )
+            },
             restore = { saved ->
-                TrainingRecapHeroState(revealed = saved[0] as Boolean, initialCollapseOffset = saved[1] as Float)
+                TrainingRecapHeroState(
+                    revealed = saved[0] as Boolean,
+                    initialCollapseOffset = saved[1] as Float
+                )
             },
         )
     }
@@ -483,7 +498,7 @@ private fun RecapCollapsingSurface(
 
     Layout(
         contents = listOf(
-            { Box(modifier = Modifier.illustrationBackground(RectangleShape, style = IllustrationBackgroundStyle.Solid)) },
+            { Box(modifier = Modifier.illustrationBackground(RectangleShape)) },
             text,
             backdrop,
             facts,
@@ -498,8 +513,10 @@ private fun RecapCollapsingSurface(
                 onDragStopped = { state.settleCollapse() },
             ),
     ) { (surfaceMeasurables, textMeasurables, backdropMeasurables, factsMeasurables, barMeasurables), constraints ->
-        val startPadding = (contentPadding.calculateStartPadding(layoutDirection) + horizontalPadding).roundToPx()
-        val endPadding = (contentPadding.calculateEndPadding(layoutDirection) + horizontalPadding).roundToPx()
+        val startPadding =
+            (contentPadding.calculateStartPadding(layoutDirection) + horizontalPadding).roundToPx()
+        val endPadding =
+            (contentPadding.calculateEndPadding(layoutDirection) + horizontalPadding).roundToPx()
         val topInset = contentPadding.calculateTopPadding().roundToPx()
         val bottomInset = contentPadding.calculateBottomPadding().roundToPx()
         val expandedPaddingPx = expandedPadding.roundToPx()
@@ -513,7 +530,8 @@ private fun RecapCollapsingSurface(
         val textPlaceable = textMeasurables.first().measure(
             Constraints(maxWidth = (contentWidth - backdropPx - rowGapPx).coerceAtLeast(0)),
         )
-        val backdropPlaceable = backdropMeasurables.first().measure(Constraints.fixed(backdropPx, backdropPx))
+        val backdropPlaceable =
+            backdropMeasurables.first().measure(Constraints.fixed(backdropPx, backdropPx))
         val factsPlaceable = factsMeasurables.first().measure(Constraints(maxWidth = contentWidth))
         val barPlaceable = barMeasurables.first().measure(
             Constraints(maxWidth = (contentWidth - collapsedBackdropPx - rowGapPx).coerceAtLeast(0)),
@@ -522,9 +540,10 @@ private fun RecapCollapsingSurface(
         val topRowHeight = maxOf(textPlaceable.height, backdropPx)
         val factsGapPx = if (factsPlaceable.height > 0) rowGapPx else 0
         val expandedHeight = topInset + expandedPaddingPx + topRowHeight + factsGapPx +
-            factsPlaceable.height + expandedPaddingPx + bottomInset
+                factsPlaceable.height + expandedPaddingPx + bottomInset
         val barRowHeight = maxOf(barPlaceable.height, collapsedBackdropPx)
-        val collapsedHeight = topInset + collapsedPaddingPx + barRowHeight + collapsedPaddingPx + bottomInset
+        val collapsedHeight =
+            topInset + collapsedPaddingPx + barRowHeight + collapsedPaddingPx + bottomInset
         val range = (expandedHeight - collapsedHeight).coerceAtLeast(0).toFloat()
         val heightLimit = if (constraints.hasBoundedHeight) {
             (constraints.maxHeight * RECAP_MAX_HEIGHT_SHARE).roundToInt()
@@ -537,7 +556,10 @@ private fun RecapCollapsingSurface(
 
         val offset = state.collapseOffset.coerceIn(floor, range)
         val fraction = if (range > 0f) offset / range else 0f
-        val height = (expandedHeight - offset.roundToInt()).coerceIn(constraints.minHeight, constraints.maxHeight)
+        val height = (expandedHeight - offset.roundToInt()).coerceIn(
+            constraints.minHeight,
+            constraints.maxHeight
+        )
         val surfacePlaceable = surfaceMeasurables.first().measure(Constraints.fixed(width, height))
 
         val expandedTop = topInset + expandedPaddingPx
@@ -545,7 +567,8 @@ private fun RecapCollapsingSurface(
         val surfaceRadius = collapsed.radius.toPx() * fraction
         val parallax = (offset * RECAP_COLLAPSE_PARALLAX).roundToInt()
         val titleScale = lerp(1f, RECAP_COLLAPSE_TITLE_SCALE, fraction)
-        val titleOrigin = TransformOrigin(if (layoutDirection == LayoutDirection.Ltr) 0f else 1f, 0f)
+        val titleOrigin =
+            TransformOrigin(if (layoutDirection == LayoutDirection.Ltr) 0f else 1f, 0f)
         val backdropScale = lerp(1f, collapsedBackdropPx / backdropPx.toFloat(), fraction)
         val backdropInset = backdropPx * (1f - backdropScale) / 2f
         val backdropX = lerp(
@@ -580,7 +603,11 @@ private fun RecapCollapsingSurface(
                 x = startPadding,
                 y = expandedTop + topRowHeight + factsGapPx - parallax,
             ) {
-                alpha = 1f - collapsePhase(fraction = fraction, start = 0f, end = RECAP_COLLAPSE_FACTS_FADE_END)
+                alpha = 1f - collapsePhase(
+                    fraction = fraction,
+                    start = 0f,
+                    end = RECAP_COLLAPSE_FACTS_FADE_END
+                )
             }
             backdropPlaceable.placeRelativeWithLayer(
                 x = (backdropX - backdropInset).roundToInt(),
@@ -612,7 +639,8 @@ private fun RecapBackdrop(
     Box(modifier = Modifier.size(AppTokens.dp.illustration.compact)) {
         if (verdict != null) {
             LaunchedEffect(state) { state.reveal() }
-            val rise = with(LocalDensity.current) { AppTokens.dp.training.recap.backdrop.rise.toPx() }
+            val rise =
+                with(LocalDensity.current) { AppTokens.dp.training.recap.backdrop.rise.toPx() }
 
             key(state.backdropGeneration) {
                 Crossfade(
@@ -756,7 +784,10 @@ private fun TrainingRecapHeroStablePreview() {
             style = TrainingRecapHeroStyle.Resolved(
                 verdict = PerformanceVerdictState.Stable,
                 reference = PerformanceReferenceState.Average,
-                description = PerformanceReferenceState.Average.comparedSummary(improved = 2, compared = 4),
+                description = PerformanceReferenceState.Average.comparedSummary(
+                    improved = 2,
+                    compared = 4
+                ),
             ),
         )
     }
@@ -865,7 +896,12 @@ private fun TrainingRecapHeroCollapsedPreview() {
             modifier = Modifier.fillMaxWidth(),
             training = stubRecapTraining(),
             style = previewResolvedStyle(metrics = stubPerformanceMetricsImproved()),
-            state = remember { TrainingRecapHeroState(revealed = true, initialCollapseOffset = Float.MAX_VALUE) },
+            state = remember {
+                TrainingRecapHeroState(
+                    revealed = true,
+                    initialCollapseOffset = Float.MAX_VALUE
+                )
+            },
         )
     }
 }
@@ -878,7 +914,12 @@ private fun TrainingRecapHeroCollapsedPendingPreview() {
             modifier = Modifier.fillMaxWidth(),
             training = stubRecapTraining(),
             style = TrainingRecapHeroStyle.Pending,
-            state = remember { TrainingRecapHeroState(revealed = true, initialCollapseOffset = Float.MAX_VALUE) },
+            state = remember {
+                TrainingRecapHeroState(
+                    revealed = true,
+                    initialCollapseOffset = Float.MAX_VALUE
+                )
+            },
         )
     }
 }
