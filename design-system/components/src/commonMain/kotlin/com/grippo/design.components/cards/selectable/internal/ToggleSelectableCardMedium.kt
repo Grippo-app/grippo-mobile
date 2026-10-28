@@ -17,7 +17,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
-import androidx.compose.ui.graphics.ColorFilter
 import com.grippo.design.components.cards.selectable.ToggleSelectableCardStyle
 import com.grippo.design.components.cards.selectable.ToggleSelectableCardVariants
 import com.grippo.design.components.modifiers.scalableClick
@@ -33,7 +32,6 @@ internal fun ToggleSelectableCardMedium(
     style: ToggleSelectableCardStyle.Medium,
     isSelected: Boolean,
     onClick: () -> Unit,
-    leading: (@Composable () -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.toggleSelectableCard.medium.radius)
 
@@ -61,19 +59,11 @@ internal fun ToggleSelectableCardMedium(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        if (leading != null) {
-            leading()
-        } else {
-            Image(
-                imageVector = style.icon,
-                contentDescription = null,
-                modifier = Modifier.size(AppTokens.dp.toggleSelectableCard.medium.icon),
-                colorFilter = when (isSelected) {
-                    true -> null
-                    false -> ColorFilter.tint(color = AppTokens.colors.icon.secondary)
-                },
-            )
-        }
+        Image(
+            modifier = Modifier.size(AppTokens.dp.toggleSelectableCard.medium.icon),
+            imageVector = style.icon,
+            contentDescription = null,
+        )
 
         Text(
             modifier = Modifier.weight(1f),

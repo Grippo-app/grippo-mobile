@@ -120,8 +120,24 @@ behavior and cover the added variant under the existing preview rules.
   NOT hand-roll a static dot as a sized circle box or add a per-site dot size
   token; `PagerIndicator`'s animated capsule is the one exception and shares
   `dot.size`. Dot roles stay in [CONSISTENCY.md](../../../../design-system/CONSISTENCY.md#dots).
+- [MuscleCard](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/muscle/MuscleCard.kt)
+  is the single owner of muscle and muscle-group drawings outside the full-body
+  figures (`MusclesImage`, `MuscleLoadingImagesRow`). It follows the EquipmentCard
+  call shape, `MuscleCard(value, style)`, with Compact, Inline, Load and Selection
+  roles. Accepted exception to the entity `*State` input: `value` is
+  `MuscleEnumState` or `MuscleGroupEnumState`, because load rows, filters and
+  library metadata hold no `MuscleState`. Both families take a list in Compact:
+  `EquipmentCard(list, Compact)` keeps one drawing per type in a wrapping row, and
+  `MuscleCard(list, Compact)` merges two or more upper-body groups into one torso
+  drawing (a single group keeps its own crop) and keeps legs separate; callers
+  pass the list instead of building their own row. A role name means the same
+  composition in both families. Outside those figures and their hosts, consumers MUST NOT
+  build muscle color presets or draw `body*`/`legs*` vectors for a muscle or group
+  drawing themselves; role-to-token choices stay in
+  [CONSISTENCY.md](../../../../design-system/CONSISTENCY.md).
 - MuscleSelection's measured bottom slot reserves list space before adaptive hero
-  sizing. Keep bounded layout, immutable inputs and caller-owned selection. Group
+  sizing; its rows are MuscleCard Selection, built like EquipmentCard Selection.
+  Keep bounded layout, immutable inputs and caller-owned selection. Group
   changes may restart scrolling without clearing caller selection.
 
 ## Contract and placement gate

@@ -257,7 +257,7 @@ public object LightColor : AppColor {
         override val outline = AppPalette.NeutralLight.N400
         override val compactBackground = AppPalette.NeutralLight.N200
         override val compactInactive = AppPalette.NeutralLight.N300
-        override val summaryHighlight = AppPalette.NeutralLight.N550
+        override val compactHighlight = AppPalette.NeutralLight.N550
         override val palette6MuscleCalm: List<Color> = AppPalette.Gradient.Palette6MuscleLight
     }
 

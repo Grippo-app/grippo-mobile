@@ -24,8 +24,8 @@ import com.grippo.core.state.muscles.stubMuscleGroup
 import com.grippo.design.components.cards.selectable.CheckSelectableCard
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.inputs.InputSearch
-import com.grippo.design.components.muscle.MuscleMark
-import com.grippo.design.components.muscle.MuscleMarkStyle
+import com.grippo.design.components.muscle.MuscleCard
+import com.grippo.design.components.muscle.MuscleCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -79,7 +79,7 @@ internal fun Header(
                         title = item.type.title().text(),
                         isSelected = value.filter is QueryFilter.Group && value.filter.id == item.id,
                         onSelect = { contract.onMuscleGroupClick(item.id) },
-                        leading = { MuscleMark(group = item.type, style = MuscleMarkStyle.Inline) },
+                        leading = { MuscleCard(value = item.type, style = MuscleCardStyle.Inline) },
                     )
                 }
             }
@@ -120,7 +120,7 @@ private fun LibraryFilterChip(
 @Composable
 private fun SuggestionsMark(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.size(AppTokens.dp.muscle.inlineMarkSize),
+        modifier = modifier.size(AppTokens.dp.muscleCard.inline.icon),
         contentAlignment = Alignment.Center,
     ) {
         Icon(

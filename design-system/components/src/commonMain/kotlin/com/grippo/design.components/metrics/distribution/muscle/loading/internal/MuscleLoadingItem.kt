@@ -11,12 +11,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.semantics
-import com.grippo.core.state.metrics.distribution.MuscleLoadEntryState
 import com.grippo.core.state.formatters.PercentageFormatState
+import com.grippo.core.state.metrics.distribution.MuscleLoadEntryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.design.components.indicators.LineIndicator
-import com.grippo.design.components.muscle.MuscleMark
+import com.grippo.design.components.muscle.MuscleCard
+import com.grippo.design.components.muscle.MuscleCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -55,9 +56,9 @@ internal fun MuscleLoadingItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (muscle == null) {
-            MuscleMark(group = entry.group, color = color)
+            MuscleCard(value = entry.group, style = MuscleCardStyle.Load(color = color))
         } else {
-            MuscleMark(muscle = muscle, color = color)
+            MuscleCard(value = muscle, style = MuscleCardStyle.Load(color = color))
         }
 
         Column(

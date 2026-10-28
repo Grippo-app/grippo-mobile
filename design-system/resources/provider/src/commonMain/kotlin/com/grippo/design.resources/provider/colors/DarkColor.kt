@@ -258,7 +258,7 @@ public object DarkColor : AppColor {
         override val outline = Color.Transparent
         override val compactBackground = AppPalette.NeutralDark.N450
         override val compactInactive = AppPalette.NeutralDark.N500
-        override val summaryHighlight = AppPalette.NeutralDark.N700
+        override val compactHighlight = AppPalette.NeutralDark.N700
         override val palette6MuscleCalm: List<Color> = AppPalette.Gradient.Palette6MuscleDark
     }
 

@@ -25,8 +25,6 @@ import androidx.compose.ui.unit.dp
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.core.state.muscles.stubMuscleGroup
-import com.grippo.design.components.cards.selectable.ToggleSelectableCard
-import com.grippo.design.components.cards.selectable.ToggleSelectableCardStyle
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.segment.Segment
@@ -73,10 +71,10 @@ public fun MuscleSelection(
                     0.dp
                 }
                 val availableHeroHeight = (
-                    availableHeight - AppTokens.dp.segment.outline.height -
-                        AppTokens.dp.contentPadding.content * 3 -
-                        dividerHeight - AppTokens.dp.muscleSelection.listMinHeight
-                    ).coerceAtLeast(AppTokens.dp.muscleSelection.heroMinHeight)
+                        availableHeight - AppTokens.dp.segment.outline.height -
+                                AppTokens.dp.contentPadding.content * 3 -
+                                dividerHeight - AppTokens.dp.muscleSelection.listMinHeight
+                        ).coerceAtLeast(AppTokens.dp.muscleSelection.heroMinHeight)
                 val heroSize = minOf(
                     maxWidth,
                     availableHeight * AppTokens.dp.muscleSelection.heroHeightFraction,
@@ -126,12 +124,12 @@ public fun MuscleSelection(
                                 key = { it.value.id },
                                 contentType = { "muscle" }
                             ) { muscle ->
-                                ToggleSelectableCard(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    style = ToggleSelectableCardStyle.Small(muscle.value.type.title().text()),
-                                    isSelected = muscle.value.id in selectedIds,
-                                    onSelect = { onMuscleSelect(muscle.value.id) },
-                                    leading = { MuscleMark(muscle = muscle.value.type) },
+                                MuscleCard(
+                                    value = muscle.value.type,
+                                    style = MuscleCardStyle.Selection(
+                                        isSelected = muscle.value.id in selectedIds,
+                                        onSelect = { onMuscleSelect(muscle.value.id) },
+                                    ),
                                 )
                             }
                         }

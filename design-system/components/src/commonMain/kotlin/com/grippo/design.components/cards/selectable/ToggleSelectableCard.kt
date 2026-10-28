@@ -6,7 +6,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.components.cards.selectable.internal.ToggleSelectableCardMedium
-import com.grippo.design.components.cards.selectable.internal.ToggleSelectableCardSmall
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.equipment.Barbell
@@ -17,11 +16,6 @@ import com.grippo.design.resources.provider.equipment.SmithMachine
 public sealed class ToggleSelectableCardStyle(
     public open val title: String
 ) {
-    @Immutable
-    public data class Small(
-        public override val title: String
-    ) : ToggleSelectableCardStyle(title)
-
     @Immutable
     public data class Medium(
         public override val title: String,
@@ -35,23 +29,13 @@ public fun ToggleSelectableCard(
     style: ToggleSelectableCardStyle,
     isSelected: Boolean,
     onSelect: () -> Unit,
-    leading: (@Composable () -> Unit)? = null,
 ) {
     when (style) {
-        is ToggleSelectableCardStyle.Small -> ToggleSelectableCardSmall(
-            modifier = modifier,
-            style = style,
-            isSelected = isSelected,
-            onClick = onSelect,
-            leading = leading,
-        )
-
         is ToggleSelectableCardStyle.Medium -> ToggleSelectableCardMedium(
             modifier = modifier,
             style = style,
             isSelected = isSelected,
             onClick = onSelect,
-            leading = leading,
         )
     }
 }
@@ -77,25 +61,8 @@ private fun ToggleSelectableCardMediumPreview() {
 
 @AppPreview
 @Composable
-private fun ToggleSelectableCardSmallPreview() {
-    PreviewContainer {
-        ToggleSelectableCardVariants(
-            ToggleSelectableCardStyle.Small(
-                title = "Quadriceps"
-            )
-        )
-    }
-}
-
-@AppPreview
-@Composable
 private fun ToggleSelectableCardLongContentPreview() {
     PreviewContainer {
-        ToggleSelectableCardVariants(
-            ToggleSelectableCardStyle.Small(
-                title = "Розгиначі хребта та м'язи попереку"
-            )
-        )
         ToggleSelectableCardVariants(
             ToggleSelectableCardStyle.Medium(
                 title = "Тренажер для розгинання ніг сидячи",

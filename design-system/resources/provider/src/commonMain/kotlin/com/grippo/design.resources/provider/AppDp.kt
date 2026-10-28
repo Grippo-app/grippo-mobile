@@ -63,12 +63,13 @@ public data object AppDp {
     }
 
     val bottomSheet: BottomSheet = BottomSheet
-    public val divider: Divider = Divider
+    val divider: Divider = Divider
     val dot: Dot = Dot
     val contentPadding: ContentPadding = ContentPadding
     val screen: Screen = Screen
     val muscleSelection: MuscleSelection = MuscleSelection
-    public val muscle: Muscle = Muscle
+    val muscle: Muscle = Muscle
+    val muscleCard: MuscleCard = MuscleCard
     val dialog: Dialog = Dialog
     val input: Input = Input
     val button: Button = Button
@@ -81,6 +82,7 @@ public data object AppDp {
     val toggleSelectableCard: ToggleSelectableCard = ToggleSelectableCard
     val wheelPicker: WheelPicker = WheelPicker
     val achievementCard: AchievementCard = AchievementCard
+    val equipment: Equipment = Equipment
     val equipmentCard: EquipmentCard = EquipmentCard
     val timeline: Timeline = Timeline
     val exerciseCard: ExerciseCard = ExerciseCard
@@ -95,7 +97,7 @@ public data object AppDp {
     val check: Check = Check
     val calendar: Calendar = Calendar
     val metrics: Metrics = Metrics
-    public val goal: Goal = Goal
+    val goal: Goal = Goal
     val brandHeader: BrandHeader = BrandHeader
     val brandSplash: BrandSplash = BrandSplash
     val userCard: UserCard = UserCard
@@ -149,19 +151,40 @@ public data object AppDp {
         val heroMaxHeight: Dp = icon.xxxxLarge
         val heroMinHeight: Dp = 0.dp
         val listMinHeight: Dp = size.xLarge
-        val heroHeightFraction: Float = 0.4f
+        const val heroHeightFraction: Float = 0.4f
     }
 
     public data object Muscle {
-        public val markSize: Dp = size.small
-        public val inlineMarkSize: Dp = 28.dp
-        public val summaryMarkSize: Dp = size.small
-        public val markRadius: Dp = radius.small
-        public val markPadding: Dp = padding.tiny
+        public val image: Image = Image
         public val figure: Figure = Figure
 
+        public data object Image {
+            public val small: Dp = 28.dp
+            public val medium: Dp = size.small
+        }
+
         public data object Figure {
-            public val aspectRatio: Float = 411f / 774f
+            public const val aspectRatio: Float = 411f / 774f
+        }
+    }
+
+    public data object MuscleCard {
+        public val compact: Compact = Compact
+        public val inline: Inline = Inline
+        public val load: Load = Load
+
+        public data object Compact {
+            public val icon: Dp = muscle.image.medium
+        }
+
+        public data object Inline {
+            public val icon: Dp = muscle.image.small
+        }
+
+        public data object Load {
+            public val padding: Dp = AppDp.padding.tiny
+            public val size: Dp = muscle.image.small + padding * 2
+            public val radius: Dp = AppDp.radius.small
         }
     }
 
@@ -238,7 +261,7 @@ public data object AppDp {
                 val focusRadius: Dp = 3.5.dp
                 val focusRingWidth: Dp = 2.dp
                 val focusHaloRadius: Dp = 0.dp
-                val tooltipRadius: Dp = AppDp.radius.small
+                val tooltipRadius: Dp = radius.small
                 val tooltipHorizontalPadding: Dp = padding.small
                 val tooltipVerticalPadding: Dp = padding.extraSmall
                 val tooltipMargin: Dp = 6.dp
@@ -568,7 +591,7 @@ public data object AppDp {
         val contentPadding: Dp = padding.large
         val headerIconContainer: Dp = size.small
         val headerIconRadius: Dp = AppDp.radius.small
-        val headerIcon: Dp = AppDp.icon.medium
+        val headerIcon: Dp = icon.medium
         val item: Item = Item
         val radius: Dp = AppDp.radius.xLarge
 
@@ -637,7 +660,7 @@ public data object AppDp {
     }
 
     public data object ExerciseCard {
-        val chevron: Dp = AppDp.icon.small
+        val chevron: Dp = icon.small
         val small: Small = Small
 
         public data object Small {
@@ -686,12 +709,28 @@ public data object AppDp {
         }
     }
 
+    public data object Equipment {
+        public val image: Image = Image
+
+        public data object Image {
+            public val small: Dp = icon.xLarge
+            public val medium: Dp = size.medium
+        }
+    }
+
     public data object EquipmentCard {
-        val icon: Dp = size.large
-        public val inlineIcon: Dp = AppDp.icon.xLarge
-        public val compactIcon: Dp = AppDp.icon.xLarge
-        public val compactFreeWeightPadding: Dp = padding.tiny
-        val width: Dp = 144.dp
+        public val compact: Compact = Compact
+        public val detail: Detail = Detail
+
+        public data object Compact {
+            public val icon: Dp = equipment.image.small
+            public val freeWeightPadding: Dp = padding.tiny
+        }
+
+        public data object Detail {
+            public val icon: Dp = equipment.image.medium
+            public val width: Dp = 144.dp
+        }
     }
 
     public data object AchievementCard {
@@ -712,21 +751,13 @@ public data object AppDp {
     public data object ToggleSelectableCard {
         val borderWidth: Dp = 1.dp
         val medium: Medium = Medium
-        val small: Small = Small
 
         public data object Medium {
             val height: Dp = size.medium
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.medium
             public val radius: Dp = AppDp.radius.large
-            val icon: Dp = size.large
-        }
-
-        public data object Small {
-            val height: Dp = size.medium
-            val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.medium
-            public val radius: Dp = AppDp.radius.large
+            val icon: Dp = size.medium
         }
     }
 
@@ -753,7 +784,7 @@ public data object AppDp {
             val verticalPadding: Dp = padding.small
             val horizontalPadding: Dp = padding.large
             public val radius: Dp = AppDp.radius.medium
-            val leadingIcon: Dp = AppDp.icon.medium
+            val leadingIcon: Dp = icon.medium
         }
     }
 

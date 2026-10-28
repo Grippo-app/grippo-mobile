@@ -27,6 +27,21 @@ are the elevation steps.
   private base scales stay the producers behind the leaves. The same rule holds
   for every `AppTokens` producer with groups (`AppColor`:
   `colors.charts.tooltip.background`).
+- An entity drawn by a card family keeps its drawing sizes in an entity group,
+  and each card variant that sizes the drawing itself references them instead of
+  the private scales, through the entity group's val (`muscle.image`, not the
+  `Muscle.image` object path), as producers read `size` or `padding`:
+  `muscle.image.small` feeds `muscleCard.inline` and the Load
+  drawing, `muscle.image.medium` feeds `muscleCard.compact`;
+  `equipment.image.small` feeds `equipmentCard.compact`, and
+  `equipment.image.medium` feeds `equipmentCard.detail`. The
+  steps are per entity, so equal sizes across entities are not implied. Card-only
+  geometry (tile radius, padding, width, optical padding) stays in the card
+  variant and may be derived from the drawing (`muscleCard.load.size` is the
+  drawing plus its padding). A variant that hands the drawing to a shared
+  component, such as Selection through ToggleSelectableCard, keeps that
+  component's slot. Entity-wide properties such as `muscle.figure.aspectRatio`
+  also live in the entity group.
 - Producers reuse private scales where their meaning fits. An isolated demanded
   dimension may have a literal inside its semantic group. A new base-scale entry
   requires an authorized design-grid change with concrete consumers.

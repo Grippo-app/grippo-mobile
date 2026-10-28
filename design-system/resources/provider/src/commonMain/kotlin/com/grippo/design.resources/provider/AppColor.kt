@@ -251,7 +251,7 @@ public interface AppColor {
         public val outline: Color
         public val compactBackground: Color
         public val compactInactive: Color
-        public val summaryHighlight: Color
+        public val compactHighlight: Color
         public val palette6MuscleCalm: List<Color>
     }
 

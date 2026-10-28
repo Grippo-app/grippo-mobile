@@ -78,14 +78,20 @@ public fun MuscleLoading(
 @Composable
 public fun MuscleLoadingSkeleton(modifier: Modifier = Modifier) {
     val textMeasurer = rememberTextMeasurer()
-    val dominantLabelLine = rememberTextHeight(style = AppTokens.typography.h6(), textMeasurer = textMeasurer)
-    val dominantValueLine = rememberTextHeight(style = AppTokens.typography.b15Med(), textMeasurer = textMeasurer)
-    val labelLine = rememberTextHeight(style = AppTokens.typography.b13Med(), textMeasurer = textMeasurer)
-    val valueLine = rememberTextHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
-    val indicatorHeight = AppTokens.dp.contentPadding.text + AppTokens.dp.metrics.charts.indicator.height
-    val markSize = AppTokens.dp.muscle.markSize
-    val dominantRowHeight = maxOf(markSize, maxOf(dominantLabelLine, dominantValueLine) + indicatorHeight)
-    val rowHeight = maxOf(markSize, maxOf(labelLine, valueLine) + indicatorHeight)
+    val dominantLabelLine =
+        rememberTextHeight(style = AppTokens.typography.h6(), textMeasurer = textMeasurer)
+    val dominantValueLine =
+        rememberTextHeight(style = AppTokens.typography.b15Med(), textMeasurer = textMeasurer)
+    val labelLine =
+        rememberTextHeight(style = AppTokens.typography.b13Med(), textMeasurer = textMeasurer)
+    val valueLine =
+        rememberTextHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
+    val indicatorHeight =
+        AppTokens.dp.contentPadding.text + AppTokens.dp.metrics.charts.indicator.height
+    val cardSize = AppTokens.dp.muscleCard.load.size
+    val dominantRowHeight =
+        maxOf(cardSize, maxOf(dominantLabelLine, dominantValueLine) + indicatorHeight)
+    val rowHeight = maxOf(cardSize, maxOf(labelLine, valueLine) + indicatorHeight)
 
     Column(
         modifier = modifier,
