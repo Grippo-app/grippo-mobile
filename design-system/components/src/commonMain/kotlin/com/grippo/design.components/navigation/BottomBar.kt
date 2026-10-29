@@ -31,6 +31,7 @@ import com.grippo.core.state.formatters.UiText
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
+import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
@@ -40,10 +41,10 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.calendar
 import com.grippo.design.resources.provider.home
 import com.grippo.design.resources.provider.icons.Calendar
-import com.grippo.design.resources.provider.icons.Dumbbell
 import com.grippo.design.resources.provider.icons.Home
-import com.grippo.design.resources.provider.icons.Play
+import com.grippo.design.resources.provider.icons.Library
 import com.grippo.design.resources.provider.icons.UserOutline
+import com.grippo.design.resources.provider.icons.Workout
 import com.grippo.design.resources.provider.library
 import com.grippo.design.resources.provider.profile
 import kotlinx.collections.immutable.ImmutableList
@@ -148,20 +149,27 @@ private fun BottomBarPreview() {
     PreviewContainer { BottomBarPreviewContent() }
 }
 
+@AppPreview
 @Composable
-private fun BottomBarPreviewContent() {
+private fun BottomBarLoadingPreview() {
+    PreviewContainer { BottomBarPreviewContent(actionState = ButtonState.Loading) }
+}
+
+@Composable
+private fun BottomBarPreviewContent(actionState: ButtonState = ButtonState.Enabled) {
     Column {
         val items = persistentListOf(
             0 to BottomBarItem(UiText.Res(Res.string.home), AppTokens.icons.Home),
             1 to BottomBarItem(UiText.Res(Res.string.calendar), AppTokens.icons.Calendar),
-            2 to BottomBarItem(UiText.Res(Res.string.library), AppTokens.icons.Dumbbell),
+            2 to BottomBarItem(UiText.Res(Res.string.library), AppTokens.icons.Library),
             3 to BottomBarItem(UiText.Res(Res.string.profile), AppTokens.icons.UserOutline),
         )
         items.forEach { (key, _) ->
             BottomBar(items = items, selected = key, onSelect = {}, action = {
                 Button(
                     modifier = Modifier.size(AppTokens.dp.bottomBar.actionSize),
-                    content = ButtonContent.Icon(ButtonIcon.Icon(AppTokens.icons.Play)),
+                    content = ButtonContent.Icon(ButtonIcon.Icon(AppTokens.icons.Workout)),
+                    state = actionState,
                     onClick = {},
                 )
             })

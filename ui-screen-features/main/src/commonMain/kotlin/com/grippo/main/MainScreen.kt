@@ -29,10 +29,10 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.calendar
 import com.grippo.design.resources.provider.home
 import com.grippo.design.resources.provider.icons.Calendar
-import com.grippo.design.resources.provider.icons.Dumbbell
 import com.grippo.design.resources.provider.icons.Home
-import com.grippo.design.resources.provider.icons.Play
+import com.grippo.design.resources.provider.icons.Library
 import com.grippo.design.resources.provider.icons.UserOutline
+import com.grippo.design.resources.provider.icons.Workout
 import com.grippo.design.resources.provider.library
 import com.grippo.design.resources.provider.profile
 import com.grippo.design.resources.provider.start_workout
@@ -54,7 +54,7 @@ internal fun MainScreen(
         persistentListOf(
             MainRouter.Home to BottomBarItem(UiText.Res(Res.string.home), icons.Home),
             MainRouter.Calendar() to BottomBarItem(UiText.Res(Res.string.calendar), icons.Calendar),
-            MainRouter.Library to BottomBarItem(UiText.Res(Res.string.library), icons.Dumbbell),
+            MainRouter.Library to BottomBarItem(UiText.Res(Res.string.library), icons.Library),
             MainRouter.Profile to BottomBarItem(UiText.Res(Res.string.profile), icons.UserOutline),
         )
     }
@@ -84,7 +84,7 @@ internal fun MainScreen(
                     val label = AppTokens.strings.res(Res.string.start_workout)
                     Button(
                         modifier = Modifier.fillMaxSize().semantics { contentDescription = label },
-                        content = ButtonContent.Icon(ButtonIcon.Icon(AppTokens.icons.Play)),
+                        content = ButtonContent.Icon(ButtonIcon.Icon(AppTokens.icons.Workout)),
                         state = if (MainLoader.StartTraining in loaders) ButtonState.Loading else ButtonState.Enabled,
                         onClick = contract::onStartTraining,
                     )

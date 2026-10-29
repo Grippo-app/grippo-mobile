@@ -245,12 +245,16 @@ and Latin text in both themes; each role keeps its existing size and line height
   Goal entry points in Profile and Home use Compass for an unspecified goal;
   a configured Profile goal uses its shared goal icon. Both keep the copper
   accent. Ordinary benefit and methodology text stays neutral.
-- Bottom-bar tab identity: Home, Calendar, Dumbbell and UserOutline identify the
+- Bottom-bar tab identity: Home, Calendar, Library and UserOutline identify the
   Home, Calendar, Library (exercise catalog) and Profile tabs in the
-  `bottomBar.activeContent/inactiveContent` tints; Dumbbell in a neutral/orange
-  navigation slot with the "Library" label is the broad exercise cue, distinct
-  from its copper `GoalMark` "strength" use. Tabs split 2 + 2 around the central
-  Play action.
+  `bottomBar.activeContent/inactiveContent` tints. Library uses four rounded
+  outline tiles in the shared 24 dp tab slot to identify the catalog. Tabs split
+  2 + 2 around the central Primary action: its diagonal Workout dumbbell uses
+  the standard Medium button icon size (`button.medium.icon`, 22 dp) inside the
+  existing 56 dp circle, without a caption or plus badge. The action opens a new
+  or saved workout; its loading
+  state keeps the same icon and shared button semantics. Other icon buttons keep
+  their size defaults, and the global Dumbbell retains its strength/load roles.
 - Muscle distribution summaries show neutral unavailable information when data
   is absent, without an inferred score or status. Progress bars use linear
   proportions and outside values; pie slices preserve their actual shares.
