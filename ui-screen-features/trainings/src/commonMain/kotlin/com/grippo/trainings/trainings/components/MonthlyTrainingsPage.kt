@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
@@ -182,7 +183,10 @@ private fun MonthCalendarDayCellContent(
     textColor: Color,
     hasTrainings: Boolean,
 ) {
-    Column(verticalArrangement = Arrangement.Top) {
+    Column(
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             text = day.dayOfMonth.toString(),
             style = AppTokens.typography.b14Med(),
