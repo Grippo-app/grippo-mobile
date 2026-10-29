@@ -93,10 +93,16 @@ and home_operation are different contracts. No retry, refresh-only success rate 
 current-APK SDK receipt is claimed. The root [admin synchronization record](../COVERAGE.md#live-ga4-setup-review--2026-10-14)
 owns the verified consumer mapping and delivery limits.
 
+Loaded exercise-image taps open the encapsulated `ExerciseExampleImage` viewer.
+Viewer open/close, image loading and animation are deliberately untracked local
+presentation actions: they do not invoke the enclosing row callback or add a
+screen identity. Existing row actions remain available outside the loaded image.
+
 ## Preservation inventory
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
+| ExerciseExampleImage | Image availability, fullscreen visibility and transition | Runtime only | Component-local `remember` keyed by image value; Coil painter state | No business draft or accepted result; changing the image or recreating the widget closes the viewer. No StateKeeper, route or ViewModel change |
 | TrainingsComponent / TrainingsViewModel | `period` (Daily/Monthly discriminator) | Preserve | `DRAFT = PersistenceKey("TrainingsDraft", TrainingsState.serializer())`; nullable initialState; `saveState` of the latest VM state; `TrainingsTimelinePeriod` is a serializable sealed interface whose payload fields are all `@Transient` | Type-stable default `Monthly()`; restored and fresh drafts both pass through `selectRange(draft.date)` |
 | Same | `date` (DateRange) incl. accepted picker results, arrow and day selection | Preserve | Same key; serializable DateRange; no default, cannot be elided | Only without a saved draft does `TrainingsState.of(day)` choose the fresh value: Daily on the route's `day` (`selectDay`, coerced into `limitations`), otherwise the dynamic current-month `Monthly().defaultRange()`; picker results (`applyAnchor`), arrows and day taps (`selectDay`) all write this field |
 | Same | `limitations` | Rebuild | `@Transient`; `DateTimeUtils.trailingYear()` | Recomputed per construction |

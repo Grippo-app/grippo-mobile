@@ -1,6 +1,6 @@
 ---
 name: bug-investigation
-description: Investigate and fix a reported Grippo defect - capture the report, reproduce on emulator/simulator, trace through the MVI/data/network/persistence layers with the app's logs, state the root cause with evidence, fix at the owning layer under its skill, and re-run the reproduction. Use for any bug report, crash, wrong data, broken navigation, lost draft or failed request.
+description: Investigate Grippo bugs, crashes, wrong data, navigation, lost drafts and failed requests. Establish the root cause, fix at its owner and recheck the reported scenario.
 ---
 
 # Bug investigation

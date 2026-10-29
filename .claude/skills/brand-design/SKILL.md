@@ -1,6 +1,6 @@
 ---
 name: brand-design
-description: Design and visually review Grippo UI in its warm orange, graphite and sculptural brand language, with composition, visual semantics organized by domain entities, usage/state analysis and visual acceptance. Use for new UI and visual changes; behavior-only changes and standalone artwork use their own skills.
+description: Design and review Grippo product UI, visual intent, domain semantics and usage/state acceptance. Apply to new or visually changed UI; pair decorative artwork with illustrations.
 ---
 
 # Grippo brand design

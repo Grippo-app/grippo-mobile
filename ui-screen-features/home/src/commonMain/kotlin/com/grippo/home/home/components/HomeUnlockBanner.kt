@@ -1,7 +1,6 @@
 package com.grippo.home.home.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -62,7 +61,6 @@ internal fun HomeUnlockBanner(
         modifier = modifier
             .fillMaxWidth()
             .background(AppTokens.colors.background.card, shape)
-            .border(panel.borderWidth, AppTokens.colors.border.default, shape)
             .padding(
                 horizontal = panel.large.horizontalPadding,
                 vertical = panel.large.verticalPadding,

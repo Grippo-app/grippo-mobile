@@ -32,7 +32,7 @@ opens Recording in the Draft stage directly and never shows this dialog.
 | onStartNew (Start new button) | StartNewClicked / `draft_training_start_new_clicked` v1 | The screen disables Start new during the opening query and displays the shared button loading state during deletion; the VM rejects callbacks before analytics while any loader is active. After successful deletion, the continuation re-enters `resumeOrStartTraining` after host release, re-reads a null draft and starts a new training (goal suggestion or `Training(Add)`) without a second central-button click |
 | StartNew deletion | DeleteDraft / `draft_training_task_started` [draft_training_operation = delete_draft] and `draft_training_task_completed/failed/interrupted` [draft_training_operation, duration_ms] v1 | Decorates the complete existing `deleteDraftTraining()` inside safeLaunch with `DeleteDraft` loader; navigation follows successful deletion after the decorator in the same safeLaunch; failure goes to the existing error pipeline with no navigation. The repository returns only after deletion; DAO exceptions propagate to the decorated block |
 | onBack (the Component's Essenty BackCallback; the screen has no Cancel) | DismissRequested / `draft_training_dismiss_requested` v1 | Empty payload; request only |
-| Opening draft query, programmatic navigation, exercise cards; host dismissal routes (swipe/outside, toolbar close, the host's Compose BackHandler and Essenty callbacks) | Deliberate omission | No interaction events for the passive summary/rows and no input/status/picker facts; an absent draft closes through Back without a synthetic dismissal event; host routes do not call this VM; which system-Back route reaches the child BackCallback is not established from source |
+| Opening draft query, programmatic navigation, exercise cards; host dismissal routes (swipe/outside, toolbar close, the host's Compose BackHandler and Essenty callbacks) | Deliberate omission | No interaction events for the read-only summary/row data (the shared image viewer is local presentation) and no input/status/picker facts; an absent draft closes through Back without a synthetic dismissal event; host routes do not call this VM; which system-Back route reaches the child BackCallback is not established from source |
 
 The shared decorator supplies operation ID, monotonic duration and
 started/completed/failed/interrupted outcomes, preserving results and exception
@@ -51,10 +51,16 @@ lists it once, and the module depends only on `analytics-api`. The API exposes
 `trackEvent` and `trackOperation`; `DraftTrainingOperation` has the single value
 DeleteDraft.
 
+Loaded exercise-image taps open the encapsulated `ExerciseExampleImage` viewer.
+Viewer open/close, image loading and animation are deliberately untracked local
+presentation actions: they do not invoke the enclosing row callback or add a
+screen identity. Existing row actions remain available outside the loaded image.
+
 ## Preservation inventory
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
+| ExerciseExampleImage | Image availability, fullscreen visibility and transition | Runtime only | Component-local `remember` keyed by image value; Coil painter state | No business draft or accepted result; changing the image or recreating the widget closes the viewer. No StateKeeper, route or ViewModel change |
 | DraftTrainingDao (durable owner) | Draft training, exercises and iterations | Preserve in the existing durable owner | `get(): Flow`, insert-or-replace (delete plus insert), `delete()`; `setDraftTraining` returns success without writing when no active profile exists | Survives process recreation; written by the recording screen's draft saves; removed by Start new; no duplicate local archive |
 | DraftTrainingViewModel / DraftTrainingState (`@Immutable`, not serializable) | `stage` (default Draft), `exercises` (default empty), `duration` (default Empty); summary counts are derived from exercises | Rebuild | One `getDraftTraining().first()` query in VM-owned safeLaunch → existing domain/state mapping with presentation IDs generated once for the live sheet; stage becomes Add or Edit(trainingId); DurationFormatState.of maps saved whole-minute duration, including Empty for known zero | A fresh VM reads the current durable draft once. An absent draft emits Back instead of retaining or substituting a draft. The read-only decision snapshot stays stable during ordinary pause/resume and deletion; reopening reads the durable source again. No duplicate DRAFT supplier, initialization flags or shadow source cache |
 | DraftTrainingViewModel | `Draft` and `DeleteDraft` loaders, opening query and deletion job | Runtime only | Foundation `loaders` and VM-owned safeLaunch | `Draft` hides loaded content and disables actions until the query completes; `DeleteDraft` disables Continue and makes Start new loading. VM guards reject actions during either operation before emitting events. Shared error/cancellation handling releases loaders; no local fallback or retry wrapper |

@@ -1,9 +1,70 @@
-# Collection, attribution and core contracts
+# Feature contracts, collection and core
 
-Read for changes to collection policy, analytics core/SDK adapters, operation
-attribution or schema compatibility. Apply the [feature skill](../SKILL.md) for
-instrumentation and its coverage gate. This reference owns analytics-specific
-policy; storage and UI implementation follow their existing skills.
+Read the matching section for feature API/models, encoding, schemas, analytics
+DI/catalog, collection policy, core/SDK adapters or asynchronous attribution.
+Apply the [feature skill](../SKILL.md) for observation invariants and completion
+gates; use [ViewModel integration](viewmodel.md) for caller wiring.
+
+## Feature API and schema contracts
+
+- Keep one stateless `<Feature>Analytics` interface per feature in
+  `:analytics:analytics-api`; inspect
+  `analytics/analytics-api/src/commonMain/kotlin/com/grippo/analytics/<feature>/`.
+  Its maximal shape is `trackEvent(FeatureEvent)`,
+  `suspend fun <T> trackOperation(FeatureOperation, block: suspend () -> T): T`
+  and `presentScreen(FeatureScreen, reason): ScreenPresentation`. Inspect the
+  actual interface for its implemented subset and defaults. `DebugAnalytics`
+  is screen-only. Add event/operation methods with real instrumentation, not empty
+  models or placeholder methods; events perform no business actions.
+- Keep closed event/operation families, screen enums and necessary feature enums
+  in sibling `models/`, one standalone type per file and related sealed variants
+  together. Constructors accept direct typed facts, not nested action wrappers.
+  Enforce valid combinations in types: credential fields belong to credential
+  events, picker events accept picker enums, and fixed Name needs no selector.
+- Reuse `InputStatus`, `InputKeyboardAction` and `ControlAction` where their
+  meanings fit. Actual feature fields, methods, pickers and experience values
+  remain feature-owned. Add no generic capability hierarchy, scenario factory,
+  snapshot or compatibility alias.
+- Public events are observations, not toolkit wire events. Public fact enums are
+  plain enums, without `AnalyticsCode` or wire-string properties. Internal
+  implementation owns typed schema/key instances, wire keys/codes and exhaustive
+  enum encoders. Field/action keys accept closed types, not open `AnalyticsCode`.
+  Add no string event API, nullable parameter bag or helper/method/file per button.
+
+### Implementation and catalog composition
+
+UI depends on analytics-api. `:analytics:<feature>` imports no UI, foundation,
+routes, domain, use-case, service, SDK or toolkit core code. Inspect
+`analytics/home/.../HomeAnalyticsModule.kt` and `internal/HomeAnalyticsImpl.kt`:
+one public `@Module @ComponentScan` class and one
+`@Single(binds = [<Feature>Analytics::class]) internal` implementation.
+
+For custom events/operations, provide the complete custom catalog once through a
+uniquely qualified `@Single @Named("<feature>_analytics")` schema provider. Debug
+has no custom schema. Reuse built-in `ScreenViewed` for screens; dialogs have none.
+Inspect `toolkit/analytics/core/.../AnalyticsModule.kt`: the catalog uses
+`scope.getAll<AnalyticsSchema>()`. `shared/.../Koin.kt` loads every feature module
+in one `modules(...)` call before resolution; an omitted module silently drops
+its schemas. Keep the explicit list complete. Use existing convention plugins,
+explicit API and generated `.module`/`@Single` DI; no feature integration module,
+classifier or provider is needed for VM wiring.
+
+### Schemas and compatibility
+
+Centralize typed schemas/keys, explicit versions and bounded wire codes. A semantic
+change or drop needs a documented reporting decision; a version bump alone does
+not make reports compatible. A validation change also assesses status meaning and
+event population, even when the wire schema is unchanged. Do not silently restore
+removed funnel events/classifiers or other unobserved mechanisms.
+
+New schemas start at v1. The current unreleased catalog remains v1 by the user's
+explicit decision; implementation corrections do not each increment it. Once a
+schema has produced released data, assess consumers and compatibility before
+changing meaning. Do not reset released versions to apply the unreleased rule.
+
+Operation decoration supplies a fresh OperationId, monotonic duration and
+started/completed/failed/interrupted factories. Preserve the caller's result,
+errors and cancellation under the [business invariants](../SKILL.md#business-and-event-invariants).
 
 ## Ownership and source
 

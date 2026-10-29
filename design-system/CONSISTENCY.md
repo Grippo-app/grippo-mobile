@@ -11,6 +11,11 @@ A compact navigation item and a screen heading do not need the same font size.
 All product typography tokens use bundled Onest through `AppTypography`: Regular
 (400), Medium (500), SemiBold (600) and Bold (700). The same family covers Cyrillic
 and Latin text in both themes; each role keeps its existing size and line height.
+`h1`–`h2` retain Bold for the strongest headlines and overview values;
+`h3`–`h6` use SemiBold for quieter screen, section and card hierarchy, including
+the compact values and controls that share those roles. Supporting exercise
+instructions and empty-state messages use Regular at their existing 14 sp size
+and 20 sp line height; labels, controls and other body roles retain their weights.
 
 | Role | Typography | Color |
 | --- | --- | --- |
@@ -19,6 +24,7 @@ and Latin text in both themes; each role keeps its existing size and line height
 | Regular card or exercise title | `h5` | `text.primary` |
 | Compact item title | `h6` or `b14Semi` | `text.primary` |
 | Supporting information | `b13Med`; `b14Med` for longer body text | `text.secondary` |
+| Exercise instructions | `b14Reg` | `text.secondary` |
 | Small labels and timestamps | `b11Med`–`b12Med` | `text.secondary` / `text.tertiary` |
 | Primary metric | `h4`–`h5` | `text.primary` |
 | Overview performance value (concise Home tile) | `h2` | `text.primary` |
@@ -28,7 +34,7 @@ and Latin text in both themes; each role keeps its existing size and line height
 | Role | Typography | Color |
 | --- | --- | --- |
 | Optional empty-state title | `h4` | `text.primary` |
-| Empty-state explanatory message, including text-only states | `b14Med` | `text.secondary` |
+| Empty-state explanatory message, including text-only states | `b14Reg` | `text.secondary` |
 
 Scope and review follow [empty-state typography](../.claude/skills/design-system/references/typography.md#empty-state-text).
 
@@ -62,11 +68,13 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   `lerp(background.card, decline, 0.10f / 0.14f)` recipe) and the
   `charts.indicator.decline` ramp (a lighter Indigo - `lerp(Indigo, background.card,
   0.25f)` in Light, `lerp(Indigo, Common.White, 0.25f)` in Dark - → Indigo on a
-  0.2-alpha Indigo track) color the completed-workout Declined chip, the lost
-  stretch of its before→after bars and the current value of a drop on the streak
-  and goal Growth blocks; the goal Growth block's status label keeps its severity
-  band. Indigo keeps a dip calm
-  and distinct from orange warning (validation, overdue, restart), red error, the
+  0.2-alpha Indigo track) color the lost stretch of completed-workout before→after
+  bars and goal Growth bars, plus the current length after a streak drop. A
+  completed-workout Declined chip retains that accent only without a comparison
+  bar; otherwise its background is neutral. Goal Growth score text stays primary,
+  while its status label keeps the absolute severity band when a previous score
+  exists. Indigo keeps a dip calm
+  and distinct from amber warning (validation, overdue, restart), red error, the
   neutral grey of ordinary variation and the purple identities of
   `context.repetitions` and `profile.experience.beginner`, which a decline must
   never be mistaken for. It stays apart from blue `semantic.info` and the
@@ -77,6 +85,11 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   `example.forceType.hinge` (exercise force-type chip); neither shares a surface
   with a decline. `semantic.warning` keeps its other consumers. Custom framed content supplies its
   tint and background explicitly, rather than deriving opacity inside the component.
+- Warning has its own amber palette: `LightAccent.Amber` (`8A640C`) and
+  `DarkAccent.Amber` (`E8C16A`). `semantic.warningBackground` retains the existing
+  card blend; `charts.ring.warning` and `charts.indicator.warning` derive their
+  hue and track from `semantic.warning`, with a same-hue lighter gradient start.
+  Primary actions, focus and selection keep their orange roles; notice keeps Yellow.
 - Ordinary weights, counts, dates and instructions use neutral text colors.
 - Every "before → after" statement puts the emphasis on the later value: the
   earlier value, its label and the `value_transition` arrow stay in
@@ -94,6 +107,12 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
 - Neutral boundaries use `border.default`: Light NeutralLight.N250 and Dark
   NeutralDark.N300. `divider.subtle` and `charts.bar.baseline` keep their existing
   0.4 and 0.45 alpha derivations; focus, selection and severity retain their own roles.
+- Small and Large `MetricSectionPanel`, the exercise progress summary and Home's
+  unlock summary use `background.card` with their existing radii and padding,
+  without a decorative outline. Their screen/dialog hosts and spacing define
+  the grouping; loading `SkeletonPanel` inherits the same surface treatment.
+  Exercise instructions use the same quiet card treatment through
+  `ExampleDescriptionText`, with their existing content padding and disclosure.
 - Destructive account outlines use `semantic.errorBorder`; quiet summary dividers
   use the shared `ContentDivider`. Disabled switches use their own
   `toggle.disabledTrack` and `toggle.disabledThumb` roles.
@@ -396,6 +415,20 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   names itself without a label. Exercise-image
   loading/missing-image treatment remains with ExerciseExampleImage. Muscle
   markers, measured load scales and recommendation filters keep their own meanings.
+
+## Exercise images
+
+- `ExerciseExampleImage` owns all four thumbnail sizes and the local full-screen
+  image viewer. Missing, blank and failed images keep the existing rounded
+  `background.card` slot and `border.default`, with a neutral `Dumbbell` icon in
+  `icon.secondary`; this is an unavailable-media representation, without absence
+  guidance. Real image loading uses `SkeletonBone` with the thumbnail shape and
+  localized loading/progress semantics.
+- A loaded image is an independent button within its enclosing row. The modal
+  viewer uses `background.screen`, safe drawing insets, a Tertiary Small Cancel
+  button and `ContentScale.Fit`; its full-size request keeps the thumbnail painter
+  visible while decoding. The backdrop fades and only the image scales on entry
+  and exit. Viewer state stays local to the image value.
 
 ## Shape family
 
@@ -746,7 +779,7 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   "Workouts" label leads, a `ContentDivider` follows, and one `MetricBreakdownRow`
   shows duration (`duration`), tonnage (`tonnage`) and sets; the digest and the
   completed-workout recap hero both label sets with the plain `sets` key. An empty
-  month replaces the count and breakdown with one `b14Med` `text.secondary`
+  month replaces the count and breakdown with one `b14Reg` `text.secondary`
   `digest_empty` sentence ("No workouts this month"); within a month that has
   workouts, an unavailable value and a recorded zero use the dimmed `text.tertiary`
   treatment; unavailable duration shows "—" and recorded zero shows "0 min".
@@ -946,8 +979,9 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   `b12Med` muscle context, a `b14Semi` actual value and a separate secondary
   `b12Med` target line. Severity `Dot`s align with the first title line;
   ContentDivider separates facts without nested cards or context indentation.
-  Actual values retain the existing severity color mapping and threshold-rounding
-  qualifiers. Partial-data limitations remain visible; unavailable assessments
+  Actual values use `text.primary`; the finding's dot alone carries PASS/WARN/FAIL
+  severity. Threshold-rounding qualifiers remain in the value text.
+  Partial-data limitations remain visible; unavailable assessments
   stay neutral.
   Its quiet Calendar style follows the useful findings, using secondary
   `b12Med` date/remaining copy, the shared Calendar icon and the existing Small
@@ -965,11 +999,11 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   Duration comparison stays neutral in both Home and Details; no duration status
   or best-duration claim is shown. Aggregate values preserve fractional means and
   format through canonical unit owners without input-field limits. On Home,
-  percentage colors follow the status through
-  `PerformanceMetricState.averageDeltaColor()`: `semantic.success` above usual,
-  `semantic.decline` below usual, with ordinary variation staying neutral. The
-  completed-workout comparison section keeps its signed change in `text.secondary`
-  instead, because its chip and bars already carry the status.
+  signed percentages use `text.secondary`, while the status chip carries the
+  semantic accent. Completed-workout comparison also keeps its signed change
+  neutral: when a comparison bar is present, the bar carries the status color
+  and the chip uses `semantic.neutralBackground`; without a bar the chip retains
+  its semantic background. Values, labels and comparison eligibility are unchanged.
 - Exercise highlights use the Large panel geometry (20 dp corners, 16 dp padding)
   in a horizontal gallery with regular 64 dp thumbnails,
   complete insight text and existing detail actions; a next-card peek signals more
@@ -1122,9 +1156,10 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   value that counts from the average to this workout through `displayValue()`
   with the `b12Semi` signed change in `text.secondary` beneath it whenever a
   percentage exists, Record included (a period best over a zero earlier value keeps its
-  chip without a change): the chip and the bars already carry the status, so the
-  number stays quiet and a Declined row does not repeat the decline accent three
-  times. The `PerformanceComparisonSectionSkeleton` sizes its four blocks with the
+  chip without a change). The number stays quiet; the comparison bar carries the
+  direction color and the chip has a neutral background while that bar is present.
+  Without a bar, the chip retains its semantic background, including a period best
+  without a reference. The `PerformanceComparisonSectionSkeleton` sizes its four blocks with the
   chip line. One `ComparisonIndicator` follows across the block, `subContent`
   below the first row, shown only for a metric with a value and a before value (a
   row without one carries no bar): one track carries both values, so the
@@ -1139,7 +1174,7 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   the before value on the `charts.comparison.track` (see `ComparisonIndicator`). The status ramp is `PerformanceMetricState.indicatorColors()`:
   `charts.indicator.success` for Record/Improved, `decline` for Declined and
   `muted` for Stable. The brand
-  `charts.indicator.primary` is not a neutral here: its dominant is the warning
+  `charts.indicator.primary` is not a neutral here: its dominant is the brand
   orange in both themes. The entrance is a 900 ms FastOutSlowIn tween through one
   section-level `updateTransition` over a `rememberSaveable` reveal flag (played once
   per screen instance, not on every lazy re-entry): the fill starts at the marker,
@@ -1177,19 +1212,20 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   `metrics.overview.rhythmIcon` beside an `h4` `text.primary` headline over the
   `b13Med` `text.secondary` cadence, and one `b12Med` `text.secondary` outcome
   line. It draws no indicator bar: without the Overview's progress caption a bar
-  would read as progress toward an unstated goal, and Overview and Details keep it.
+  would read as progress toward an unstated goal, and Overview keeps it.
   The headline is always `headline()`, shared with Overview and the details sheet,
   with its unit ("5-week streak", the
   Rhythm and Pattern cycles as `highlight_streak_cycles` plurals, "3 цикла подряд";
   a length of zero reads `training_streak_none`, "No streak yet") and the
-  flame keeps the mood colors (`mood.indicatorColors()`) like Overview and Detailed;
+  Growth's flame keeps the absolute mood color (`mood.indicatorColors()`);
+  Overview instead uses a neutral `icon.secondary` flame because its progress
+  bar carries that mood, and Detailed retains neutral text without a flame or bar.
   a change is one fact in one color, so only the current length carries the
   direction. When the previous length differs the outcome line
   joins the outcome text and `value_transition` through
   `joined_pair` ("Streak extended · 4 → 5"), the previous length in the line's
   `text.secondary` and the current one in the direction color
-  (`semantic.success` after growth, `semantic.decline` after a drop), like the goal
-  score, stated as previous →
+  (`semantic.success` after growth, `semantic.decline` after a drop), stated as previous →
   current from the
   first frame while only the current length fades in over 900 ms behind a
   `rememberSaveable` reveal flag (once per screen instance), so it never reads
@@ -1217,18 +1253,18 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   current one, stated from the first frame while only the current score
   fades in over 900 ms (saveable reveal, once per screen instance) and the bar moves
   from the previous score to the current one, so it never reads "68% → 68%"; its
-  current score is colored by direction like the streak's current length (`semantic.success`
-  when the score grew, `semantic.decline` when it dropped, `text.primary` when
-  unchanged or without a previous score). The `b12Med` status label takes
-  `statusColor()` - `charts.indicator.success/warning/error` by the
-  `GoalProgressState.ON_TRACK_MIN/DRIFTING_MIN` thresholds - after a drop as well.
+  current score uses `text.primary`, retaining the secondary earlier score and
+  units. With a previous score, the `b12Med` status label takes `statusColor()`
+  by the `GoalProgressState.ON_TRACK_MIN/DRIFTING_MIN` thresholds, after a drop
+  as well; the label is secondary on a first evaluation because its bar already
+  carries the absolute status.
   The bar, drawn only with a score, speaks the screen's before → after language
   when a previous score exists: a `ComparisonIndicator` of the score with the
   marker at the previous score on a 0–100 scale, in `charts.indicator.success`
   after growth, `decline` after a drop and `muted` when unchanged; a first
   evaluation keeps a `LineIndicator` of the score in `statusIndicatorColors()`.
   How the score moved and the band it now falls in are separate facts: the score
-  numbers and the bar's changed stretch carry the direction, while the label keeps
+  stays neutral and the bar's changed stretch carries the direction, while the label keeps
   the band of the current score, so a drop into the off-track band keeps its red
   error label instead of reading as the calm decline. The `b12Med` analyzed-workouts line
   (`GoalProgressState.analyzedWorkoutsLabel()`: `goal_analyzed_workouts` plurals,
@@ -1293,7 +1329,7 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   tonnage - a week still in progress is not a decline, so the stretch still to go
   stays nearly as quiet as the track - and `charts.indicator.success` from 100% on,
   the part past the marker green - never `charts.indicator.primary`,
-  whose dominant is the warning orange; without a typical week there is no bar at
+  whose dominant is the brand orange; without a typical week there is no bar at
   all, the note alone explains the absence; the `b12Med`
   `WeeklyVolumeState.workoutsLabel()` (`weekly_volume_workouts` plurals, "1 workout
   this week", or `weekly_volume_no_workouts` at zero) closes the block. Zero tonnage against a positive typical week drops the `h3`

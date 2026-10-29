@@ -72,10 +72,16 @@ dialog policy and the dialog's own events belong to exercise-example) and
 referrer/flow attribution are deliberately outside this contract; filter values are the closed
 `LibraryFilter` enum only.
 
+Loaded exercise-image taps open the encapsulated `ExerciseExampleImage` viewer.
+Viewer open/close, image loading and animation are deliberately untracked local
+presentation actions: they do not invoke the enclosing row callback or add a
+screen identity. Existing row actions remain available outside the loaded image.
+
 ## Preservation inventory
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
+| ExerciseExampleImage | Image availability, fullscreen visibility and transition | Runtime only | Component-local `remember` keyed by image value; Coil painter state | No business draft or accepted result; changing the image or recreating the widget closes the viewer. No StateKeeper, route or ViewModel change |
 | ExerciseLibraryComponent / ExerciseLibraryViewModel | `queries.name`, including whitespace and explicitly empty values | Preserve | `DRAFT = PersistenceKey("ExerciseLibraryDraft", ExerciseLibraryState.serializer())`; nullable initialState; `saveState` of the latest VM state | The saved value wins (`initialState?.copy(mode = mode)`); trimming happens only in the request |
 | Same | `queries.filter`: All, Suggestions or Group(id) | Preserve | Serializable sealed QueryFilter | The saved value, including All, wins over route preselection; the fresh default comes from the mode (SimilarTo → Suggestions, Default(group) → Group, Browse and Default(null) → All); a vanished group is dropped only on a nonempty catalog, resetting to All with restartable pagination; an empty first SimilarTo page (no cached target, or every similar candidate already in the draft workout) falls back to All and clears the suggestions flag |
 | Same | `mode` and target identity | Rebuild from route | `@Transient`; derived from the serializable route Mode by `ExerciseLibraryMode.of` (the result key stays on the route, outside State) | Reapplied on every restore (`initialState?.copy(mode = ExerciseLibraryMode.of(mode))`); the target card is observed from ExerciseExampleFeature |

@@ -1,6 +1,6 @@
 ---
 name: compose-components
-description: Implement, refactor and review Grippo Compose components and UI for readable structure, consistent APIs, correct state/effect lifetimes, accessibility and justified performance. Apply to shared widgets, feature compositions and Compose helpers; feature architecture, visual intent and token contracts retain their existing owners.
+description: Implement, refactor or review Grippo Compose widgets, feature compositions and helpers. Own API structure, state/effect lifetimes, accessibility and performance.
 ---
 
 # Compose components

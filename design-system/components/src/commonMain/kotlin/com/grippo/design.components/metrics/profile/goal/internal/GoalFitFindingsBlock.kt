@@ -129,7 +129,7 @@ private fun FindingRow(
                     modifier = Modifier.fillMaxWidth(),
                     text = finding.actualText(),
                     style = AppTokens.typography.b14Semi(),
-                    color = finding.valueColor(),
+                    color = AppTokens.colors.text.primary,
                 )
                 if (targetText != null) {
                     Text(

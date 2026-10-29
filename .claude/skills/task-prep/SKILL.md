@@ -1,6 +1,6 @@
 ---
 name: task-prep
-description: Clarify a Grippo task before coding - intended outcome, authorized scope, affected owners and platforms, open decisions as a short quiz, and implementation slices ordered by real dependencies with file ownership for delegation. Use for any non-trivial request, an ambiguous feature request or a change spanning several owners.
+description: Clarify scope, affected owners, unresolved decisions and dependency order before non-trivial Grippo work.
 ---
 
 # Task preparation
@@ -38,9 +38,10 @@ for the triggers, wording and handling of unanswered decisions.
 ## Dependency plan
 
 1. Inspect the owning source, build files and callers before choosing names and
-   shapes. Delegate an inventory to the `scout` agent when it spans more than about
-   ten files or crosses module boundaries (every caller of a widget, all routes of
-   a feature, module edges) and plan from its facts.
+   shapes. Delegate a bounded inventory to `scout` when independent investigation
+   or a separate source context justifies briefing and integration cost, under
+   [delegation rules](../task-orchestrator/SKILL.md#delegation-rules). Keep the
+   required caller/route/dependency coverage regardless of who gathers it.
 2. Route each part of the work to its owner: UI and navigation -> ui-feature;
    domain, storage and network -> data-layer (+ backend-contract-client for wire
    changes); conversions -> mappers; bindings -> di-modules; tokens, components,

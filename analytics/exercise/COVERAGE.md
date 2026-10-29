@@ -45,10 +45,16 @@ Host exits can bypass `onDismiss`. No synthetic events on initialization, conten
 emissions or resume. The existing detail action provides exercise information,
 recent history and achievements through their existing owners.
 
+Loaded exercise-image taps open the encapsulated `ExerciseExampleImage` viewer.
+Viewer open/close, image loading and animation are deliberately untracked local
+presentation actions: they do not invoke the enclosing row callback or add a
+screen identity. Existing row actions remain available outside the loaded image.
+
 ## State preservation source gate
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
+| ExerciseExampleImage | Image availability, fullscreen visibility and transition | Runtime only | Component-local `remember` keyed by image value; Coil painter state | No business draft or accepted result; changing the image or recreating the widget closes the viewer. No StateKeeper, route or ViewModel change |
 | ExerciseViewModel / ExerciseState | Actual optional exercise: identity, date, ordered iterations and totals | Rebuild | Plain observeExercise(id) and mapper | Normal data State; null exercise is actual unavailable content, never a Loading wrapper or fake ID. No loader, bootstrap or extra snapshot is added to the database subscription. Available fixed-route entity updates retain independently loaded history; actual absence clears it. No editable data. |
 | ExerciseState.history | Nonnull immutable prior records | Rebuild | First actual cached entity snapshot, existing complete LoadHistory operation, getTrainings/observeTrainings, SelectExerciseHistoryUseCase and mapper | Empty by default. The selected date bounds a 180-day window through that day; at most five strictly prior workouts contribute one recorded matching exercise each. Available entity emissions preserve history, including a result that completes before the primary source publishes; the route fixes the entity ID. The first cached entity snapshot selects or skips the existing initial operation without publishing entity snapshots from the history path. History progress belongs to ExerciseLoader.History during the finite snapshot/read/refresh; populated history remains visible during a retry. No State loading mode or comparison cache. Partial measurements remain actual unavailable values. |
 | ExerciseState | Optional entity and nonnull history | Rebuild | Actual source values only | Missing primary entity shows the existing unavailable message. Only the finite History request controls its comparison skeleton while history is empty. No primary cache-loading skeleton, Loading/Available/Unavailable lifecycle wrapper, readiness flag or nullable collection. |

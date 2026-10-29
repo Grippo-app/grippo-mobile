@@ -47,8 +47,11 @@ live in the owning skills under `.claude/skills/`; the code owns signatures.
   the task (`code-reviewer`, `design-reviewer`, `gate-auditor`). It is
   pre-authorized by this file; the author's self-review never counts as it.
 - **Permitted check** - source/diff review; the rulebook checker
-  (`python3 -I .claude/hooks/check-rulebook.py`) and its existing Bash guard
-  matrix (`zsh .claude/hooks/bash-guard-tests.sh`); scoped Gradle builds; manual
+  (`python3 -I .claude/hooks/check-rulebook.py`), its isolated structural regressions
+  (`python3 -I .claude/hooks/check-rulebook-tests.py`), the Bash guard matrix
+  (`zsh .claude/hooks/bash-guard-tests.sh`) and bounded read-only rulebook
+  task evaluations under [evaluation](.claude/skills/rulebook-maintenance/references/evaluation.md);
+  scoped Gradle/Xcode builds; manual
   runtime checks on an emulator/simulator through the `runtime-verification`
   skill when the user allows running the app. Application tests, linters and
   screenshot tooling may be added only on explicit user request.
@@ -200,13 +203,21 @@ Changing any of these is scope expansion and needs a question.
   Swift (`:shared`, `:toolkit:*:api`, Decompose-facing types); build conventions
   or the version catalog; any Room schema or migration; KSP configuration; or
   when the task is about iOS.
+- Also compile `iosApp` with Xcode when changing public APIs exported to Swift,
+  framework exports, or `iosApp` source, resources, project or build settings.
+  Use the generic simulator compile target in the
+  [build catalog](.claude/skills/runtime-verification/SKILL.md#build-target-catalog);
+  device queries and app execution are not prerequisites. An authorized successful
+  Xcode archive covering the same inputs satisfies this host-compile check.
 - For a requested TestFlight release that changes only iOS version numbers,
   a successful complete Release XCFramework and signed Xcode archive satisfy the
   iOS framework check above. Source, resource or build changes included in the
   release retain their normal checks.
 - Builds needed within the authorized scope need no separate consent; an
   explicit user restriction wins. Rulebook-only work runs the checker instead
-  of an app build; Bash guard changes also run the existing guard matrix.
+  of an app build; checker changes also run its isolated regressions, and Bash
+  guard changes run the guard matrix. Routing or loading changes run the affected
+  rulebook evaluation cases.
 - A check that is available and authorized MUST run; "unverified" is acceptable
   only for checks that are unavailable or restricted by the user, and the reason
   is stated. A green build proves compilation, not runtime behavior.
@@ -243,7 +254,7 @@ Only these files are records; everything else is reported in the reply.
 
 | File | Holds | Rule |
 |---|---|---|
-| `analytics/<feature>/COVERAGE.md` (`<feature>` = any `:analytics:<name>` implementation module, screen or dialog) | The feature's current analytics coverage matrix (route -> Component -> VM -> hook or container reason, callbacks/operations, omissions), its preservation inventory and its admin-sync rows | Replace rows to reflect the current code; no dated journal. Creating the file moves that feature's rows out of the root file and leaves a pointer there |
+| `analytics/<feature>/COVERAGE.md` (`<feature>` = any `:analytics:<name>` implementation module, screen or dialog) | The feature's current analytics coverage matrix (route -> Component -> VM -> hook or container reason, callbacks/operations, omissions) and its preservation inventory; links to root admin evidence | Replace rows to reflect current code; no dated journal. Creating it moves only that feature's coverage/preservation rows out of the root and leaves a pointer. Live admin reconciliation stays in the root file |
 | `analytics/COVERAGE.md` | Cross-feature analytics contract, index of per-feature files, admin synchronization evidence | Update the affected section; do not append unrelated task narratives |
 | `design-system/CONSISTENCY.md` | Concrete role-to-token choices | Update when a role mapping changes |
 | `docs/records/<yyyy-mm-dd>-<slug>.md` | A dated decision, review or visual-pass record | Written only when the user asks to keep one |
@@ -272,10 +283,10 @@ for Claude Code and Codex launch, capabilities and protection.
 | `backend-contract-auditor` | Backend evidence gathering and drift tables before wire changes | Read-only + WebFetch | backend-contract-client |
 | `analytics-admin-auditor` | Live admin reconciliation through the user's Chrome tab | Repo read-only; admin writes only when authorized | feature-analytics |
 | `ui-implementer` | Screens, dialogs, navigation, UI state, drafts, VM analytics hooks, the feature's analytics-api models and `:analytics:<feature>` implementation | Write within owned paths; scoped builds; read-only git | ui-feature, state-preservation, feature-analytics, compose-components |
-| `data-implementer` | Feature/Repository/UseCase, API/DTOs, Room, DataStore, mappers, Koin | Write within owned paths; scoped builds; read-only git | data-layer, mappers, di-modules, backend-contract-client |
-| `design-implementer` | Tokens, components, resources, previews, artwork integration | Write within owned paths; scoped builds; read-only git | design-system, brand-design, illustrations, compose-components |
+| `data-implementer` | Feature/Repository/UseCase, API/DTOs, Room, DataStore, mappers, Koin | Write within owned paths; scoped builds; read-only git | data-layer, mappers, di-modules |
+| `design-implementer` | Tokens, components, resources, previews, artwork integration | Write within owned paths; scoped builds; read-only git | design-system, brand-design, compose-components |
 | `platform-implementer` | Conventions, catalog, modules, toolkit, shells, XCFramework | Write within owned paths; scoped builds; read-only git | platform-build-toolkit, di-modules |
-| `build-verifier` | Runs scoped Gradle targets and reports compile errors | Bash builds; no edits | runtime-verification |
+| `build-verifier` | Runs scoped Gradle/Xcode compilation and reports errors | Bash compilation; no devices or edits | runtime-verification |
 | `runtime-verifier` | Runs the app on emulator/simulator, drives scenarios, screenshots, logs | Bash + simulator tools; no edits | runtime-verification |
 | `rulebook-maintainer` | Edits CLAUDE.md, AGENTS.md, skills, agents, hooks and records structure | Write within rulebook paths; read-only git | rulebook-maintenance |
 
@@ -288,20 +299,20 @@ for Claude Code and Codex launch, capabilities and protection.
 | [validation-gates](.claude/skills/validation-gates/SKILL.md) | Cross-cut review, forbidden patterns, code style, final response format | Every review and every completion |
 | [ui-feature](.claude/skills/ui-feature/SKILL.md) | Screens, dialogs, MVI, navigation, results, error pipeline, UI state and presentation metadata | Any UI/navigation change |
 | [compose-components](.claude/skills/compose-components/SKILL.md) | Compose APIs, readable structure, lifetimes, performance, interaction semantics, component audits | Any Compose implementation, refactor or source review |
-| [state-preservation](.claude/skills/state-preservation/SKILL.md) | Drafts, restoration, form synchronization, secret exclusion | Any behavior change |
-| [feature-analytics](.claude/skills/feature-analytics/SKILL.md) | Typed analytics, screen coverage gate, privacy, admin sync | Any behavior change or analytics task |
+| [state-preservation](.claude/skills/state-preservation/SKILL.md) | Drafts, restoration, form synchronization, secret exclusion | Any behavior change or visual-only impact assessment |
+| [feature-analytics](.claude/skills/feature-analytics/SKILL.md) | Typed analytics, screen coverage gate, privacy, admin sync | Behavior changes, visual-only impact assessments or analytics tasks |
 | [data-layer](.claude/skills/data-layer/SKILL.md) | Feature/Repository/UseCase, operation outcomes, Room, DataStore, backend client, auth session | Any data/domain/storage change |
 | [backend-contract-client](.claude/skills/backend-contract-client/SKILL.md) | Backend evidence gate, drift audits | Any wire change |
 | [mappers](.claude/skills/mappers/SKILL.md) | Seven directional conversions, mapper file content, null guards | Any conversion change |
 | [di-modules](.claude/skills/di-modules/SKILL.md) | Koin annotations, lifetimes, shared composition | Any binding/registration change |
 | [design-system](.claude/skills/design-system/SKILL.md) | Tokens, components, resources, previews, semantic role implementation, visual checks | Any visual change |
 | [brand-design](.claude/skills/brand-design/SKILL.md) | Visual intent, domain entity visual semantics, composition, usage/state analysis, acceptance | New or changed product UI |
-| [illustrations](.claude/skills/illustrations/SKILL.md) | Decorative artwork style, generation, export, integration | Requested decorative artwork |
+| [illustrations](.claude/skills/illustrations/SKILL.md) | Decorative artwork style, generation, export, integration | Decorative artwork review, generation or integration |
 | [add-equipment](.claude/skills/add-equipment/SKILL.md) | Equipment identifiers, catalog integration, native diagrams and backend task handoff | New equipment types, independently selectable variants or equipment diagram work |
 | [platform-build-toolkit](.claude/skills/platform-build-toolkit/SKILL.md) | Conventions, catalog, new modules, toolkit, shells, iOS framework, secrets, TestFlight release, dependency updates | Any build/platform change or requested TestFlight release |
-| [runtime-verification](.claude/skills/runtime-verification/SKILL.md) | Build, install, run, drive and inspect the app on emulator/simulator | Manual runtime checks |
+| [runtime-verification](.claude/skills/runtime-verification/SKILL.md) | Build, install, run, drive and inspect the app on emulator/simulator | Authorized scoped builds or manual emulator/simulator checks |
 | [bug-investigation](.claude/skills/bug-investigation/SKILL.md) | Reproduce, locate, root-cause, fix at the owner, regression gate | Any bug report |
-| [delivery](.claude/skills/delivery/SKILL.md) | Git policy, commit messages, branches, pull requests | When the user asks to commit/push/open a PR |
+| [delivery](.claude/skills/delivery/SKILL.md) | Git policy, commit messages, branches, pull requests | Any task with changed files; requested Git actions |
 | [rulebook-maintenance](.claude/skills/rulebook-maintenance/SKILL.md) | Editing this rulebook: ownership map, schemas, checker, records policy | Any change to rules, skills, agents or hooks |
 
 Global plugin skills that contradict the locked decisions MUST NOT be applied to

@@ -1,6 +1,6 @@
 ---
 name: ui-implementer
-description: Implementer for Grippo UI slices - screens, dialogs, Decompose navigation, UI state, drafts, ViewModel analytics hooks and the feature's analytics-api models and :analytics:<feature> implementation - under ui-feature, compose-components, state-preservation and feature-analytics. Use when the main session delegates a UI slice with explicit file ownership. Edits only owned files, runs scoped builds, never commits.
+description: UI implementer. Use for a delegated screen, dialog, navigation, draft or feature analytics slice with explicit file ownership and ready prerequisites.
 model: inherit
 color: green
 tools: Read, Grep, Glob, Edit, Write, Bash
@@ -46,7 +46,7 @@ build is authorized. Missing prerequisites are reported, not invented.
 
 ## Duties
 
-1. Read `.claude/skills/ui-feature/references/index.md` and the references it
+1. Read [UI topic routing](../skills/ui-feature/SKILL.md#references-to-read) and the references it
    routes you to for the task kind (`mvi-contract.md`, `base-classes.md`,
    `navigation.md`, `dialogs.md`, `results.md`, `error-pipeline.md`,
    `process-death.md`, `state.md`, `compose-rules.md`), plus

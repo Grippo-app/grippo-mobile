@@ -130,7 +130,7 @@ private fun OverviewPerformanceMetric(
                     Text(
                         text = PercentageFormatState.shortDelta(comparisonPercentage),
                         style = AppTokens.typography.b13Semi(),
-                        color = metric.averageDeltaColor(),
+                        color = AppTokens.colors.text.secondary,
                     )
                 }
             }
@@ -301,12 +301,17 @@ private fun PerformanceMetricCardWithoutComparisonPreview() {
 private fun PerformanceMetricCardRecordAfterZeroReferencePreview() {
     PreviewContainer {
         val metric = stubPerformanceMetrics().filterIsInstance<PerformanceMetricState.Volume>().first()
-        PerformanceMetricCard(
-            metric = metric.copy(
+            .copy(
                 average = 0f,
                 currentVsAveragePercentage = null,
                 status = PerformanceTrendStatusState.Record,
-            ),
+            )
+        PerformanceMetricCard(
+            metric = metric,
+            style = PerformanceMetricCardStyle.Overview,
+        )
+        PerformanceMetricCard(
+            metric = metric,
             style = PerformanceMetricCardStyle.Detailed(PerformanceReferenceState.Average),
         )
     }

@@ -19,10 +19,4 @@ public enum class GoalFitSeverityState(
         WARN -> AppTokens.colors.semantic.warning
         FAIL -> AppTokens.colors.semantic.error
     }
-
-    @Composable
-    public fun valueColor(): Color = when (this) {
-        FAIL -> AppTokens.colors.semantic.error
-        WARN, PASS -> AppTokens.colors.text.primary
-    }
 }

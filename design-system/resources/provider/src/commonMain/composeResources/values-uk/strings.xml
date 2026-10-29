@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="exercise_image">Зображення вправи</string>
+    <string name="exercise_image_open">Відкрити зображення вправи на весь екран</string>
+    <string name="exercise_image_unavailable">Зображення вправи недоступне</string>
     <string name="app_name">Grippo</string>
     <string name="kg">кг</string>
     <string name="reps">повт.</string>

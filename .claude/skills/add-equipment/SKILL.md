@@ -1,6 +1,6 @@
 ---
 name: add-equipment
-description: Add or distinguish Grippo equipment with consistent identifiers and complete catalog, enum, mapper, localization, ImageVector and selection integration, then prepare any remaining backend task. Use when adding an equipment type or variant; an explicitly requested artwork-only task uses the vector pipeline alone.
+description: Add Grippo equipment types or selectable variants across identifiers, catalog, mappers, locales and diagrams. Use the vector pipeline alone for requested artwork-only work.
 ---
 
 # Add equipment

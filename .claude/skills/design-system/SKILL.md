@@ -1,6 +1,6 @@
 ---
 name: design-system
-description: Create and change Grippo AppTokens, shared Compose components, localized resources, icons, fonts and previews using domain entity visual semantics. Map actual usage contexts and states before visual changes; inspect affected consumers and token producers before changing contracts.
+description: Create, change or review Grippo tokens, shared components, resources and previews. Apply to visual changes and design-system contracts; inspect usage and states first.
 ---
 
 # Grippo design system

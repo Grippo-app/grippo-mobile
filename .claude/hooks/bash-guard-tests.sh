@@ -343,11 +343,88 @@ run readonly 'git remote show -n origin' allow
 run readonly 'git remote get-url show' allow
 run readonly 'git diff -O /private/tmp/orderfile' allow
 run readonly 'git grep -- -Osh' allow
+run readonly 'git grep -e -- -Osh' block
+run readonly 'git grep -f -- -Osh' block
+run readonly 'git grep -ne -- -Osh' block
+run readonly 'git grep -nOsh pattern' block
+run readonly 'git grep -e -Osh' allow
+run readonly 'git grep -ne-Osh' allow
+run readonly 'git grep --context 2 -- -Osh' allow
+run readonly 'git grep --open-f=sh pattern' block
+run readonly 'git grep --textc pattern' block
+run readonly 'git grep --text pattern' allow
 run readonly 'git --exec-path' allow
 run readonly 'git branch -uorigin/main' block
 run readonly-build './gradlew :androidApp:assembleDebug --console plain' allow
 run readonly-build './gradlew :shared:dependencyInsight --dependency koin --configuration androidRuntimeClasspath' allow
 run readonly-build './gradlew --project-dir=/private/tmp :androidApp:assembleDebug' block
 run readonly-build './gradlew -p/private/tmp :androidApp:assembleDebug' block
+# ---------- compilation role excludes all device and setup actions ----------
+run readonly-compile './gradlew :androidApp:assembleDebug --console=plain' allow
+run readonly-compile './gradlew :shared:assembleSharedDebugXCFramework --console=plain' allow
+run readonly-compile 'xcodebuild -scheme iosApp -configuration Debug -derivedDataPath /tmp/grippo-compile build' allow
+run readonly-compile 'xcrun --sdk iphonesimulator xcodebuild -scheme iosApp build' allow
+run readonly-compile './gradlew :androidApp:assembleDebug > /tmp/grippo-compile.log 2>&1' allow
+run readonly-compile 'git diff --stat' allow
+for command in \
+  'adb devices' \
+  'adb -s emulator-5554 install -r app.apk' \
+  'adb -s emulator-5554 shell input tap 1 2' \
+  'emulator -avd Pixel' \
+  'simctl list devices' \
+  'xcrun simctl list devices' \
+  'xcrun --sdk iphonesimulator simctl boot ABC' \
+  'env command xcrun simctl io ABC screenshot /tmp/probe.png' \
+  'kill 123' \
+  'pkill emulator' \
+  'open -a Simulator' \
+  'sips -s format png a.webp --out /tmp/a.png' \
+  'mkdir /tmp/grippo-compile' \
+  'gh pr view 1' \
+  './gradlew :androidApp:assembleDebug > compile.log' \
+  './gradlew :androidApp:testDebugUnitTest' \
+  'xcodebuild -scheme iosApp test' \
+  'xcrun xcodebuild -scheme iosApp test-without-building' \
+  'xcodebuild -scheme iosApp install' \
+  'xcodebuild -downloadPlatform iOS'; do
+  run readonly-compile "$command" block
+done
+run readonly-build 'adb -s emulator-5554 shell input tap 1 2' allow
+run readonly-build 'xcrun simctl io ABC screenshot /tmp/probe.png' allow
+run readonly-build 'xcodebuild -scheme iosApp test' block
+run readonly-compile './gradlew :androidApp:assembleDebug 2 > /tmp/grippo-compile.log' block
+run readonly-compile './gradlew :androidApp:assembleDebug 2>/tmp/grippo-compile-errors.log' allow
+run readonly-compile './gradlew :androidApp:assembleDebug;2>/tmp/grippo-compile-errors.log' allow
+run readonly-compile './gradlew :androidApp:assembleDebug FDSPAN2' block
+run readonly-compile 'xcodebuild -license accept' block
+run readonly-compile 'xcodebuild -downloadComponent metalToolchain' block
+run readonly-build 'xcodebuild -downloadComponent metalToolchain' block
+run readonly-compile 'xcodebuild -scheme iosApp installhdrs' block
+run readonly-compile 'xcodebuild -scheme iosApp -allowProvisioningUpdates build' block
+run readonly-compile 'xcodebuild -scheme iosApp -allowProvisioningDeviceRegistration build' block
+run readonly-compile 'xcodebuild -scheme iosApp -showdestinations' block
+run readonly-build 'xcodebuild -scheme iosApp -showdestinations' allow
+check_payload readonly '{"tool_input":{"command":"git status --short"}}' block 'missing tool_name'
+check_payload readonly '{"tool_name":null}' block 'non-string tool_name'
+check_payload readonly '{"tool_name":""}' block 'empty tool_name'
+run readonly-compile 'xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -configuration Debug -sdk iphonesimulator -destination "generic/platform=iOS Simulator" -arch arm64 -derivedDataPath /tmp/grippo-compile build' allow
+# Git short-option clusters cannot hide reference mutations.
+for mode in readonly readonly-compile readonly-build no-git-write; do
+  run "$mode" 'git branch -vuorigin/main' block
+  run "$mode" 'git branch -vumain' block
+  run "$mode" 'git branch -vd' block
+  run "$mode" 'git branch -vD' block
+  run "$mode" 'git branch -vm' block
+  run "$mode" 'git branch -vM' block
+  run "$mode" 'git branch -vc' block
+  run "$mode" 'git branch -vC' block
+  run "$mode" 'git branch -vf' block
+  run "$mode" 'git tag -la' block
+  run "$mode" 'git tag -ls' block
+  run "$mode" 'git tag -lmmessage' block
+  run "$mode" 'git branch -avv' allow
+  run "$mode" 'git branch --sort -committerdate --list' allow
+  run "$mode" 'git tag -ln2' allow
+done
 echo "failures: $fails"
 exit $((fails > 0))

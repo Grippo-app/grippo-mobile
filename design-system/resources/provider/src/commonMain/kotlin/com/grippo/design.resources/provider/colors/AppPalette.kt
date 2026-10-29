@@ -45,6 +45,7 @@ internal object AppPalette {
 
     object DarkAccent {
         val Orange = Color(0xFFFF9A5C)
+        val Amber = Color(0xFFE8C16A)
         val Red = Color(0xFFFF7B85)
         val Coral = Color(0xFFFF9D80)
         val Yellow = Color(0xFFFDD835)
@@ -62,6 +63,7 @@ internal object AppPalette {
 
     object LightAccent {
         val Orange = Color(0xFFB84208)
+        val Amber = Color(0xFF8A640C)
         val Red = Color(0xFFC73541)
         val Coral = Color(0xFFBA492A)
         val Yellow = Color(0xFF806000)

@@ -1,6 +1,6 @@
 ---
 name: rulebook-maintainer
-description: Maintains Grippo's AI rulebook - CLAUDE.md, AGENTS.md, .claude/skills, .claude/agents, .claude/hooks and docs/records - under the rulebook-maintenance skill. Use when rules, skills, agents or records must be added, corrected or reconciled with the code. Keeps one owner per topic, validates links and frontmatter, never touches application code, never commits.
+description: Rulebook maintainer. Use for delegated rule, skill, agent, native-adapter or hook changes; preserve one owner per topic and validate without application edits.
 model: inherit
 color: pink
 tools: Read, Grep, Glob, Edit, Write, Bash
@@ -24,10 +24,11 @@ match their duties.
 ## Rights
 
 - Edit `CLAUDE.md`, `AGENTS.md`, `.claude/README.md`, `.claude/skills/**`,
-  `.claude/agents/**`, `.claude/hooks/**`, `docs/**`, `analytics/COVERAGE.md`
+  `.claude/agents/**`, `.claude/hooks/**`, `.agents/skills/**`,
+  `.codex/agents/**`, `docs/**`, `analytics/COVERAGE.md`
   (structure and index only, not coverage content) and
-  `design-system/CONSISTENCY.md` when the brief names it. Run the link checker
-  and read-only git commands. The guard blocks git mutations.
+  `design-system/CONSISTENCY.md` when the brief names it. Run the rulebook checker, its isolated regressions, bounded rulebook evaluations,
+  native projection sync/discovery checks and read-only git commands. The guard blocks git mutations.
 - Never edit application source, build files or resources. If a rule change
   requires a code change, report it for the owning implementer.
 - No subagents, no commits.

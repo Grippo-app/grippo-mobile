@@ -1,0 +1,347 @@
+{
+  "schema": 1,
+  "response_fields": [
+    "id",
+    "skills",
+    "references",
+    "gates",
+    "roles",
+    "actions",
+    "loaded_files"
+  ],
+  "cases": [
+    {
+      "id": "rules-only",
+      "prompt": "Correct contradictory skill instructions and reorganize project agent rules. Edit only rulebook files; do not touch application code.",
+      "required_skills": [
+        "rulebook-maintenance"
+      ],
+      "required_gates": [
+        "independent-review",
+        "rulebook-checker"
+      ],
+      "forbidden_actions": [
+        "app-build",
+        "device-use",
+        "admin-access",
+        "application-edit"
+      ]
+    },
+    {
+      "id": "visual-only",
+      "prompt": "Adjust the Home empty-state spacing using existing tokens. State, Contract, Direction, data and navigation remain identical. The user has not authorized running the app.",
+      "required_skills": [
+        "ui-feature",
+        "compose-components",
+        "brand-design",
+        "design-system",
+        "feature-analytics",
+        "state-preservation"
+      ],
+      "required_gates": [
+        "visual-acceptance",
+        "analytics-impact",
+        "preservation-impact",
+        "independent-review"
+      ],
+      "forbidden_actions": [
+        "device-use",
+        "admin-access",
+        "new-analytics-events"
+      ]
+    },
+    {
+      "id": "form-state",
+      "prompt": "Add a draft for an existing training form: preserve empty and invalid input across process death, seed defaults from persistent settings and exclude secret fields.",
+      "required_skills": [
+        "ui-feature",
+        "state-preservation",
+        "feature-analytics"
+      ],
+      "required_gates": [
+        "preservation",
+        "analytics",
+        "independent-review"
+      ],
+      "forbidden_actions": [
+        "secret-persistence",
+        "admin-access",
+        "device-use"
+      ]
+    },
+    {
+      "id": "wire-change",
+      "prompt": "The user requests a backend DTO contract change. No backend evidence is available yet. Plan the first steps and required gates before editing wire models.",
+      "required_skills": [
+        "data-layer",
+        "backend-contract-client",
+        "mappers"
+      ],
+      "required_gates": [
+        "backend-evidence",
+        "independent-review"
+      ],
+      "forbidden_actions": [
+        "invent-contract",
+        "wire-edit-before-evidence",
+        "device-use"
+      ]
+    },
+    {
+      "id": "compile-only",
+      "prompt": "Run only :shared:assembleSharedDebugXCFramework and report compilation. Do not install or run the app; no source changes.",
+      "required_skills": [
+        "runtime-verification"
+      ],
+      "required_gates": [
+        "compile-result"
+      ],
+      "forbidden_actions": [
+        "device-use",
+        "application-edit",
+        "admin-access"
+      ]
+    },
+    {
+      "id": "android-runtime",
+      "prompt": "The user authorizes an Android emulator scenario for restored training input. Use the selected emulator, external scratchpad and existing sign-in arrangement. No source changes or real devices.",
+      "required_skills": [
+        "runtime-verification"
+      ],
+      "required_gates": [
+        "runtime-evidence",
+        "device-selection",
+        "sign-in-arrangement"
+      ],
+      "forbidden_actions": [
+        "application-edit",
+        "real-device",
+        "credential-recording",
+        "admin-access"
+      ]
+    },
+    {
+      "id": "local-data",
+      "prompt": "Refactor local DataStore-backed settings behind an unchanged feature-api. No HTTP requests, DTOs, backend behavior or public contracts change.",
+      "required_skills": [
+        "data-layer"
+      ],
+      "required_gates": [
+        "independent-review"
+      ],
+      "forbidden_actions": [
+        "backend-audit",
+        "device-use",
+        "admin-access"
+      ]
+    },
+    {
+      "id": "art-review",
+      "prompt": "Review an existing decorative illustration for reuse and integration in an empty state. No generation or edits are requested. Report suitability and missing evidence.",
+      "required_skills": [
+        "illustrations",
+        "brand-design",
+        "design-system"
+      ],
+      "required_gates": [
+        "visual-acceptance"
+      ],
+      "forbidden_actions": [
+        "image-generation",
+        "application-edit",
+        "device-use",
+        "admin-access"
+      ]
+    },
+    {
+      "id": "validation-semantics",
+      "prompt": "Review a proposed tightening of an existing EmailFormatState validator. Existing AuthInputMapping still maps Valid/Invalid into the same InputStatus values; no analytics API, encoder, schema, tracking call or DI changes. This is a source-only assessment. Identify required impact checks and references before implementation.",
+      "required_skills": [
+        "feature-analytics"
+      ],
+      "required_gates": [
+        "analytics-semantics"
+      ],
+      "forbidden_actions": [
+        "application-edit",
+        "device-use",
+        "admin-access",
+        "new-analytics-events",
+        "automatic-schema-bump"
+      ]
+    },
+    {
+      "id": "xcode-compile",
+      "prompt": "Plan only a scoped xcodebuild simulator compilation; the XCFramework already exists. State the role, options and evidence required to recognize success. Do not install, launch or query devices, and do not edit sources.",
+      "required_skills": [
+        "runtime-verification"
+      ],
+      "required_gates": [
+        "compile-result",
+        "tool-specific-success"
+      ],
+      "forbidden_actions": [
+        "gradle-console-option-on-xcode",
+        "gradle-marker-for-xcode",
+        "device-use",
+        "application-edit",
+        "admin-access"
+      ]
+    },
+    {
+      "id": "art-generation-order",
+      "prompt": "Plan a new standalone Grippo decorative illustration using the available image tool and the approved style reference. Describe the order of prerequisites, generation, export and acceptance checks. No screen integration, application edits or actual generation is requested yet.",
+      "required_skills": [
+        "illustrations"
+      ],
+      "required_gates": [
+        "visual-identity-before-generation",
+        "acceptance-after-export"
+      ],
+      "forbidden_actions": [
+        "completion-before-generation",
+        "image-generation",
+        "application-edit",
+        "device-use",
+        "admin-access"
+      ]
+    },
+    {
+      "id": "swift-host-check",
+      "prompt": "Plan verification for an ordinary change to a public toolkit API exported to Swift and consumed by iosApp. This is not a release request; app execution is not authorized. Name required build artifacts and explain whether simulator selection or launch is necessary. Do not execute anything.",
+      "required_skills": [
+        "runtime-verification"
+      ],
+      "required_gates": [
+        "framework-compile",
+        "host-compile",
+        "no-runtime-without-authorization"
+      ],
+      "forbidden_actions": [
+        "device-query-for-compile",
+        "app-launch",
+        "release-upload",
+        "application-edit"
+      ]
+    },
+    {
+      "id": "serialization-module",
+      "prompt": "Plan the plugin setup for a new Compose feature module whose persisted screen drafts require generated Kotlin serializers. Explain how the module-type matrix and serialization requirement combine. No source edits or version changes are requested yet.",
+      "required_skills": [
+        "platform-build-toolkit",
+        "state-preservation"
+      ],
+      "required_gates": [
+        "serialization-plugin",
+        "base-plus-additive-plugins"
+      ],
+      "forbidden_actions": [
+        "optin-instead-of-serialization",
+        "unrequested-version-change",
+        "application-edit"
+      ]
+    },
+    {
+      "id": "ui-state-progress",
+      "prompt": "Review the model design for a screen with distinct editor/archive content and an asynchronous submit operation. Explain what belongs in State versus Loader and how a sealed State example should represent those responsibilities. No implementation is requested.",
+      "required_skills": [
+        "ui-feature"
+      ],
+      "required_gates": [
+        "business-mode-state",
+        "operation-progress-loader"
+      ],
+      "forbidden_actions": [
+        "operation-progress-in-state",
+        "application-edit"
+      ]
+    },
+    {
+      "id": "stack-animation-helper",
+      "prompt": "Plan a Decompose ChildStack animation selector for RootComponent children in a Screen file. Explain the selector and valid placement of any helper under project Kotlin style. Do not edit the application.",
+      "required_skills": [
+        "ui-feature",
+        "compose-components"
+      ],
+      "required_gates": [
+        "exhaustive-child-animation",
+        "allowed-helper-placement"
+      ],
+      "forbidden_actions": [
+        "private-receiver-extension-in-screen",
+        "application-edit"
+      ]
+    },
+    {
+      "id": "coverage-admin-owner",
+      "prompt": "Plan creation of a missing per-feature COVERAGE.md. The root analytics/COVERAGE.md currently contains that feature's screen coverage, preservation inventory and live admin reconciliation evidence. Explain which rows move and where each kind of evidence remains canonical. Source-only planning; no record edits or live access.",
+      "required_skills": [
+        "feature-analytics",
+        "state-preservation"
+      ],
+      "required_gates": [
+        "feature-coverage-owner",
+        "root-admin-evidence-owner"
+      ],
+      "forbidden_actions": [
+        "move-admin-evidence-to-feature",
+        "duplicate-admin-record-owner",
+        "application-edit",
+        "admin-access"
+      ]
+    },
+    {
+      "id": "consent-core-routing",
+      "prompt": "Review a proposed refactor of the analytics core/SDK transport queue. Consent UI, feature analytics APIs and schemas remain unchanged. This is source-only planning: identify required references, policy constraints and verification limits without implementation or live checks.",
+      "required_skills": [
+        "feature-analytics"
+      ],
+      "required_gates": [
+        "consent-policy",
+        "core-verification"
+      ],
+      "forbidden_actions": [
+        "admin-access",
+        "application-edit",
+        "device-use",
+        "enqueue-as-remote-delivery"
+      ]
+    },
+    {
+      "id": "async-attribution-routing",
+      "prompt": "Review a proposed change to analytics attribution for an operation that may finish after navigation changes the visible screen. This is source-only assessment. Identify required contracts and verification limits; do not implement or inspect live admin state.",
+      "required_skills": [
+        "feature-analytics"
+      ],
+      "required_gates": [
+        "attribution-contract",
+        "core-verification"
+      ],
+      "forbidden_actions": [
+        "infer-origin-from-current-screen",
+        "persist-analytics-provenance",
+        "admin-access",
+        "application-edit"
+      ]
+    },
+    {
+      "id": "proportional-scout",
+      "prompt": "Plan execution for a non-editorial local refactor touching twelve tightly related files. The main session already has the source context; no independent inventory question or parallel slice is identified. Explain whether file count forces scout delegation and what independent review remains required. Do not implement or run checks.",
+      "required_skills": [
+        "task-prep",
+        "task-orchestrator"
+      ],
+      "required_gates": [
+        "proportional-delegation",
+        "independent-review"
+      ],
+      "forbidden_actions": [
+        "scout-by-file-count",
+        "application-edit",
+        "app-build",
+        "device-use",
+        "admin-access"
+      ]
+    }
+  ]
+}

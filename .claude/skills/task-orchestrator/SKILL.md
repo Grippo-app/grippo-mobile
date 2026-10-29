@@ -1,6 +1,6 @@
 ---
 name: task-orchestrator
-description: Execute a Grippo task - implement slices yourself or through the implementer agents, self-review, obtain independent review from the reviewer agents, resolve findings, run the default checks and hand off. Use for any implementation task; owns the delegation rules, agent briefs, file ownership and the recurring-findings policy.
+description: Execute Grippo implementation slices with explicit ownership, independent review, checks and handoff. Apply to implementation and rulebook changes.
 ---
 
 # Task execution
@@ -64,10 +64,13 @@ live in `.claude/agents/`; the roster is in
   `design-reviewer`, `gate-auditor`, `backend-contract-auditor`, `build-verifier`;
   `runtime-verifier` and `analytics-admin-auditor` when the user allows running
   the app or using the browser tab respectively.
-- Implementer agents (`ui-`, `data-`, `design-`, `platform-implementer`) are used
-  when a task spans two or more owning skills or when the user asks for delegation.
-  Rulebook slices may use `rulebook-maintainer`. Otherwise implement in the main
-  session; independent inventories may still be delegated to `scout`.
+- Delegate implementation when a ready slice has disjoint owned paths, its
+  prerequisites are available, and parallel progress or a separate source context
+  outweighs briefing and integration cost; also delegate when the user asks.
+  Match the slice to `ui-`, `data-`, `design-`, `platform-implementer` or
+  `rulebook-maintainer`. Implement a tightly coupled slice in the main session.
+  A count of skills or files alone does not decide delegation. Independent
+  review still applies to the task under the execution loop above.
 - One writer per file, always. Dependent edits run sequentially; independent
   slices on disjoint paths may run in parallel. Shared wiring files belong to one
   slice, by default the main session: `screen-api` routers, `shared/.../Koin.kt`,
@@ -76,7 +79,10 @@ live in `.claude/agents/`; the roster is in
 - Launch roles and apply their rights through
   [agent runtimes](references/agent-runtimes.md), for both Claude Code and Codex.
   Briefs are written in English; replies to the user follow the final response
-  format. Include everything the role needs regardless of context inheritance.
+  format. Prefer a fresh bounded context for an independent slice when the runtime
+  supports it. Include everything the role needs regardless of context
+  inheritance; send concrete source paths and acceptance criteria, not the
+  full parent transcript.
 - Linked sessions count as writers: a file another session is editing is
   off-limits until that session reports it done; coordinate by message, never
   by editing the same file.

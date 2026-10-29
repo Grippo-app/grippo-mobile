@@ -16,7 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -65,11 +64,6 @@ internal fun GoalCardGrowth(
         label = GOAL_GROWTH_ALPHA_LABEL,
     )
     val scoreChange = if (score != null && previousScore != null) score.compareTo(previousScore) else 0
-    val scoreColor = when {
-        scoreChange > 0 -> AppTokens.colors.semantic.success
-        scoreChange < 0 -> AppTokens.colors.semantic.decline
-        else -> AppTokens.colors.text.primary
-    }
 
     Column(
         modifier = modifier,
@@ -86,14 +80,13 @@ internal fun GoalCardGrowth(
                     GoalScoreLine(
                         score = score,
                         previousScore = previousScore,
-                        numberColor = scoreColor,
                         currentScoreAlpha = currentScoreAlpha,
                     )
                 }
                 Text(
                     text = value.statusLabel(),
                     style = AppTokens.typography.b12Med(),
-                    color = value.statusColor(),
+                    color = if (previousScore == null) AppTokens.colors.text.secondary else value.statusColor(),
                 )
             }
 
@@ -121,10 +114,10 @@ private fun GoalScoreLine(
     modifier: Modifier = Modifier,
     score: Int,
     previousScore: Int?,
-    numberColor: Color,
     currentScoreAlpha: State<Float>,
 ) {
     val percent = AppTokens.strings.res(Res.string.percent)
+    val numberColor = AppTokens.colors.text.primary
     val unitColor = AppTokens.colors.text.secondary
     val numberStyle = SpanStyle(color = numberColor)
     val unitStyle = AppTokens.typography.b14Med().toSpanStyle().copy(color = unitColor)
@@ -231,6 +224,30 @@ private fun GoalCardGrowthDroppedPreview() {
         GoalCard(
             value = value,
             style = GoalCardStyle.Growth(previous = value.copy(score = 45, sessionCount = value.sessionCount - 1)),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalCardGrowthImprovedWhileDriftingPreview() {
+    PreviewContainer {
+        val value = stubGoalProgressList().first { it.score == 54 }.copy(score = 50)
+        GoalCard(
+            value = value,
+            style = GoalCardStyle.Growth(previous = value.copy(score = 30, sessionCount = value.sessionCount - 1)),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalCardGrowthZeroScorePreview() {
+    PreviewContainer {
+        val value = stubGoalProgressList().first().copy(score = 0)
+        GoalCard(
+            value = value,
+            style = GoalCardStyle.Growth(previous = value.copy(score = 15, sessionCount = value.sessionCount - 1)),
         )
     }
 }

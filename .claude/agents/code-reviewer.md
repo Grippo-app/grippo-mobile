@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Independent read-only reviewer for Grippo changes. Use proactively after any implementation slice that is more than a small editorial change - behavior, architecture, visual or multi-owner - before claiming completion. Reviews the actual diff against the request, CLAUDE.md, the owning skill gates, Compose implementation rules and forbidden patterns; reports defects with file:line and severity, never fixes.
+description: Independent read-only reviewer. Use after every change beyond a small editorial change; review the task delta against the request and owning gates.
 model: inherit
 color: blue
 tools: Read, Grep, Glob, Bash

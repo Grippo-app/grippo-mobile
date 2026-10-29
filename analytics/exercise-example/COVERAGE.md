@@ -62,10 +62,16 @@ is added to observe unavailable facts.
 No exercise IDs, titles, URLs, history counts, body measurements, weights,
 achievements, request/response payloads or exception text are encoded.
 
+Loaded exercise-image taps open the encapsulated `ExerciseExampleImage` viewer.
+Viewer open/close, image loading and animation are deliberately untracked local
+presentation actions: they do not invoke the enclosing row callback or add a
+screen identity. Existing row actions remain available outside the loaded image.
+
 ## State preservation gate
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
+| ExerciseExampleImage | Image availability, fullscreen visibility and transition | Runtime only | Component-local `remember` keyed by image value; Coil painter state | No business draft or accepted result; changing the image or recreating the widget closes the viewer. No StateKeeper, route or ViewModel change |
 | Shared dialog host | Session, id, mode/title, action/back callbacks and nested step | Runtime only | Existing retained host; slot/step serializer = null | Ordinary recreation can retain the session; process death closes it |
 | ExerciseExampleDetailsViewModel | mode | Runtime only | Existing DialogConfig input | Fresh opening uses supplied mode; no editable draft |
 | ExerciseExampleDetailsViewModel | example, muscleLoad | Rebuild | ExerciseExampleFeature observer/refresh; pure MuscleLoadingSummaryUseCase.fromExerciseExample(observedExample) | Fresh opening observes current data and derives anatomy directly, without re-reading a separate cache snapshot |

@@ -1,6 +1,6 @@
 ---
 name: gate-auditor
-description: Read-only auditor for Grippo's analytics coverage and state-preservation gates. Use before completing a feature behavior change or a visual-only change that needs impact assessments. Produces inventories or verifies those assessments against the diff with file:line; never edits.
+description: Read-only analytics and preservation auditor. Use for behavior changes and visual-only impact assessments before completion.
 model: inherit
 color: blue
 tools: Read, Grep, Glob, Bash

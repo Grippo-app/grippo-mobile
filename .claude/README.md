@@ -11,9 +11,10 @@ AGENTS.md                 entry point for Codex and other tools
   README.md               this overview
   skills/<skill>/         SKILL.md (rule owner) + references/ (long form)
   agents/<agent>.md       shared roles: rights, duties, required skills, report format
-  hooks/bash-guard.py     PreToolUse guard for agents' Bash: readonly | readonly-build | no-git-write
+  hooks/bash-guard.py     PreToolUse guard for agents' Bash: readonly | readonly-compile | readonly-build | no-git-write
   hooks/check-rulebook.py validates links, anchors, frontmatter and the roster
-  settings.local.json     personal permissions (not shared)
+.agents/skills/<skill>    symlink projections for Codex discovery (canonical .claude/skills)
+.codex/agents/<role>.toml generated Codex adapters pointing to canonical role files
 analytics/COVERAGE.md     cross-feature analytics contract + index; analytics/<feature>/COVERAGE.md per feature
 design-system/CONSISTENCY.md  role-to-token choices
 docs/records/             dated decision/review records, written on request
@@ -44,7 +45,11 @@ iOS TestFlight releases follow the [terminal release workflow](skills/platform-b
 
 ```bash
 python3 -I .claude/hooks/check-rulebook.py     # zero problems before reporting a rule change
+python3 -I .claude/hooks/check-rulebook-tests.py # isolated checker regressions
+python3 -I .claude/hooks/sync-native-adapters.py # projection drift check (--write regenerates)
 zsh .claude/hooks/bash-guard-tests.sh          # guard matrix after touching bash-guard.py (main session only; read-only agents cannot run zsh)
 ```
 
 Role loading and fallback follow agent runtimes above.
+
+Routing and loading changes use the bounded [rulebook evaluations](skills/rulebook-maintenance/references/evaluation.md).

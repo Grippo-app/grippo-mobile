@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="exercise_image">Imagem do exercício</string>
+    <string name="exercise_image_open">Abrir imagem do exercício em ecrã inteiro</string>
+    <string name="exercise_image_unavailable">Imagem do exercício indisponível</string>
     <string name="app_name">Grippo</string>
     <string name="kg">kg</string>
     <string name="reps">reps</string>

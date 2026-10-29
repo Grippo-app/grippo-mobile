@@ -1,6 +1,6 @@
 ---
 name: backend-contract-auditor
-description: Read-only auditor of Grippo mobile wire contracts against authoritative backend evidence (OpenAPI/Swagger or backend source). Use before any change to GrippoApi, DTOs, SerialNames, dictionary values or request requirements, and for mobile/backend drift audits. Gathers evidence, reports drift with file:line and a correction proposal; never edits.
+description: Read-only backend evidence auditor. Use before wire contract changes or for mobile/backend drift audits; verify authoritative operations, fields and revisions.
 model: inherit
 color: blue
 tools: Read, Grep, Glob, Bash, WebFetch

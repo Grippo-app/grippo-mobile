@@ -12,6 +12,8 @@ Usage (agent frontmatter):
 Modes:
     readonly        inspection only (reviewers, scouts, auditors): read-only
                     programs, read-only git, no file writes, no builds, no network
+    readonly-compile inspection plus scoped Gradle/Xcode compilation and external logs;
+                    no device queries, installation, launch or device control
     readonly-build  readonly plus Gradle/Xcode/simulator/adb/emulator commands and
                     writes to absolute paths outside the repository (verifiers)
     no-git-write    anything except git history/index/remote/stash mutation,
@@ -172,6 +174,12 @@ def unmask(tok: str, spans, keep_quotes=False):
 def tokenize(masked: str):
     protected = (masked.replace("\\(", " ESCLPAREN ").replace("\\)", " ESCRPAREN ")
                  .replace("\r\n", " ; ").replace("\n", " ; ").replace("\r", " ; "))
+    fd_prefix = "FDSPAN"
+    while fd_prefix in protected:
+        fd_prefix += "_"
+    # Preserve adjacency: '2>&1' has an IO number; '2 >&1' has an argument.
+    protected = re.sub(r"(^|[\s;|&()])(\d+)(?=[<>])",
+                       lambda m: m[1] + fd_prefix + m[2] + " ", protected)
     try:
         lexer = shlex.shlex(protected, posix=True, punctuation_chars=True)
         lexer.whitespace_split = True
@@ -179,7 +187,15 @@ def tokenize(masked: str):
         tokens = list(lexer)
     except ValueError as exc:
         block(f"could not parse command ({exc}); simplify the command")
-    return tokens
+    merged, i = [], 0
+    while i < len(tokens):
+        if tokens[i].startswith(fd_prefix) and tokens[i][len(fd_prefix):].isdigit():
+            merged.append(tokens[i][len(fd_prefix):] + tokens[i + 1])
+            i += 2
+        else:
+            merged.append(tokens[i])
+            i += 1
+    return merged
 
 
 def split_segments(tokens, redirects):
@@ -227,7 +243,7 @@ def check_redirects(redirects, spans, mode: str) -> None:
             continue
         if mode == "readonly":
             block(f"output redirection to '{target}' writes a file; this agent is read-only")
-        if mode == "readonly-build":
+        if mode in ("readonly-compile", "readonly-build"):
             check_evidence_path(target)
 
 
@@ -347,6 +363,10 @@ def ref_listing(sub, args):
         key = arg.split("=", 1)[0]
         if key in ("--no-list", "--no-all", "--no-remotes", "--no-show-current"):
             block("negating git ref-listing mode is outside read-only inspection")
+        if arg.startswith("-") and not arg.startswith("--"):
+            write_flags = "dDmMcCufe" if sub == "branch" else "dasmFuf"
+            if any(flag in write_flags for flag in arg[1:]):
+                block(f"mutating git {sub} flags are not allowed inside short-option clusters")
         if key in REF_FILTERS or arg in ("-l", "--list") or (
                 sub == "branch" and arg in ("-a", "--all", "-r", "--remotes", "--show-current")):
             listing = True
@@ -356,6 +376,29 @@ def ref_listing(sub, args):
             operands.append(arg)
         i += 1
     return listing or not operands
+
+
+def grep_options(args):
+    """Separate Git grep options from their values and a real '--' terminator."""
+    valued_long = {"--max-depth", "--context", "--before-context", "--after-context", "--threads", "--max-count"}
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg == "--":
+            return
+        if arg.startswith("--"):
+            name = arg.split("=", 1)[0]
+            yield name
+            if name in valued_long and "=" not in arg:
+                i += 1
+        elif arg.startswith("-"):
+            for position, flag in enumerate(arg[1:], 1):
+                yield "-" + flag
+                if flag in "efABCmO":
+                    if position == len(arg) - 1:
+                        i += 1
+                    break
+        i += 1
 
 
 def check_git(args) -> None:
@@ -391,14 +434,16 @@ def check_git(args) -> None:
         options = options[:options.index("--")] if "--" in options else options
         if action == "show" and "-n" not in options:
             block("git remote show contacts the remote; use 'git remote show -n <name>' for local inspection")
-    option_args = rest[:rest.index("--")] if "--" in rest else rest
+    option_args = list(grep_options(rest)) if sub == "grep" else rest
     if any(a == "--output" or a.startswith("--output=") for a in option_args):
         block("git --output writes a file; pipe to a read-only program instead")
     if any(a in ("--ext-diff", "--textconv", "--open-files-in-pager")
            or a.startswith("--open-files-in-pager=") for a in option_args):
         block("git external diff/text conversion/pager execution is outside read-only inspection")
-    if sub == "grep" and any(a.startswith("-O") for a in option_args):
-        block("git grep -O can execute an attached pager; use plain git grep")
+    if sub == "grep" and any(a == "-O" or (
+            a.startswith("--") and a != "--text" and any(
+                option.startswith(a) for option in ("--open-files-in-pager", "--textconv"))) for a in option_args):
+        block("git grep pager/textconv options can execute helpers; use plain git grep")
     if sub not in GIT_READONLY:
         block(f"'git {sub}' is outside the read-only set")
 
@@ -487,11 +532,18 @@ def check_sed(args) -> None:
         block("sed expression is outside display ranges and plain substitutions; use rg or separate inspection commands")
 
 
-def check_xcodebuild(args) -> None:
+def check_xcodebuild(args, mode) -> None:
     if "clean" in args:
         block("'xcodebuild clean' discards build outputs; build the specific scheme instead")
     if any(a in ("archive", "-exportArchive", "-exportLocalizations", "-importLocalizations") for a in args):
         block("archiving/exporting with xcodebuild is release work, not verification")
+    if any(a in ("test", "test-without-building", "build-for-testing", "install", "installsrc", "installhdrs", "analyze",
+                 "-runFirstLaunch", "-downloadPlatform", "-downloadAllPlatforms", "-downloadComponent",
+                 "-importPlatform", "-importComponent", "-license", "-allowProvisioningUpdates",
+                 "-allowProvisioningDeviceRegistration") for a in args):
+        block("Xcode tests, installation, analysis and tool setup are outside scoped compilation")
+    if mode == "readonly-compile" and "-showdestinations" in args:
+        block("Xcode device destination queries belong to runtime verification")
 
 
 def check_simctl(args, mode) -> None:
@@ -508,6 +560,8 @@ def check_simctl(args, mode) -> None:
 
 
 def check_readonly_program(prog, args, mode) -> None:
+    if mode == "readonly-compile" and prog in {"adb", "emulator", "simctl", "xcrun", "kill", "pkill", "open", "sips", "plutil"}:
+        block(f"'{prog}' is outside compilation; device work belongs to runtime-verifier")
     if prog in INTERPRETERS:
         block(f"'{prog}' can execute arbitrary code; not allowed in {mode} mode")
     if prog == "python3":
@@ -594,7 +648,7 @@ def check_readonly_program(prog, args, mode) -> None:
 
 def main() -> None:
     mode = sys.argv[1] if len(sys.argv) > 1 else "readonly"
-    if mode not in ("readonly", "readonly-build", "no-git-write"):
+    if mode not in ("readonly", "readonly-compile", "readonly-build", "no-git-write"):
         block(f"unknown guard mode '{mode}'")
     try:
         payload = json.load(sys.stdin)
@@ -602,6 +656,8 @@ def main() -> None:
         block(f"invalid hook payload ({exc})")
     if not isinstance(payload, dict):
         block("hook payload must be a JSON object")
+    if not isinstance(payload.get("tool_name"), str) or not payload["tool_name"].strip():
+        block("hook payload must identify the tool; use tool_name Bash for command checks")
     if payload.get("tool_name") != "Bash":
         sys.exit(0)
     tool_input = payload.get("tool_input")
@@ -631,7 +687,7 @@ def main() -> None:
             check_git(args)
             continue
         if prog == "gh":
-            if mode == "readonly":
+            if mode in ("readonly", "readonly-compile"):
                 block("gh uses the network; read-only shell roles inspect local sources")
             check_gh(args)
             continue
@@ -643,9 +699,9 @@ def main() -> None:
         if prog == "xcodebuild":
             if mode == "readonly":
                 block("xcodebuild is reserved for build/runtime verifier agents")
-            check_xcodebuild(args)
+            check_xcodebuild(args, mode)
             continue
-        if mode in ("readonly", "readonly-build"):
+        if mode in ("readonly", "readonly-compile", "readonly-build"):
             check_readonly_program(prog, args, mode)
     sys.exit(0)
 

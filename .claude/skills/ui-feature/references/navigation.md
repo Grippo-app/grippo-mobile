@@ -269,18 +269,20 @@ result keys. Screen results follow [the existing result protocol](results.md).
 ChildStack(
     modifier = Modifier.fillMaxSize(),
     stack = component.childStack,
-    animation = stackAnimation(selector = { child, _, _, _ -> child.instance.animator() }),
+    animation = stackAnimation(
+        selector = { child, _, _, _ ->
+            when (child.instance) {
+                is RootComponent.Child.Authorization -> fade()
+                is RootComponent.Child.Home -> fade()
+                is RootComponent.Child.Debug -> platformStackAnimator()
+                is RootComponent.Child.Profile -> platformStackAnimator()
+                is RootComponent.Child.Training -> platformStackAnimator()
+                is RootComponent.Child.Exercises -> platformStackAnimator()
+            }
+        },
+    ),
     content = { child -> child.instance.component.Render() },
 )
-
-private fun RootComponent.Child.animator(): StackAnimator = when (this) {
-    is RootComponent.Child.Authorization -> fade()
-    is RootComponent.Child.Home -> fade()
-    is RootComponent.Child.Debug -> platformStackAnimator()
-    is RootComponent.Child.Profile -> platformStackAnimator()
-    is RootComponent.Child.Training -> platformStackAnimator()
-    is RootComponent.Child.Exercises -> platformStackAnimator()
-}
 ```
 
 The dialog overlay is **not** rendered inside `RootScreen`. `RootComponent.Render()` reads `AppTheme.current`/`AppLocale.current` and calls `RootScreen(...)` and `dialogComponent.Render()` as siblings inside `AppTheme { ... }`. The Android shell keeps the system splash until `AppLocale.isResolved` (the stored app language was read and applied, or the read failed and the system locale is kept); iOS starts in the persisted `AppleLanguages` language:

@@ -56,10 +56,16 @@ the screen shows the loading skeleton only while no preset or recent option exis
 yet, and Custom remains an independent valid Empty choice throughout.
 No business context or callback is added solely for analytics.
 
+Loaded exercise-image taps open the encapsulated `ExerciseExampleImage` viewer.
+Viewer open/close, image loading and animation are deliberately untracked local
+presentation actions: they do not invoke the enclosing row callback or add a
+screen identity. Existing row actions remain available outside the loaded image.
+
 ## State preservation inventory
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
+| ExerciseExampleImage | Image availability, fullscreen visibility and transition | Runtime only | Component-local `remember` keyed by image value; Coil painter state | No business draft or accepted result; changing the image or recreating the widget closes the viewer. No StateKeeper, route or ViewModel change |
 | StartTrainingViewModel | Options including recent identities, required LocalDateTime dates and exercises; generated preset with pending sets | Rebuild on fresh dialog opening | Continuous TrainingFeature cache observation (Processing.Infinity) plus one GeneratePresetTrainingUseCase run per dialog opening; TrainingFeature range refresh in parallel under the Options loader | Cached options render immediately and update when the refresh lands; the preset option and its generated ids are built once per options collection and reused across its emissions (a Retry after a failed observation rebuilds them with new ids); Empty option remains actionable throughout. No StateKeeper supplier |
 | StartTrainingScreen / StartTrainingPage / StartTrainingRecentPicker | selectedChoice, selectedRecentKey; vertical and horizontal list presentation | Runtime only | Screen remembers the category, initially Empty, and nullable recent key; Page pins its introduction and recent picker above the exercise-only vertical list; the action overlays the list through the shared bottom gradient | Late options preserve the current choice. Unaccepted live choice and scroll presentation are discarded with the in-memory dialog session after process death |
 | Dialog hosts / Component | Session, callbacks, Back registration, VM jobs, errors, Options loader | Runtime only | Existing retainedInstance; host serializers null; safeLaunch loader lifecycle around the refresh | Ordinary retained recreation differs from process death; no session archive or callback replay. The loading skeleton renders only while no preset or recent option exists yet; the pinned Empty action stays available |

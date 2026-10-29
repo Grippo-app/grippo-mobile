@@ -189,10 +189,16 @@ reach the shared error pipeline) and the metric aggregation use cases are not tr
 callbacks do not duplicate leaf events; the HomeRoot BackCallback closes without
 DismissRequested.
 
+Loaded exercise-image taps open the encapsulated `ExerciseExampleImage` viewer.
+Viewer open/close, image loading and animation are deliberately untracked local
+presentation actions: they do not invoke the enclosing row callback or add a
+screen identity. Existing row actions remain available outside the loaded image.
+
 ## Preservation inventory
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
+| ExerciseExampleImage | Image availability, fullscreen visibility and transition | Runtime only | Component-local `remember` keyed by image value; Coil painter state | No business draft or accepted result; changing the image or recreating the widget closes the viewer. No StateKeeper, route or ViewModel change |
 | MainComponent / MainTabNavigation (host) | Active tab including `MainRouter.Home` | Preserve (host-owned) | `MainRouter.serializer()`, key `MainTabs` | Tab Back returns to Home through bringToFront; Home-tab Back falls through to close |
 | HomeRootComponent | Child navigation | Preserve | `HomeRouter.serializer()`, key `HomeRootComponent` | Payload-free `HomeRouter.Home` only; depth always one; no route inputs or drafts. The Trainings route Home builds is owned by the Calendar tab once opened |
 | HomeRootViewModel | HomeRootState | Runtime only | Data object | Stateless container; no supplier |

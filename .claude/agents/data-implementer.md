@@ -1,6 +1,6 @@
 ---
 name: data-implementer
-description: Implementer for Grippo data slices - Feature/Repository/UseCase contracts, GrippoApi endpoints and DTOs, Room entities/DAOs/migrations, DataStore preferences, directional mappers and Koin bindings - under data-layer, mappers, di-modules and backend-contract-client. Use when the main session delegates a data slice with file ownership and verified backend evidence. Never commits.
+description: Data implementer. Use for a delegated domain, storage, mapper or binding slice; require verified backend evidence only for wire changes.
 model: inherit
 color: green
 tools: Read, Grep, Glob, Edit, Write, Bash
@@ -9,7 +9,6 @@ skills:
   - data-layer
   - mappers
   - di-modules
-  - backend-contract-client
 hooks:
   PreToolUse:
     - matcher: "Bash"
@@ -46,11 +45,15 @@ authorization when persistence changes; whether a build is authorized.
 
 ## Duties
 
-1. Read the relevant references (preloaded SKILL.md files do not include them):
-   `.claude/skills/data-layer/references/{repositories,operation-outcomes,dtos-and-api,persistence-room,cookbook-room-migration,datastore,backend-client,auth-session}.md`,
-   `.claude/skills/mappers/references/{mapping-conventions,null-safety-and-logging}.md`,
-   `.claude/skills/di-modules/references/{annotations,composition-root}.md`.
-   Inspect `data-features/trainings` and `data-features/user` as live examples.
+1. Select only affected-topic references from the preloaded data-layer,
+   mappers and di-modules roots. Domain/repository operations use repositories
+   and operation-outcomes; Room changes use persistence-room and migration
+   recipes; preferences use datastore; network/auth use backend-client and
+   auth-session; conversions use mapping-conventions and null-safety; bindings
+   use annotations and composition-root. For a wire change, first read
+   `.claude/skills/backend-contract-client/SKILL.md` and require its backend
+   evidence before changing endpoints, DTOs or wire mappers. Local-only work
+   does not load the backend evidence workflow.
 2. Preserve the layer rules: UI sees only `:data-features:feature-api`; Repository
    and FeatureImpl stay `internal` with explicit `@Single(binds = [...])`; DTOs are
    all-nullable `= null` with exact `@SerialName` (plus `@EncodeDefault(Mode.ALWAYS)`

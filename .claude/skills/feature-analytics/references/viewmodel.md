@@ -1,6 +1,7 @@
 # ViewModel analytics and the foundation screen hook
 
-Read with the [canonical skill](../SKILL.md). Current examples are the authorization
+Read when wiring VM dependencies, screen hooks, events or complete operations,
+with the [canonical skill](../SKILL.md). Current examples are the authorization
 ViewModels and `ui-core/foundation` BaseComponent/BaseViewModel/ScreenAnalytics.
 
 ## Conventional injection
@@ -19,6 +20,7 @@ override val viewModel = componentContext.retainedInstance {
 Constructor examples are abbreviated. Do not pass analytics in Component
 constructors or route factories, add a feature provider, or resolve lifecycle
 services in the feature. Routes keep navigation identity; analytics does not read it.
+Feature events are emitted only by the owning ViewModel.
 
 The leaf ViewModel receives the same stateless `AuthAnalytics` as other leaves:
 
@@ -53,6 +55,9 @@ before relying on it):
   Exceptions thrown by `present`/`close` are swallowed; telemetry never
   interrupts lifecycle delivery.
 
+Do not infer flow continuity, entry attribution or Action/Back reasons from a
+fresh binding.
+
 Graph/container VMs use null: no binding and no ScreenAnalytics resolution. Do not
 override a graph as a screen just because it owns a router. VM knows neither
 Lifecycle nor ComponentContext and does not observe activationFlow for visibility.
@@ -70,18 +75,8 @@ role. A page with its own content can also own child navigation; review what is
 actually displayed. Container events/operations may still observe its real business
 callbacks; they do not justify a container screen_view.
 
-Inventory the actual affected routes and rendered content; do not rely on historical
-counts or missing reports. Record current owners, typed hooks and container reasons
-in the feature's `analytics/<feature>/COVERAGE.md`
-([records](../../../../CLAUDE.md#records)), replacing stale rows.
-Dialogs, pickers and overlays do not automatically become screens; their dedicated
-presentation telemetry needs the separate contract described below.
-
 Run the [mandatory screen coverage gate](../SKILL.md#mandatory-screen-coverage-gate)
-against actual routes, Component factories and rendered bodies before completion.
-A new feature needs an inventory of all its screens; a behavior change needs all
-screens in the affected scope. Missing hooks and container views emitted alongside their child screens block
-completion; default null is not a permitted screen omission.
+against actual routes, Component factories and rendered bodies.
 
 ## Direct typed facts and complete operations
 
@@ -90,8 +85,8 @@ before choosing event parameters or changing a caller contract. The examples bel
 observe facts already available to the owning VM.
 
 ```kotlin
-analytics.trackEvent(AuthEvent.Login.Submit(Method.Google))
-val hasProfile = analytics.trackOperation(AuthOperation.Login(Method.Google)) {
+analytics.trackEvent(AuthEvent.Login.Submit(method = Method.Google))
+val hasProfile = analytics.trackOperation(AuthOperation.Login(method = Method.Google)) {
     val credential = googleAuthProvider.getUiProvider(context).signIn()
     loginUseCase.loginGoogle(token = credential.token)
 }
@@ -105,17 +100,28 @@ analytics.trackEvent(AuthEvent.User.PickerConfirmed(field = ProfilePicker.Height
 The current [LoginUseCase](../../../../data-features/feature-api/src/commonMain/kotlin/com/grippo/data.features.api/authorization/LoginUseCase.kt)
 returns Boolean and throws on failure; credential providers return their account and throw on failure.
 Credential acquisition stays inside its decorator. Feature/UseCase commands follow the
-[throwing suspend contract](../../data-layer/references/operation-outcomes.md#throwing-suspend-contracts-canonical)
-and are called directly inside the decorator:
+[throwing suspend contract](../../data-layer/references/operation-outcomes.md#throwing-suspend-contracts-canonical).
+
+For a throwing command already run through the error pipeline, keep its complete
+invocation inside the decorator. Current example from
+`ui-screen-features/trainings/.../TrainingsViewModel.kt` (re-inspect before copying):
 
 ```kotlin
-val value = analytics.trackOperation(FeatureOperation.Save) {
-    saveUseCase.execute(existingValue)
+safeLaunch(recovery = ErrorRecovery.Retry) {
+    analytics.trackOperation(operation = TrainingsOperation.DeleteTraining) {
+        deleteTrainingUseCase.execute(id)
+    }
 }
 ```
 
-This second example is a generic pattern. Reuse the actual business operation and
-its result type; required requests, validation and storage complete inside that block.
+Use the existing `safeLaunch` directly, without a local recovery catch or wrapper.
+A pure `mapError` changes dialog presentation only. Intent placement, complete
+operation retries and both `safeLaunch` overloads follow
+[Retry and close](../../ui-feature/references/error-pipeline.md#retry-and-close).
+Startup uses the existing VM scope; the foundation runs the next attempt after
+the popup's Retry. Follow [coroutine rules](../../validation-gates/references/forbidden-patterns.md#coroutines)
+and [Kotlin blocks](../../validation-gates/references/code-style.md#kotlin-blocks)
+for cancellation, function declarations and block layout.
 
 Emit in existing Contract→VM callbacks after eligibility/busy guards. Rejected
 callbacks emit neither accepted intent nor operation events. Text events compare
@@ -131,12 +137,21 @@ host/config callbacks do not construct events. The screen hook does not provide
 dedicated dialog_view/close telemetry; record the omission or define that separate
 contract within an explicitly requested scope before adding its implementation.
 
-AuthEvent constructors contain direct typed values, not action wrappers. Credential
-and picker families enforce their field enums; fixed Name is implicit. These facts
-do not implement toolkit AnalyticsEvent: internal matrix/payload/schema encode wire.
+Model constraints and wire encoding follow
+[feature contracts](collection-and-core.md#feature-api-and-schema-contracts).
 
-Shared registers only the generated feature implementation module; foundation DI
-owns ScreenAnalytics. No feature analytics integration module/classifier/provider
-is needed. Verify actual VM screen declarations and the foundation hook/lifecycle,
-payloads, operation results/errors/cancellation and reporting isolation. Respect
-the permitted verification scope; source checks do not establish runtime correctness.
+## Event meaning and dismissal
+
+An in-surface edit cancellation (Cancel beside a field) is that control's
+`Clicked` fact. Use `DismissRequested` for an observed user request to leave or
+close the surface. It records intent, not completed dismissal or cancellation.
+Declare it in the feature's `models/` and encode it as
+`<feature>_dismiss_requested`.
+
+Keep navigation Back/onBack names when they describe navigation; do not rename
+business contracts to match telemetry. Programmatic pop, lifecycle close and
+successful completion are not user dismissal requests.
+
+A telemetry rename reconciles public events, internal action types/matrices,
+wire encoders, VM callers and current coverage together. Retain no compatibility
+alias without a released-consumer requirement.

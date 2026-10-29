@@ -280,7 +280,13 @@ Factor cohesive data into sub-state classes (`HeaderState`, `NoteRowState`); com
 
 ### No flat scalar piles (MUST)
 
-A `State` is not a bucket for every scalar. When fields cluster into obvious groups, model it — don't flatten. A lifecycle encoded as loose booleans (`isRunning` + `hasCompletedTest` + nullable `activePhase`) admits illegal combinations. Refactor: a **sealed run-phase** for the lifecycle (`Idle`/`Running(phase)`/`Completed(result)`), **sub-states** for the clusters (network info, latency stats), an **enum** for the fixed phase set. Rule of thumb: if a `State` carries more than a handful of same-typed primitives, or a set of booleans describing one lifecycle, you're missing a sub-state, an enum, or a sealed interface.
+A `State` is not a bucket for every scalar. When fields form a cohesive group,
+model that group instead of flattening it. Use sub-states for related display data,
+an enum for a fixed value set, and a sealed interface for mutually exclusive
+business/content modes with their own resolved data, such as `Editor(note)` and
+`Archive(notes)`. Boolean combinations representing those modes must not admit
+impossible states. Operation progress follows the existing
+[Loader ownership rule](#state-conventions), rather than another State lifecycle.
 
 ### Top-level `stub*` functions
 

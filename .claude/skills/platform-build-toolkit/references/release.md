@@ -38,8 +38,8 @@ Android and iOS versions are maintained independently and may differ.
   `ApplicationStateStore.swift`.
 - **Analytics**: released schemas keep their meaning; semantic changes need a
   reporting decision before a version bump (owner: feature-analytics).
-- **Public Swift API**: changes to exported `:shared`, `:toolkit:*:api` or
-  Decompose-facing types require the XCFramework build and an `iosApp` compile.
+- **Public Swift API**: framework and host compilation follow the
+  [verification policy](../../../../CLAUDE.md#verification-policy).
 
 ## Release builds
 

@@ -9,11 +9,12 @@ global flags in `gradle.properties`. Inspect them before relying on a detail bel
 | Module type | Plugins |
 |---|---|
 | `:androidApp` | `android.application.convention` + `libs.plugins.compose.compiler` + `libs.plugins.jetbrains.compose` + `libs.plugins.google.services` + `libs.plugins.firebase.crashlytics` |
-| Pure KMP module (no UI) | `android.library.convention` + `kotlin.multiplatform.convention` |
+| KMP module (base) | `android.library.convention` + `kotlin.multiplatform.convention` |
 | KMP module with Compose UI | + `compose.multiplatform.convention` |
 | Module with Koin bindings | + `koin.annotation.convention` |
 | `:data-services:database` | + `room.convention` |
 | `:shared` | `android.library.convention` + `kotlin.multiplatform.convention` + `ios.swiftpackage.convention` + `compose.multiplatform.convention` + `koin.annotation.convention` |
+| Module using generated Kotlin serializers | + `alias(libs.plugins.kotlin.serialization)` |
 
 What each plugin does (verified):
 
@@ -72,8 +73,9 @@ any dependency version; platform pins belong to the convention sources above.
 
 ## Rules
 
-- Pure KMP, Compose, Koin, Room and the shared export module apply exactly their matrix row;
-  module scripts never repeat SDK versions, toolchain, repositories or opt-ins.
+- Apply the module's base row plus every applicable additive (`+`) row; the serialization
+  row also applies to `:shared` when it uses generated serializers. Module scripts never
+  repeat SDK versions, toolchain, repositories or opt-ins.
 - Add a global opt-in in `KotlinMultiplatformConventionPlugin` only when the authorized scope
   covers that convention change; a source-level `@OptIn` is not a bypass.
 - Adding catalog entries, renaming aliases, changing versions or module membership requires the

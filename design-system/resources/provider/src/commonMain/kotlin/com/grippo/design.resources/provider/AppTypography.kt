@@ -34,7 +34,7 @@ public data object AppTypography {
         fontSize = 22.sp,
         fontFamily = onest(),
         lineHeight = 28.sp,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.SemiBold,
     )
 
     @Composable
@@ -42,7 +42,7 @@ public data object AppTypography {
         fontSize = 18.sp,
         fontFamily = onest(),
         lineHeight = 24.sp,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.SemiBold,
     )
 
     @Composable
@@ -50,7 +50,7 @@ public data object AppTypography {
         fontSize = 16.sp,
         fontFamily = onest(),
         lineHeight = 24.sp,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.SemiBold,
     )
 
     @Composable
@@ -58,7 +58,7 @@ public data object AppTypography {
         fontSize = 15.sp,
         fontFamily = onest(),
         lineHeight = 22.sp,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.SemiBold,
     )
 
     @Composable
@@ -91,6 +91,14 @@ public data object AppTypography {
         fontFamily = onest(),
         lineHeight = 20.sp,
         fontWeight = FontWeight.Medium,
+    )
+
+    @Composable
+    public fun b14Reg(): TextStyle = TextStyle(
+        fontSize = 14.sp,
+        fontFamily = onest(),
+        lineHeight = 20.sp,
+        fontWeight = FontWeight.Normal,
     )
 
     @Composable

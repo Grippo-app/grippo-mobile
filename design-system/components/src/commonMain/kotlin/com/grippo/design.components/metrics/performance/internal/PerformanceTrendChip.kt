@@ -17,9 +17,10 @@ internal fun PerformanceTrendChip(
     modifier: Modifier = Modifier,
     status: PerformanceTrendStatusState,
     reference: PerformanceReferenceState,
+    emphasized: Boolean = true,
 ) {
     val label = status.label(reference) ?: return
-    val background = status.backgroundColor()
+    val background = if (emphasized) status.backgroundColor() else AppTokens.colors.semantic.neutralBackground
 
     Text(
         modifier = modifier
@@ -65,6 +66,33 @@ private fun PerformanceTrendChipPreview() {
         PerformanceTrendChip(
             status = PerformanceTrendStatusState.Declined,
             reference = PerformanceReferenceState.Previous,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun PerformanceTrendChipNeutralPreview() {
+    PreviewContainer {
+        PerformanceTrendChip(
+            status = PerformanceTrendStatusState.Record,
+            reference = PerformanceReferenceState.Average,
+            emphasized = false,
+        )
+        PerformanceTrendChip(
+            status = PerformanceTrendStatusState.Improved,
+            reference = PerformanceReferenceState.Average,
+            emphasized = false,
+        )
+        PerformanceTrendChip(
+            status = PerformanceTrendStatusState.Stable,
+            reference = PerformanceReferenceState.Average,
+            emphasized = false,
+        )
+        PerformanceTrendChip(
+            status = PerformanceTrendStatusState.Declined,
+            reference = PerformanceReferenceState.Previous,
+            emphasized = false,
         )
     }
 }

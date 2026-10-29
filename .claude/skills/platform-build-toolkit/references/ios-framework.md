@@ -32,9 +32,11 @@ Inspect `IosSwiftPackageConventionPlugin` under `build-logic/convention/src/main
   the resulting diff. Preserve existing UUID references; do not replace it with a generic template
   or duplicate build phases.
 - Preserve SQLite linkage and the exported Decompose/toolkit API contracts.
-- `:shared:assembleSharedDebugXCFramework` proves framework compilation only. Swift startup, linking
-  and restoration remain unverified unless they ran as permitted checks under
-  [runtime-verification](../../runtime-verification/SKILL.md).
+- Apply the [verification policy](../../../../CLAUDE.md#verification-policy) for
+  framework and host build triggers. The XCFramework build proves framework
+  compilation; an Xcode host build also checks Swift compilation and linking.
+  Startup and restoration require authorized
+  [runtime verification](../../runtime-verification/SKILL.md).
 - Do not touch secure configuration ([secrets](secrets-and-config.md)) or unrelated shell behavior
   as a framework fix.
 

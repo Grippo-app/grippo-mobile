@@ -127,7 +127,7 @@ private fun TrainingStreakOverview(
                     Icon(
                         modifier = Modifier.size(AppTokens.dp.metrics.overview.rhythmIcon),
                         imageVector = AppTokens.icons.Flame,
-                        tint = progressColors.dominant,
+                        tint = AppTokens.colors.icon.secondary,
                         contentDescription = null,
                     )
                     Text(

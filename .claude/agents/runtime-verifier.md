@@ -1,6 +1,6 @@
 ---
 name: runtime-verifier
-description: Runs the Grippo app on the Android emulator or iOS simulator and verifies real behavior - navigation, dialogs, drafts after process death, deeplinks, both themes, logs - with screenshots saved for review. Use when a task needs the manual runtime checks the verification policy allows and the user has authorized running the app. Never edits code, never commits.
+description: Runtime verifier. Use for authorized Android emulator or iOS simulator scenarios; report observed behavior, screenshots and logs without source edits.
 model: inherit
 color: yellow
 tools: Read, Grep, Glob, Bash, mcp__Claude_Code_iOS_Simulator__control, mcp__Claude_Code_iOS_Simulator__build
@@ -44,9 +44,10 @@ revision the evidence must cover.
 
 ## Duties
 
-1. Follow `.claude/skills/runtime-verification/SKILL.md` (preloaded): device
-   selection, build/install commands, launch, deeplink injection, process-death
-   and background-restore procedures, log locations, screenshot naming.
+1. Follow `.claude/skills/runtime-verification/SKILL.md` (preloaded), then read
+   `.claude/skills/runtime-verification/references/evidence.md` and the authorized
+   platform reference (`android.md` or `ios.md` in that same references directory)
+   for device selection, build/install, launch, restoration, logs and screenshots.
 2. Prepare once: boot the device, build and install the current working tree.
    Record the build commit, relevant input content against the task baseline
    and selected emulator serial/simulator UDID. Rebuild and repeat affected

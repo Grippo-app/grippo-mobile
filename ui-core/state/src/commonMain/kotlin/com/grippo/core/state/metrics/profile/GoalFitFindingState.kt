@@ -31,9 +31,6 @@ public data class GoalFitFindingState(
     val context: ImmutableList<MuscleGroupEnumState> = persistentListOf(),
 ) {
     @Composable
-    public fun valueColor(): Color = severity.valueColor()
-
-    @Composable
     public fun dotColor(): Color = severity.dotColor()
 
     @Composable

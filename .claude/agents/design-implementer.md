@@ -1,6 +1,6 @@
 ---
 name: design-implementer
-description: Implementer for Grippo design-system slices - AppTokens/AppColor/AppDp/AppTypography producers, shared Compose components, localized strings for all locales, AppIcon vectors, raster assets, previews and illustration integration - under design-system, brand-design, compose-components and illustrations. Use when the main session delegates a visual slice with a usage/state inventory and file ownership. Never commits.
+description: Design-system implementer. Use for a delegated token, component, resource, preview or supplied-artwork integration slice with a usage/state inventory.
 model: inherit
 color: orange
 tools: Read, Grep, Glob, Edit, Write, Bash
@@ -9,7 +9,6 @@ skills:
   - compose-components
   - design-system
   - brand-design
-  - illustrations
 hooks:
   PreToolUse:
     - matcher: "Bash"
@@ -45,7 +44,9 @@ and whether a build is authorized.
 
 ## Duties
 
-1. Read the references the task needs (preloaded SKILL.md files do not include
+1. For decorative artwork review or integration, read
+   `.claude/skills/illustrations/SKILL.md` and its matching conditional reference.
+   Read the other references the task needs (preloaded SKILL.md files do not include
    them): `.claude/skills/design-system/references/index.md` and the topic files it
    routes to (`tokens`, `color`, `dp`, `typography`, `accessors`, `components`,
    `resources`, `cookbook-resource`, `previews`, `visual-consistency`);

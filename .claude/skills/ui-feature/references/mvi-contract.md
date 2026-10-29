@@ -65,7 +65,20 @@ can initialize `BaseViewModel(...)`. Other states may require explicit initial d
 Empty` is needed on State** (Empty belongs on `Contract`).
 
 Static/empty-data screen: `@Immutable internal data object ProfileSettingsState`.
-Multi-mode screen: `@Immutable internal sealed interface AuthorizationState { @Immutable data class Idle(...) ; @Immutable data class Submitting(...) ; @Immutable data object Done }`.
+Multi-mode screen with distinct editor and archive layouts:
+
+```kotlin
+@Immutable
+internal sealed interface NoteContentState {
+    @Immutable
+    data class Editor(val note: NoteState) : NoteContentState
+    @Immutable
+    data class Archive(val notes: ImmutableList<NoteState>) : NoteContentState
+}
+```
+
+Operation progress stays in `*Loader` and VM `loaders` under
+[State conventions](state.md#state-conventions).
 
 Rules:
 - `@Immutable` on State and every sealed subtype; use the canonical [state conventions](state.md).
@@ -75,7 +88,7 @@ Rules:
 - Form fields reuse a suitable existing formatter where parsing/validation/display requires it; plain nonsecret free text without those needs may remain String. Follow [formatter rules](state.md#formatstate-rules-must--anti-patterns); do not create a type per field.
 - Use meaningful constructor defaults where an initial empty/loading value exists; pass required data explicitly through initialState. A no-argument `<X>State()` is not mandatory. Shared models follow the same [initialization rule](state.md#state-conventions); previews use explicit fixtures, not fabricated production defaults.
 - **No** direct domain model storage if a transformation is required — map via `:data-mappers:domain-to-state` to a UI-friendly shape.
-- **No flat scalar piles.** Cluster related primitives into sub-states, fixed value sets into enums, a lifecycle of booleans into a sealed interface (see `references/state.md`).
+- **No flat scalar piles.** Cluster related primitives into sub-states, fixed value sets into enums, mutually exclusive business/content modes into a sealed interface (see `references/state.md`).
 
 ### `<Name>Direction.kt`
 

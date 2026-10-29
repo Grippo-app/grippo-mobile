@@ -208,8 +208,13 @@ private fun PerformanceComparisonRow(
     val current = metric.chartValue()
     val average = metric.averageChartValue()
     val showsComparison = metric.showsComparison()
+    val hasComparisonIndicator = average != null && !metric.isEmpty()
     // The reference travels with the status, so a leaving chip keeps the words it was measured in.
-    val statusChip = (metric.status to reference).takeIf { showsComparison }
+    val statusChip = Triple(
+        first = metric.status,
+        second = reference,
+        third = !hasComparisonIndicator,
+    ).takeIf { showsComparison }
     val earlierLine = (metric to reference).takeIf { metric.hasEarlierValue() }
     val delta = metric.currentVsAveragePercentage?.takeIf { showsComparison }
 
@@ -279,8 +284,8 @@ private fun PerformanceComparisonRow(
                     }
                 }
                 ComparisonOptionalPart(value = statusChip) { shownChip ->
-                    ComparisonCrossfade(targetState = shownChip) { (status, statusReference) ->
-                        PerformanceTrendChip(status = status, reference = statusReference)
+                    ComparisonCrossfade(targetState = shownChip) { (status, statusReference, emphasized) ->
+                        PerformanceTrendChip(status = status, reference = statusReference, emphasized = emphasized)
                     }
                 }
             }
@@ -313,7 +318,7 @@ private fun PerformanceComparisonRow(
         }
 
         ComparisonOptionalPart(
-            value = animatedBeforeFraction.takeIf { average != null && !metric.isEmpty() },
+            value = animatedBeforeFraction.takeIf { hasComparisonIndicator },
             padding = PaddingValues(top = AppTokens.dp.contentPadding.subContent),
         ) { shownBeforeFraction ->
             ComparisonIndicator(

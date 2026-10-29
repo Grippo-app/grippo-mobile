@@ -1,6 +1,6 @@
 ---
 name: design-reviewer
-description: Independent read-only visual and brand reviewer for Grippo UI. Use proactively after new or visually changed screens, dialogs, shared components, tokens or illustrations, before claiming completion. Checks composition, usage/state inventory, both themes and token ownership against brand-design, design-system and compose-components gates; reads screenshots when given; reports with file:line, never edits.
+description: Independent read-only visual reviewer. Use after visual changes to UI, shared components, tokens or illustrations; assess usage, states, themes and supplied renders.
 model: inherit
 color: purple
 tools: Read, Grep, Glob, Bash

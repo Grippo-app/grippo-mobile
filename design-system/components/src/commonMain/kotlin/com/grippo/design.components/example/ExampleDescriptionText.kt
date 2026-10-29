@@ -2,7 +2,6 @@ package com.grippo.design.components.example
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,14 +47,13 @@ public fun ExampleDescriptionText(
     Column(
         modifier = modifier
             .background(AppTokens.colors.background.card, shape)
-            .border(AppTokens.dp.exerciseExampleCard.borderWidth, AppTokens.colors.border.default, shape)
             .padding(AppTokens.dp.exerciseExampleCard.contentPadding),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
         Text(
             modifier = Modifier.animateContentSize(),
             text = text,
-            style = AppTokens.typography.b14Med(),
+            style = AppTokens.typography.b14Reg(),
             color = AppTokens.colors.text.secondary,
             maxLines = if (expanded) Int.MAX_VALUE else 3,
             overflow = TextOverflow.Ellipsis,

@@ -26,17 +26,39 @@ Claude configuration. Confirm that the requested role and its Bash hook are
 available. A newly edited definition may require a new session for native loading;
 until then, pass the current role explicitly using the fallback below.
 
-## Codex and explicit-role fallback
+## Codex native discovery and roles
 
-Use the session's subagent tool (for example `spawn_agent`) and provide the
-canonical role path plus the common launch contract. This also works when Claude
-has a generic agent available but has not loaded the named role yet. A generic
-agent without the explicit role, owning skills and gates is only a scout.
+Codex discovers project skills through `.agents/skills/<skill>`, symlinks to the
+canonical `.claude/skills/<skill>` directories. Standalone project roles in
+`.codex/agents/<role>.toml` point back to `.claude/agents/<role>.md`; they do not
+copy its policy. Generate projections after canonical metadata or membership
+changes with `python3 -I .claude/hooks/sync-native-adapters.py --write`.
+The ordinary rulebook checker rejects missing, extra or drifted projections.
 
-Claude frontmatter is not automatically installed as Codex configuration.
-Inherit the parent model in Codex unless the user selected a supported override;
-`sonnet` is a Claude setting, not a model name to pass to Codex. Pass a complete
-brief even when the runtime also inherits conversation history.
+Use the registered project role when the client's subagent tool exposes it.
+The adapters inherit the parent model and permissions. They disable memories and
+permission-request tools, plus apps/plugins for roles without browser/simulator
+rights. Supported feature switches reduce those capabilities only: they do not
+install Claude's tool allowlist, Bash hook, editing ban or no-nesting rule.
+Apply the canonical role and the procedural protection below for the remaining
+boundaries. Never describe the adapter as a per-role read-only sandbox.
+
+Verify discovery in a fresh local session: `codex debug prompt-input` displays the
+available skill descriptions without running a model task. Check that each
+project skill appears once. For registration, inspect the actual subagent tool's
+project types and run a bounded read-only role probe. For enforcement, verify
+which tools were actually exposed separately from the guard matrix. TOML parsing
+or an adapter file's existence alone does not prove native registration or
+runtime enforcement. Report client/trust/usage limitations precisely.
+
+## Explicit-role fallback
+
+If a native project type is not exposed or the session has stale definitions,
+use the session's generic subagent tool and provide the canonical role path plus
+the common launch contract. A generic agent without its explicit role, owning
+skills and gates is only a scout. Inherit the parent model unless the user chose
+an available override; `sonnet` is a Claude setting, not a Codex model name.
+Pass a complete brief even when conversation history is inherited.
 
 Use native capability restrictions when the session exposes them. When per-role
 shell hooks are unavailable, keep the same guard mode as a procedural check:
@@ -108,3 +130,8 @@ that requirement remains unmet.
   describes delegation, inherited permissions and custom-agent configuration.
 - [Official AGENTS.md documentation](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
   describes project instruction discovery.
+
+- [Official Codex skill discovery documentation](https://learn.chatgpt.com/docs/build-skills)
+  describes project skill directories and symlinked skill folders.
+- [Official Claude subagent documentation](https://code.claude.com/docs/en/sub-agents)
+  describes project roles, full skill preloading, tool allowlists and hooks.

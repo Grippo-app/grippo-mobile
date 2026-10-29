@@ -1,6 +1,6 @@
 ---
 name: scout
-description: Read-only codebase scout for Grippo. Use when a task needs an inventory before design or review - callers of a symbol, every screen/route/ViewModel of a feature, module dependency edges, resource usages, or where a behavior actually lives. Returns facts with file:line, never opinions or edits.
+description: Read-only codebase scout. Use for inventories of callers, routes, dependencies, resources or behavior owners before implementation or review.
 model: sonnet
 color: cyan
 tools: Read, Grep, Glob, Bash

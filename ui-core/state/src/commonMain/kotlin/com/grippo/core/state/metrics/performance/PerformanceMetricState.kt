@@ -2,7 +2,6 @@ package com.grippo.core.state.metrics.performance
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.formatters.DensityFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.IntensityFormatState
@@ -94,13 +93,6 @@ public sealed interface PerformanceMetricState {
         is Density -> DensityFormatState.shortTotal(average)
         is Repetitions -> RepetitionsFormatState.shortAverage(average?.roundToInt()?.toDouble())
         is Intensity -> IntensityFormatState.shortAverage(average)
-    }
-
-    @Composable
-    public fun averageDeltaColor(): Color = when (band()) {
-        Band.Gain -> AppTokens.colors.semantic.success
-        Band.Loss -> AppTokens.colors.semantic.decline
-        Band.Neutral -> AppTokens.colors.text.secondary
     }
 
     @Composable

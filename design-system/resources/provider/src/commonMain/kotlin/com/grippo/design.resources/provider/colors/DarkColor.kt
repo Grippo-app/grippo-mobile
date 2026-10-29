@@ -133,7 +133,7 @@ public object DarkColor : AppColor {
         override val success = AppPalette.DarkAccent.Green
         override val error = AppPalette.DarkAccent.Red
         override val errorBorder = error.copy(alpha = 0.5f)
-        override val warning = AppPalette.DarkAccent.Orange
+        override val warning = AppPalette.DarkAccent.Amber
         override val info = AppPalette.DarkAccent.Blue
         override val notice = AppPalette.DarkAccent.Yellow
         override val decline = AppPalette.DarkAccent.Indigo
@@ -299,8 +299,8 @@ public object DarkColor : AppColor {
                 override val track: Color = AppPalette.NeutralDark.N300
             }
             override val warning = object : AppColor.Charts.RingColor.RingPalette {
-                override val indicator: Color = AppPalette.DarkAccent.Orange
-                override val track: Color = AppPalette.DarkAccent.Orange.copy(alpha = 0.2f)
+                override val indicator: Color = semantic.warning
+                override val track: Color = semantic.warning.copy(alpha = 0.2f)
             }
             override val error = object : AppColor.Charts.RingColor.RingPalette {
                 override val indicator: Color = AppPalette.DarkAccent.Red
@@ -338,10 +338,10 @@ public object DarkColor : AppColor {
 
             override val warning = object : AppColor.Charts.IndicatorColors.IndicatorColors {
                 override val colors: List<Color> = listOf(
-                    AppPalette.DarkAccent.Yellow,
-                    AppPalette.DarkAccent.Orange,
+                    lerp(semantic.warning, AppPalette.Common.White, 0.25f),
+                    semantic.warning,
                 )
-                override val track: Color = AppPalette.DarkAccent.Orange.copy(alpha = 0.2f)
+                override val track: Color = semantic.warning.copy(alpha = 0.2f)
             }
 
             override val error = object : AppColor.Charts.IndicatorColors.IndicatorColors {

@@ -370,7 +370,6 @@ public data object AppDp {
         }
 
         public data object Panel {
-            val borderWidth: Dp = 1.dp
             val small: Small = Small
             val large: Large = Large
 
@@ -712,7 +711,6 @@ public data object AppDp {
 
     public data object ExerciseExampleCard {
         val radius: Dp = AppDp.radius.xLarge
-        val borderWidth: Dp = 1.dp
         val contentPadding: Dp = padding.large
     }
 

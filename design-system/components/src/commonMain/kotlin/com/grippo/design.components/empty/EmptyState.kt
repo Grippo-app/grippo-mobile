@@ -189,7 +189,7 @@ private fun EmptyStateText(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = text,
-            style = AppTokens.typography.b14Med(),
+            style = AppTokens.typography.b14Reg(),
             color = AppTokens.colors.text.secondary,
             textAlign = textAlign,
         )

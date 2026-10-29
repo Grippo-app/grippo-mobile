@@ -17,14 +17,17 @@ Checks:
   4. The actual tables in CLAUDE.md's Skills index and Workflow and agents
      sections match their files; roster skills match each required skill list.
   5. No `.claude/skills/*/agents/openai.yaml` leftovers and no empty skill dirs.
-  6. Required entry points exist; CLAUDE.md stays a map: at most 400 lines.
+  6. Native Codex skill links and role adapters match their canonical owners.
+  7. Required entry points exist; CLAUDE.md stays a map: at most 400 lines.
 Exit code 1 when any problem is found.
 """
 from fnmatch import fnmatchcase
 import json
 import os
 import re
+import runpy
 import sys
+from pathlib import Path
 
 ROOT = os.getcwd()
 problems = []
@@ -216,9 +219,11 @@ def scalar(value, where):
             decoded, end = json.JSONDecoder().raw_decode(value)
             if value[end:] and not re.fullmatch(r"[ \t]+#.*", value[end:]):
                 raise ValueError("text after closing quote")
+            if isinstance(decoded, str) and any(0xD800 <= ord(char) <= 0xDFFF for char in decoded):
+                raise ValueError("unpaired Unicode surrogate")
             return decoded
         except ValueError:
-            problems.append(f"invalid double-quoted scalar: {where}; use JSON-style escapes or YAML single quotes")
+            problems.append(f"invalid double-quoted scalar: {where}; use JSON-style escapes for valid Unicode or YAML single quotes")
             return None
     value = re.split(r"(?:^|[ \t]+)#", value, maxsplit=1)[0].rstrip()
     if value.lower() in ("true", "false"):
@@ -272,7 +277,7 @@ def check_agent_rights(path, stem, fm):
     readonly = stem == "scout" or stem in VERIFIERS or stem.endswith(("-reviewer", "-auditor"))
     if readonly and (tools & WRITE_TOOLS or not WRITE_TOOLS <= denied):
         problems.append(f"read-only agent must exclude Edit, Write and NotebookEdit from tools and disallow them: {label}")
-    mode = "readonly-build" if stem in VERIFIERS else "no-git-write" if tools & WRITE_TOOLS and not readonly else "readonly"
+    mode = "readonly-compile" if stem == "build-verifier" else "readonly-build" if stem == "runtime-verifier" else "no-git-write" if tools & WRITE_TOOLS and not readonly else "readonly"
     check_agent_guard(path, fm.get("hooks"), mode)
 
 
@@ -482,6 +487,12 @@ def main():
     check_roster(agents)
     check_skill_index(skills)
     check_map_size()
+    adapter = Path(ROOT, ".claude/hooks/sync-native-adapters.py")
+    if not adapter.is_file():
+        problems.append("missing native adapter checker: .claude/hooks/sync-native-adapters.py")
+    else:
+        native = runpy.run_path(str(adapter))
+        problems.extend(native["check"](Path(ROOT), frontmatter))
     for p in problems:
         print(p)
     print(f"\n{len(problems)} problem(s); {len(skills)} skills; {len(agents)} agents; {len(md_files())} markdown files checked")

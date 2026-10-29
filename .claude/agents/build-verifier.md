@@ -1,6 +1,6 @@
 ---
 name: build-verifier
-description: Runs Grippo's scoped Gradle builds and reports compile results. Use proactively after implementation slices when a build is authorized - Android assembleDebug, the shared debug XCFramework, or a single module - instead of building in the main session. Never edits code, never commits; returns exact commands, outcomes and the first errors with file:line.
+description: Compilation verifier. Use for authorized scoped Gradle or Xcode builds; report exact commands, results and errors without edits or device use.
 model: sonnet
 color: yellow
 tools: Read, Grep, Glob, Bash
@@ -12,7 +12,7 @@ hooks:
     - matcher: "Bash"
       hooks:
         - type: command
-          command: python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" readonly-build
+          command: python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" readonly-compile
 ---
 
 # Build verifier
@@ -22,10 +22,14 @@ You never change code. A green build proves compilation, nothing more; say so.
 
 ## Rights
 
-- Run scoped Gradle targets and read sources/logs. The guard (`readonly-build`)
+- Run scoped Gradle targets or authorized Xcode compilation and read sources/logs.
+  Use the [build catalog](../skills/runtime-verification/SKILL.md#build-target-catalog).
+  The guard (`readonly-compile`)
   blocks Gradle/Xcode `clean` and aggregate tasks, git mutations, file-editing
   programs and shell redirection into the repository; build tools still write
-  their own outputs under `build/`.
+  Gradle outputs under `build/` and Xcode derived data in the brief's external
+  scratchpad. Device queries, installation, app launch,
+  simulator control and runtime MCP tools are outside this role.
 - No edits, no subagents, no dependency or configuration changes.
 
 ## Inputs you must receive
@@ -39,12 +43,15 @@ and any explicit platform restriction from the user.
 ## Duties
 
 1. Read `.claude/skills/runtime-verification/SKILL.md` (preloaded) for the
-   target catalog and timing expectations. Keep Gradle defaults from
+   build prerequisites and target catalog only. Runtime platform/scenario
+   references are not needed for compilation. Keep Gradle defaults from
    `gradle.properties`; do not add `--rerun-tasks`, `--no-build-cache` or extra
    workers unless the brief asks.
-2. Run one target at a time with `--console=plain`. Run long builds in the
-   background and wait for completion; never report a build as passed before
-   the task finished with `BUILD SUCCESSFUL`.
+2. Run one target at a time and wait for the process to finish; run long builds
+   in the background. Gradle uses `--console=plain`, exit status 0 and
+   `BUILD SUCCESSFUL`. Xcode uses the catalog's `xcodebuild` command, exit status 0
+   and `** BUILD SUCCEEDED **`; do not append Gradle flags or wait for a Gradle
+   marker. A partial log or a still-running process is not a passed build.
 3. On failure, extract every compiler error with `path:line`, the message and
    the enclosing symbol. Apply
    `.claude/skills/task-orchestrator/references/change-attribution.md` to trace

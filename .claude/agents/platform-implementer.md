@@ -1,6 +1,6 @@
 ---
 name: platform-implementer
-description: Implementer for Grippo platform and build slices - Gradle convention plugins, version catalog, module wiring in settings.gradle.kts, toolkit modules with Android/iOS actuals, compose-libs, app shells (androidApp, iosApp/Xcode project) and the shared XCFramework - under platform-build-toolkit and di-modules. Use when the main session delegates build/platform work with explicit scope. Never commits.
+description: Platform implementer. Use for a delegated build, module, toolkit, app-shell or framework slice with explicit ownership and platform scope.
 model: inherit
 color: orange
 tools: Read, Grep, Glob, Edit, Write, Bash
@@ -40,13 +40,18 @@ building, and whether Android and/or iOS builds are authorized.
 
 ## Duties
 
-1. Read `.claude/skills/platform-build-toolkit/references/{gradle-build,convention-plugins,new-module,toolkit-utilities-core,toolkit-utilities-platform,ios-framework,secrets-and-config,release}.md`
-   and `.claude/skills/di-modules/references/composition-root.md` (SKILL.md files
-   are preloaded; references are not). Inspect the actual plugin sources under
-   `build-logic/convention/src/main/kotlin/`; ignore any stale copies under
-   `build-logic/convention/bin/`.
-   When changing Compose code in `compose-libs`, read and apply
-   `.claude/skills/compose-components/SKILL.md` and
+1. Read the affected-topic links in
+   `.claude/skills/platform-build-toolkit/SKILL.md`: build scripts ->
+   `references/gradle-build.md`; conventions/catalog/dependencies ->
+   `references/convention-plugins.md`; new module -> `references/new-module.md`;
+   toolkit API -> `references/toolkit-utilities-core.md`, platform actuals ->
+   `references/toolkit-utilities-platform.md`; iOS shell/framework ->
+   `references/ios-framework.md`; secure inputs -> `references/secrets-and-config.md`;
+   requested release -> `references/release.md`. Paths are relative to that skill.
+   Read `.claude/skills/di-modules/references/composition-root.md` only for Koin
+   composition changes. Skill roots are preloaded; references are conditional.
+   Inspect affected convention sources under `build-logic/convention/src/main/kotlin/`.
+   For Compose code, also read `.claude/skills/compose-components/SKILL.md` and
    `.claude/skills/compose-components/references/structure-and-runtime.md`.
 2. New modules: `include` in `settings.gradle.kts`, a `build.gradle.kts` using
    only convention plugins and catalog aliases (no repositories, SDK or opt-in

@@ -74,95 +74,30 @@ impact assessment defined in [CLAUDE.md](../../../CLAUDE.md#definitions).
 
 ## Workflow
 
-1. **Read the routed references** — look up the task kind in the
-   [routing table](references/index.md#task-kind--topic--read) and read those
-   files. If a referenced file is missing, report it in the reply and continue
-   with the source.
-2. **Within authorized module/navigation scope, scaffold if the feature module doesn't exist** — create the module,
-   `settings.gradle.kts` include, `build.gradle.kts`, the `public` feature-root
-   entry Component and the necessary RootRouter entry. For one screen the public
-   Component owns its seven MVI files and screenPresentation directly; for multiple
-   screens use a container root and child stack, following current naming.
-3. **For a screen/dialog: write the seven MVI files** (same package, siblings):
-   - `<Name>State` — `@Immutable`; meaningful constructor defaults or explicit
-     required initial data; no `companion Empty` on State.
-   - `<Name>Direction` — `sealed interface : BaseDirection`; nav intents only.
-   - `<Name>Loader` — `@Immutable sealed interface : BaseLoader`; empty is ok.
-   - `<Name>Contract` — `@Immutable interface` + `companion object Empty`.
-   - `<Name>ViewModel` — `BaseViewModel<State,Direction,Loader>`, implements
-     Contract; `safeLaunch` / `Flow.safeLaunch` / `withLoader` / `update {}` /
-     `navigateTo` with errors in the shared pipeline — never
-     `viewModelScope.launch`, `GlobalScope` or local catches.
-   - `<Name>Component` — `BaseComponent<Direction>`;
-     `retainedInstance { <Name>ViewModel(...) }` with dependencies resolved
-     inside that factory; `eventListener` maps every Direction subtype.
-   - `<Name>Screen` — `@Composable internal fun(state, loaders, contract)` in
-     `BaseComposeScreen`, `AppTokens.*` only; new or visually changed UI gets an
-     `@AppPreview` per significant state ([definitions](../../../CLAUDE.md#definitions))
-     with `Contract.Empty`.
-
-   Nonvisual changes assess visual impact and reuse existing previews without
-   unrelated preview expansion. Shared model stubs live in ui-core:state; private
-   screen-State fixture builders may live beside the feature preview.
-   Choose extraction under [Compose structure](../compose-components/references/structure-and-runtime.md#read-from-top-to-bottom)
-   and place extracted feature composables under [feature file layout](references/module-structure.md#file-layout-for-a-feature).
-   Entity composables bind their `*State` as one parameter.
-4. **For a dialog**: no toolbar, `ScreenBackground.Color(...background.dialog)`;
-   add a plain `DialogConfig.<Name>` subtype with the required `title: UiText`,
-   live typed callbacks, and its typed `hasSameContentAs` branch (compare content,
-   exclude callbacks). Add the `DialogContentComponent.createChild` branch and
-   `Child` entry. The host's step-bound navigation delivers results through
-   `finish { router.onResult(value) }` and Back through `finish(null)`.
-   Ordinary screen ViewModels open it via `DialogController.open(...)`; nested
-   features emit semantic directions and forward typed constructor callbacks so
-   the host chooses the config/title and uses the originating `Session`.
-5. **Wire screen navigation** — add the `@Serializable` Router subtype +
-   `createChild` branch + inner `sealed class Child` entry (Decompose `ChildStack`).
-   Dialogs use the existing session slot and internal step stack; follow
-   [dialogs.md](references/dialogs.md). Cross-feature jumps go through
-   `:ui-screen-features:screen-api` + constructor-threaded callbacks (the
-   `RootDirection` → `RootContract` → `RootViewModel` → `RootComponent.eventListener`
-   chain), never direct feature-to-feature imports. Deeplinks add the `Deeplink`
-   enum entry + `RootViewModel.parseDeeplink` branch.
-6. **Apply the [state-preservation gate](../state-preservation/SKILL.md#mandatory-preservation-gate)**;
-   use [process-death.md](references/process-death.md) for route/shell restoration
-   and Component wiring.
-7. **For `:ui-core:state` work** — add `*State`/`*RowState`/`*EnumState`/
-   `*FormatState` + `stub*()`; for a new error type, edit the
-   `AppError` → `AppErrorState` → `ErrorProviderImpl` when-branch triad atomically.
-8. **Integrate affected analytics** — apply the linked analytics skill before
-   completing behavior changes. Every independent screen MUST declare its VM
-   screenPresentation; containers keep default null. Run the canonical
-   [screen coverage gate](../feature-analytics/SKILL.md#mandatory-screen-coverage-gate)
-   across all screens of a new feature or all affected screens before completion.
-   Foundation binds the lifecycle. Decorate complete
-   business blocks in the existing error pipeline and observe typed callbacks.
-   Keep the coverage matrix synchronized; do not scatter event construction
-   through Screens, Components, ViewModels and use cases.
-9. **Verify** — run the build checks the
-   [verification policy](../../../CLAUDE.md#verification-policy) requires for the
-   changed files. Apply the analytics skill's scoped checks when analytics changes.
-   Manual runtime checks follow [runtime-verification](../runtime-verification/SKILL.md).
-   Fix build failures caused by the task's changes. Report unrelated or pre-existing
-   failures and every unrun check; do not expand scope or change unrelated
-   infrastructure to make a build pass.
+1. Match the task to the [direct reference routing](#references-to-read) below
+   and read the owners for the topics being changed. For a screen or dialog,
+   apply the seven-file MVI contract. If a referenced file is missing, report it
+   in the reply and continue with the actual source.
+2. Implement within the authorized module/navigation scope, using the owning
+   recipe and actual neighboring files. New module wiring follows the linked
+   platform checklist; existing modules need only their affected integrations.
+3. Apply the [state-preservation gate](../state-preservation/SKILL.md#mandatory-preservation-gate)
+   and [analytics screen coverage gate](../feature-analytics/SKILL.md#mandatory-screen-coverage-gate)
+   to behavior changes; visual-only changes use their canonical impact assessments.
+4. Review the actual source against this skill's completion gate, then run the
+   checks the [verification policy](../../../CLAUDE.md#verification-policy)
+   requires for the changed files. Apply analytics' scoped checks when analytics
+   changes. Manual runtime checks follow
+   [runtime-verification](../runtime-verification/SKILL.md). Fix build failures
+   caused by the task's changes. Report unrelated or pre-existing failures and
+   every unrun check; do not expand scope or change unrelated infrastructure to
+   make a build pass.
 
 ## Screen results and dialog-to-screen changes
 
-For any screen that returns data, read [references/results.md](references/results.md)
-before changing routes, Components or observers. The receiver defines its key in
-its companion object and passes `resultKey` to the producer; the producer uses
-`sendResult → back`. No Back in receiver observers, result relays or hidden
-selection/navigation flags.
-
-When converting a dialog to a screen, follow the seven-file MVI and visibility
-patterns. Expose a single screen directly; use a container/subgraph only for an
-actual multi-screen flow. Route through `screen-api`,
-update all callers/dependencies/config entries, use screen toolbar/background/
-spacing/insets from the design system, and preserve all existing modes and states.
-Remove obsolete dialog names, resources and integration points within the migration
-scope. Compare with actual neighboring features; do not invent a new construction
-and present it as an existing project convention.
+For a screen that returns data, read [screen results](references/results.md)
+before changing routes, Components or observers. For a dialog-to-screen migration,
+follow [the conversion recipe](references/add-screen.md#convert-a-dialog-to-a-screen).
 
 ## Stop and ask
 
@@ -178,18 +113,32 @@ and present it as an existing project convention.
 
 ## References to read
 
-Feature mechanics are routed under `references/`. Shared Compose implementation
-belongs to [compose-components](../compose-components/SKILL.md). Feature behavior
-also requires the canonical [feature-analytics skill](../feature-analytics/SKILL.md).
-Start with `references/index.md` (the routing table); it maps each task-kind to
-the reference file(s) to read.
+This is the canonical routing table. Read the linked owners for the changed
+topics directly; a recipe does not replace its topic's contract. Shared cross-cut
+prohibitions follow
+[forbidden patterns](../validation-gates/references/forbidden-patterns.md).
 
-Use the canonical [reference routing table](references/index.md#task-kind--topic--read); do not maintain a second table here.
-
-Use [MVI contract](references/mvi-contract.md) for the seven-file responsibilities
-and the routed references for their owned topics. Cross-cut prohibitions follow
-[forbidden patterns](../validation-gates/references/forbidden-patterns.md);
-recipes link to the owning rule instead of defining it again.
+| Task or topic | Read |
+|---|---|
+| New UI, visual redesign or brand/composition review | [brand-design](../brand-design/SKILL.md), alongside the applicable mechanics below |
+| Add a sub-screen | [add-screen recipe](references/add-screen.md), [MVI contract](references/mvi-contract.md), [foundation usage](references/base-classes.md), [feature Compose](references/compose-rules.md) |
+| Author a screen/dialog's seven MVI files or change ViewModel data flow | [MVI contract](references/mvi-contract.md), [base classes](references/base-classes.md), [State](references/state.md), [data boundary](references/results.md#data-boundary-for-result-producers-and-receivers) |
+| Add a dialog / picker / modal | [dialog contract and recipe](references/dialogs.md), [MVI contract](references/mvi-contract.md), [base classes](references/base-classes.md) |
+| Scaffold a feature module | [module structure](references/module-structure.md), [navigation](references/navigation.md), [MVI contract](references/mvi-contract.md), [module wiring checklist](../platform-build-toolkit/references/new-module.md) |
+| Convert a dialog to a screen | [conversion recipe](references/add-screen.md#convert-a-dialog-to-a-screen), [MVI contract](references/mvi-contract.md), [screen results](references/results.md) |
+| Decompose ChildStack, routers, animations, Back or deeplinks | [navigation](references/navigation.md) |
+| Cross-feature jump or embedded foreign flow | [cross-feature navigation](references/navigation.md#cross-feature-navigation), [module boundaries](references/module-structure.md#anti-pattern-feature-to-feature-cross-import-must) |
+| Cross-component results, receiver keys or result-bus lifecycle | [screen results](references/results.md) |
+| Process death, route/shell restoration or Component draft wiring | [restoration](references/process-death.md), [state-preservation](../state-preservation/SKILL.md) |
+| safeLaunch, recovery, Retry/Close, error dialogs or a new error type | [error pipeline](references/error-pipeline.md), including the [error triad](references/error-pipeline.md#the-error-triad-ui-corestate-work) |
+| Data-side operation outcomes, cancellation or cache reconciliation | [operation outcomes](../data-layer/references/operation-outcomes.md) |
+| Kotlin style, naming, packages or ViewModel layout | [code style](../validation-gates/references/code-style.md) |
+| Reusable UI models, UiText, FormatState, State conventions or stubs | [State](references/state.md), [UI-core ownership](references/module-structure.md); new errors also read the [error triad](references/error-pipeline.md#the-error-triad-ui-corestate-work) |
+| Shared Compose structure, stability, effects, lazy identity or modifiers | [compose-components](../compose-components/SKILL.md) |
+| Feature Screen composition or keyboard integration | [feature Compose](references/compose-rules.md), [BaseComposeScreen](references/base-classes.md#basecomposescreen--screenbackground) |
+| Foundation APIs, marker models, OperationManager or platform helpers | [base classes](references/base-classes.md) |
+| Analytics impact, typed VM events/operations or screen coverage | [feature-analytics](../feature-analytics/SKILL.md), [VM integration](../feature-analytics/references/viewmodel.md) |
+| Widgets shared across features | [shared widget ownership](references/module-structure.md#when-to-extract-a-widget-into-compose-libs) |
 
 ## Completion gate
 

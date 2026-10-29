@@ -1,7 +1,6 @@
 package com.grippo.exercise.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -117,11 +116,6 @@ private fun ExerciseProgressPanel(
     Column(
         modifier = modifier
             .background(color = AppTokens.colors.background.card, shape = shape)
-            .border(
-                width = AppTokens.dp.metrics.panel.borderWidth,
-                color = AppTokens.colors.border.default,
-                shape = shape,
-            )
             .padding(horizontal = panel.horizontalPadding, vertical = panel.verticalPadding),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         content = content,

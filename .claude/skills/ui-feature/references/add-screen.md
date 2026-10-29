@@ -77,3 +77,14 @@ Use relevant checks/builds under [verification policy](../../../../CLAUDE.md#ver
 Report actual results and unverified platform/runtime/restoration states. Retention
 or a State-only copy does not prove a fresh-component archive restoration.
 Do not introduce automated tests/infrastructure without an explicit user request.
+
+## Convert a dialog to a screen
+
+When converting a dialog to a screen, follow the seven-file MVI and visibility
+patterns. Expose a single screen directly; use a container/subgraph only for an
+actual multi-screen flow. Route through `screen-api`,
+update all callers/dependencies/config entries, use screen toolbar/background/
+spacing/insets from the design system, and preserve all existing modes and states.
+Remove obsolete dialog names, resources and integration points within the migration
+scope. Compare with actual neighboring features; do not invent a new construction
+and present it as an existing project convention.
