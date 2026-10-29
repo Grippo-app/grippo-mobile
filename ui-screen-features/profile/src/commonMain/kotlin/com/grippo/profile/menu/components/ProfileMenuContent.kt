@@ -99,7 +99,7 @@ internal fun ProfileMenuContent(
         }
         MenuSection(
             title = AppTokens.strings.res(Res.string.goal_title),
-            icon = goal?.primaryGoal?.icon() ?: AppTokens.icons.Compass,
+            icon = AppTokens.icons.Compass,
             iconColor = AppTokens.colors.goal.accent,
         ) {
             MenuValueRow(
@@ -137,7 +137,7 @@ internal fun ProfileMenuContent(
         }
         MenuSection(
             title = AppTokens.strings.res(Res.string.settings),
-            style = MenuSectionStyle.Subtle,
+            style = MenuSectionStyle.Default,
             icon = AppTokens.icons.Tune,
             iconColor = AppTokens.colors.icon.tertiary,
         ) {

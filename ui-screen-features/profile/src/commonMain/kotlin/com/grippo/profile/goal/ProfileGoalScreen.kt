@@ -270,7 +270,11 @@ private fun MainGoalSection(
                 color = AppTokens.colors.border.default,
                 shape = shape,
             )
-            .padding(AppTokens.dp.menu.contentPadding),
+            .padding(
+                start = AppTokens.dp.menu.contentPadding,
+                top = AppTokens.dp.menu.contentPadding,
+                end = AppTokens.dp.menu.contentPadding,
+            ),
     ) {
         Row(
             modifier = Modifier
@@ -346,6 +350,7 @@ private fun MainGoalSection(
         )
         if (dateError != null) {
             Text(
+                modifier = Modifier.padding(bottom = AppTokens.dp.menu.contentPadding),
                 text = dateError,
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.semantic.error,
