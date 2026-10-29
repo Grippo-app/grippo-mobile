@@ -45,6 +45,7 @@ import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
 
 internal class TrainingsViewModel(
+    day: LocalDate?,
     private val analytics: TrainingsAnalytics,
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
@@ -53,9 +54,7 @@ internal class TrainingsViewModel(
     private val trainingTimelineUseCase: TrainingTimelineUseCase,
     initialState: TrainingsState?,
 ) : BaseViewModel<TrainingsState, TrainingsDirection, TrainingsLoader>(
-    state = (initialState ?: TrainingsState(
-        date = TrainingsTimelinePeriod.Monthly().defaultRange(),
-    )).let { draft ->
+    state = (initialState ?: TrainingsState.of(day)).let { draft ->
         draft.selectRange(draft.date)
     }
 ), TrainingsContract {
@@ -342,14 +341,9 @@ internal class TrainingsViewModel(
     override fun onOpenDaily(date: LocalDate) {
         analytics.trackEvent(event = TrainingsEvent.DailySelected)
 
-        val period = TrainingsTimelinePeriod.Daily()
-
-        val anchor = DateTimeUtils.startOfDay(date)
-
-        val range = period.rangeFor(anchor)
-            .coerceWithin(state.value.limitations)
-
-        update { it.copy(period = period, date = range) }
+        update { current ->
+            current.selectDay(date)
+        }
     }
 
     override fun onBack() {

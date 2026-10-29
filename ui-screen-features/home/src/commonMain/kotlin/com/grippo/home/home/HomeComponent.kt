@@ -6,11 +6,12 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
+import com.grippo.screen.api.TrainingsRouter
 
 internal class HomeComponent(
     componentContext: ComponentContext,
     private val back: () -> Unit,
-    private val toTrainings: () -> Unit,
+    private val toTrainings: (TrainingsRouter) -> Unit,
     private val toGoal: () -> Unit,
 ) : BaseComponent<HomeDirection>(componentContext) {
 
@@ -47,7 +48,7 @@ internal class HomeComponent(
     override suspend fun eventListener(direction: HomeDirection) {
         when (direction) {
             HomeDirection.Back -> back.invoke()
-            HomeDirection.Trainings -> toTrainings.invoke()
+            is HomeDirection.Trainings -> toTrainings.invoke(direction.route)
             HomeDirection.Goal -> toGoal.invoke()
         }
     }

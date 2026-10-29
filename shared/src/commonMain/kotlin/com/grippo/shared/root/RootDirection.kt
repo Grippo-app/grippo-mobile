@@ -9,7 +9,6 @@ public sealed interface RootDirection : BaseDirection {
     public data object Close : RootDirection
     public data object Home : RootDirection
     public data object Debug : RootDirection
-    public data object Trainings : RootDirection
     public data class Training(val stage: StageState) : RootDirection
     public data class Exercises(val route: ExercisesRouter.Library) : RootDirection
     public data object WeightHistory : RootDirection

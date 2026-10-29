@@ -8,11 +8,20 @@ import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.stage.StageState
 import com.grippo.screen.api.MainRouter
+import com.grippo.screen.api.TrainingsRouter
 
 public class MainComponent(
     componentContext: ComponentContext,
-    private val createHome: (context: ComponentContext, onBack: () -> Unit) -> BaseComponent<*>,
-    private val createCalendar: (context: ComponentContext, onBack: () -> Unit) -> BaseComponent<*>,
+    private val createHome: (
+        context: ComponentContext,
+        toTrainings: (TrainingsRouter) -> Unit,
+        onBack: () -> Unit,
+    ) -> BaseComponent<*>,
+    private val createCalendar: (
+        context: ComponentContext,
+        initial: TrainingsRouter,
+        onBack: () -> Unit,
+    ) -> BaseComponent<*>,
     private val createLibrary: (context: ComponentContext, onBack: () -> Unit) -> BaseComponent<*>,
     private val createProfile: (context: ComponentContext, onBack: () -> Unit) -> BaseComponent<*>,
     private val toTraining: (StageState) -> Unit,
@@ -39,6 +48,7 @@ public class MainComponent(
     override suspend fun eventListener(direction: MainDirection) {
         when (direction) {
             is MainDirection.SelectTab -> navigation.select(direction.tab)
+            is MainDirection.Trainings -> navigation.open(MainRouter.Calendar(value = direction.route))
             is MainDirection.Training -> toTraining(direction.stage)
             MainDirection.Goal -> toGoal()
             MainDirection.Back -> if (!navigation.back()) close()
@@ -46,8 +56,8 @@ public class MainComponent(
     }
 
     private fun createChild(tab: MainRouter, context: ComponentContext): BaseComponent<*> = when (tab) {
-        MainRouter.Home -> createHome(context, viewModel::onBack)
-        MainRouter.Calendar -> createCalendar(context, viewModel::onBack)
+        MainRouter.Home -> createHome(context, viewModel::toTrainings, viewModel::onBack)
+        is MainRouter.Calendar -> createCalendar(context, tab.value, viewModel::onBack)
         MainRouter.Library -> createLibrary(context, viewModel::onBack)
         MainRouter.Profile -> createProfile(context, viewModel::onBack)
     }

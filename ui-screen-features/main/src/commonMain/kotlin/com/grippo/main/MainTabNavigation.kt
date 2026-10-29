@@ -22,6 +22,11 @@ internal class MainTabNavigation<CHILD : Any>(
     )
 
     fun select(tab: MainRouter) {
+        val opened = childStack.value.items.firstOrNull { it.configuration::class == tab::class }
+        navigation.bringToFront(opened?.configuration ?: tab)
+    }
+
+    fun open(tab: MainRouter) {
         navigation.bringToFront(tab)
     }
 

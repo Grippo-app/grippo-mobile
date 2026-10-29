@@ -68,7 +68,7 @@ Verified example rows for the trainings calendar (`TrainingsComponent`,
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
-| TrainingsComponent / TrainingsViewModel | `date` (selected range) and `period` (Daily/Monthly) | Preserve | Component-owned `DRAFT` with address `TrainingsDraft` and `TrainingsState.serializer()` | Component passes `restoreState(DRAFT)`; ViewModel creates the monthly default only for a null archive and rebuilds range-derived presentation through `selectRange`; check the restored month and mode on a fresh Component |
+| TrainingsComponent / TrainingsViewModel | `date` (selected range) and `period` (Daily/Monthly) | Preserve | Component-owned `DRAFT` with address `TrainingsDraft` and `TrainingsState.serializer()` | Component passes `restoreState(DRAFT)` and the route's `day`; for a null archive the ViewModel applies the route seed (Daily on `TrainingsRouter.Trainings.day` through `TrainingsState.selectDay`, coerced into `limitations`) or otherwise the current-month Monthly default, and a saved draft wins over that seed; it rebuilds range-derived presentation through `selectRange`; check the restored month and mode on a fresh Component |
 | TrainingsViewModel | `limitations`, monthly `weeks`/`digest`, daily `items` | Rebuild | `@Transient`; `DateTimeUtils.trailingYear()` and the `observeTrainings` flow | Recomputed from the restored range; never in the archive |
 | TrainingsViewModel | `TrainingsLoader.Trainings` and the range refresh step | Runtime only | `loaders` flow; `withLoader` inside the `mapLatest` refresh chain | Not saved; the refresh runs again for the restored range |
 

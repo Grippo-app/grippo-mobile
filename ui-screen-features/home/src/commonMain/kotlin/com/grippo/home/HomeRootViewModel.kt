@@ -1,6 +1,7 @@
 package com.grippo.home
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.screen.api.TrainingsRouter
 
 public class HomeRootViewModel : BaseViewModel<HomeRootState, HomeRootDirection, HomeRootLoader>(
     HomeRootState
@@ -10,8 +11,8 @@ public class HomeRootViewModel : BaseViewModel<HomeRootState, HomeRootDirection,
         navigateTo(HomeRootDirection.Back)
     }
 
-    override fun toTrainings() {
-        navigateTo(HomeRootDirection.Trainings)
+    override fun toTrainings(route: TrainingsRouter) {
+        navigateTo(HomeRootDirection.Trainings(route))
     }
 
     override fun toGoal() {

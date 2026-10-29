@@ -42,6 +42,28 @@ internal data class TrainingsState(
             )
         },
     )
+
+    fun selectDay(day: LocalDate): TrainingsState {
+        val period = TrainingsTimelinePeriod.Daily()
+
+        val anchor = DateTimeUtils.startOfDay(day)
+
+        val range = period.rangeFor(anchor).coerceWithin(limitations)
+
+        return copy(period = period, date = range)
+    }
+
+    companion object {
+        fun of(day: LocalDate?): TrainingsState {
+            val monthly = TrainingsState(date = TrainingsTimelinePeriod.Monthly().defaultRange())
+
+            if (day == null) {
+                return monthly
+            }
+
+            return monthly.selectDay(day)
+        }
+    }
 }
 
 @Immutable

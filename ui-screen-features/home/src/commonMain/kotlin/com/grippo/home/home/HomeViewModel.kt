@@ -55,6 +55,7 @@ import com.grippo.domain.state.metrics.profile.toState
 import com.grippo.domain.state.range.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.user.toState
+import com.grippo.screen.api.TrainingsRouter
 import com.grippo.screen.api.deeplink.Deeplink
 import com.grippo.state.domain.range.toDomain
 import com.grippo.toolkit.analytics.context.NavigationReason
@@ -70,7 +71,6 @@ import com.grippo.toolkit.permission.PermissionManager
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -356,7 +356,11 @@ internal class HomeViewModel(
 
     override fun onOpenTrainings() {
         analytics.trackEvent(HomeEvent.TrainingsClicked)
-        navigateTo(HomeDirection.Trainings)
+
+        val day = state.value.lastTraining?.createdAt?.value?.date
+        val route = TrainingsRouter.Trainings(day = day)
+
+        navigateTo(HomeDirection.Trainings(route))
     }
 
     override fun onOpenPeriodPicker() {

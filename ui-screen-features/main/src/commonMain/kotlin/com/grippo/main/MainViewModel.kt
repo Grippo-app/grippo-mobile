@@ -15,6 +15,7 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.main.analytics.toAnalytics
 import com.grippo.screen.api.MainRouter
+import com.grippo.screen.api.TrainingsRouter
 import kotlinx.coroutines.flow.first
 
 public class MainViewModel(
@@ -63,6 +64,10 @@ public class MainViewModel(
         } else {
             navigateTo(MainDirection.Training(StageState.Add))
         }
+    }
+
+    override fun toTrainings(route: TrainingsRouter) {
+        navigateTo(MainDirection.Trainings(route))
     }
 
     override fun onBack() {

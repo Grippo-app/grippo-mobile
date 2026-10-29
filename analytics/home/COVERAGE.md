@@ -18,9 +18,11 @@ stack key `MainTabs`, `handleBackButton = false`) constructs
 `HomeRootComponent(initial = HomeRouter.Home)`; its stack (`HomeRouter.serializer()`,
 key `HomeRootComponent`, `handleBackButton = true`) has exactly one payload-free
 route and is always one deep. No other entry path to HomeComponent exists.
-HomeViewModel emits only the Trainings, Goal and Back directions, which the root
-forwards to Main; the HomeRoot container registers its own BackCallback that
-closes without an event.
+HomeViewModel emits only the Trainings(route), Goal and Back directions. Trainings
+carries `TrainingsRouter.Trainings(day = lastTraining.createdAt date)` through
+HomeRoot to MainViewModel.toTrainings, which opens the Calendar tab inside the
+shell (bottom bar visible); Goal goes to the root stack; the HomeRoot container
+registers its own BackCallback that closes without an event.
 
 ## Surfaces and screen hooks
 
@@ -119,7 +121,7 @@ it explains the existing card action and adds no control or observation.
 
 | Observation owner / callback | Typed event / operation | Eligibility / wire payload |
 |---|---|---|
-| HomeViewModel.onOpenTrainings (LastTrainingCard, rendered only with a last training) | TrainingsClicked → `home_trainings_clicked` | Existing unconditional navigation; no parameters |
+| HomeViewModel.onOpenTrainings (LastTrainingCard, rendered only with a last training) | TrainingsClicked → `home_trainings_clicked` | Unchanged first statement before unconditional navigation into the Calendar tab, seeded with the last training's day (a missing date falls back to the Monthly default); the day is not encoded; no parameters |
 | onOpenExample (ExerciseSpotlightsCard) | ExerciseClicked → `home_exercise_clicked` | Existing dialog opening; exercise ID excluded |
 | onOpenMuscleLoading / onOpenTrainingStreak / onOpenGoalDetails (GoalCard click) | MuscleLoadingClicked / TrainingStreakClicked / GoalDetailsClicked | Only after the nonnull resolved range guard |
 | onPerformanceMetricClick(type) | PerformanceMetricClicked → `home_performance_metric_clicked` | Only after the nonnull range guard; metric values/type omitted; the performance cards render only past the lifetime unlock thresholds (two trainings for the duration trend, three for performance trends), so eligibility is also UI-gated |
@@ -191,7 +193,7 @@ DismissRequested.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | MainComponent / MainTabNavigation (host) | Active tab including `MainRouter.Home` | Preserve (host-owned) | `MainRouter.serializer()`, key `MainTabs` | Tab Back returns to Home through bringToFront; Home-tab Back falls through to close |
-| HomeRootComponent | Child navigation | Preserve | `HomeRouter.serializer()`, key `HomeRootComponent` | Payload-free `HomeRouter.Home` only; depth always one; no route inputs or drafts |
+| HomeRootComponent | Child navigation | Preserve | `HomeRouter.serializer()`, key `HomeRootComponent` | Payload-free `HomeRouter.Home` only; depth always one; no route inputs or drafts. The Trainings route Home builds is owned by the Calendar tab once opened |
 | HomeRootViewModel | HomeRootState | Runtime only | Data object | Stateless container; no supplier |
 | HomeViewModel | Accepted range kind | Preserve in the existing durable owner (no StateKeeper copy) | `LocalSettingsFeature.setRange/observeRange` → DataStore `range`; Range ↔ DateRangeKind mappers | Initial `DateRangeFormatState.Empty(kind = Last30Days)` with a null value until the store emits; an absent preference resolves to Last30Days only after that emission; `clearUserSettings` (logout/delete) removes `range`; the picker offers Last7/14/30/60, and `Infinity` is a resolvable persisted kind that yields Invalid with nonnull bounds |
 | HomeViewModel | Range date bounds / formatter state | Rebuild | combine(LocalSettingsFeature.observeRange, currentDateFlow) → provideRange → DateRangeFormatState.of(kind) | Recomputed after the persisted kind emits and at each local midnight; selectedPeriods deduplicates date bounds for server refresh, metricPeriods adds date invalidation after distinct so local metrics also rebuild inside unchanged calendar bounds. Both retain the existing WhileActive lifecycle |

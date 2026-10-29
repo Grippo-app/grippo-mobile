@@ -9,7 +9,6 @@ public interface RootContract {
     public fun onClose()
     public fun toHome()
     public fun toDebug()
-    public fun toTrainings()
     public fun toTraining(stage: StageState)
     public fun toExercises(route: ExercisesRouter.Library)
     public fun toGoal()
@@ -20,7 +19,6 @@ public interface RootContract {
         override fun onClose() {}
         override fun toHome() {}
         override fun toDebug() {}
-        override fun toTrainings() {}
         override fun toTraining(stage: StageState) {}
         override fun toExercises(route: ExercisesRouter.Library) {}
         override fun toGoal() {}

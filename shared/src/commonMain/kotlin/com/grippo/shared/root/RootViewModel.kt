@@ -57,10 +57,6 @@ public class RootViewModel(
         navigateTo(RootDirection.Debug)
     }
 
-    override fun toTrainings() {
-        navigateTo(RootDirection.Trainings)
-    }
-
     override fun toTraining(stage: StageState) {
         navigateTo(RootDirection.Training(stage))
     }

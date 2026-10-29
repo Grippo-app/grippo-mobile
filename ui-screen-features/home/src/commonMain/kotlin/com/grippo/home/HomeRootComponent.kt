@@ -12,11 +12,12 @@ import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.home.home.HomeComponent
 import com.grippo.screen.api.HomeRouter
+import com.grippo.screen.api.TrainingsRouter
 
 public class HomeRootComponent(
     initial: HomeRouter,
     componentContext: ComponentContext,
-    private val toTrainings: () -> Unit,
+    private val toTrainings: (TrainingsRouter) -> Unit,
     private val toGoal: () -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<HomeRootDirection>(componentContext) {
@@ -34,7 +35,7 @@ public class HomeRootComponent(
     override suspend fun eventListener(direction: HomeRootDirection) {
         when (direction) {
             HomeRootDirection.Back -> close.invoke()
-            HomeRootDirection.Trainings -> toTrainings.invoke()
+            is HomeRootDirection.Trainings -> toTrainings.invoke(direction.route)
             HomeRootDirection.Goal -> toGoal.invoke()
         }
     }

@@ -27,13 +27,11 @@ import com.grippo.screen.api.ProfileRouter
 import com.grippo.screen.api.RootRouter
 import com.grippo.screen.api.RootRouter.Auth
 import com.grippo.screen.api.TrainingRouter
-import com.grippo.screen.api.TrainingsRouter
 import com.grippo.shared.dialog.DialogComponent
 import com.grippo.shared.root.RootComponent.Child.Authorization
 import com.grippo.shared.root.RootComponent.Child.Debug
 import com.grippo.shared.root.RootComponent.Child.Profile
 import com.grippo.shared.root.RootComponent.Child.Training
-import com.grippo.shared.root.RootComponent.Child.Trainings
 import com.grippo.toolkit.localization.AppLocale
 import com.grippo.toolkit.theme.AppTheme
 import com.grippo.training.TrainingComponent
@@ -111,10 +109,6 @@ public class RootComponent(
                 RootRouter.Profile(ProfileRouter.Goal)
             )
 
-            RootDirection.Trainings -> navigation.push(
-                RootRouter.Trainings
-            )
-
             RootDirection.Back -> navigation.pop()
             RootDirection.Close -> close.invoke()
         }
@@ -134,19 +128,19 @@ public class RootComponent(
             RootRouter.Home -> Child.Home(
                 MainComponent(
                     componentContext = context,
-                    createHome = { childContext, back ->
+                    createHome = { childContext, toTrainings, back ->
                         HomeRootComponent(
                             componentContext = childContext,
                             initial = HomeRouter.Home,
-                            toTrainings = viewModel::toTrainings,
+                            toTrainings = toTrainings,
                             toGoal = viewModel::toGoal,
                             close = back,
                         )
                     },
-                    createCalendar = { childContext, back ->
+                    createCalendar = { childContext, initial, back ->
                         TrainingsRootComponent(
                             componentContext = childContext,
-                            initial = TrainingsRouter.Trainings,
+                            initial = initial,
                             toTraining = viewModel::toTraining,
                             close = back,
                         )
@@ -169,15 +163,6 @@ public class RootComponent(
                     toTraining = viewModel::toTraining,
                     toGoal = viewModel::toGoal,
                     close = viewModel::onClose
-                )
-            )
-
-            RootRouter.Trainings -> Trainings(
-                TrainingsRootComponent(
-                    componentContext = context,
-                    initial = TrainingsRouter.Trainings,
-                    toTraining = viewModel::toTraining,
-                    close = viewModel::onBack
                 )
             )
 
@@ -233,9 +218,6 @@ public class RootComponent(
 
     public sealed class Child(public open val component: BaseComponent<*>) {
         public data class Authorization(override val component: AuthComponent) :
-            Child(component)
-
-        public data class Trainings(override val component: TrainingsRootComponent) :
             Child(component)
 
         public data class Home(override val component: MainComponent) :

@@ -58,6 +58,7 @@ public class TrainingsRootComponent(
             is TrainingsRouter.Trainings -> Child.Trainings(
                 TrainingsComponent(
                     componentContext = context,
+                    day = router.day,
                     toEditTraining = viewModel::toEditTraining,
                     back = viewModel::onBack
                 ),

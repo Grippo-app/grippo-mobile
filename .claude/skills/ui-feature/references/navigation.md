@@ -13,13 +13,16 @@ in-memory configs and are not restored.
 ## Three layers of navigation
 
 1. **RootComponent** in shared owns the primary StackNavigation<RootRouter>.
-   Inspect `RootComponent.createChild`; it builds `AuthComponent`, `MainComponent`
-   (whose `createHome`/`createCalendar`/`createLibrary`/`createProfile` factories
-   build `HomeRootComponent`, `TrainingsRootComponent`, `ExercisesRootComponent`
-   with `ExercisesRouter.Library(ExercisesRouter.Mode.Browse)` and
-   `ProfileComponent` for the `MainRouter` tabs), `TrainingsRootComponent`,
-   `ProfileComponent`, `DebugComponent` and `TrainingComponent`.
-   `MainComponent`'s Library tab uses `Mode.Browse` without a result key.
+   Inspect `RootComponent.createChild`; it builds `AuthComponent`, `MainComponent`,
+   `ProfileComponent`, `DebugComponent`, `TrainingComponent` and
+   `ExercisesRootComponent`. Inspect `MainComponent` for its tab factories:
+   `createHome(context, toTrainings, onBack)`, `createCalendar(context, initial, onBack)`,
+   `createLibrary` and `createProfile`. `RootComponent` supplies them to build
+   `HomeRootComponent`, `TrainingsRootComponent` (from the tab's `TrainingsRouter`),
+   `ExercisesRootComponent` and `ProfileComponent` for the `MainRouter` tabs;
+   `TrainingsRootComponent` is built only inside `createCalendar`.
+   `MainComponent`'s Library tab uses `ExercisesRouter.Library(ExercisesRouter.Mode.Browse)`
+   without a result key.
    [TrainingComponent](../../../../ui-screen-features/training/src/commonMain/kotlin/com/grippo/training/TrainingComponent.kt)
    requests picking modes `Mode.Default` / `Mode.SimilarTo` through its
    `toExercises` callback. Root pushes `RootRouter.Exercises`, preserving the
@@ -48,7 +51,6 @@ All routes are `@Serializable sealed class` in `:ui-screen-features:screen-api`.
 @Serializable
 public sealed class RootRouter : BaseRouter {
     @Serializable public data class Auth(val value: AuthRouter) : RootRouter()
-    @Serializable public data object Trainings : RootRouter()
     @Serializable public data object Home : RootRouter()
     @Serializable public data class Profile(val value: ProfileRouter) : RootRouter()
     @Serializable public data object Debug : RootRouter()
@@ -99,7 +101,7 @@ Feature-root stacks use `initialStack = { listOf(initial) }` instead of `initial
 public sealed class Child(public open val component: BaseComponent<*>) {
     public data class Authorization(override val component: AuthComponent) : Child(component)
     public data class Home(override val component: MainComponent) : Child(component)
-    // ... Trainings, Profile, Debug, Training, Exercises — one entry per route
+    // ... Profile, Debug, Training, Exercises — one entry per route
 }
 ```
 
@@ -148,7 +150,7 @@ override suspend fun eventListener(direction: RootDirection) {
         is RootDirection.Training -> navigation.push(RootRouter.Training(direction.stage))
         RootDirection.Back -> navigation.pop()
         RootDirection.Close -> close.invoke()
-        // ... Debug, Trainings
+        // ... Debug, Exercises
     }
 }
 ```
@@ -180,7 +182,7 @@ The `toX` names below describe existing root/container relay APIs, not a naming
 exception for new callbacks; [code style](../../validation-gates/references/code-style.md)
 owns naming. Inspect and reuse the actual chain before adding a destination.
 
-1. **Confirm/declare the destination route in `:ui-screen-features:screen-api`** — here `ProfileRouter.Goal`. If it doesn't exist, add it. `Auth`/`Profile` wrap nested routers; leaf root entries (`Home`, `Trainings`, `Debug`) are `data object`; payload-carrying ones (`Training(stage)`) are `data class`. When destination inputs change, inspect all callers; archived routes need no compatibility work ([compatibility bumps](../../platform-build-toolkit/references/release.md#compatibility-bumps)). Reuse the existing subtype for the same destination when a coherent migration is within scope; add a subtype only for a distinct destination or contract.
+1. **Confirm/declare the destination route in `:ui-screen-features:screen-api`** — here `ProfileRouter.Goal`. If it doesn't exist, add it. `Auth`/`Profile` wrap nested routers; leaf root entries (`Home`, `Debug`) are `data object`; payload-carrying ones (`Training(stage)`) are `data class`. When destination inputs change, inspect all callers; archived routes need no compatibility work ([compatibility bumps](../../platform-build-toolkit/references/release.md#compatibility-bumps)). Reuse the existing subtype for the same destination when a coherent migration is within scope; add a subtype only for a distinct destination or contract.
 
 2. **Add a `RootDirection` entry** (in `:shared`'s `RootDirection.kt`, a `public sealed interface`): `public data object Goal : RootDirection`. Grippo uses the explicit-direction style: `data object` for 1:1 destinations, `data class` for payloads (`Training(val stage: StageState)`). Do not introduce a generic GoTo route wrapper.
 
@@ -232,9 +234,14 @@ For result-back navigation (feature A opens B, expects a result), use `ResultMan
 
 When a foreign feature belongs inside the host's stack or tabs, the host owns
 navigation and `shared` supplies a constructor factory for the child. Inspect
-`MainComponent`'s tab factories with their wiring in `RootComponent`. Full-screen
-cross-feature destinations such as Training's exercise picker use the root
-callback flow above; they have a `RootRouter` entry and root-owned Back.
+`MainComponent`'s tab factories with their wiring in `RootComponent`. The shipped
+in-shell example is Home's last-workout card opening the Calendar tab: the typed
+`TrainingsRouter` travels up to `MainViewModel.toTrainings` (which `MainComponent`
+passes to `createHome`), `MainComponent` opens `MainRouter.Calendar(value = route)`
+through `MainTabNavigation.open`, and the route `value` reaches `createCalendar` as
+`initial`. Full-screen cross-feature destinations such as Training's exercise
+picker use the root callback flow above; they have a `RootRouter` entry and
+root-owned Back.
 
 The host invokes the factory from its child factory with the child
 `ComponentContext`, typed route inputs and its ordinary Back/close callback.
@@ -273,7 +280,6 @@ private fun RootComponent.Child.animator(): StackAnimator = when (this) {
     is RootComponent.Child.Profile -> platformStackAnimator()
     is RootComponent.Child.Training -> platformStackAnimator()
     is RootComponent.Child.Exercises -> platformStackAnimator()
-    is RootComponent.Child.Trainings -> platformStackAnimator()
 }
 ```
 

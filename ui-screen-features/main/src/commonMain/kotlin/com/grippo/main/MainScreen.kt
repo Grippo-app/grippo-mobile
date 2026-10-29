@@ -53,11 +53,12 @@ internal fun MainScreen(
     val items = remember(icons) {
         persistentListOf(
             MainRouter.Home to BottomBarItem(UiText.Res(Res.string.home), icons.Home),
-            MainRouter.Calendar to BottomBarItem(UiText.Res(Res.string.calendar), icons.Calendar),
+            MainRouter.Calendar() to BottomBarItem(UiText.Res(Res.string.calendar), icons.Calendar),
             MainRouter.Library to BottomBarItem(UiText.Res(Res.string.library), icons.Dumbbell),
             MainRouter.Profile to BottomBarItem(UiText.Res(Res.string.profile), icons.UserOutline),
         )
     }
+    val selected = items.first { (tab, _) -> tab::class == stack.active.configuration::class }.first
     val actionLift = AppTokens.dp.bottomBar.actionLift
     Layout(
         modifier = Modifier.fillMaxWidth().weight(1f),
@@ -77,7 +78,7 @@ internal fun MainScreen(
             BottomBar(
                 modifier = Modifier.fillMaxWidth(),
                 items = items,
-                selected = stack.active.configuration,
+                selected = selected,
                 onSelect = contract::onSelectTab,
                 action = {
                     val label = AppTokens.strings.res(Res.string.start_workout)
