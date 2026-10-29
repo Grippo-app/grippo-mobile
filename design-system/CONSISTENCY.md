@@ -775,9 +775,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   surface beneath it, warm illustration regions included, without a cold grey
   cast) clipped to its `shape`. An animated bone carries the skeleton wave after
   clip and background: one soft `colors.skeleton.highlight` band (`Common.White`
-  at 40% light / 5% dark) of `dp.skeleton.waveWidth` positioned in root
-  coordinates on the shared frame clock, so all bones on a screen share one
-  diagonal sweep and rest between sweeps. The shape defaults
+  at 30% light / 5% dark, so its peak stays below the surface and keeps a warm
+  region's hue) of `dp.skeleton.waveWidth` positioned in root coordinates on the
+  shared frame clock, so all bones on a screen share one diagonal sweep and rest
+  between sweeps; with system animations off the bones stay static. The shape defaults
   to the `dp.skeleton.radius` text-line corner; a bone
   standing in for a control or a tile takes that owner's shape (`button.medium.radius`
   for a reserved button). A text bone is one laid-out line of the real typography role it stands

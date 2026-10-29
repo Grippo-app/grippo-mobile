@@ -157,7 +157,7 @@ public object LightColor : AppColor {
 
     override val skeleton: AppColor.SkeletonColors = object : AppColor.SkeletonColors {
         override val bone = AppPalette.Common.Black.copy(alpha = 0.07f)
-        override val highlight = AppPalette.Common.White.copy(alpha = 0.4f)
+        override val highlight = AppPalette.Common.White.copy(alpha = 0.3f)
     }
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
