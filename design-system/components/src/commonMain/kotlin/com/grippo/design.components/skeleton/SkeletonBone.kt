@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
+import com.grippo.design.components.modifiers.shimmer
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -28,7 +29,7 @@ public fun SkeletonBone(
         modifier = modifier
             .clip(shape)
             .background(AppTokens.colors.skeleton.bone)
-            .skeletonWave(enabled = animated),
+            .shimmer(enabled = animated, highlightColor = AppTokens.colors.skeleton.highlight),
     )
 }
 

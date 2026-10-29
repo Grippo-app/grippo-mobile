@@ -76,6 +76,7 @@ public data object AppDp {
     val input: Input = Input
     val button: Button = Button
     val loader: Loader = Loader
+    val shimmer: Shimmer = Shimmer
     val skeleton: Skeleton = Skeleton
     val konfetti: Konfetti = Konfetti
     val segment: Segment = Segment
@@ -813,9 +814,12 @@ public data object AppDp {
         val icon: Dp = AppDp.icon.xLarge
     }
 
+    public data object Shimmer {
+        val waveWidth: Dp = 280.dp
+    }
+
     public data object Skeleton {
         val radius: Dp = AppDp.radius.small
-        val waveWidth: Dp = 280.dp
         val line: Line = Line
 
         public data object Line {

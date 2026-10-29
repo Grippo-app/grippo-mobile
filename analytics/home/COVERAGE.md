@@ -107,7 +107,7 @@ Welcome groups identity and artwork in one hero, then setup progress,
 experience/facts and benefits. No additional
 control callback, observation, analytics parameter, schema or screen identity is
 introduced by these presentation choices.
-Initial loading uses noninteractive Home skeleton cards with the shared skeleton wave;
+Initial loading uses noninteractive Home skeleton cards with the shared shimmer;
 no successful metric publication is represented by an empty performance list,
 whereas a completed empty period contains five Empty-status metrics. An active
 trainings refresh without period content also shows the skeleton; populated
