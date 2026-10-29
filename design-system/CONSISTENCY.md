@@ -757,7 +757,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   right of the heading. Calendar and Update remain their existing explicit buttons.
 - Home's initial loading and an active refresh without period content use
   noninteractive skeleton cards with the dashboard's toolbar, gutters and geometry.
-  Each card uses one broad `colors.skeleton.bone` block with shared clipped shimmer,
+  Each card uses one broad `colors.skeleton.bone` block with the shared skeleton wave,
   without simulated facts, icons or chart details. Panel geometry derives from
   the existing typography, image and spacing slots; section text placeholders
   are one laid-out line of their typography role tall and stay static. The highlights header keeps
@@ -770,9 +770,14 @@ and Latin text in both themes; each role keeps its existing size and line height
   Cached populated content stays visible during refresh; completed empty periods
   retain their real empty presentation. No minimum loading duration is introduced.
 - The skeleton family (`skeleton/`: `SkeletonBone`, `SkeletonText`, `SkeletonPanel`)
-  owns that geometry: a bone is a `colors.skeleton.bone` block (the
-  `divider.default` value in both themes) clipped to its `shape` with the shared
-  `shimmer.highlight` band applied after clip and background. The shape defaults
+  owns that geometry: a bone is a `colors.skeleton.bone` block (translucent ink,
+  `Common.Black` at 7% in light and `Common.White` at 5% in dark, so it shades the
+  surface beneath it, warm illustration regions included, without a cold grey
+  cast) clipped to its `shape`. An animated bone carries the skeleton wave after
+  clip and background: one soft `colors.skeleton.highlight` band (`Common.White`
+  at 40% light / 5% dark) of `dp.skeleton.waveWidth` positioned in root
+  coordinates on the shared frame clock, so all bones on a screen share one
+  diagonal sweep and rest between sweeps. The shape defaults
   to the `dp.skeleton.radius` text-line corner; a bone
   standing in for a control or a tile takes that owner's shape (`button.medium.radius`
   for a reserved button). A text bone is one laid-out line of the real typography role it stands

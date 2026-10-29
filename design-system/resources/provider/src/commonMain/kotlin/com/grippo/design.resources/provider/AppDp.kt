@@ -815,6 +815,7 @@ public data object AppDp {
 
     public data object Skeleton {
         val radius: Dp = AppDp.radius.small
+        val waveWidth: Dp = 280.dp
         val line: Line = Line
 
         public data object Line {
