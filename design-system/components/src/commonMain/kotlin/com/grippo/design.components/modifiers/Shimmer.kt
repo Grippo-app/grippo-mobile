@@ -43,7 +43,7 @@ private const val SHIMMER_PROFILE_STEPS = 8
 @Composable
 public fun Modifier.shimmer(
     enabled: Boolean = true,
-    highlightColor: Color = AppTokens.colors.shimmer.highlight,
+    highlightColor: Color = AppTokens.colors.shimmer.neutral,
 ): Modifier {
     if (!enabled) return this
     val waveWidth = AppTokens.dp.shimmer.waveWidth

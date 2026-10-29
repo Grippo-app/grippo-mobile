@@ -130,11 +130,8 @@ public fun Button(
     val enabled = state == ButtonState.Enabled
     val tintImages = state == ButtonState.Disabled
     val highlight = when (style) {
-        ButtonStyle.Primary -> AppTokens.colors.shimmer.buttonPrimary
-        ButtonStyle.Secondary -> AppTokens.colors.shimmer.buttonSecondary
-        ButtonStyle.Tertiary -> AppTokens.colors.shimmer.buttonTertiary
-        ButtonStyle.Transparent -> AppTokens.colors.shimmer.buttonTransparent
-        ButtonStyle.Error -> AppTokens.colors.shimmer.buttonError
+        ButtonStyle.Primary, ButtonStyle.Error -> AppTokens.colors.shimmer.accent
+        ButtonStyle.Secondary, ButtonStyle.Tertiary, ButtonStyle.Transparent -> AppTokens.colors.shimmer.neutral
     }
     val gap = if (transparent) metrics.spaceTransparent else metrics.space
     val shape = when (content) {

@@ -165,17 +165,12 @@ public interface AppColor {
     }
 
     public interface ShimmerColors {
-        public val highlight: Color
-        public val buttonPrimary: Color
-        public val buttonSecondary: Color
-        public val buttonTertiary: Color
-        public val buttonTransparent: Color
-        public val buttonError: Color
+        public val neutral: Color
+        public val accent: Color
     }
 
     public interface SkeletonColors {
         public val bone: Color
-        public val highlight: Color
     }
 
     public interface BorderColors {
