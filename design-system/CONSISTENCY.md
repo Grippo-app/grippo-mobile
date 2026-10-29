@@ -858,12 +858,18 @@ and Latin text in both themes; each role keeps its existing size and line height
   estimated-1RM block, the `h4` History line, `VolumeMetricChartSkeleton` and three
   `exerciseCard.small` bones).
 - The last-workout recap names its selected-period scope. Title/date and two
-  training facts share a row with the unchanged compact journal illustration;
+  training facts share a row with the Compact `last_training` stopwatch-and-towel illustration;
   exercise count and Calendar share the footer. Like the completed-workout recap hero
   and the welcome hero it fills its large card shape with the flat
   `illustration.backgroundStart` (`IllustrationBackgroundStyle.Solid`), with
   content-driven height and complete values; the gradient's fading end had blended
   the card into the screen.
+- Home's welcome hero uses the Compact `welcome_training` gym bag and bottle.
+  Library empty results use the Large `empty_exercise_search` magnifier and catalog
+  cards; recording and new-workout empty states retain `empty_exercises`.
+  Empty performance history uses the Medium `empty_progress` blank plotting slate
+  and pencil above its existing left-aligned title and description, within the
+  dialog's LazyColumn. Artwork communicates missing history without plotted values.
 - Home muscle and training-rhythm summaries are separate full-width large panels;
   neither is stretched to a neighbor's height. Muscle distribution pairs a 144×140 dp
   front/back map with up to three real groups and their existing load shares.
@@ -1411,7 +1417,7 @@ and Latin text in both themes; each role keeps its existing size and line height
 - The exercise-details Achievements tab without history (both the recent-exercise
   and achievement requests returned empty) stops the sheet body scroll and lets
   IllustratedEmptyState fill the height left below the header and Segment: the
-  existing empty-workouts journal artwork with a Medium illustration, `h4` title
+  `empty_achievements` trophy artwork with a Medium illustration, `h4` title
   and secondary `b14Med` description. A failed request is not shown as absence: the
   tab keeps its regular content with the estimated-1RM explanation.
 - Start workout sheets expose available Custom, Suggested and Repeat choices

@@ -34,6 +34,8 @@ import com.grippo.core.state.metrics.performance.stubPerformanceTrendHistory
 import com.grippo.design.components.datetime.DialogRangeHeader
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.frames.OverlayContainer
+import com.grippo.design.components.illustration.Illustration
+import com.grippo.design.components.illustration.IllustrationStyle
 import com.grippo.design.components.metrics.performance.PerformanceMetricCard
 import com.grippo.design.components.metrics.performance.PerformanceMetricCardStyle
 import com.grippo.design.components.metrics.performance.PerformanceTrendHistoryCard
@@ -43,6 +45,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.empty_progress
 import com.grippo.design.resources.provider.performance_history_empty
 import com.grippo.design.resources.provider.performance_trend_details_empty_message
 import com.grippo.design.resources.provider.performance_trend_details_latest
@@ -112,6 +115,13 @@ private fun PerformanceTrendDetailsContent(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
                             ) {
+                                Illustration(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = AppTokens.dp.contentPadding.subContent),
+                                    painter = AppTokens.drawables.res(Res.drawable.empty_progress),
+                                    style = IllustrationStyle.Medium,
+                                )
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = AppTokens.strings.res(Res.string.performance_history_empty),

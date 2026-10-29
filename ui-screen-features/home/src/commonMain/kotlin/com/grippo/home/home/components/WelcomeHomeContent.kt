@@ -30,7 +30,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.empty_workouts
 import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_description
 import com.grippo.design.resources.provider.goal_setup_suggestion_benefit_tailored_title
 import com.grippo.design.resources.provider.icons.Compass
@@ -53,6 +52,7 @@ import com.grippo.design.resources.provider.welcome_section_benefits_title
 import com.grippo.design.resources.provider.welcome_section_progress_title
 import com.grippo.design.resources.provider.welcome_subtitle
 import com.grippo.design.resources.provider.welcome_title
+import com.grippo.design.resources.provider.welcome_training
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -263,7 +263,7 @@ private fun HeroBlock(
 
             Illustration(
                 modifier = Modifier.width(AppTokens.dp.illustration.compact),
-                painter = AppTokens.drawables.res(Res.drawable.empty_workouts),
+                painter = AppTokens.drawables.res(Res.drawable.welcome_training),
                 style = IllustrationStyle.Compact,
             )
         }

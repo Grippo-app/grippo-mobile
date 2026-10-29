@@ -24,8 +24,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.empty_workouts
 import com.grippo.design.resources.provider.home_last_workout_in_period
+import com.grippo.design.resources.provider.last_training
 import com.grippo.design.resources.provider.metric_overview_duration
 import com.grippo.design.resources.provider.metric_overview_volume
 import com.grippo.toolkit.date.utils.DateCompose
@@ -102,7 +102,7 @@ public fun LastTrainingCard(
             }
             Illustration(
                 modifier = Modifier.width(AppTokens.dp.illustration.compact),
-                painter = AppTokens.drawables.res(Res.drawable.empty_workouts),
+                painter = AppTokens.drawables.res(Res.drawable.last_training),
                 style = IllustrationStyle.Compact,
             )
         }

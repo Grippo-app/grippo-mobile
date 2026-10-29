@@ -58,7 +58,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.empty_exercise_examples
-import com.grippo.design.resources.provider.empty_exercises
+import com.grippo.design.resources.provider.empty_exercise_search
 import com.grippo.design.resources.provider.exercise_library
 import com.grippo.design.resources.provider.exercise_library_replace_target
 import com.grippo.exercises.library.internal.Header
@@ -161,7 +161,7 @@ internal fun ExerciseLibraryScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .navigationBarsPadding(),
-                painter = AppTokens.drawables.res(Res.drawable.empty_exercises),
+                painter = AppTokens.drawables.res(Res.drawable.empty_exercise_search),
                 contentPadding = PaddingValues(
                     horizontal = AppTokens.dp.screen.horizontalPadding,
                     vertical = AppTokens.dp.screen.verticalPadding,
