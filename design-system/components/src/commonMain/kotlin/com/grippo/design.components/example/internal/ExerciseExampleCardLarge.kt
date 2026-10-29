@@ -28,8 +28,6 @@ import com.grippo.design.components.equipment.EquipmentCard
 import com.grippo.design.components.equipment.EquipmentCardStyle
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
-import com.grippo.design.components.muscle.MuscleCard
-import com.grippo.design.components.muscle.MuscleCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -73,7 +71,7 @@ internal fun ExerciseExampleCardLarge(
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         ) {
             Text(
                 text = value.value.name,
@@ -91,7 +89,6 @@ internal fun ExerciseExampleCardLarge(
                     itemVerticalAlignment = Alignment.CenterVertically,
                 ) {
                     EquipmentCard(value = value.equipments, style = EquipmentCardStyle.Compact)
-                    MuscleCard(value = muscleGroups, style = MuscleCardStyle.Compact)
                 }
             }
 
