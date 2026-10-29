@@ -770,9 +770,13 @@ and Latin text in both themes; each role keeps its existing size and line height
   Cached populated content stays visible during refresh; completed empty periods
   retain their real empty presentation. No minimum loading duration is introduced.
 - The skeleton family (`skeleton/`: `SkeletonBone`, `SkeletonText`, `SkeletonPanel`)
-  owns that geometry: a bone is a `colors.skeleton.bone` block (the
-  `divider.default` value in both themes) clipped to its `shape` with the shared
-  `shimmer.highlight` band applied after clip and background. The shape defaults
+  owns that geometry: a bone is a `colors.skeleton.bone` block (translucent ink,
+  `Common.Black` at 7% in light and `Common.White` at 5% in dark, so it shades the
+  surface beneath it, warm illustration regions included, without a cold grey
+  cast) clipped to its `shape`, with the shared shimmer applied after clip and
+  background in `colors.skeleton.highlight` (`Common.White` at 30% light / 5%
+  dark, so the band peak stays below the surface and keeps a warm region's hue).
+  The shape defaults
   to the `dp.skeleton.radius` text-line corner; a bone
   standing in for a control or a tile takes that owner's shape (`button.medium.radius`
   for a reserved button). A text bone is one laid-out line of the real typography role it stands

@@ -175,6 +175,7 @@ public interface AppColor {
 
     public interface SkeletonColors {
         public val bone: Color
+        public val highlight: Color
     }
 
     public interface BorderColors {
