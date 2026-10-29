@@ -17,7 +17,6 @@ import com.grippo.domain.state.metrics.distribution.toState
 import com.grippo.domain.state.metrics.volume.toState
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onEach
@@ -45,53 +44,42 @@ public class StatisticsViewModel(
         when (config) {
             is DialogConfig.Statistics.Trainings -> {
                 trainingFeature.observeTrainings(start = config.range.from, end = config.range.to)
-                    .flatMapLatest { trainings ->
-                        observeTrainingStatistics(range = config.range, trainings = trainings)
-                    }
-                    .buffer(0)
-                    .onEach(::provideMuscleLoad)
+                    .onEach { trainings -> provideTrainingStatistics(range = config.range, trainings = trainings) }
+                    .flatMapLatest(::observeTrainingMuscleLoad)
                     .safeLaunch(recovery = ErrorRecovery.Retry)
 
-                safeLaunch(recovery = ErrorRecovery.Retry) {
-                    withLoader(StatisticsLoader.Charts) {
-                        analytics.trackOperation(StatisticsOperation.RefreshTrainings) {
-                            trainingFeature.getTrainings(start = config.range.from, end = config.range.to)
-                        }
+                safeLaunch(loader = StatisticsLoader.Charts, recovery = ErrorRecovery.Retry) {
+                    analytics.trackOperation(StatisticsOperation.RefreshTrainings) {
+                        trainingFeature.getTrainings(start = config.range.from, end = config.range.to)
                     }
                 }
             }
 
             is DialogConfig.Statistics.Training -> {
                 trainingFeature.observeTraining(config.id)
-                    .flatMapLatest(::observeExerciseStatistics)
-                    .buffer(0)
-                    .onEach(::provideMuscleLoad)
+                    .onEach(::provideExerciseStatistics)
+                    .flatMapLatest(::observeExerciseMuscleLoad)
                     .safeLaunch(recovery = ErrorRecovery.Retry)
             }
         }
     }
 
-    private fun observeTrainingStatistics(
-        range: DateRange,
-        trainings: List<Training>,
-    ): Flow<MuscleLoadSummary> {
-        provideTrainingStatistics(range = range, trainings = trainings)
-
-        return if (trainings.isEmpty()) {
-            emptyFlow()
-        } else {
-            muscleLoadingSummaryUseCase.observeFromTrainings(trainings)
+    private fun observeTrainingMuscleLoad(trainings: List<Training>): Flow<MuscleLoadSummary> {
+        if (trainings.isEmpty()) {
+            return emptyFlow()
         }
+
+        return muscleLoadingSummaryUseCase.observeFromTrainings(trainings)
+            .onEach(::provideMuscleLoad)
     }
 
-    private fun observeExerciseStatistics(training: Training?): Flow<MuscleLoadSummary> {
-        provideExerciseStatistics(training)
-
-        return if (training == null) {
-            emptyFlow()
-        } else {
-            muscleLoadingSummaryUseCase.observeFromExercises(training.exercises)
+    private fun observeExerciseMuscleLoad(training: Training?): Flow<MuscleLoadSummary> {
+        if (training == null) {
+            return emptyFlow()
         }
+
+        return muscleLoadingSummaryUseCase.observeFromExercises(training.exercises)
+            .onEach(::provideMuscleLoad)
     }
 
     private fun provideTrainingStatistics(range: DateRange, trainings: List<Training>) {
@@ -111,12 +99,12 @@ public class StatisticsViewModel(
                 .toState()
         }
 
-        update {
-            it.copy(
+        update { current ->
+            current.copy(
                 mode = mode,
-                exerciseVolume = volume,
                 total = totalMetrics,
-                muscleLoad = null,
+                exerciseVolume = volume,
+                muscleLoad = if (totalMetrics == null) null else current.muscleLoad,
             )
         }
     }
@@ -134,12 +122,12 @@ public class StatisticsViewModel(
                 .toState()
         }
 
-        update {
-            it.copy(
+        update { current ->
+            current.copy(
                 mode = StatisticsMode.Exercises,
-                exerciseVolume = volume,
                 total = totalMetrics,
-                muscleLoad = null,
+                exerciseVolume = volume,
+                muscleLoad = if (totalMetrics == null) null else current.muscleLoad,
             )
         }
     }
