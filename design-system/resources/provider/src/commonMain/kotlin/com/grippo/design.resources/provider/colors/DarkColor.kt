@@ -147,17 +147,12 @@ public object DarkColor : AppColor {
     }
 
     override val shimmer: AppColor.ShimmerColors = object : AppColor.ShimmerColors {
-        override val highlight = AppPalette.Common.White.copy(alpha = 0.16f)
-        override val buttonPrimary = AppPalette.Common.White.copy(alpha = 0.08f)
-        override val buttonSecondary = AppPalette.Common.White.copy(alpha = 0.12f)
-        override val buttonTertiary = AppPalette.Common.White.copy(alpha = 0.16f)
-        override val buttonTransparent = AppPalette.Common.White.copy(alpha = 0.12f)
-        override val buttonError = AppPalette.Common.White.copy(alpha = 0.16f)
+        override val neutral = AppPalette.Common.White.copy(alpha = 0.05f)
+        override val accent = AppPalette.Common.Black.copy(alpha = 0.07f)
     }
 
     override val skeleton: AppColor.SkeletonColors = object : AppColor.SkeletonColors {
         override val bone = AppPalette.Common.White.copy(alpha = 0.05f)
-        override val highlight = AppPalette.Common.White.copy(alpha = 0.05f)
     }
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {

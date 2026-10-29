@@ -29,7 +29,7 @@ public fun SkeletonBone(
         modifier = modifier
             .clip(shape)
             .background(AppTokens.colors.skeleton.bone)
-            .shimmer(enabled = animated, highlightColor = AppTokens.colors.skeleton.highlight),
+            .shimmer(enabled = animated),
     )
 }
 
