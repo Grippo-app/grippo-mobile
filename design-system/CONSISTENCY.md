@@ -420,7 +420,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   Loading name/email slots are `SkeletonText` lines of h3/b13Med with the shared
   text-line corner at the `skeleton.line` short/medium widths. The avatar slot is
   a circular `SkeletonBone`.
-  Only the avatar slot shimmers; supporting name/email placeholders stay static.
+  Only the avatar slot animates; supporting name/email placeholders stay static.
 - UserProfileHeader uses role variants: Profile retains the warm avatar/name/email
   region; Account shows read-only signed-in identity on `background.card`, using
   the user-card shape and `menu.contentPadding` (16 dp on all sides) to align with
@@ -558,7 +558,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   saving, the same order renders as skeletons: the pinned
   `TrainingRecapHeroSkeleton` with static text bones on the hero's warm surface
   (neither connected to the list's scroll nor draggable; capped like the hero), and below it `TrainingCompletedSkeleton`, whose
-  list root carries the single loading node: the shimmering comparison section,
+  list root carries the single loading node: the animated comparison section,
   a static `h4` heading bone at `skeleton.line.short`, the weekly and streak
   blocks with the same divider, and the muscle section - no records skeleton,
   because records are unknown until the save completes - and Done keeps
@@ -790,13 +790,13 @@ and Latin text in both themes; each role keeps its existing size and line height
   row is the larger of its `h5` line and the `metrics.overview.detailsIcon`
   chevron. A panel is the real
   `MetricSectionPanel` of its `SkeletonPanelStyle` (Small or Large) holding one
-  full-width shimmering bone of the populated content height. Loading semantics
+  full-width animated bone of the populated content height. Loading semantics
   follow the [skeleton family rule](../.claude/skills/design-system/references/components.md):
   one node per loading region, on the host root or on each section skeleton that
   loads on its own. A shared card's loading
   geometry lives beside the card as its `*CardSkeleton` (an open section's as its
   `*SectionSkeleton`, and an open style's skeleton branch, without a panel: a
-  static heading bone where the section has an `h4` heading and one shimmering bone
+  static heading bone where the section has an `h4` heading and one animated bone
   of the content height)
   (`PerformanceComparisonSectionSkeleton`: an `h4` heading bone at
   `skeleton.line.medium` over one bone sized to the reference segment and the four
@@ -947,7 +947,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   Insight kind is conveyed by its existing localized semantic chip; the card has
   no colored edge stripe. Its image/title/chevron header shares the card hierarchy.
 - MenuValueRow keeps neutral labels/values and a quiet chevron, with a 56 dp
-  minimum height and 12 dp vertical padding/gaps. A loading value is a shimmering
+  minimum height and 12 dp vertical padding/gaps. A loading value is an animated
   `b14Med` `SkeletonText` at the `skeleton.line.short` width of its value slot. Optional leading icons use a
   32 dp card-surface tile with 8 dp corners; caller-supplied channel/destructive
   colors retain their meaning. Dividers align with the text after the tile.
@@ -1482,7 +1482,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   Both caption and chart retain reserved geometry while history loads, is empty
   or contains unsupported tonnage. Skeletons are the shared `SkeletonText` caption
   line and a `SkeletonBone` chart region with the small panel corner. Shared
-  clipped shimmer animates only the previous-date header and chart region; per-set and caption slots stay static
+  skeleton wave animates only the previous-date header and chart region; per-set and caption slots stay static
   regardless of set count. The card exposes one localized
   indeterminate node while individual bones remain decorative. No minimum loading
   duration or business animation is added.

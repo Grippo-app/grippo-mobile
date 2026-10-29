@@ -77,7 +77,7 @@ outside the IterationCard entity content. Nullable recorded-load calculation bel
 to IterationState. ExerciseState reports maximum effective load only when every
 positive-repetition set has a known load; an incomplete performed set cannot silently
 disappear from the maximum. The fixed context width and two-line minimum reserve the
-same space for shimmer, prior values and absent matches.
+same space for skeleton lines, prior values and absent matches.
 
 The compact summary after the sets shows only current volume, repetitions and
 maximum effective load; set count already belongs to the Sets heading.
@@ -94,7 +94,7 @@ eligibility check or silently dropping unsupported history. Its empty-input guar
 only avoids reading a nonexistent final date. Negative effective set load is an
 allowed machine convention, distinct from nonnegative tonnage; signed recorded facts
 remain visible without clamping them to fabricated zero. History loading has one
-localized indeterminate accessibility node, decorative shared shimmer slots and
+localized indeterminate accessibility node, decorative skeleton slots and
 the same caption/chart geometry as loaded or empty history. It introduces no
 draft, timer, request, retry or business selection.
 
