@@ -777,8 +777,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   background. Every shimmer is one soft contrast step of about 1.15:1 against the
   surface it crosses: `colors.shimmer.neutral` (`Common.Black` 7% light,
   `Common.White` 5% dark) on neutral surfaces, bones included, and
-  `colors.shimmer.accent` (`Common.White` 10% light, `Common.Black` 7% dark) on
-  Primary and Error fills; neutral ink keeps a warm region's hue. The shape defaults
+  `colors.shimmer.accent` (`Common.White` 7% light, `Common.Black` 7% dark) on
+  Primary and Error fills, where the light step stays slightly lower so white
+  labels keep 4.5:1 under the band; neutral ink keeps a warm region's hue. The shape defaults
   to the `dp.skeleton.radius` text-line corner; a bone
   standing in for a control or a tile takes that owner's shape (`button.medium.radius`
   for a reserved button). A text bone is one laid-out line of the real typography role it stands

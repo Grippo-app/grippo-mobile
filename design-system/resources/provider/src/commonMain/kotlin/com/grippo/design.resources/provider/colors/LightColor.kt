@@ -148,7 +148,7 @@ public object LightColor : AppColor {
 
     override val shimmer: AppColor.ShimmerColors = object : AppColor.ShimmerColors {
         override val neutral = AppPalette.Common.Black.copy(alpha = 0.07f)
-        override val accent = AppPalette.Common.White.copy(alpha = 0.1f)
+        override val accent = AppPalette.Common.White.copy(alpha = 0.07f)
     }
 
     override val skeleton: AppColor.SkeletonColors = object : AppColor.SkeletonColors {
