@@ -41,10 +41,11 @@ internal fun Modifier.skeletonWave(enabled: Boolean): Modifier {
         while (true) {
             val motionScale = coroutineContext[MotionDurationScale]?.scaleFactor ?: 1f
             if (motionScale > 0f) {
+                val cycle = ((WAVE_SWEEP_MILLIS + WAVE_PAUSE_MILLIS) * motionScale).toLong().coerceAtLeast(1L)
                 withInfiniteAnimationFrameMillis { frameTime ->
-                    val elapsed = (frameTime / motionScale).toLong() % (WAVE_SWEEP_MILLIS + WAVE_PAUSE_MILLIS)
+                    val elapsed = (frameTime % cycle) / motionScale
                     value = if (elapsed < WAVE_SWEEP_MILLIS) {
-                        EaseInOutSine.transform(elapsed / WAVE_SWEEP_MILLIS.toFloat())
+                        EaseInOutSine.transform(elapsed / WAVE_SWEEP_MILLIS)
                     } else {
                         null
                     }
