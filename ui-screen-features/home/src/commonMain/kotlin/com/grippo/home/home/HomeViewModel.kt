@@ -170,6 +170,7 @@ internal class HomeViewModel(
             .flatMapLatest { period ->
                 trainingFeature.observeTrainings(start = period.from, end = period.to)
                     .flatMapLatest(muscleLoadingSummaryUseCase::observeFromTrainings)
+                    .map { summary -> period to summary }
             }
             .onEach(::provideMuscleLoad)
             .safeLaunch(recovery = ErrorRecovery.Retry)
@@ -288,8 +289,10 @@ internal class HomeViewModel(
             )
             .toState()
 
-        update {
-            it.copy(
+        update { current ->
+            if (current.range.value != period) return@update current
+
+            current.copy(
                 spotlights = spotlights,
                 streak = streak,
                 performance = performance,
@@ -311,13 +314,23 @@ internal class HomeViewModel(
         }
         val goalProgress = adherence?.toState(now = now)
 
-        update { it.copy(goalProgress = goalProgress) }
+        update { current ->
+            if (current.range.value != period) return@update current
+
+            current.copy(goalProgress = goalProgress)
+        }
     }
 
-    private fun provideMuscleLoad(value: MuscleLoadSummary) {
-        val muscleLoad = value.takeIf { it.meta.trainingsCount > 0 }?.toState()
+    private fun provideMuscleLoad(value: Pair<DateRange, MuscleLoadSummary>) {
+        val (period, summary) = value
 
-        update { it.copy(muscleLoad = muscleLoad) }
+        val muscleLoad = summary.takeIf { it.meta.trainingsCount > 0 }?.toState()
+
+        update { current ->
+            if (current.range.value != period) return@update current
+
+            current.copy(muscleLoad = muscleLoad)
+        }
     }
 
     override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {

@@ -178,8 +178,9 @@ internal fun ExerciseLibraryScreen(
                 )
 
                 val listState = rememberLazyListState()
-                val canLoadMore = !state.pagination.isEndReached &&
-                        !state.pagination.isLoadingNextPage
+                val canLoadMore = state.pagination is PaginationState.Next &&
+                        !state.pagination.isEndReached &&
+                        state.exerciseExamples.size >= state.pagination.limit * state.pagination.page
 
                 LaunchedEffect(listState, canLoadMore) {
                     if (!canLoadMore) return@LaunchedEffect

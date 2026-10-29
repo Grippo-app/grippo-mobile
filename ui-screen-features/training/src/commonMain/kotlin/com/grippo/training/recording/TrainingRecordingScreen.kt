@@ -1,5 +1,9 @@
 package com.grippo.training.recording
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,6 +30,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -33,6 +38,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.add_exercise_btn
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.training
 import com.grippo.design.resources.provider.update_btn
@@ -41,8 +47,11 @@ import com.grippo.toolkit.date.utils.DateRangePresets
 import com.grippo.toolkit.date.utils.timerTextFlow
 import com.grippo.training.recording.internal.ExercisesPage
 import com.grippo.training.recording.internal.Header
+import com.grippo.training.recording.components.TrainingRecordingHeaderSkeleton
+import com.grippo.training.recording.components.TrainingRecordingSkeleton
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
 
@@ -59,6 +68,7 @@ internal fun TrainingRecordingScreen(
 
     TrainingRecordingContent(
         state = state,
+        loaders = loaders,
         duration = durationText,
         contract = contract,
     )
@@ -67,11 +77,15 @@ internal fun TrainingRecordingScreen(
 @Composable
 private fun TrainingRecordingContent(
     state: TrainingRecordingState,
+    loaders: ImmutableSet<TrainingRecordingLoader> = persistentSetOf(),
     duration: String,
     contract: TrainingRecordingContract,
 ) = BaseComposeScreen(
     background = ScreenBackground.Color(value = AppTokens.colors.background.screen),
 ) {
+    val isLoading = state.stage != StageState.Add && state.exercises == null &&
+        TrainingRecordingLoader.Training in loaders
+
     val totalVolume = remember(state.exercises) {
         if (state.exercises.orEmpty().any { it.total.volume is VolumeFormatState.Invalid }) {
             VolumeFormatState.Invalid(display = "", value = null)
@@ -113,6 +127,18 @@ private fun TrainingRecordingContent(
             )
         },
         content = {
+            if (isLoading) {
+                TrainingRecordingHeaderSkeleton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = AppTokens.dp.screen.horizontalPadding,
+                            vertical = AppTokens.dp.contentPadding.content,
+                        ),
+                )
+                return@Toolbar
+            }
+
             Header(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -127,11 +153,67 @@ private fun TrainingRecordingContent(
         },
     )
 
-    ExercisesPage(
+    OverlayContainer(
         modifier = Modifier.fillMaxSize(),
-        state = state,
-        contract = contract,
+        contentPadding = PaddingValues(top = AppTokens.dp.contentPadding.content),
+        overlay = AppTokens.colors.background.screen,
+        content = { resolvedPadding ->
+            if (isLoading) {
+                TrainingRecordingSkeleton(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+                    contentPadding = resolvedPadding,
+                )
+            } else {
+                ExercisesPage(
+                    modifier = Modifier.fillMaxSize(),
+                    exercises = state.exercises ?: persistentListOf(),
+                    examples = state.examples,
+                    contentPadding = resolvedPadding,
+                    contract = contract,
+                )
+            }
+        },
+        bottom = {
+            Button(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .fillMaxWidth(),
+                content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.add_exercise_btn)),
+                style = ButtonStyle.Secondary,
+                onClick = contract::onAddExercise,
+            )
+            Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+            Spacer(modifier = Modifier.navigationBarsPadding())
+        },
     )
+}
+
+@AppPreview
+@Composable
+private fun ScreenEditLoadingPreview() {
+    PreviewContainer {
+        TrainingRecordingContent(
+            state = TrainingRecordingState(stage = StageState.Edit(id = "preview-training"), startAt = previewStartAt),
+            loaders = persistentSetOf(TrainingRecordingLoader.Training),
+            duration = "00:00:00",
+            contract = TrainingRecordingContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenDraftLoadingPreview() {
+    PreviewContainer {
+        TrainingRecordingContent(
+            state = TrainingRecordingState(stage = StageState.Draft, startAt = previewStartAt),
+            loaders = persistentSetOf(TrainingRecordingLoader.Training),
+            duration = "00:00:00",
+            contract = TrainingRecordingContract.Empty,
+        )
+    }
 }
 
 @AppPreview

@@ -21,7 +21,6 @@ import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
-import androidx.compose.ui.text.rememberTextMeasurer
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.FormatState
 import com.grippo.core.state.formatters.IntensityFormatState
@@ -37,8 +36,6 @@ import com.grippo.design.components.banner.BannerCard
 import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.metrics.volume.ExerciseVolumeHistoryChart
-import com.grippo.design.components.skeleton.SkeletonBone
-import com.grippo.design.components.skeleton.SkeletonText
 import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -68,10 +65,10 @@ import kotlin.math.roundToInt
 @Composable
 internal fun ExerciseProgressCard(
     modifier: Modifier = Modifier,
-    value: ExerciseState.Available,
+    value: ExerciseState,
     isHistoryLoading: Boolean = false,
 ) {
-    val exercise = value.exercise
+    val exercise = value.exercise ?: return
     val zeroVolume = "0${FormatState.UNIT_SPACE}${AppTokens.strings.res(Res.string.kg)}"
     val repetitions = exercise.total.repetitions.value ?: 0
     val maximum = exercise.maximumRecordedLoad()
@@ -106,41 +103,6 @@ internal fun ExerciseProgressCard(
         ContentDivider()
 
         ExerciseVolumeHistory(value = value, isHistoryLoading = isHistoryLoading)
-    }
-}
-
-@Composable
-internal fun ExerciseProgressCardSkeleton(modifier: Modifier = Modifier) {
-    val textMeasurer = rememberTextMeasurer()
-    val valueLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
-    val labelLine = rememberTextHeight(style = AppTokens.typography.b11Med(), textMeasurer = textMeasurer)
-    val captionStyle = AppTokens.typography.b12Med()
-
-    ExerciseProgressPanel(modifier = modifier) {
-        SkeletonBone(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(valueLine + AppTokens.dp.contentPadding.text + labelLine),
-        )
-
-        ContentDivider()
-
-        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-            val chartHeight = maxWidth / AppTokens.dp.metrics.volume.chart.historyAspectRatio
-
-            Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
-                SkeletonText(
-                    modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.short),
-                    style = captionStyle,
-                    textMeasurer = textMeasurer,
-                )
-                ExerciseHistorySkeleton(
-                    captionStyle = captionStyle,
-                    chartHeight = chartHeight,
-                    textMeasurer = textMeasurer,
-                )
-            }
-        }
     }
 }
 
@@ -184,10 +146,10 @@ private fun ResultMetric(
 @Composable
 private fun ExerciseVolumeHistory(
     modifier: Modifier = Modifier,
-    value: ExerciseState.Available,
+    value: ExerciseState,
     isHistoryLoading: Boolean,
 ) {
-    val exercise = value.exercise
+    val exercise = value.exercise ?: return
     val records = value.history
     val previous = if (isHistoryLoading) null else records.lastOrNull()
     val volume = exercise.total.volume.value ?: 0f
@@ -348,8 +310,9 @@ private fun ExerciseProgressCardWithoutHistoryPreview() {
 @Composable
 private fun ExerciseProgressCardChangedAssistancePreview() {
     val value = progressPreviewState(historyCount = 1)
-    val current = value.exercise.copy(
-        iterations = value.exercise.iterations.map {
+    val baseExercise = value.exercise ?: return
+    val current = baseExercise.copy(
+        iterations = baseExercise.iterations.map {
             it.copy(
                 externalWeight = VolumeFormatState.Empty(),
                 bodyWeight = WeightFormatState.of(80f),
@@ -373,7 +336,8 @@ private fun ExerciseProgressCardChangedAssistancePreview() {
 @Composable
 private fun ExerciseProgressCardPartialMaximumPreview() {
     val value = progressPreviewState(historyCount = 1)
-    val iterations = value.exercise.iterations.toPersistentList().replacingAt(
+    val baseExercise = value.exercise ?: return
+    val iterations = baseExercise.iterations.toPersistentList().replacingAt(
         index = 1,
         element = stubPendingIteration().copy(
             id = "incomplete-load",
@@ -382,7 +346,7 @@ private fun ExerciseProgressCardPartialMaximumPreview() {
         ),
     )
     PreviewContainer {
-        ExerciseProgressCard(value = value.copy(exercise = value.exercise.copy(iterations = iterations)))
+        ExerciseProgressCard(value = value.copy(exercise = baseExercise.copy(iterations = iterations)))
     }
 }
 
@@ -411,24 +375,11 @@ private fun ExerciseProgressCardLoadingPreview() {
 
 @AppPreview
 @Composable
-private fun ExerciseProgressCardSkeletonPreview() {
-    PreviewContainer {
-        Column(
-            modifier = Modifier
-                .background(AppTokens.colors.background.dialog)
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        ) {
-            ExerciseProgressCardSkeleton(modifier = Modifier.fillMaxWidth())
-        }
-    }
-}
-
-@AppPreview
-@Composable
 private fun ExerciseProgressCardNegativeVolumePreview() {
     val value = progressPreviewState(historyCount = 1)
+    val baseExercise = value.exercise ?: return
     val history = value.history
-    val iterations = value.exercise.iterations.map { iteration ->
+    val iterations = baseExercise.iterations.map { iteration ->
         iteration.copy(
             externalWeight = VolumeFormatState.Empty(),
             bodyWeight = WeightFormatState.of(80f),
@@ -436,9 +387,9 @@ private fun ExerciseProgressCardNegativeVolumePreview() {
             assistWeight = VolumeFormatState.of(90f),
         )
     }.toPersistentList()
-    val exercise = value.exercise.copy(
+    val exercise = baseExercise.copy(
         iterations = iterations,
-        total = value.exercise.total.copy(
+        total = baseExercise.total.copy(
             volume = VolumeFormatState.of(-300f),
             intensity = IntensityFormatState.of(-10f),
         ),
@@ -469,8 +420,9 @@ private fun ExerciseProgressCardNegativeVolumePreview() {
 @Composable
 private fun ExerciseProgressCardZeroBaselinePreview() {
     val value = progressPreviewState(historyCount = 1)
+    val baseExercise = value.exercise ?: return
     val history = value.history
-    val iterations = value.exercise.iterations.map { iteration ->
+    val iterations = baseExercise.iterations.map { iteration ->
         iteration.copy(
             externalWeight = VolumeFormatState.Empty(),
             bodyWeight = WeightFormatState.of(80f),
@@ -478,9 +430,9 @@ private fun ExerciseProgressCardZeroBaselinePreview() {
             assistWeight = VolumeFormatState.of(10f),
         )
     }.toPersistentList()
-    val exercise = value.exercise.copy(
+    val exercise = baseExercise.copy(
         iterations = iterations,
-        total = value.exercise.total.copy(
+        total = baseExercise.total.copy(
             volume = VolumeFormatState.of(2_100f),
             intensity = IntensityFormatState.of(70f),
         ),
@@ -497,7 +449,7 @@ private fun ExerciseProgressCardZeroBaselinePreview() {
     }
 }
 
-private fun progressPreviewState(historyCount: Int): ExerciseState.Available {
+private fun progressPreviewState(historyCount: Int): ExerciseState {
     val date = DateTimeFormatState.of(
         value = LocalDateTime(year = 2026, month = 10, day = 16, hour = 18, minute = 0),
         range = DateRangePresets.infinity(),
@@ -543,5 +495,5 @@ private fun progressPreviewState(historyCount: Int): ExerciseState.Available {
             ),
         )
     }.toPersistentList()
-    return ExerciseState.Available(exercise = exercise, history = previous)
+    return ExerciseState(exercise = exercise, history = previous)
 }

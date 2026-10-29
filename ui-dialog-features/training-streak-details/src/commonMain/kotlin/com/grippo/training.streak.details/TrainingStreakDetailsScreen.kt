@@ -53,7 +53,6 @@ import com.grippo.design.resources.provider.training_streak_details_empty
 import com.grippo.design.resources.provider.training_streak_details_method_collapsed
 import com.grippo.design.resources.provider.training_streak_details_method_expanded
 import com.grippo.design.resources.provider.training_streak_insights_title
-import com.grippo.training.streak.details.components.TrainingStreakDetailsSkeleton
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -106,11 +105,7 @@ private fun TrainingStreakDetailsContent(
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
             ) {
                 when {
-                    streak == null -> {
-                        item(key = "skeleton") {
-                            TrainingStreakDetailsSkeleton(modifier = Modifier.fillMaxWidth())
-                        }
-                    }
+                    streak == null -> Unit
 
                     streak.totalActiveDays == 0 -> {
                         item(key = "empty") {
@@ -385,18 +380,6 @@ private fun TrainingStreakExpandedMethodPreview() {
                 onToggleMethod = {},
             )
         }
-    }
-}
-
-@AppPreview
-@Composable
-private fun TrainingStreakInitialLoadingPreview() {
-    PreviewContainer {
-        TrainingStreakDetailsScreen(
-            state = trainingStreakDetailsPreview(streak = null),
-            loaders = persistentSetOf(),
-            contract = TrainingStreakDetailsContract.Empty,
-        )
     }
 }
 

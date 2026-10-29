@@ -29,7 +29,7 @@ screen enum, view/close events or feature lifecycle wiring is introduced.
 |---|---|---|
 | StatisticsViewModel.onBack / registered BackCallback | StatisticsEvent.DismissRequested | statistics_dismiss_requested v1; empty payload, before existing Back direction; no guard |
 | Trainings mode startup safeLaunch / Charts loader | StatisticsOperation.RefreshTrainings | statistics_task_started/completed/failed/interrupted v1; statistics_operation=refresh_trainings, terminal duration_ms; foundation supplies fresh operation identity |
-| Training mode observeTraining | Deliberate omission | Reactive source observation; no finite request |
+| Training mode observeTraining | Deliberate omission | Plain reactive observation; no remote request or user command |
 | observeTrainings and metric calculations | Deliberate omission | Reactive presentation rebuilding and local calculations |
 | Parent open callbacks | Existing parent analytics, unchanged | Remain owned by Trainings; no context transported into this dialog |
 
@@ -58,8 +58,8 @@ error messages or request/response data enter the payload.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | StatisticsViewModel | mode / configured range or training ID | Runtime only | Existing DialogConfig inputs | Live dialog session; no editable filters or accepted results |
-| StatisticsViewModel | total, exerciseVolume, muscleLoad | Rebuild | observeTrainings/observeTraining plus metric use cases; muscleLoad also observes referenced anatomy through observeFromTrainings/observeFromExercises | Both modes calculate from available mapped exercise details; no scope caption is rendered and no completeness state is inferred. Anatomy changes recalculate shares and excluded/unassigned notices |
-| StatisticsViewModel | Charts loader, jobs, Back direction, telemetry | Runtime only | Foundation runtime owners | No archive supplier or serializer |
+| StatisticsViewModel | Optional total, exerciseVolume and muscleLoad | Rebuild | Plain training/anatomy observations, existing metric use cases and mappers | Flat normal State, no Metrics/result wrapper or loading flags. Empty/absent source data keeps genuine optional values null. Observers publish actual metrics without bootstrap queries or loading tokens. Cached populated totals and anatomy remain visible during recalculation; actual absent totals clear anatomy. |
+| StatisticsViewModel | Charts loader; jobs, Back and telemetry | Runtime only | Existing safeLaunch/withLoader around the finite remote refresh | The whole-content skeleton appears only during Charts refresh while totals are absent. Cached populated content remains visible. Pure database/anatomy observations have no loading skeleton or partial-progress token, and no extra cache read or remote call is introduced. |
 | StatisticsComponent | ViewModel | Runtime retention | Existing retainedInstance | Ordinary configuration recreation retains VM; process restart closes dialog |
 | StatisticsScreen | Configured range label | Rebuild in composition | `DateRangeFormatState.shortStartEnd()` from the existing mode range | Uses the current locale without changing the range, VM state, inputs or dialog lifetime |
 

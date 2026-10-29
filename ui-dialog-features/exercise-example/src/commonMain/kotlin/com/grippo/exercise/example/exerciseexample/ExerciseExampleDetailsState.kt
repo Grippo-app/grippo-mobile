@@ -10,14 +10,15 @@ import com.grippo.core.state.metrics.volume.VolumeSeriesState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.dialog.api.DialogConfig
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public data class ExerciseExampleDetailsState(
     val mode: ExerciseExampleDetailsModeState = ExerciseExampleDetailsModeState.Default,
     val example: ExerciseExampleState? = null,
     val muscleLoad: MuscleLoadSummaryState? = null,
-    val recent: ImmutableList<ExerciseState>? = null,
-    val achievements: ImmutableList<AchievementState>? = null,
+    val recent: ImmutableList<ExerciseState> = persistentListOf(),
+    val achievements: ImmutableList<AchievementState> = persistentListOf(),
     val estimatedOneRepMax: EstimatedOneRepMaxState? = null,
     val exerciseVolume: VolumeSeriesState? = null,
 )

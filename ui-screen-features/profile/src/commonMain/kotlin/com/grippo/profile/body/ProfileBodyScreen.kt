@@ -42,6 +42,8 @@ import com.grippo.design.resources.provider.apply_btn
 import com.grippo.design.resources.provider.update_your_body_metrics
 import com.grippo.design.resources.provider.weight_and_height
 import com.grippo.design.resources.provider.weight_history
+import com.grippo.profile.body.components.ProfileBodyHistorySkeleton
+import com.grippo.profile.body.components.ProfileBodyInputsSkeleton
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -73,19 +75,30 @@ internal fun ProfileBodyScreen(
 
     Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-    InputHeight(
-        modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        value = state.height,
-        onClick = contract::onHeightPickerClick
-    )
+    val isUserLoading = ProfileBodyLoader.User in loaders &&
+        state.height is HeightFormatState.Empty && state.weight is WeightFormatState.Empty
+    val history = state.history
+    val isHistoryLoading = history.isEmpty() && ProfileBodyLoader.RefreshHistory in loaders
 
-    Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+    if (isUserLoading) {
+        ProfileBodyInputsSkeleton(
+            modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+        )
+    } else {
+        InputHeight(
+            modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+            value = state.height,
+            onClick = contract::onHeightPickerClick
+        )
 
-    InputWeight(
-        modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        value = state.weight,
-        onClick = contract::onWeightPickerClick
-    )
+        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+
+        InputWeight(
+            modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+            value = state.weight,
+            onClick = contract::onWeightPickerClick
+        )
+    }
 
     Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
@@ -118,22 +131,28 @@ internal fun ProfileBodyScreen(
                     )
                 }
 
-                item("weight_history_chart") {
-                    WeightHistoryChart(
-                        modifier = Modifier
-                            .animateItem()
-                            .fillMaxWidth(),
-                        list = state.history
-                    )
-                }
+                if (isHistoryLoading) {
+                    item("weight_history_skeleton") {
+                        ProfileBodyHistorySkeleton(modifier = Modifier.fillMaxWidth())
+                    }
+                } else {
+                    item("weight_history_chart") {
+                        WeightHistoryChart(
+                            modifier = Modifier
+                                .animateItem()
+                                .fillMaxWidth(),
+                            list = history
+                        )
+                    }
 
-                items(state.history, key = { it.id }) { item ->
-                    WeightHistoryCard(
-                        modifier = Modifier
-                            .animateItem()
-                            .fillMaxWidth(),
-                        value = item
-                    )
+                    items(history, key = { it.id }) { item ->
+                        WeightHistoryCard(
+                            modifier = Modifier
+                                .animateItem()
+                                .fillMaxWidth(),
+                            value = item
+                        )
+                    }
                 }
             }
         },
@@ -243,6 +262,64 @@ private fun ProfileBodyEmptyHistoryPreview() {
                 user = stubUser(),
             ),
             loaders = persistentSetOf(),
+            contract = ProfileBodyContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileBodyInitialLoadingPreview() {
+    PreviewContainer {
+        ProfileBodyScreen(
+            state = ProfileBodyState(),
+            loaders = persistentSetOf(ProfileBodyLoader.User, ProfileBodyLoader.RefreshHistory),
+            contract = ProfileBodyContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileBodyHistoryLoadingPreview() {
+    PreviewContainer {
+        val user = stubUser()
+        ProfileBodyScreen(
+            state = ProfileBodyState(user = user, weight = user.weight, height = user.height),
+            loaders = persistentSetOf(ProfileBodyLoader.RefreshHistory),
+            contract = ProfileBodyContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileBodyRestoredDraftLoadingPreview() {
+    PreviewContainer {
+        ProfileBodyScreen(
+            state = ProfileBodyState(
+                weight = WeightFormatState.of(82f),
+                height = HeightFormatState.Empty(),
+            ),
+            loaders = persistentSetOf(ProfileBodyLoader.RefreshHistory),
+            contract = ProfileBodyContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ProfileBodyCachedRefreshPreview() {
+    PreviewContainer {
+        val user = stubUser()
+        ProfileBodyScreen(
+            state = ProfileBodyState(
+                user = user,
+                weight = user.weight,
+                height = user.height,
+                history = stubWeightHistoryList(),
+            ),
+            loaders = persistentSetOf(ProfileBodyLoader.User, ProfileBodyLoader.RefreshHistory),
             contract = ProfileBodyContract.Empty,
         )
     }

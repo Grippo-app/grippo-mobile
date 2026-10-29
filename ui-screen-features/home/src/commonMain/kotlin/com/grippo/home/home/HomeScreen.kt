@@ -38,10 +38,7 @@ internal fun HomeScreen(
     val hasPeriodContent = state.lastTraining != null || state.muscleLoad != null ||
         state.streak != null || state.goalProgress != null || state.spotlights.isNotEmpty() ||
         state.performance.any { !it.isEmpty() }
-    val awaitsInitialMetrics = state.performance.isEmpty()
-    val isLoading = state.range.value == null || state.user == null ||
-        awaitsInitialMetrics ||
-        (loaders.contains(HomeLoader.Trainings) && (isEmptyState || !hasPeriodContent))
+    val isLoading = HomeLoader.Trainings in loaders && !hasPeriodContent
 
     if (isLoading) {
         Toolbar(
@@ -59,14 +56,15 @@ internal fun HomeScreen(
         return@BaseComposeScreen
     }
 
-    if (isEmptyState) {
+    val user = state.user
+    if (isEmptyState && user != null) {
         WelcomeHomeContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
                 .statusBarsPadding(),
-            user = state.user,
-            experience = state.user.experience,
+            user = user,
+            experience = user.experience,
             excludedMusclesCount = state.excludedMusclesCount,
             missingEquipmentCount = state.missingEquipmentCount,
             hasGoal = state.hasGoal,
@@ -158,7 +156,7 @@ private fun HomeScreenReturningUserLoadingPreview() {
                 spotlights = persistentListOf(),
                 performance = persistentListOf(),
             ),
-            loaders = persistentSetOf(),
+            loaders = persistentSetOf(HomeLoader.Trainings),
             contract = HomeContract.Empty,
         )
     }
@@ -166,7 +164,7 @@ private fun HomeScreenReturningUserLoadingPreview() {
 
 @AppPreview
 @Composable
-private fun HomeScreenUserLoadingPreview() {
+private fun HomeScreenIdentityUnavailablePreview() {
     PreviewContainer {
         HomeScreen(
             state = homePreviewState().copy(user = null),

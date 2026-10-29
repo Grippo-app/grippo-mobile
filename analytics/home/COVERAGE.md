@@ -28,7 +28,7 @@ registers its own BackCallback that closes without an event.
 
 | Route / rendered surface | Component → ViewModel | Presentation identity | Coverage |
 |---|---|---|---|
-| `HomeRouter.Home`: one surface with three render variants (HomeSkeleton for initial range/user/metrics readiness or an active trainings refresh without period content, WelcomeHomeContent for a ready user with no trainings, DashboardHomeContent otherwise; welcome owns its status-bar inset without an empty toolbar) | HomeComponent → HomeViewModel | `HomeScreen.Home` / `home` | One typed screenPresentation covers all variants; HomeAnalytics resolved inside `retainedInstance`; foundation binds before activation and supplies Initial/Restore |
+| `HomeRouter.Home`: one surface with three render variants (HomeSkeleton for an active finite trainings refresh without period content, WelcomeHomeContent for a ready user with no trainings, DashboardHomeContent otherwise; welcome owns its status-bar inset without an empty toolbar) | HomeComponent → HomeViewModel | `HomeScreen.Home` / `home` | One typed screenPresentation covers all variants; HomeAnalytics resolved inside `retainedInstance`; foundation binds before activation and supplies Initial/Restore |
 | Home graph | HomeRootComponent → HomeRootViewModel | Default null | Container renders only the child stack; its Contract methods forward to HomeRootDirection; no analytics dependency |
 | Overlays opened from Home: ExerciseExample, MuscleLoadingDetails, TrainingStreakDetails, PerformanceTrendDetails, TrainingGoalDetails, PeriodPicker | DialogContentComponent factories → the dialogs' own VMs | Live overlays; no screen hook under the dialog policy | Home reports only open intent and accepted results; the five Home-specific configs are constructed only in HomeViewModel, ExerciseExample also elsewhere |
 
@@ -107,12 +107,13 @@ Welcome groups identity and artwork in one hero, then setup progress,
 experience/facts and benefits. No additional
 control callback, observation, analytics parameter, schema or screen identity is
 introduced by these presentation choices.
-Initial loading uses noninteractive Home skeleton cards with the shared shimmer;
-no successful metric publication is represented by an empty performance list,
-whereas a completed empty period contains five Empty-status metrics. An active
-trainings refresh without period content also shows the skeleton; populated
-cached cards stay visible. The existing period picker and its callback remain
-available for returning users after range restoration, including during loading.
+Loading uses noninteractive Home skeleton cards with the shared shimmer only
+while the existing finite Trainings refresh runs without useful period content.
+User, settings, catalogs and metric sources remain plain observations; there are
+no extra first-cache reads, subscription loaders or readiness wrappers. Populated
+cached cards stay visible. An idle missing identity uses the existing Dashboard
+unavailable path; an empty period renders its actual empty content. The existing
+period picker and its callback remain available once the range is resolved.
 Skeleton slots add no event, operation, feature callback or persisted field,
 and do not impose a minimum loading duration. Existing shared
 error feedback still owns failures before the first successful metric publication.
@@ -207,7 +208,7 @@ DismissRequested.
 | HomeViewModel | `muscleLoad`, including excluded/unassigned set counts and `unmeasuredVolumeSets` | Rebuild | Resolved range → observeTrainings(range) → flatMapLatest(MuscleLoadingSummaryUseCase.observeFromTrainings) → mapper | Training and referenced-anatomy changes recalculate the distribution; an empty training period publishes null. Calculations use available mapped exercise details; the map and goal card show only their conditional data notices (excluded/unassigned sets, limited data), without a completeness flag or inferred missing reps/weights. Accepted performed-set shares survive incomplete load measurements; the derived unmeasured count explains omitted physical volume. No editable or archived metric snapshot |
 | HomeViewModel | `excludedMusclesCount`, `missingEquipmentCount`, `hasGoal` | Rebuild | Excluded-muscle/equipment and goal observations | Defaults 0/0/false |
 | HomeViewModel | `showWelcomeConfetti` | Runtime only | `observeHomeWelcomeStatus().first()` → provideWelcomeStatus → `setHomeWelcomeStatus(Celebrated)`; DataStore `home_welcome_status`, default Idle | True once per fresh VM only after PendingCelebration is successfully persisted as Celebrated; failed writes use the shared error pipeline without displaying a successful celebration. Consumed inside WelcomeHomeContent and reset at animation start; an unfinished animation is not a draft |
-| HomeViewModel / HomeScreen | Loading presentation | Runtime only | Existing range/user readiness, initial empty performance list, and Trainings loader without period content (or lifetime count <1) | Home skeleton until initial readiness; a real empty period has five Empty metrics and resolves after the loader. Populated cached content remains visible during refresh; the existing picker stays available for returning users after range restoration, even during loading. Shared error feedback remains the failure owner; no new loading flag/draft/timer |
+| HomeViewModel / HomeScreen | Loading presentation | Runtime only | Existing finite Trainings command loader without period content | Plain user/range/metric observations do not manage loading or perform extra initial reads. Non-null lists and actual optional results render content when no real request is active. Cached content remains visible during refresh; obsolete period results are rejected. No readiness flag, draft or timer |
 | HomeViewModel | Jobs, whileActive subscriptions, notification permission/schedule, dialog sessions, analytics provenance | Runtime only | `Flow.safeLaunch` default WhileActive (one-second disconnect grace); each range refresh is a step of the range Flow; live DialogConfig callbacks; host serializers null | Resume beyond the grace re-emits the current range and repeats RefreshTrainings. A request failure ends the range refresh Flow unless the error popup's Retry re-collects it; range/lifecycle cancellation cancels the in-flight request with its `mapLatest` step. NonCancellable is confined to cancellation cleanup; requests remain cancellable. No persisted Job, restoration flag, previous-source cache or shadow copy |
 | Home dialogs | Unaccepted picker selection; `onResult`/`onAddGoal` closures | Runtime only | Dialog slot/step stacks unserialized; the picker value lives only in the dialog VM | The accepted period goes straight to DataStore through SavePeriod; a result still queued at process death has no durability |
 | Home composables | Dashboard and spotlight-gallery scroll positions | Presentation only | Existing anchored grid state; gallery's standard `rememberScrollState` pixel offset | No business selection, draft field, restoration flag or ViewModel owner added; swipe scrolling has no feature analytics event |

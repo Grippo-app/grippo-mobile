@@ -63,14 +63,13 @@ internal class ExerciseLibraryViewModel(
             .map(::buildParams)
             .distinctUntilChanged()
             .flatMapLatest(::observeExerciseExamples)
-            .onEach(::provideExerciseExamples)
             .safeLaunch(recovery = ErrorRecovery.Retry)
     }
 
     private fun observeExerciseExamples(params: ExampleParams): Flow<Pair<ExampleParams, List<ExerciseExample>>> {
-        return userExerciseExamplesUseCase
-            .execute(params)
+        return userExerciseExamplesUseCase.execute(params)
             .map { results -> params to results }
+            .onEach(::provideExerciseExamples)
     }
 
     private fun buildParams(current: ExerciseLibraryState): ExampleParams {
@@ -121,7 +120,6 @@ internal class ExerciseLibraryViewModel(
                 PaginationState.Restartable(
                     page = ExamplePage.Chunk.number,
                     limit = current.pagination.limit,
-                    isLoadingNextPage = false,
                     isEndReached = false,
                 )
             } else {
@@ -171,7 +169,6 @@ internal class ExerciseLibraryViewModel(
                 pagination = PaginationState.Next(
                     page = pagination.page,
                     limit = pagination.limit,
-                    isLoadingNextPage = false,
                     isEndReached = results.size < pagination.limit * pagination.page,
                 ),
             )
@@ -210,26 +207,19 @@ internal class ExerciseLibraryViewModel(
 
     override fun onLoadNextPage() {
         val pagination = state.value.pagination
-        if (pagination.isEndReached || pagination.isLoadingNextPage) return
+        if (pagination !is PaginationState.Next || pagination.isEndReached ||
+            state.value.exerciseExamples.size < pagination.limit * pagination.page
+        ) return
+
         analytics.trackEvent(ExercisesEvent.LoadNextPage)
         update { current ->
             val pagination = current.pagination
-            when {
-                pagination.isEndReached -> current
-                pagination.isLoadingNextPage -> current
-                else -> current.copy(
-                    pagination = when (pagination) {
-                        is PaginationState.Next -> pagination.copy(
-                            page = pagination.page + 1,
-                            isLoadingNextPage = true
-                        )
-
-                        is PaginationState.Restartable -> pagination.copy(
-                            page = pagination.page + 1,
-                            isLoadingNextPage = true
-                        )
-                    }
-                )
+            if (pagination !is PaginationState.Next || pagination.isEndReached ||
+                current.exerciseExamples.size < pagination.limit * pagination.page
+            ) {
+                current
+            } else {
+                current.copy(pagination = pagination.copy(page = pagination.page + 1))
             }
         }
     }
@@ -266,12 +256,13 @@ internal class ExerciseLibraryViewModel(
     ) {
         update { current ->
             val state = transform(current)
+            if (buildParams(state) == buildParams(current)) return@update state
+
             val pagination = state.pagination
             state.copy(
                 pagination = PaginationState.Restartable(
                     page = ExamplePage.Chunk.number,
                     limit = pagination.limit,
-                    isLoadingNextPage = false,
                     isEndReached = false
                 )
             )

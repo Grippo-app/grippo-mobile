@@ -53,7 +53,7 @@ public class ExerciseExampleDetailsViewModel(
             .onEach(::provideEstimatedOneRepMax)
             .safeLaunch(processing = Processing.Infinity, recovery = ErrorRecovery.Retry)
 
-        safeLaunch(recovery = ErrorRecovery.Retry) {
+        safeLaunch(loader = ExerciseExampleDetailsLoader.Example, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ExerciseExampleOperation.LoadExample) {
                 exerciseExampleFeature.getExerciseExampleById(id)
             }

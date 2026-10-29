@@ -41,11 +41,8 @@ import com.grippo.design.resources.provider.empty_workouts
 import com.grippo.design.resources.provider.icons.MoreVertical
 import com.grippo.design.resources.provider.menu
 import com.grippo.trainings.factory.timelineStyle
-import com.grippo.trainings.trainings.TrainingsLoader
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlin.time.Duration
 
@@ -53,15 +50,11 @@ import kotlin.time.Duration
 internal fun DailyTrainingsPage(
     modifier: Modifier = Modifier,
     items: ImmutableList<TimelineState.Daily.Item>,
-    loaders: ImmutableSet<TrainingsLoader>,
     contentPadding: PaddingValues,
     onTrainingMenuClick: (String) -> Unit,
     onExerciseClick: (String) -> Unit,
 ) {
-    val isEmpty = items.isEmpty()
-    val isLoading = loaders.contains(TrainingsLoader.Trainings)
-
-    if (isEmpty && isLoading.not()) {
+    if (items.isEmpty()) {
         IllustratedEmptyState(
             modifier = modifier.fillMaxSize(),
             painter = AppTokens.drawables.res(Res.drawable.empty_workouts),
@@ -170,21 +163,6 @@ private fun DailyTrainingsPagePreview() {
                 .filterIsInstance<TimelineState.Daily.Item>()
                 .toPersistentList(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
-            loaders = persistentSetOf(),
-            onTrainingMenuClick = {},
-            onExerciseClick = {},
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun DailyTrainingsLoadingPagePreview() {
-    PreviewContainer {
-        DailyTrainingsPage(
-            items = persistentListOf(),
-            contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
-            loaders = persistentSetOf(TrainingsLoader.Trainings),
             onTrainingMenuClick = {},
             onExerciseClick = {},
         )
@@ -198,7 +176,6 @@ private fun DailyTrainingsEmptyPagePreview() {
         DailyTrainingsPage(
             items = persistentListOf(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
-            loaders = persistentSetOf(),
             onTrainingMenuClick = {},
             onExerciseClick = {},
         )
@@ -226,7 +203,6 @@ private fun DailyTrainingsUnavailableHeaderPreview() {
         DailyTrainingsPage(
             items = items,
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
-            loaders = persistentSetOf(),
             onTrainingMenuClick = {},
             onExerciseClick = {},
         )

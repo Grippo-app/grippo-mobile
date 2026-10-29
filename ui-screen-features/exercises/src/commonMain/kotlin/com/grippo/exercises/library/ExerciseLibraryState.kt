@@ -104,14 +104,12 @@ internal sealed interface QueryFilter {
 internal sealed class PaginationState {
     abstract val page: Int
     abstract val limit: Int
-    abstract val isLoadingNextPage: Boolean
     abstract val isEndReached: Boolean
 
     @Immutable
     data class Next(
         override val page: Int = ExamplePage.Chunk.number,
         override val limit: Int = ExamplePage.CHUNK_LIMITS,
-        override val isLoadingNextPage: Boolean = false,
         override val isEndReached: Boolean = false,
     ) : PaginationState()
 
@@ -119,7 +117,6 @@ internal sealed class PaginationState {
     data class Restartable(
         override val page: Int = ExamplePage.Chunk.number,
         override val limit: Int = ExamplePage.CHUNK_LIMITS,
-        override val isLoadingNextPage: Boolean = false,
         override val isEndReached: Boolean = false,
     ) : PaginationState()
 }

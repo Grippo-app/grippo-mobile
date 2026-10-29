@@ -26,7 +26,7 @@ the default null screenPresentation. Dialog sessions have no presentation contra
 | PerformanceTrendDetailsViewModel.onBack | DismissRequested / performance_trend_dismiss_requested v1 | Existing Back callback, empty parameters before the existing direction |
 | HomeViewModel.onPerformanceMetricClick | HomeEvent.PerformanceMetricClicked | Existing valid-range guard; parameterless event. Metric type and the `Average` reference are business dialog inputs omitted from telemetry; owned by Home |
 | TrainingCompletedViewModel.onMetricClick | TrainingEvent.Completed.MetricOpened / completed_metric_opened v1 | Computed-comparison guard (`performance.period.value`); parameterless event. The tapped metric type, the Completed period and its computed reference are business dialog inputs (title `value_performance_trend(rangeLabel, metric)` or `performance_trend(metric)`), not encoded; owned by Completed |
-| Training observation and history calculation | Deliberate omission | Data-backed rebuilding and pure local calculation, no finite request or submission |
+| Training observation and history calculation | Deliberate omission | Plain data-backed rebuilding; no cache bootstrap, loading operation, remote command, submission or new telemetry contract |
 
 The leaf Back callback observes a dismissal request, not delivered dismissal.
 The shared host handles toolbar Back/Close, Compose/system Back and swipe/outside
@@ -86,11 +86,10 @@ hasChart predicate (at least two available chart values) controls both the chart
 that sentence, including empty, single-session and partially measured histories.
 No visibility field is stored in State or a draft.
 
-Before the first cached-source emission, `history` is null and the sheet shows
-initial loading rather than an empty-period claim. The first emission resolves
-history to a populated or empty immutable list. The sheet observes the same cached
-selected-period source as before; it makes no separate refresh request or remote
-freshness claim.
+History starts as an empty immutable list and follows the existing cached
+selected-period observation directly. Empty data uses the existing empty-period
+content. There is no bootstrap query, loader, skeleton, separate refresh request
+or remote freshness claim.
 
 History retains up to ten newest sessions, including a first session when it is
 within that limit; each prefix uses all its available predecessors, even when older
@@ -112,7 +111,7 @@ no earlier measurement.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | PerformanceTrendDetailsComponent / VM | range, metricType and reference | Runtime only for live dialog | Caller inputs and retainedInstance; no draft key | Retained VM survives ordinary recreation; a fresh opening uses the caller's current inputs (Home's selected period, metric and `Average`, or Completed's comparison period, tapped metric and computed reference) |
-| PerformanceTrendDetailsViewModel | history, training identity, dates and metric presentation | Rebuild | TrainingFeature.observeTrainings for the selected range, PerformanceTrendUseCase and domain-to-state mapper | History starts null; the first emission resolves populated/empty data in one update. At most ten newest entries are retained for the summary and chart, with up to nine previous-session rows derived locally; their comparisons still use all predecessors |
+| PerformanceTrendDetailsViewModel | Nonnull history, training identity, dates and metric presentation | Rebuild | Plain TrainingFeature observation, PerformanceTrendUseCase and mapper | History defaults empty and each source emission rebuilds populated/empty data directly. At most ten newest entries remain; comparisons use all predecessors. No nullable readiness, bootstrap query or subscription loader. |
 | PerformanceTrendDetailsScreen | Methodology disclosure state | Runtime only | Local rememberSaveable presentation state in the live dialog | Fresh opening starts collapsed; ordinary recomposition/recreation retains the current disclosure. No business draft or process-death dialog restoration |
 | Dialog host | Session, callbacks and pending Back | Runtime only | Slot/step serializer = null | Process death discards the session |
 | Foundation / widgets | Jobs, loaders and scroll/gesture state | Runtime only | Existing foundation and widget owners | No business snapshot or synthetic input events |

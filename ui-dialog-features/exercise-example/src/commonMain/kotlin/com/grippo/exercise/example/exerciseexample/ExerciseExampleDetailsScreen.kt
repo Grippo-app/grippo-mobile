@@ -42,6 +42,7 @@ import com.grippo.exercise.example.exerciseexample.components.ExerciseExampleDet
 import com.grippo.exercise.example.exerciseexample.components.ExerciseExampleDetailsAchievementsSkeleton
 import com.grippo.exercise.example.exerciseexample.components.ExerciseExampleDetailsHeader
 import com.grippo.exercise.example.exerciseexample.components.ExerciseExampleDetailsInformationContent
+import com.grippo.exercise.example.exerciseexample.components.ExerciseExampleDetailsSkeleton
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -61,11 +62,13 @@ internal fun ExerciseExampleDetailsScreen(
         )
     }
 
-    val isAchievementsLoading = ExerciseExampleDetailsLoader.RecentExercises in loaders ||
-        ExerciseExampleDetailsLoader.Achievements in loaders
+    val isExampleLoading = ExerciseExampleDetailsLoader.Example in loaders
+    val isAchievementsLoading = (ExerciseExampleDetailsLoader.RecentExercises in loaders ||
+        ExerciseExampleDetailsLoader.Achievements in loaders) &&
+        state.recent.isEmpty() && state.achievements.isEmpty()
     val isAchievementsEmpty = isAchievementsLoading.not() &&
-        state.recent?.isEmpty() == true &&
-        state.achievements?.isEmpty() == true
+        state.recent.isEmpty() &&
+        state.achievements.isEmpty()
     val isEmptyTab = selectedTab == ExerciseExampleDetailsTabState.Achievements && isAchievementsEmpty
 
     val basePadding = PaddingValues(top = AppTokens.dp.dialog.top)
@@ -84,7 +87,13 @@ internal fun ExerciseExampleDetailsScreen(
                     .then(if (isEmptyTab) Modifier else Modifier.verticalScroll(scrollState))
                     .padding(resolvedPadding),
             ) {
-                val example = state.example ?: return@Column
+                val example = state.example
+                if (example == null) {
+                    if (isExampleLoading) {
+                        ExerciseExampleDetailsSkeleton(modifier = Modifier.fillMaxWidth())
+                    }
+                    return@Column
+                }
 
                 ExerciseExampleDetailsHeader(
                     modifier = Modifier.fillMaxWidth(),
@@ -153,6 +162,44 @@ internal fun ExerciseExampleDetailsScreen(
             Spacer(modifier = Modifier.navigationBarsPadding())
         }
     )
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleDetailsInitialLoadingPreview() {
+    PreviewContainer {
+        ExerciseExampleDetailsScreen(
+            state = ExerciseExampleDetailsState(),
+            loaders = persistentSetOf(ExerciseExampleDetailsLoader.Example),
+            contract = ExerciseExampleDetailsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleDetailsActionLoadingPreview() {
+    PreviewContainer {
+        ExerciseExampleDetailsScreen(
+            state = ExerciseExampleDetailsState(
+                mode = ExerciseExampleDetailsModeState.Action(title = UiText.Str("Change")),
+            ),
+            loaders = persistentSetOf(ExerciseExampleDetailsLoader.Example),
+            contract = ExerciseExampleDetailsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleDetailsUnavailablePreview() {
+    PreviewContainer {
+        ExerciseExampleDetailsScreen(
+            state = ExerciseExampleDetailsState(),
+            loaders = persistentSetOf(),
+            contract = ExerciseExampleDetailsContract.Empty,
+        )
+    }
 }
 
 @AppPreview

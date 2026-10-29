@@ -114,19 +114,6 @@ private fun StartTrainingContent(
         is StartTrainingOption.Preset -> Res.string.start_training_use_preset_btn
         is StartTrainingOption.Recent -> Res.string.start_training_repeat_btn
     }
-    val recentPicker: (@Composable () -> Unit)? = if (option is StartTrainingOption.Recent) {
-        {
-            StartTrainingRecentPicker(
-                modifier = Modifier.fillMaxWidth(),
-                options = recents,
-                selectedKey = option.key,
-                onSelect = onSelectRecent,
-            )
-        }
-    } else {
-        null
-    }
-
     if (choices.size > 1) {
         Segment(
             modifier = Modifier
@@ -188,7 +175,18 @@ private fun StartTrainingContent(
                     modifier = Modifier.fillMaxSize(),
                     option = option,
                     contentPadding = contentPadding,
-                    recentPicker = recentPicker,
+                    recentPicker = if (option is StartTrainingOption.Recent) {
+                        {
+                            StartTrainingRecentPicker(
+                                modifier = Modifier.fillMaxWidth(),
+                                options = recents,
+                                selectedKey = option.key,
+                                onSelect = onSelectRecent,
+                            )
+                        }
+                    } else {
+                        null
+                    },
                 )
             }
         },

@@ -24,10 +24,9 @@ content through the family style API; the Detailed variant is preserved.
 Available workout/set counts scope the data, and full group/muscle rows retain
 all tied leaders without a balance-quality score, gap recommendation or
 fatigue/recovery estimate. The group/muscle segment is available only when a
-known group distribution exists; loading and empty/unknown data have no mode
-control. A null summary shows a noninteractive skeleton of the summary panel,
-mode-control slot, front/back figure row, group rows and method control under
-one localized indeterminate loading node. No workouts, no available
+known group distribution exists; absent and empty/unknown data have no mode
+control. Pure training/anatomy observation has no loader, bootstrap read or
+skeleton. No workouts, no available
 accepted sets, and accepted sets without known anatomy have distinct localized
 messages. A visible count sums excluded and unassigned sets; the local animated
 method disclosure explains those counts separately and describes proportional
@@ -61,7 +60,7 @@ added by these calculated values or explanatory notices.
 |---|---|---|
 | MuscleLoadingDetailsViewModel.onSelectMode | ModeSelected(mode) / muscle_loading_mode_selected | Every invoked selection callback, including the current mode if invoked; enum values per_group or per_muscle. Before the existing state update; no new eligibility guard. |
 | MuscleLoadingDetailsViewModel.onBack | DismissRequested / muscle_loading_dismiss_requested | Callback invocation before the existing Back direction. Component BackCallback targets this VM method; no source or completed-dismissal inference. |
-| init / provideMuscleLoad | No interaction or operation event | observeTrainings flatMapLatest observes the referenced anatomy through observeFromTrainings; training or anatomy emissions rebuild summary and notices through the mapper. No finite business command or operation decorator is introduced. |
+| init / provideMuscleLoad | No interaction or operation event | Plain training/anatomy observations rebuild summary and notices directly; no bootstrap query, loading operation, extra remote command or new analytics decorator. |
 
 UI enum mapping stays in the local analytics package. No dates, range endpoints,
 training/muscle IDs, names, load/measurement values, exception text or raw input
@@ -82,7 +81,7 @@ resume. The requested scope instruments observable local callbacks, not host exi
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | MuscleLoadingDetailsViewModel | mode | Runtime only | Existing retained VM, no StateKeeper supplier | Live recreation retains the VM selection; process death discards the dialog. A new session defaults to PerGroup. No accepted result is sent to a parent. |
-| MuscleLoadingDetailsViewModel | summary | Rebuild | TrainingFeature.observeTrainings(range.from, range.to) → flatMapLatest(MuscleLoadingSummaryUseCase.observeFromTrainings) → toState | Fresh session starts null with the loading skeleton; emissions rebuild shares and counts. Available-set context, visible excluded/unknown total, proportional-set method and separate no-workout/no-set/unknown-anatomy messages derive from that summary. Unmeasured volume remains rebuilt data but is not displayed in this set-only dialog. |
+| MuscleLoadingDetailsViewModel | Actual optional summary | Rebuild | Plain training/anatomy flow and existing mapper | The existing observer updates shares/counts directly. An absent summary has no distribution content; zero-workout/zero-set/unknown-anatomy results retain their real messages. No cache bootstrap, skeleton, readiness flag or subscription loader. |
 | MuscleLoadingDetailsScreen | isMethodExpanded | Runtime only | Composition-owned rememberSaveable(range), default false | Presentation disclosure only; normal recomposition retains it, a newly opened dialog starts collapsed. No StateKeeper archive or parent result. |
 | DialogConfig / VM | range and localized DateRangeFormatState | Runtime only / Rebuild | Runtime config seed and DateRangeFormatState.of(range), rendered through shortStartEnd() | Caller supplies the range for a newly opened session; shortStartEnd() rebuilds localized text from the current composition locale even while the dialog is retained. This dialog does not edit the parent range. |
 | Host / Component / foundation | dialog session, callbacks, jobs, loaders, directions, scroll and telemetry provenance | Runtime only | Host slot and content stack both serializer=null; retainedInstance and existing presentation widgets | No sessions, callbacks, jobs or telemetry metadata archived. |

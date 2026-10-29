@@ -77,15 +77,15 @@ public fun MuscleLoadingImagesRow(
 
 @Composable
 public fun MuscleLoadingImagesRowSkeleton(modifier: Modifier = Modifier) {
-    val figure: @Composable (Modifier) -> Unit = { figureModifier ->
-        SkeletonBone(modifier = figureModifier.aspectRatio(AppTokens.dp.muscle.figure.aspectRatio))
-    }
-
     MuscleImagesLayout(
         modifier = modifier,
         compact = false,
-        front = figure,
-        back = figure,
+        front = { figureModifier ->
+            SkeletonBone(modifier = figureModifier.aspectRatio(AppTokens.dp.muscle.figure.aspectRatio))
+        },
+        back = { figureModifier ->
+            SkeletonBone(modifier = figureModifier.aspectRatio(AppTokens.dp.muscle.figure.aspectRatio))
+        },
     )
 }
 

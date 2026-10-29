@@ -69,11 +69,11 @@ achievements, request/response payloads or exception text are encoded.
 | Shared dialog host | Session, id, mode/title, action/back callbacks and nested step | Runtime only | Existing retained host; slot/step serializer = null | Ordinary recreation can retain the session; process death closes it |
 | ExerciseExampleDetailsViewModel | mode | Runtime only | Existing DialogConfig input | Fresh opening uses supplied mode; no editable draft |
 | ExerciseExampleDetailsViewModel | example, muscleLoad | Rebuild | ExerciseExampleFeature observer/refresh; pure MuscleLoadingSummaryUseCase.fromExerciseExample(observedExample) | Fresh opening observes current data and derives anatomy directly, without re-reading a separate cache snapshot |
-| ExerciseExampleDetailsViewModel | recent, exerciseVolume, estimatedOneRepMax (dated source set and External/Effective load basis) | Rebuild | ExerciseMetricsFeature, VolumeSeriesUseCase, EstimatedOneRepMaxUseCase with the observed route example and its component requirements | Startup fetch rebuilds chronological records; combining them with the current example recalculates valid 1–10-rep estimates; recent stays null until its request succeeds; no eligible estimates show an explicit explanation, including after a failed request; records and achievements both received empty show the Achievements empty state |
+| ExerciseExampleDetailsViewModel | Nonnull recent records, optional volume and estimated 1RM | Rebuild | Existing finite recent-record request, VolumeSeriesUseCase and EstimatedOneRepMaxUseCase with the observed route example | Recent defaults empty, with progress owned only by RecentExercises. The complete existing request publishes records/volume; metadata+records rebuild eligible estimates. Empty estimates retain their explanation; pending empty recent/achievement content uses request loaders, populated tab content stays visible. |
 | ExerciseExampleDetailsViewModel | Recent-record source | Rebuild | Finite request Flow combined with the observed example through Processing.Infinity | Runs once per VM, plus once per error-popup Retry; an empty result remains a known empty sample. No member cache/MutableStateFlow or loading flag; the independent metadata observation survives a failed history request |
-| ExerciseExampleDetailsViewModel | achievements | Rebuild | ExerciseMetricsFeature | Existing startup fetch and mapping; null until the request succeeds, so a failure is not shown as absence |
+| ExerciseExampleDetailsViewModel | Nonnull achievements | Rebuild | Existing finite startup request and mapper | Empty by default; Achievements loader selects the pending skeleton while no useful tab content exists. Empty results are actual empty data; failure/retry remains in the shared pipeline without nullable readiness. |
 | ExerciseExampleDetailsScreen | selected tab and scroll | Runtime only, presentation widget state | Existing rememberSaveable(example id) and rememberScrollState | No business draft; new dialog defaults to Information; existing saveable UI behavior unchanged |
-| VM/foundation | Loaders, jobs, directions, errors, telemetry provenance | Runtime only | Existing foundation ownership | No StateKeeper supplier, secret archive, restoration flag or shadow snapshot added |
+| VM/foundation | Example request and recent/achievement loaders; jobs, directions, errors, telemetry provenance | Runtime only | Existing finite suspend requests through `safeLaunch` and existing foundation ownership | Missing metadata shows a skeleton while the Example request runs; cached metadata remains visible. Subscriptions update data without loaders. No StateKeeper supplier, secret archive, restoration flag or shadow snapshot added |
 | Calling screen | Any business result of the supplied Action callback | Existing caller owner outside scope | Existing callback | This dialog returns no edited input; caller remains responsible for its own draft |
 
 No serializer or PersistenceKey is required: the module has no editable business
@@ -120,9 +120,10 @@ estimate without a member cache or a second request. Processing.Infinity keeps
 that one-time source from restarting after pause/resume; independent metadata
 observation retains its WhileActive lifetime and survives a failed history load. Empty
 estimates show eligibility information without a fabricated zero or confidence
-score, including after a failed request (recent and achievements stay null until
-received); when both requests return empty, the Achievements tab shows its empty
-state instead, the sheet body stops scrolling and the empty state fills the
+score. Recent records and achievements are nonnull immutable lists; active finite
+request loaders select pending empty-tab skeletons, while request failures retain
+the shared error popup. With neither request active and both lists empty, the
+Achievements tab shows its empty state, the sheet body stops scrolling and it fills the
 remaining height. No new interaction or event is
 introduced.
 Tap and horizontal exploration

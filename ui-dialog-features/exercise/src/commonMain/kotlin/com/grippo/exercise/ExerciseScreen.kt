@@ -43,7 +43,6 @@ import com.grippo.design.resources.provider.exercise_history_no_sets
 import com.grippo.design.resources.provider.exercise_history_unavailable
 import com.grippo.exercise.components.ExerciseProgressCard
 import com.grippo.exercise.components.ExerciseSetsContent
-import com.grippo.exercise.components.ExerciseSkeleton
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.ImmutableSet
@@ -76,17 +75,16 @@ internal fun ExerciseScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(resolvedPadding),
             ) {
-                when (state) {
-                    ExerciseState.Loading -> ExerciseSkeleton(modifier = Modifier.fillMaxWidth())
-                    ExerciseState.Unavailable -> Text(
+                val exercise = state.exercise
+                when {
+                    exercise == null -> Text(
                         text = AppTokens.strings.res(Res.string.exercise_history_unavailable),
                         style = AppTokens.typography.b14Med(),
                         color = AppTokens.colors.text.secondary,
                     )
 
-                    is ExerciseState.Available -> {
-                        val exercise = state.exercise
-                        val isHistoryLoading = loaders.contains(ExerciseLoader.History)
+                    else -> {
+                        val isHistoryLoading = loaders.contains(ExerciseLoader.History) && state.history.isEmpty()
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -179,7 +177,7 @@ private fun ExerciseRecordedSetsPreview() {
 private fun ExerciseBodyAndPartialSetsPreview() {
     PreviewContainer {
         ExerciseScreen(
-            state = ExerciseState.Available(exercise = exerciseBodyHistoryPreview()),
+            state = ExerciseState(exercise = exerciseBodyHistoryPreview()),
             loaders = persistentSetOf(),
             contract = ExerciseContract.Empty,
         )
@@ -191,7 +189,7 @@ private fun ExerciseBodyAndPartialSetsPreview() {
 private fun ExerciseWithManySetsPreview() {
     PreviewContainer {
         ExerciseScreen(
-            state = ExerciseState.Available(exercise = exerciseLongHistoryPreview()),
+            state = ExerciseState(exercise = exerciseLongHistoryPreview()),
             loaders = persistentSetOf(),
             contract = ExerciseContract.Empty,
         )
@@ -203,19 +201,7 @@ private fun ExerciseWithManySetsPreview() {
 private fun ExerciseWithoutSetsPreview() {
     PreviewContainer {
         ExerciseScreen(
-            state = ExerciseState.Available(exercise = exerciseHistoryPreview().copy(iterations = persistentListOf())),
-            loaders = persistentSetOf(),
-            contract = ExerciseContract.Empty,
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun ExerciseLoadingPreview() {
-    PreviewContainer {
-        ExerciseScreen(
-            state = ExerciseState.Loading,
+            state = ExerciseState(exercise = exerciseHistoryPreview().copy(iterations = persistentListOf())),
             loaders = persistentSetOf(),
             contract = ExerciseContract.Empty,
         )
@@ -227,7 +213,7 @@ private fun ExerciseLoadingPreview() {
 private fun ExerciseUnavailablePreview() {
     PreviewContainer {
         ExerciseScreen(
-            state = ExerciseState.Unavailable,
+            state = ExerciseState(),
             loaders = persistentSetOf(),
             contract = ExerciseContract.Empty,
         )
@@ -332,7 +318,7 @@ private fun previewIteration(
     )
 }
 
-private fun exerciseWithPreviousPreview(): ExerciseState.Available {
+private fun exerciseWithPreviousPreview(): ExerciseState {
     val current = exerciseHistoryPreview()
     val previous = current.copy(
         id = "previous-exercise",
@@ -349,7 +335,7 @@ private fun exerciseWithPreviousPreview(): ExerciseState.Available {
         ),
         total = current.total.copy(volume = VolumeFormatState.of(2_640f)),
     )
-    return ExerciseState.Available(
+    return ExerciseState(
         exercise = current,
         history = persistentListOf(previous),
     )
@@ -372,7 +358,7 @@ private fun ExerciseWithoutPreviousRecordPreview() {
 private fun ExerciseHistoryLoadingPreview() {
     PreviewContainer {
         ExerciseScreen(
-            state = ExerciseState.Available(exercise = exerciseHistoryPreview()),
+            state = ExerciseState(exercise = exerciseHistoryPreview()),
             loaders = persistentSetOf(ExerciseLoader.History),
             contract = ExerciseContract.Empty,
         )

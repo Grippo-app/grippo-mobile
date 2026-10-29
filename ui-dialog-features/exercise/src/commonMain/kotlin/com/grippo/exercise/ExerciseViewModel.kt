@@ -10,6 +10,7 @@ import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.domain.state.training.toState
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.DatePeriod
@@ -21,30 +22,20 @@ public class ExerciseViewModel(
     trainingFeature: TrainingFeature,
     selectExerciseHistoryUseCase: SelectExerciseHistoryUseCase,
 ) : BaseViewModel<ExerciseState, ExerciseDirection, ExerciseLoader>(
-    ExerciseState.Loading
+    ExerciseState()
 ), ExerciseContract {
 
     init {
-        trainingFeature.observeExercise(id)
+        val exercises = trainingFeature.observeExercise(id)
+
+        exercises
             .onEach(::provideExercise)
             .safeLaunch(recovery = ErrorRecovery.Retry)
 
-        safeLaunch(
-            loader = ExerciseLoader.History,
-            recovery = ErrorRecovery.Retry,
-        ) {
-            val content = state.first { it !is ExerciseState.Loading }
-            if (content !is ExerciseState.Available) {
-                return@safeLaunch
-            }
+        safeLaunch(loader = ExerciseLoader.History, recovery = ErrorRecovery.Retry) {
+            val selected = exercises.first() ?: return@safeLaunch
 
             analytics.trackOperation(operation = ExerciseOperation.LoadHistory) {
-                val selected = trainingFeature.observeExercise(id).first() ?: return@trackOperation
-                val available = state.value as? ExerciseState.Available ?: return@trackOperation
-                if (available.exercise.id != selected.id) {
-                    return@trackOperation
-                }
-
                 val start = DateTimeUtils.startOfDay(selected.createdAt.date.minus(DatePeriod(days = 180)))
                 val end = DateTimeUtils.endOfDay(selected.createdAt.date)
 
@@ -56,7 +47,7 @@ public class ExerciseViewModel(
                 if (current != null) {
                     val history = selectExerciseHistoryUseCase.execute(current = current, trainings = trainings)
 
-                    provideHistory(exerciseId = current.id, value = history)
+                    provideHistory(history)
                 }
             }
         }
@@ -66,27 +57,16 @@ public class ExerciseViewModel(
         val exercise = value?.toState()
 
         update { current ->
-            when {
-                exercise == null -> ExerciseState.Unavailable
-                current is ExerciseState.Available && current.exercise.id == exercise.id -> {
-                    current.copy(exercise = exercise)
-                }
+            val history = if (exercise == null) persistentListOf() else current.history
 
-                else -> ExerciseState.Available(exercise = exercise)
-            }
+            current.copy(exercise = exercise, history = history)
         }
     }
 
-    private fun provideHistory(exerciseId: String, value: List<Exercise>) {
+    private fun provideHistory(value: List<Exercise>) {
         val records = value.toState()
 
-        update { current ->
-            if (current !is ExerciseState.Available || current.exercise.id != exerciseId) {
-                return@update current
-            }
-
-            current.copy(history = records)
-        }
+        update { it.copy(history = records) }
     }
 
     override fun onDismiss() {
@@ -95,8 +75,8 @@ public class ExerciseViewModel(
     }
 
     override fun onExampleDetailsClick() {
-        val content = state.value as? ExerciseState.Available ?: return
-        val id = content.exercise.exerciseExample.id
+        val exercise = state.value.exercise ?: return
+        val id = exercise.exerciseExample.id
 
         analytics.trackEvent(ExerciseEvent.ExampleDetailsClicked)
         navigateTo(ExerciseDirection.ShowExampleDetails(id))

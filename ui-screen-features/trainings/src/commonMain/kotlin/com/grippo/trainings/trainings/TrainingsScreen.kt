@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.metrics.engagement.DigestState
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.trainings.TimelineState
@@ -28,6 +29,8 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.trainings
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.trainings.trainings.components.DailyTrainingsPage
+import com.grippo.trainings.trainings.components.DailyTrainingsSkeleton
+import com.grippo.trainings.trainings.components.MonthlyTrainingsSkeleton
 import com.grippo.trainings.trainings.components.MonthlyTrainingsPage
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -97,29 +100,41 @@ internal fun TrainingsScreen(
         bottom = AppTokens.dp.screen.verticalPadding,
     )
 
-    when (val period = state.period) {
-        is TrainingsTimelinePeriod.Daily -> DailyTrainingsPage(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .navigationBarsPadding(),
-            items = period.items,
-            loaders = loaders,
-            contentPadding = contentPadding,
-            onTrainingMenuClick = contract::onTrainingMenuClick,
-            onExerciseClick = contract::onExerciseClick,
-        )
+    val contentModifier = Modifier.fillMaxWidth().weight(1f).navigationBarsPadding()
+    val isLoading = TrainingsLoader.Trainings in loaders
 
-        is TrainingsTimelinePeriod.Monthly -> MonthlyTrainingsPage(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .navigationBarsPadding(),
-            period = period,
-            contentPadding = contentPadding,
-            onDigestClick = contract::onDailyDigestViewStats,
-            onOpenDaily = contract::onOpenDaily,
-        )
+    when (val period = state.period) {
+        is TrainingsTimelinePeriod.Daily -> {
+            if (isLoading && period.items.isEmpty()) {
+                DailyTrainingsSkeleton(modifier = contentModifier, contentPadding = contentPadding)
+            } else {
+                DailyTrainingsPage(
+                    modifier = contentModifier,
+                    items = period.items,
+                    contentPadding = contentPadding,
+                    onTrainingMenuClick = contract::onTrainingMenuClick,
+                    onExerciseClick = contract::onExerciseClick,
+                )
+            }
+        }
+
+        is TrainingsTimelinePeriod.Monthly -> {
+            if (isLoading && period.digest is DigestState.Empty) {
+                MonthlyTrainingsSkeleton(
+                    modifier = contentModifier,
+                    contentPadding = contentPadding,
+                    weekCount = period.weeks.size.coerceAtLeast(4),
+                )
+            } else {
+                MonthlyTrainingsPage(
+                    modifier = contentModifier,
+                    period = period,
+                    contentPadding = contentPadding,
+                    onDigestClick = contract::onDailyDigestViewStats,
+                    onOpenDaily = contract::onOpenDaily,
+                )
+            }
+        }
     }
 }
 
@@ -178,6 +193,30 @@ private fun MonthlyEmptyScreenPreview() {
         TrainingsScreen(
             state = monthlyTrainingsPreviewState(empty = true),
             loaders = persistentSetOf(),
+            contract = TrainingsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MonthlyLoadingScreenPreview() {
+    PreviewContainer {
+        TrainingsScreen(
+            state = monthlyTrainingsPreviewState(empty = true),
+            loaders = persistentSetOf(TrainingsLoader.Trainings),
+            contract = TrainingsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MonthlyRefreshingScreenPreview() {
+    PreviewContainer {
+        TrainingsScreen(
+            state = monthlyTrainingsPreviewState(),
+            loaders = persistentSetOf(TrainingsLoader.Trainings),
             contract = TrainingsContract.Empty,
         )
     }

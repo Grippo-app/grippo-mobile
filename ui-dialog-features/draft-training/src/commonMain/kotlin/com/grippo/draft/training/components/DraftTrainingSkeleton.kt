@@ -15,6 +15,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.rememberTextMeasurer
 import com.grippo.design.components.skeleton.SkeletonBone
 import com.grippo.design.components.skeleton.SkeletonText
+import com.grippo.design.components.divider.ContentDivider
+import com.grippo.design.components.training.ExerciseCardSkeleton
+import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -34,15 +37,8 @@ internal fun DraftTrainingSkeleton(
     val descriptionHeight = rememberTextHeight(style = descriptionStyle, lines = 2, textMeasurer = textMeasurer)
     val statValueLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
     val statLabelLine = rememberTextHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
-    val exerciseNameLine = rememberTextHeight(style = AppTokens.typography.b14Semi(), textMeasurer = textMeasurer)
-    val exerciseSummaryLine = rememberTextHeight(style = AppTokens.typography.b13Med(), textMeasurer = textMeasurer)
     val textGap = AppTokens.dp.contentPadding.text
-    val exercisePadding = AppTokens.dp.contentPadding.subContent
     val summaryHeight = statValueLine + textGap + statLabelLine + AppTokens.dp.metrics.panel.large.verticalPadding * 2
-    val exerciseHeight = maxOf(
-        AppTokens.dp.exerciseExampleImage.compact.size,
-        exerciseNameLine + textGap + exerciseSummaryLine,
-    )
 
     Column(
         modifier = modifier.semantics(mergeDescendants = true) {
@@ -96,17 +92,18 @@ internal fun DraftTrainingSkeleton(
             textMeasurer = textMeasurer,
         )
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = exercisePadding),
-            verticalArrangement = Arrangement.spacedBy(exercisePadding * 2 + AppTokens.dp.divider.thickness),
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            repeat(EXERCISE_ROW_COUNT) {
-                SkeletonBone(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(exerciseHeight),
-                )
+            repeat(EXERCISE_ROW_COUNT) { index ->
+                ExerciseCardSkeleton(modifier = Modifier.fillMaxWidth(), style = ExerciseCardStyle.Medium())
+                if (index < EXERCISE_ROW_COUNT - 1) {
+                    ContentDivider(
+                        modifier = Modifier.padding(
+                            start = AppTokens.dp.exerciseExampleImage.compact.size +
+                                AppTokens.dp.contentPadding.subContent,
+                        ),
+                    )
+                }
             }
         }
     }

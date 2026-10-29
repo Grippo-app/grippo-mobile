@@ -106,7 +106,7 @@ internal class TrainingRecordingViewModel(
 
         when (initialState?.exercises) {
             null -> {
-                safeLaunch(recovery = ErrorRecovery.Retry) {
+                safeLaunch(loader = TrainingRecordingLoader.Training, recovery = ErrorRecovery.Retry) {
                     when (val stage = state.value.stage) {
                         StageState.Add -> {
                             analytics.trackOperation(TrainingOperation.DeleteDraft) {

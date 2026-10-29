@@ -54,19 +54,16 @@ import kotlinx.collections.immutable.toPersistentList
 @Immutable
 public sealed interface MuscleLoadingCardStyle {
     @Immutable
-    public sealed interface Loadable : MuscleLoadingCardStyle
-
-    @Immutable
-    public data object Overview : Loadable
+    public data object Overview : MuscleLoadingCardStyle
 
     @Immutable
     public data object Detailed : MuscleLoadingCardStyle
 
     @Immutable
-    public data object Summary : Loadable
+    public data object Summary : MuscleLoadingCardStyle
 
     @Immutable
-    public data object Session : Loadable
+    public data object Session : MuscleLoadingCardStyle
 }
 
 @Composable
@@ -262,7 +259,7 @@ private fun MuscleLoadingOverviewRow(entry: MuscleLoadEntryState, color: Color) 
 @Composable
 public fun MuscleLoadingCardSkeleton(
     modifier: Modifier = Modifier,
-    style: MuscleLoadingCardStyle.Loadable,
+    style: MuscleLoadingCardStyle,
 ) {
     val textMeasurer = rememberTextMeasurer()
     val titleLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
@@ -281,6 +278,12 @@ public fun MuscleLoadingCardSkeleton(
             contentHeight = maxOf(titleLine, AppTokens.dp.metrics.overview.detailsIcon) +
                 AppTokens.dp.contentPadding.text + captionLine + mapRowHeight + captionLine + spacer * 2,
             style = SkeletonPanelStyle.Large,
+        )
+
+        MuscleLoadingCardStyle.Detailed -> SkeletonPanel(
+            modifier = modifier,
+            contentHeight = captionLine + groupsHeight + AppTokens.dp.metrics.panel.small.spacer,
+            style = SkeletonPanelStyle.Small,
         )
 
         MuscleLoadingCardStyle.Summary -> {
@@ -533,5 +536,13 @@ private fun MuscleLoadingCardDetailedEmptyPreview() {
         MuscleLoadingCard(
             summary = stubMuscleLoadSummaryEmpty(),
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingCardSkeletonDetailedPreview() {
+    PreviewContainer {
+        MuscleLoadingCardSkeleton(modifier = Modifier.fillMaxWidth(), style = MuscleLoadingCardStyle.Detailed)
     }
 }

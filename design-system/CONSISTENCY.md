@@ -388,9 +388,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   menu, profile, recap, achievement and gallery cards. Equipment detail images
   are unframed; its selection variant uses the repeated-row shape.
 - 28 dp is reserved for BrandHeader, the onboarding hero, bottom-sheet top
-  corners and the bottom corners of the completed-workout recap hero's collapsed
-  bar (`training.recap.collapsed.radius`). The expanded recap hero is full-bleed
-  with square corners. Warm card fills alone do not change a
+  corners. The completed-workout recap hero is full-bleed with square corners
+  throughout expansion and collapse. Warm card fills alone do not change a
   card's radius.
 - Filled segments use a 16 dp outer shape and a 12 dp selection shape with 4 dp
   inset. Neutral navigation and utility icon buttons use `ButtonStyle.Tertiary`
@@ -512,16 +511,12 @@ and Latin text in both themes; each role keeps its existing size and line height
   `Resolved(verdict, reference, description)` once the period is known (the hero
   words the title as `PerformanceVerdictState.title(reference)` for the reference the
   metrics were measured against, so a title can never disagree with its verdict),
-  `Pending` while the
-  verdict is still being computed - it then renders the facts for real and holds
-  the verdict title and description with static decorative bones of the same
-  geometry (an `h2`-line title bone at `skeleton.line.medium` and a `b14Med`-line
-  bone at `skeleton.line.long`); the bones carry no
-  semantics - the comparison and weekly skeletons below, and the records skeleton
-  while the `LoadRecords` loader runs, each carry one loading semantics node; the
-  streak placeholder shown while the period computes stays silent, since it resolves
-  with the comparison skeleton that already announces it. A missing value is
-  not drawn as a placeholder dash: the part that would hold it is omitted.
+  the existing `Pending` style can reserve verdict text with decorative bones.
+  Completed itself now renders the hero only from computed performance; its pure
+  metric observations add no loading state. The real SaveTraining operation
+  selects the full saving skeleton, and LoadRecords owns its separate loading
+  semantics. Missing optional values omit their content instead of creating
+  synthetic progress or placeholder dashes.
   Every weight carries a non-breaking space before its unit (`FormatState.UNIT_SPACE`,
   "400 kg"), in the `shortTotal`/`shortAverage` family used by the hero facts, the
   comparison section, records (`AchievementState.value()`) and the weekly block, and
@@ -531,10 +526,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   record is an achievement with its own boundary. The order is
   `TrainingRecordsCard` (or its skeleton while the `LoadRecords` loader runs;
   hidden once they resolve empty) → the `PerformanceComparisonSection` "Before →
-  after" section, whose composed title is an `h4` section heading (or its skeleton;
-  its reference segment appears only with an earlier value) → a "Progress" group
+  after" section, whose composed title is an `h4` section heading
+  (its reference segment appears only with an earlier value) → a "Progress" group
   under the shared `progress` string as an `h4` `text.primary` heading with
-  `heading()` semantics: `WeeklyVolumeSection` (or its skeleton), then
+  `heading()` semantics: `WeeklyVolumeSection` when available, then
   `TrainingStreakCardStyle.Growth` and `GoalCardStyle.Growth` when a goal exists,
   each preceded by a `ContentDivider` with `content` space above and below it →
   `MuscleLoadingCardStyle.Session`, whose `muscle_loading` title is the section's
@@ -678,9 +673,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   and the facts row trail the bottom edge at half the scroll speed, the title
   shrinking toward 0.86, the facts fading out over the first 35 % of the collapse; the backdrop slot keeps its measured
   `illustration.compact` size and its layer scales it into a
-  `training.recap.collapsed.backdrop` (48 dp) slot at the bar's end; the bottom
-  corners round from square to `training.recap.collapsed.radius` (28 dp, the
-  `brandHeader.radius`) on the warm surface, laid out as the hero's first child. The text column and the bar
+  `training.recap.collapsed.backdrop` (48 dp) slot at the bar's end; the warm
+  surface, laid out as the hero's first child, keeps square corners throughout.
+  The text column and the bar
   crossfade over one shared window, 40-60 % of the collapse (one title is always
   at least half opaque), the bar rising by `training.recap.collapsed.rise`: the verdict title in `h4`
   `text.primary` (a static `h4` bone while `Pending`) over one `b12Med`
@@ -803,9 +798,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   (`PerformanceComparisonSectionSkeleton`: an `h4` heading bone at
   `skeleton.line.medium` over one bone sized to the reference segment and the four
   rows, each with one comparison bar row; `TrainingStreakCardSkeleton(style)` and
-  `MuscleLoadingCardSkeleton(style)` accept only the styles a loading host shows,
-  every `TrainingStreakCardStyle` and `MuscleLoadingCardStyle.Loadable` (Overview,
-  Summary, Session; Detailed has no loading host), with no default, so each
+  `MuscleLoadingCardSkeleton(style)` take the ordinary existing card styles
+  directly, with exhaustive geometry for every accepted variant and no Loadable
+  subtype. Detailed muscle anatomy uses its Small panel; each
   host names its style: the streak Overview for Home sizes the header, the
   headline/active-days row (the flame beside the headline alone), the indicator
   and the current-period line (`TrainingStreakFeaturedState.currentPeriodLine()`:
@@ -834,32 +829,39 @@ and Latin text in both themes; each role keeps its existing size and line height
   the tonnage caption and the width-derived bar chart), consumed by every host;
   a skeleton with a single host stays private to that host until a second host
   needs it or it reuses the component's private layout.
-- Dialog content loads show a private `<Feature>Skeleton` instead of the `Loader`
-  spinner, which remains only for the brand splash and debug pages. Each mirrors its
-  populated content with the dialog's gutters and gaps, keeps real range headers
-  and carries one localized `loading` node on its root: Statistics (two
-  `chip.medium` total bones, `VolumeMetricChartSkeleton`, the `h4` Muscles line over
-  `MuscleLoadingSkeleton`); performance trend details (Latest row lines, a Small
-  metric panel, the `h4` Recent workouts line, a `trend.historyAspectRatio`
-  sparkline bone, three history rows with real dividers, a static `button.medium`
-  bone); training streak details (`TrainingStreakCardSkeleton(Detailed)`, static
-  `h4`/`b12Med` lines over four period blocks, a static `button.medium` bone);
-  muscle loading details (`MuscleLoadingCardSkeleton(Summary)`, a static
-  `segment.outline.height` bone, `MuscleLoadingImagesRowSkeleton`,
-  `MuscleLoadingSkeleton`, a static `button.medium` bone); start training (the
-  static fill Segment bone in `segment.fill.outRadius`, the circular
-  `illustration.large` halo, the `h4` title and two-line `b14Med` description);
-  draft training (the `h3` header and two-line description, the
-  `metrics.panel.large.radius` summary tile, the `h4` contents line and three
-  exercise-row bones); the completed exercise (`ExerciseSkeleton`: the 64 dp
-  image-slot bone with `h4`/`b12Med` lines, `ExerciseSetsSkeleton` with three static
-  `IterationCard.Recorded` rows and dividers, `ExerciseProgressCardSkeleton` on the
-  card's real Large surface with the shared `ExerciseHistorySkeleton`, and a static
-  `button.medium` bone for the details action); and the exercise-details
-  Achievements tab (`ExerciseExampleDetailsAchievementsSkeleton`: a clipped row of
-  `achievementCard.width` bones, one default-corner bone for the unframed
-  estimated-1RM block, the `h4` History line, `VolumeMetricChartSkeleton` and three
-  `exerciseCard.small` bones).
+- Finite dialog requests use their existing feature loaders and skeletons:
+  Statistics Charts refresh, Start workout options, Draft workout readback,
+  exercise history and exercise-example metadata/history/achievements requests.
+  Pure database observations in goal, trend, streak, muscle details and the
+  exercise library do not create a loader, repeat an initial read or reserve
+  synthetic loading content. Calendar's finite refresh retains Medium exercise
+  rows with the timeline gutter, or a digest panel and static month tiles;
+  cached populated content remains visible during refresh.
+- `ExerciseCardSkeleton` takes the ordinary ExerciseCardStyle directly: Large
+  and Medium retain their row image, title and summary geometry; Planned uses
+  the compact row with `b12Med` summary; Small uses its bordered history card,
+  `h6` date and recorded-result line. No Loadable subtype is introduced. `DigestCardSkeleton` uses the
+  real Large metric panel, with content height from its overview heading, count,
+  label, divider and three-column breakdown. Recording's Edit/Draft startup uses
+  the Large row bones and static `h5`/`b12Med` header lines; its real Add action
+  remains in the bottom overlay during loading. Draft-training preview rows reuse
+  the same Medium skeleton and inset dividers; header-stat bones center their text
+  like the real TrainingStat columns.
+- Body loading uses `input.height/radius` for unfilled inputs during the real
+  User request and `weightHistoryCard.chartAspectRatio/radius` for missing history
+  during RefreshHistory. Restored inputs and populated sections stay visible.
+  Equipment/muscle selections and account identity/consent use plain observation
+  content and inline action slots without cache-read loaders or skeletons.
+- Exercise-example details reserve their header and Information tab only while
+  the finite Example request is active. Statistics reserves its initial body only
+  for the finite Charts refresh; its observed anatomy summary has no independent
+  synthetic loading state. Every loading region uses the skeleton family's
+  localized indeterminate semantics. Screens choose skeleton or content through
+  existing feature Loaders for real finite suspend operations. Observations never
+  manage Loaders or perform duplicate initial reads. Content lists are non-null;
+  only Recording's persisted exercise draft retains null to distinguish an
+  unresolved source from an intentionally empty saved draft, while its UI
+  receives a non-null list. No readiness wrappers or loading-flow helpers exist.
 - The last-workout recap names its selected-period scope. Title/date and two
   training facts share a row with the Compact `last_training` stopwatch-and-towel illustration;
   exercise count and Calendar share the footer. Like the completed-workout recap hero
@@ -1220,7 +1222,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   show `muscle_load_no_data`.
 - `TrainingRecordsCard` is the completed-workout "Personal records" card: a Large
   MetricSectionPanel with the `h5` `training_records_title`, one `Trophy` at
-  `metrics.performance.records.trophyIcon` in `semantic.success` at the end of the
+  `metrics.performance.records.trophyIcon` (32 dp) in `semantic.success` at the end of the
   title row (the card's single celebration accent: every row is a record, so the
   rows carry none) and the `b13Med` `text.secondary`
   `training_records_description`, then one row per exercise
@@ -1242,6 +1244,13 @@ and Latin text in both themes; each role keeps its existing size and line height
   kind in full, joined by `listed_pair` commas instead of the dots. The caller shows
   the card only when
   records exist; records are evidence, not selection, so the row carries no orange.
+  On Completed, records and the comparison section share one stable lazy item so
+  scroll anchoring cannot hide a late insertion above the comparison. A local
+  `AnimatedContent` transitions the records region between empty, its loading
+  skeleton and the card: the whole region, including its trailing block gap,
+  changes height over 300 ms with `FastOutSlowInEasing`, while incoming/outgoing
+  content fades over 300/150 ms. Other sections follow the intermediate height;
+  controls and data readiness remain independent of the transition.
 - `WeeklyVolumeSection` is the "This week" tonnage block, open (no panel; parts
   `metrics.section.spacer` apart) and first in the completed screen's
   "Progress" group, whose header row pairs the `h5` `weekly_volume_title` with the `b12Med`
@@ -1421,8 +1430,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   and achievement requests returned empty) stops the sheet body scroll and lets
   IllustratedEmptyState fill the height left below the header and Segment: the
   `empty_achievements` trophy artwork with a Medium illustration, `h4` title
-  and secondary `b14Med` description. A failed request is not shown as absence: the
-  tab keeps its regular content with the estimated-1RM explanation.
+  and secondary `b14Med` description. Active finite requests select the tab skeleton
+  only while both content lists are empty. Failures use the shared error popup;
+  once no request is active, empty lists select the same empty presentation
+  without a separate failure or readiness wrapper.
 - Start workout sheets expose available Custom, Suggested and Repeat choices
   through pinned equal-width Segment controls. All modes fill the same available
   host height so the sheet, choices and action stay in place when content changes.

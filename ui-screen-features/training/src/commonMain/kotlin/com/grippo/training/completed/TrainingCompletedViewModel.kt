@@ -316,13 +316,13 @@ internal class TrainingCompletedViewModel(
     }
 
     private suspend fun loadRecords(training: Training) {
-        val records = withLoader(loader = TrainingCompletedLoader.LoadRecords) {
-            analytics.trackOperation(operation = TrainingOperation.LoadRecords) {
+        withLoader(loader = TrainingCompletedLoader.LoadRecords) {
+            val records = analytics.trackOperation(operation = TrainingOperation.LoadRecords) {
                 trainingRecordsUseCase.fromTraining(training)
             }
-        }
 
-        provideRecords(records)
+            provideRecords(records)
+        }
     }
 
     private suspend fun provideTraining(value: Training?) {
@@ -334,7 +334,11 @@ internal class TrainingCompletedViewModel(
 
         val training = value.toState()
 
-        update { it.copy(training = training, muscleLoad = muscleLoad) }
+        update { current ->
+            if (current.savedTrainingId != value.id) return@update current
+
+            current.copy(training = training, muscleLoad = muscleLoad)
+        }
     }
 
     private fun provideRange(value: Range) {
@@ -375,6 +379,10 @@ internal class TrainingCompletedViewModel(
         }
 
         update { current ->
+            if (current.reference != reference || current.range.value != period || current.savedTrainingId != saved.id) {
+                return@update current
+            }
+
             val recordCelebration = current.recordCelebration.celebrate(isRecord = isPeriodRecord)
 
             current.copy(
@@ -431,7 +439,11 @@ internal class TrainingCompletedViewModel(
             null
         }
 
-        update { it.copy(goalProgress = goalProgress, previousGoalProgress = previousGoalProgress) }
+        update { current ->
+            if (current.range.value != period || current.savedTrainingId != savedId) return@update current
+
+            current.copy(goalProgress = goalProgress, previousGoalProgress = previousGoalProgress)
+        }
     }
 
     // Saved createdAt is server time; take the later of it and now so a lagging device clock keeps the workout.

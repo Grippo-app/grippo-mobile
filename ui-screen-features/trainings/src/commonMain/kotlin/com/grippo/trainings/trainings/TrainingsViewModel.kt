@@ -81,8 +81,8 @@ internal class TrainingsViewModel(
             .flatMapLatest { range ->
                 trainingFeature.observeTrainings(start = range.from, end = range.to)
                     .map { trainings -> range to trainings }
+                    .onEach(::provideTrainings)
             }
-            .onEach(::provideTrainings)
             .safeLaunch(recovery = ErrorRecovery.Retry)
     }
 
@@ -125,7 +125,15 @@ internal class TrainingsViewModel(
             )
         }
 
-        update { it.copy(period = period) }
+        update { current ->
+            val currentRange = current.period.effectiveRange(
+                anchor = current.date.from,
+                limitations = current.limitations,
+            )
+            if (currentRange != range) return@update current
+
+            current.copy(period = period)
+        }
     }
 
     private fun applyAnchor(date: LocalDateTime) {

@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -33,7 +31,6 @@ import com.grippo.core.state.trainings.IterationState
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.divider.ContentDivider
-import com.grippo.design.components.skeleton.SkeletonBone
 import com.grippo.design.components.skeleton.SkeletonText
 import com.grippo.design.components.training.IterationCard
 import com.grippo.design.components.training.IterationCardStyle
@@ -54,8 +51,6 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDateTime
-
-private const val SKELETON_SET_COUNT = 3
 
 @Composable
 internal fun ExerciseSetsContent(
@@ -111,70 +106,6 @@ internal fun ExerciseSetsContent(
                 if (index < value.lastIndex) {
                     ContentDivider()
                 }
-            }
-        }
-    }
-}
-
-@Composable
-internal fun ExerciseSetsSkeleton(modifier: Modifier = Modifier) {
-    val textMeasurer = rememberTextMeasurer()
-    val contextStyle = AppTokens.typography.b12Med()
-    val contextMinHeight = rememberTextHeight(style = contextStyle, lines = 2, textMeasurer = textMeasurer)
-
-    Column(modifier = modifier) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = AppTokens.dp.contentPadding.subContent),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(modifier = Modifier.weight(1f)) {
-                SkeletonText(
-                    modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.short),
-                    style = AppTokens.typography.h4(),
-                    textMeasurer = textMeasurer,
-                )
-            }
-            ExerciseSetsPreviousDate(
-                value = null,
-                style = contextStyle,
-                minHeight = contextMinHeight,
-                isLoading = true,
-                textMeasurer = textMeasurer,
-            )
-        }
-        repeat(SKELETON_SET_COUNT) { index ->
-            if (index > 0) {
-                ContentDivider()
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = AppTokens.dp.contentPadding.subContent),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                SkeletonBone(
-                    modifier = Modifier.size(AppTokens.dp.iterationCard.numberSize),
-                    shape = RoundedCornerShape(AppTokens.dp.iterationCard.radius),
-                    animated = false,
-                )
-                Box(modifier = Modifier.weight(1f)) {
-                    SkeletonText(
-                        modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.medium),
-                        style = AppTokens.typography.h5(),
-                        textMeasurer = textMeasurer,
-                    )
-                }
-                ExerciseSetComparison(
-                    value = null,
-                    style = contextStyle,
-                    minHeight = contextMinHeight,
-                    isLoading = true,
-                    textMeasurer = textMeasurer,
-                )
             }
         }
     }
@@ -394,13 +325,5 @@ private fun ExerciseSetsContentLoadingPreviousPreview() {
             previous = null,
             isHistoryLoading = true,
         )
-    }
-}
-
-@AppPreview
-@Composable
-private fun ExerciseSetsSkeletonPreview() {
-    PreviewContainer {
-        ExerciseSetsSkeleton(modifier = Modifier.fillMaxWidth())
     }
 }

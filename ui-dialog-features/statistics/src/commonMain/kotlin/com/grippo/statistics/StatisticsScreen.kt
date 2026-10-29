@@ -60,7 +60,7 @@ internal fun StatisticsScreen(
         contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
         overlay = AppTokens.colors.background.dialog,
         content = { resolvedPadding ->
-            if (loaders.contains(StatisticsLoader.Charts)) {
+            if (StatisticsLoader.Charts in loaders && state.total == null) {
                 StatisticsSkeleton(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = resolvedPadding,
@@ -149,6 +149,28 @@ private fun ScreenPreview() {
 
 @AppPreview
 @Composable
+private fun StatisticsRefreshingContentPreview() {
+    PreviewContainer {
+        StatisticsScreen(
+            state = StatisticsState(
+                mode = StatisticsMode.Trainings(
+                    range = DateRangeFormatState.of(
+                        from = LocalDateTime(2026, 10, 5, 0, 0),
+                        to = LocalDateTime(2026, 10, 11, 23, 59),
+                    ),
+                ),
+                total = stubTotal(),
+                exerciseVolume = stubVolumeSeries(),
+                muscleLoad = stubMuscleLoadSummary(),
+            ),
+            loaders = persistentSetOf(StatisticsLoader.Charts),
+            contract = StatisticsContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
 private fun StatisticsTrainingsLoadingPreview() {
     PreviewContainer {
         StatisticsScreen(
@@ -160,18 +182,6 @@ private fun StatisticsTrainingsLoadingPreview() {
                     ),
                 ),
             ),
-            loaders = persistentSetOf(StatisticsLoader.Charts),
-            contract = StatisticsContract.Empty,
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun StatisticsExercisesLoadingPreview() {
-    PreviewContainer {
-        StatisticsScreen(
-            state = StatisticsState(mode = StatisticsMode.Exercises),
             loaders = persistentSetOf(StatisticsLoader.Charts),
             contract = StatisticsContract.Empty,
         )

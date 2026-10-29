@@ -23,7 +23,7 @@ Back/close behavior and in-memory session ownership.
 |---|---|---|
 | ExerciseViewModel.onExampleDetailsClick | ExampleDetailsClicked / `exercise_example_details_clicked` | After the existing available exercise/example ID guard, before ShowExampleDetails; observes the click, not downstream display. Loading/unavailable content emits nothing. |
 | ExerciseViewModel.onDismiss | DismissRequested / `exercise_dismiss_requested` | Before Back; reports callback invocation without inferring user source or host dismissal. |
-| ExerciseViewModel.init / startup safeLaunch | LoadHistory / `exercise_task_started`, `exercise_task_completed`, `exercise_task_failed`, `exercise_task_interrupted` | Once after the primary subscription supplies an available record. The complete decorated block rechecks the selected record, refreshes the 180-day workout window, reads the reconciled cache and fresh selected record, selects prior workouts and maps their history. The throwing refresh remains inside the block. |
+| ExerciseViewModel.init / first actual available entity snapshot | LoadHistory / `exercise_task_started`, `exercise_task_completed`, `exercise_task_failed`, `exercise_task_interrupted` | The finite History startup reads the first actual entity snapshot; initial absence ends that attempt without tracking or refreshing. As before, the complete decorator stays in init after actual-entity eligibility, uses that same selected snapshot without a second pre-refresh query, refreshes the 180-day window, reads reconciled trainings and the current entity, and publishes mapped history. History never publishes the entity itself; the throwing refresh remains inside the block. |
 
 The two existing event schemas remain parameterless. The four version-1
 operation schemas carry `exercise_operation=load_history`; terminal schemas also
@@ -49,9 +49,9 @@ recent history and achievements through their existing owners.
 
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
-| ExerciseViewModel / ExerciseState | Available exercise: identity, date, ordered iterations and stored totals | Rebuild | TrainingFeature.observeExercise(id) → domain-to-state mapper | The primary subscription alone owns current-record state. Fresh session starts Loading; nonnull source becomes Available. A null source becomes Unavailable, clearing any earlier available record. No editable data. |
-| ExerciseState.Available.history | Immutable prior exercise records | Rebuild | TrainingFeature.getTrainings plus observeTrainings, SelectExerciseHistoryUseCase and domain-to-state mapper | The selected date bounds a 180-day window through the end of that day. At most five strictly prior workouts contribute one recorded matching exercise each; the current workout and future records are excluded. Same-ID primary emissions preserve history data. Progress belongs only to ExerciseLoader.History in the existing safeLaunch; State stores no duplicate loading mode. There is no draft or persistent comparison cache. A partial prior record remains the actual latest record; unknown per-set measurements stay unavailable rather than being replaced by an older session. |
-| ExerciseState | Loading / Available / Unavailable content lifecycle | Rebuild | Initial state and the current observeExercise emission | No saved flags, source snapshots or duplicated draft. An unavailable record exposes no details action. |
+| ExerciseViewModel / ExerciseState | Actual optional exercise: identity, date, ordered iterations and totals | Rebuild | Plain observeExercise(id) and mapper | Normal data State; null exercise is actual unavailable content, never a Loading wrapper or fake ID. No loader, bootstrap or extra snapshot is added to the database subscription. Available fixed-route entity updates retain independently loaded history; actual absence clears it. No editable data. |
+| ExerciseState.history | Nonnull immutable prior records | Rebuild | First actual cached entity snapshot, existing complete LoadHistory operation, getTrainings/observeTrainings, SelectExerciseHistoryUseCase and mapper | Empty by default. The selected date bounds a 180-day window through that day; at most five strictly prior workouts contribute one recorded matching exercise each. Available entity emissions preserve history, including a result that completes before the primary source publishes; the route fixes the entity ID. The first cached entity snapshot selects or skips the existing initial operation without publishing entity snapshots from the history path. History progress belongs to ExerciseLoader.History during the finite snapshot/read/refresh; populated history remains visible during a retry. No State loading mode or comparison cache. Partial measurements remain actual unavailable values. |
+| ExerciseState | Optional entity and nonnull history | Rebuild | Actual source values only | Missing primary entity shows the existing unavailable message. Only the finite History request controls its comparison skeleton while history is empty. No primary cache-loading skeleton, Loading/Available/Unavailable lifecycle wrapper, readiness flag or nullable collection. |
 | ExerciseScreen | Scroll position | Runtime only | Existing Compose scroll owner | Presentation-only; no business selection or accepted result. |
 | ExerciseVolumeHistoryChart | Tooltip / touched bar | Runtime only | Existing shared BarChart owner | No business selection; recreated from chronological history with the selected entry last. |
 | DialogConfig.Exercise / host | id, title, callbacks and session identity | Runtime only | Existing slot and content stack, serializer = null | Retained VM supports ordinary recreation; process death closes the dialog session. No StateKeeper supplier is added. |
@@ -142,9 +142,10 @@ receipt, lifecycle resubscription or restoration. No verification-only productio
 hooks or automated test infrastructure are introduced.
 
 Typed events, parameters, eligibility, consent and transport retain the recorded
-contract. The startup decorator remains after the available-record gate within
-the same initialization path; Available stores an immutable history list, while ExerciseLoader.History supplies
-the only operation progress. Empty history and unsupported stored tonnage use a
+contract. The startup decorator remains after the first actual entity snapshot
+within the same initialization path; ExerciseState stores a nonnull immutable
+history list, while ExerciseLoader.History supplies
+history operation progress. Empty history and unsupported stored tonnage use a
 neutral BannerCard in the existing reserved plot region. The admin
 section retains its live configuration evidence; layout and chart eligibility
 changes add no analytics-facing symbols or admin consumer dependency.

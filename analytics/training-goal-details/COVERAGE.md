@@ -31,7 +31,7 @@ No screen enum or separate dialog presentation contract is introduced.
 | HomeViewModel config onAddGoal closure | HomeEvent.AddGoalClicked | Parent observes its accepted navigation callback, separate from dialog click intent |
 | TrainingCompletedViewModel.onGoalClick | TrainingEvent.Completed.GoalOpened / completed_goal_opened v1 | Resolved-period guard (`state.range.value`); parent-owned open intent with title `goal_details_title` and the Completed period; empty payload |
 | TrainingCompletedViewModel config onAddGoal closure | TrainingEvent.Completed.AddGoalClicked / completed_add_goal_clicked v1 | Parent observes its accepted navigation callback before `TrainingCompletedDirection.Goal`; the Growth GoalCard itself has no add/update action |
-| Training/goal/catalog observation and adherence calculation | Deliberate omission | Reactive presentation rebuilding, no finite command or submission |
+| Training/goal/catalog observation and adherence calculation | Deliberate omission | Plain reactive presentation rebuilding; no remote command or submission |
 | Local assessment disclosure | Deliberate omission | Presentation-only expand/collapse; no domain command, navigation or submission |
 
 The leaf `onBack` callback records `DismissRequested`, not completed dismissal.
@@ -55,12 +55,12 @@ sheet's own two facts.
 | Owner | Field/group | Preserve / Rebuild / Runtime only | Serializer/key or data source | Restore/default and check |
 |---|---|---|---|---|
 | TrainingGoalDetailsComponent / VM | Immutable range seed | Runtime only | Caller range (Home's selected range or Completed's resolved period), retainedInstance | Reopening receives the caller's current range; retained recreation reuses the VM |
-| TrainingGoalDetailsViewModel | progress; priority, positive and additional findings plus unavailable-assessment copy derive from it | Rebuild | Combined TrainingFeature.observeTrainings, GoalFeature.observeGoal and currentDateFlow; relevant ExerciseExampleFeature.observeExerciseExamples IDs trigger recalculation; GoalFollowingUseCase with explicit range/current goal/current time | Fresh VM starts with null progress and a neutral NoData explanation; goal removal clears progress; an existing goal with empty period retains its summary and a null score; latest source updates cancel obsolete computation |
+| TrainingGoalDetailsViewModel | Actual optional progress; derived findings and notice | Rebuild | Plain combined training/goal/date/example observation; existing GoalFollowingUseCase | Concrete normal State. Progress remains genuinely optional for no goal or no assessment. The observer publishes actual calculations without a loader, bootstrap query, nullable whole-State sentinel, wrapper or readiness flag. |
 | GoalProgressState in dialog | grouped GoalAnalysisEvidenceState (range and valid/excluded/metadata-missing set counts), derived days/timeline, findings and prepared optional domain score | Rebuild | Domain adherence mapped through domain-to-state | Only observations since goal creation and inside the selected range are represented; insufficient observations have no numeric score |
 | Rendered content | Localized dates, evidence, unavailable-assessment copy and goal presentation | Rebuild | Typed date range rendered through DateRangeFormatState.shortStartEnd(); current resources and rebuilt progress | Locale changes resolve period endpoints and copy again; no resolved-label cache or saved business snapshot |
 | TrainingGoalDetailsScreen | Assessment disclosure | Runtime only | Local rememberSaveable keyed by goal primary/creation date | Collapsed for a fresh goal/session; survives recomposition/configuration within the current in-memory dialog; no process-death archive |
 | Dialog host | Session, callbacks, pending directions | Runtime only | DialogComponent slot and DialogContentComponent stack use serializer = null | Process death closes the dialog; callbacks are never archived |
-| Foundation / widgets | Jobs, loaders, scroll state and telemetry provenance | Runtime only | Existing foundation/widget ownership | No new persistence owner or synthetic interaction replay |
+| Foundation / widgets | Jobs, scroll state and telemetry | Runtime only | Existing foundation/widget owners | Pure observation has no loading operation or skeleton. No extra cache read, loader helper or archive is introduced; all dialog sessions remain unsaved. |
 
 The sheet owns no editable fields, selections, accepted picker results or drafts.
 Range is a caller seed. Data-backed fields rebuild reactively; they are not saved.
@@ -76,7 +76,7 @@ optional domain score and semantic status. Its modest neutral percentage is
 explicitly labelled training alignment. The Home Overview card remains
 unchanged. A null score has no corrective or positive diagnostic findings; a
 neutral notice distinguishes TooEarly, NoData and no analysis-range overlap.
-Null progress retains the existing neutral unavailable-assessment notice and
+Null progress retains the neutral unavailable-assessment notice and
 never claims a confirmed missing goal or exposes a premature goal-creation action.
 
 The sheet keeps at most two priority non-PASS findings visible in the existing

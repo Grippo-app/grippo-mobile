@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -564,7 +563,6 @@ private fun RecapCollapsingSurface(
 
         val expandedTop = topInset + expandedPaddingPx
         val collapsedTop = topInset + collapsedPaddingPx
-        val surfaceRadius = collapsed.radius.toPx() * fraction
         val parallax = (offset * RECAP_COLLAPSE_PARALLAX).roundToInt()
         val titleScale = lerp(1f, RECAP_COLLAPSE_TITLE_SCALE, fraction)
         val titleOrigin =
@@ -589,10 +587,7 @@ private fun RecapCollapsingSurface(
         val barRise = collapsed.rise.toPx()
 
         layout(width, height) {
-            surfacePlaceable.placeWithLayer(x = 0, y = 0) {
-                shape = RoundedCornerShape(bottomStart = surfaceRadius, bottomEnd = surfaceRadius)
-                clip = true
-            }
+            surfacePlaceable.place(x = 0, y = 0)
             textPlaceable.placeRelativeWithLayer(x = startPadding, y = expandedTop - parallax) {
                 alpha = 1f - barAlpha
                 scaleX = titleScale

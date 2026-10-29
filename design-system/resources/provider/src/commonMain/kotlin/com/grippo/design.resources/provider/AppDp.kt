@@ -418,7 +418,7 @@ public data object AppDp {
             }
 
             public data object Records {
-                public val trophyIcon: Dp = Trend.icon
+                public val trophyIcon: Dp = icon.xLarge
             }
         }
 
@@ -560,7 +560,6 @@ public data object AppDp {
             public data object Collapsed {
                 public val backdrop: Dp = 48.dp
                 public val verticalPadding: Dp = padding.medium
-                public val radius: Dp = AppDp.radius.xxLarge
                 public val rise: Dp = padding.small
             }
         }

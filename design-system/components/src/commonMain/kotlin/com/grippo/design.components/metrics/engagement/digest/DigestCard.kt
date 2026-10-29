@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.rememberTextMeasurer
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.engagement.DigestState
@@ -18,6 +19,8 @@ import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.components.modifiers.scalableClick
+import com.grippo.design.components.skeleton.SkeletonPanel
+import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -53,6 +56,20 @@ public fun DigestCard(
             is DigestState.Content -> ContentDigestBody(value = value)
         }
     }
+}
+
+@Composable
+public fun DigestCardSkeleton(modifier: Modifier = Modifier) {
+    val textMeasurer = rememberTextMeasurer()
+    val header = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
+    val count = rememberTextHeight(style = AppTokens.typography.h3(), textMeasurer = textMeasurer)
+    val label = rememberTextHeight(style = AppTokens.typography.b13Med(), textMeasurer = textMeasurer)
+    val breakdownLabel = rememberTextHeight(style = AppTokens.typography.b11Med(), textMeasurer = textMeasurer)
+    val contentHeight = maxOf(header, AppTokens.dp.metrics.overview.detailsIcon) +
+        count + label + header + breakdownLabel + AppTokens.dp.contentPadding.text * 2 +
+        AppTokens.dp.divider.thickness + AppTokens.dp.metrics.panel.large.spacer * 3
+
+    SkeletonPanel(modifier = modifier, contentHeight = contentHeight)
 }
 
 @Composable
@@ -140,6 +157,14 @@ private fun DigestCardPreview() {
             value = stubDigest(),
             onClick = {},
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun DigestCardSkeletonPreview() {
+    PreviewContainer {
+        DigestCardSkeleton(modifier = Modifier.fillMaxWidth())
     }
 }
 

@@ -70,7 +70,6 @@ import com.grippo.design.resources.provider.muscle_loading_details_no_workouts_m
 import com.grippo.design.resources.provider.muscle_loading_details_no_workouts_title
 import com.grippo.design.resources.provider.muscle_loading_details_unknown_message
 import com.grippo.design.resources.provider.muscle_loading_details_unknown_title
-import com.grippo.muscle.loading.details.components.MuscleLoadingDetailsSkeleton
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
@@ -129,57 +128,55 @@ private fun MuscleLoadingDetailsContent(
                         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                     ) {
                         val summary = state.summary
-                        if (summary == null) {
-                            MuscleLoadingDetailsSkeleton(modifier = Modifier.fillMaxWidth())
+                        summary ?: return@Column
+
+                        if (summary.meta.trainingsCount > 0) {
+                            MuscleLoadingCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                summary = summary,
+                                style = MuscleLoadingCardStyle.Summary,
+                            )
+                        }
+
+                        if (summary.perGroup.entries.isEmpty()) {
+                            MuscleLoadingMissingContent(summary = summary)
                         } else {
-                            if (summary.meta.trainingsCount > 0) {
-                                MuscleLoadingCard(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    summary = summary,
-                                    style = MuscleLoadingCardStyle.Summary,
-                                )
-                            }
+                            Segment(
+                                modifier = Modifier.fillMaxWidth(),
+                                items = segmentItems,
+                                selected = state.mode,
+                                onSelect = onSelectMode,
+                                segmentWidth = SegmentWidth.EqualFill,
+                                style = SegmentStyle.Outline,
+                            )
 
-                            if (summary.perGroup.entries.isEmpty()) {
-                                MuscleLoadingMissingContent(summary = summary)
-                            } else {
-                                Segment(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    items = segmentItems,
-                                    selected = state.mode,
-                                    onSelect = onSelectMode,
-                                    segmentWidth = SegmentWidth.EqualFill,
-                                    style = SegmentStyle.Outline,
-                                )
+                            MuscleLoadingImagesRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                summary = summary,
+                                mode = when (state.mode) {
+                                    MuscleLoadingDetailsShowingMode.PerGroup -> MuscleLoadingImagesMode.PerGroup
+                                    MuscleLoadingDetailsShowingMode.PerMuscle -> MuscleLoadingImagesMode.PerMuscle
+                                },
+                            )
 
-                                MuscleLoadingImagesRow(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    summary = summary,
-                                    mode = when (state.mode) {
-                                        MuscleLoadingDetailsShowingMode.PerGroup -> MuscleLoadingImagesMode.PerGroup
-                                        MuscleLoadingDetailsShowingMode.PerMuscle -> MuscleLoadingImagesMode.PerMuscle
-                                    },
-                                )
+                            MuscleLoading(
+                                modifier = Modifier.fillMaxWidth(),
+                                summary = summary,
+                                mode = when (state.mode) {
+                                    MuscleLoadingDetailsShowingMode.PerGroup -> MuscleLoadingMode.PerGroup
+                                    MuscleLoadingDetailsShowingMode.PerMuscle -> MuscleLoadingMode.PerMuscle
+                                },
+                                style = MuscleLoadingStyle.Breakdown,
+                            )
+                        }
 
-                                MuscleLoading(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    summary = summary,
-                                    mode = when (state.mode) {
-                                        MuscleLoadingDetailsShowingMode.PerGroup -> MuscleLoadingMode.PerGroup
-                                        MuscleLoadingDetailsShowingMode.PerMuscle -> MuscleLoadingMode.PerMuscle
-                                    },
-                                    style = MuscleLoadingStyle.Breakdown,
-                                )
-                            }
-
-                            if (summary.meta.trainingsCount > 0) {
-                                MuscleLoadingMethodDisclosure(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    summary = summary,
-                                    isExpanded = isMethodExpanded,
-                                    onToggle = onToggleMethod,
-                                )
-                            }
+                        if (summary.meta.trainingsCount > 0) {
+                            MuscleLoadingMethodDisclosure(
+                                modifier = Modifier.fillMaxWidth(),
+                                summary = summary,
+                                isExpanded = isMethodExpanded,
+                                onToggle = onToggleMethod,
+                            )
                         }
                     }
                 }
@@ -345,18 +342,6 @@ private fun UnknownMuscleDataPreview() {
     PreviewContainer {
         MuscleLoadingDetailsScreen(
             state = previewState(summary = stubMuscleLoadSummaryUnknown()),
-            loaders = persistentSetOf(),
-            contract = MuscleLoadingDetailsContract.Empty,
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun LoadingSummaryPreview() {
-    PreviewContainer {
-        MuscleLoadingDetailsScreen(
-            state = previewState(summary = null),
             loaders = persistentSetOf(),
             contract = MuscleLoadingDetailsContract.Empty,
         )

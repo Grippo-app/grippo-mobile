@@ -55,33 +55,36 @@ internal class ProfileBodyViewModel(
     }
 
     init {
+        val users = userFeature.observeUser()
+
         if (initialState == null) {
-            userFeature.observeUser()
+            users
                 .filterNotNull()
                 .take(1)
                 .onEach(::provideInitialUser)
                 .safeLaunch(processing = Processing.Infinity, recovery = ErrorRecovery.Retry)
         }
 
-        safeLaunch(recovery = ErrorRecovery.Retry) {
+        safeLaunch(loader = ProfileBodyLoader.RefreshHistory, recovery = ErrorRecovery.Retry) {
             analytics.trackOperation(ProfileOperation.RefreshWeightHistory) {
                 weightHistoryFeature.getWeightHistory()
             }
         }
 
-        safeLaunch(recovery = ErrorRecovery.Retry) {
+        safeLaunch(
+            loader = if (initialState == null) ProfileBodyLoader.User else null,
+            recovery = ErrorRecovery.Retry,
+        ) {
             analytics.trackOperation(ProfileOperation.RefreshUser) {
                 userFeature.getUser()
             }
         }
 
-        userFeature
-            .observeUser()
+        users
             .onEach(::provideUser)
             .safeLaunch(recovery = ErrorRecovery.Retry)
 
-        weightHistoryFeature
-            .observeWeightHistory()
+        weightHistoryFeature.observeWeightHistory()
             .onEach(::provideWeightHistory)
             .safeLaunch(recovery = ErrorRecovery.Retry)
     }

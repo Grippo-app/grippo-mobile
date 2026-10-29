@@ -1,5 +1,12 @@
 package com.grippo.training.completed
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +27,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.layer.GraphicsLayer
@@ -63,16 +71,13 @@ import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCard
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCardStyle
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
-import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardSkeleton
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardStyle
 import com.grippo.design.components.metrics.performance.PerformanceComparisonSection
-import com.grippo.design.components.metrics.performance.PerformanceComparisonSectionSkeleton
 import com.grippo.design.components.metrics.performance.TrainingRecordsCard
 import com.grippo.design.components.metrics.performance.TrainingRecordsCardSkeleton
 import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.metrics.profile.goal.GoalCardStyle
 import com.grippo.design.components.metrics.volume.WeeklyVolumeSection
-import com.grippo.design.components.metrics.volume.WeeklyVolumeSectionSkeleton
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.training.TrainingRecapHero
 import com.grippo.design.components.training.TrainingRecapHeroSkeleton
@@ -116,7 +121,8 @@ internal fun TrainingCompletedScreen(
     val isSaving = loaders.contains(TrainingCompletedLoader.SaveTraining)
     val isSharing = loaders.contains(TrainingCompletedLoader.ShareRecap)
     val training = state.training
-    val heroStyle = trainingCompletedHeroStyle(state)
+    val performance = state.performance
+    val heroStyle = performance?.let { trainingCompletedHeroStyle(performance = it, range = state.range) }
     val heroLayer = rememberGraphicsLayer()
     val heroState = rememberTrainingRecapHeroState()
     val heroPadding = WindowInsets.statusBars.asPaddingValues()
@@ -125,7 +131,7 @@ internal fun TrainingCompletedScreen(
     val shareState = when {
         isSaving -> ButtonState.Disabled
         isSharing -> ButtonState.Loading
-        heroStyle is TrainingRecapHeroStyle.Resolved -> ButtonState.Enabled
+        heroStyle != null -> ButtonState.Enabled
         else -> ButtonState.Disabled
     }
 
@@ -141,7 +147,7 @@ internal fun TrainingCompletedScreen(
                     contentPadding = heroPadding,
                 )
 
-                training != null -> TrainingCompletedHero(
+                training != null && heroStyle != null -> TrainingCompletedHero(
                     modifier = Modifier.fillMaxWidth(),
                     training = training,
                     style = heroStyle,
@@ -170,7 +176,7 @@ internal fun TrainingCompletedScreen(
                             contentPadding = resolvedPadding,
                             listState = contentListState,
                             state = state,
-                            loaders = loaders,
+                            isLoadingRecords = TrainingCompletedLoader.LoadRecords in loaders,
                             contract = contract,
                         )
                     }
@@ -237,11 +243,10 @@ private fun TrainingCompletedContent(
     contentPadding: PaddingValues,
     listState: LazyListState,
     state: TrainingCompletedState,
-    loaders: ImmutableSet<TrainingCompletedLoader>,
+    isLoadingRecords: Boolean,
     contract: TrainingCompletedContract,
 ) {
     val performance = state.performance
-    val isLoadingRecords = loaders.contains(TrainingCompletedLoader.LoadRecords)
     val loadingDescription = AppTokens.strings.res(Res.string.loading)
     val sectionModifier = Modifier
         .fillMaxWidth()
@@ -273,68 +278,76 @@ private fun TrainingCompletedContent(
             return@LazyColumn
         }
 
-        if (isLoadingRecords || state.records.isNotEmpty()) {
-            item(key = "training_records") {
-                if (isLoadingRecords) {
-                    TrainingRecordsCardSkeleton(
-                        modifier = sectionModifier.semantics(mergeDescendants = true) {
-                            contentDescription = loadingDescription
-                            progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
-                        },
-                    )
-                } else {
-                    TrainingRecordsCard(
-                        modifier = sectionModifier,
-                        records = state.records,
-                        onRecordClick = contract::onRecordClick,
-                    )
+        item(key = "performance_comparison") {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                AnimatedContent(
+                    modifier = Modifier.fillMaxWidth(),
+                    targetState = if (isLoadingRecords) null else state.records,
+                    transitionSpec = {
+                        (fadeIn(animationSpec = tween(durationMillis = 300)) togetherWith
+                            fadeOut(animationSpec = tween(durationMillis = 150)))
+                            .using(
+                                SizeTransform(sizeAnimationSpec = { _, _ ->
+                                    tween(durationMillis = 300, easing = FastOutSlowInEasing)
+                                }),
+                            )
+                    },
+                    contentAlignment = Alignment.TopStart,
+                    label = "TrainingCompletedRecords",
+                ) { records ->
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        if (records == null) {
+                            TrainingRecordsCardSkeleton(
+                                modifier = sectionModifier.semantics(mergeDescendants = true) {
+                                    contentDescription = loadingDescription
+                                    progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
+                                },
+                            )
+                        } else if (records.isNotEmpty()) {
+                            TrainingRecordsCard(
+                                modifier = sectionModifier,
+                                records = records,
+                                onRecordClick = contract::onRecordClick,
+                            )
+                        }
+
+                        if (records == null || records.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
+                        }
+                    }
                 }
 
+                if (performance != null) {
+                    PerformanceComparisonSection(
+                        modifier = sectionModifier,
+                        metrics = performance.metrics,
+                        reference = performance.reference,
+                        onReferenceSelect = contract::onReferenceSelect,
+                        onMetricClick = contract::onMetricClick,
+                    )
+                }
+            }
+        }
+
+        if (state.weeklyVolume != null || state.streak != null ||
+            state.goalProgress != null || state.muscleLoad != null
+        ) {
+            item(key = "progress_heading") {
                 Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
+
+                Text(
+                    modifier = sectionModifier.semantics { heading() },
+                    text = AppTokens.strings.res(Res.string.progress),
+                    style = AppTokens.typography.h4(),
+                    color = AppTokens.colors.text.primary,
+                )
+
+                Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
             }
         }
 
-        item(key = "performance_comparison") {
-            if (performance == null) {
-                PerformanceComparisonSectionSkeleton(
-                    modifier = sectionModifier.semantics(mergeDescendants = true) {
-                        contentDescription = loadingDescription
-                        progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
-                    },
-                )
-            } else {
-                PerformanceComparisonSection(
-                    modifier = sectionModifier,
-                    metrics = performance.metrics,
-                    reference = performance.reference,
-                    onReferenceSelect = contract::onReferenceSelect,
-                    onMetricClick = contract::onMetricClick,
-                )
-            }
-        }
-
-        item(key = "progress_heading") {
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
-
-            Text(
-                modifier = sectionModifier.semantics { heading() },
-                text = AppTokens.strings.res(Res.string.progress),
-                style = AppTokens.typography.h4(),
-                color = AppTokens.colors.text.primary,
-            )
-
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
-        }
-
-        item(key = "weekly_volume") {
-            if (state.weeklyVolume == null) {
-                WeeklyVolumeSectionSkeleton(
-                    modifier = sectionModifier.semantics(mergeDescendants = true) {
-                        contentDescription = loadingDescription
-                        progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
-                    },
-                )
-            } else {
+        if (state.weeklyVolume != null) {
+            item(key = "weekly_volume") {
                 WeeklyVolumeSection(
                     modifier = sectionModifier,
                     value = state.weeklyVolume,
@@ -342,16 +355,7 @@ private fun TrainingCompletedContent(
             }
         }
 
-        if (performance == null) {
-            item(key = "training_streak_skeleton") {
-                ProgressDivider(modifier = sectionModifier)
-
-                TrainingStreakCardSkeleton(
-                    modifier = sectionModifier,
-                    style = TrainingStreakCardStyle.Growth(previous = null),
-                )
-            }
-        } else if (state.streak != null) {
+        if (state.streak != null) {
             item(key = "training_streak") {
                 ProgressDivider(modifier = sectionModifier)
 
@@ -416,12 +420,13 @@ private fun TrainingCompletedHero(
 }
 
 @Composable
-private fun trainingCompletedHeroStyle(state: TrainingCompletedState): TrainingRecapHeroStyle {
-    val performance = state.performance ?: return TrainingRecapHeroStyle.Pending
-
+private fun trainingCompletedHeroStyle(
+    performance: PerformanceComparisonState,
+    range: DateRangeFormatState,
+): TrainingRecapHeroStyle.Resolved {
     val verdict = PerformanceVerdictState.of(performance.metrics)
     val summary = verdict.summary(metrics = performance.metrics, reference = performance.reference)
-    val rangeLabel = performance.periodLabel(state.range)
+    val rangeLabel = performance.periodLabel(range)
     val description = if (rangeLabel == null) {
         summary
     } else {
@@ -599,7 +604,7 @@ private fun TrainingCompletedRecordsPendingPreview() {
 
 @AppPreview
 @Composable
-private fun TrainingCompletedProgressPendingPreview() {
+private fun TrainingCompletedOptionalResultsUnavailablePreview() {
     PreviewContainer {
         TrainingCompletedScreen(
             state = trainingCompletedPreviewState().copy(

@@ -97,11 +97,6 @@ internal fun ExerciseExampleDetailsAchievementsContent(
             recent.forEachIndexed { index, item ->
                 val previous = recent.getOrNull(index + 1)
                 val delta = previous?.let(item::volumeDeltaPercent)
-                val trailing: (@Composable () -> Unit)? = if (delta != null) {
-                    { ExerciseHistoryVolumeDelta(delta = delta) }
-                } else {
-                    null
-                }
 
                 key(item.id) {
                     ExerciseCard(
@@ -109,7 +104,13 @@ internal fun ExerciseExampleDetailsAchievementsContent(
                             .fillMaxWidth()
                             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                         value = item,
-                        style = ExerciseCardStyle.Small(trailing = trailing),
+                        style = ExerciseCardStyle.Small(
+                            trailing = if (delta != null) {
+                                { ExerciseHistoryVolumeDelta(delta = delta) }
+                            } else {
+                                null
+                            },
+                        ),
                     )
                 }
 
