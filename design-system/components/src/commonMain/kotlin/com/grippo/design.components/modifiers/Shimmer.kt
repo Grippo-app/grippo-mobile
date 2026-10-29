@@ -1,12 +1,16 @@
 package com.grippo.design.components.modifiers
 
-import androidx.compose.animation.core.EaseInOutSine
 import androidx.compose.animation.core.withInfiniteAnimationFrameMillis
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,9 +18,9 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.MotionDurationScale
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -27,6 +31,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
+import com.grippo.design.components.skeleton.SkeletonBone
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -35,8 +40,8 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-private const val SHIMMER_SWEEP_MILLIS = 1700L
-private const val SHIMMER_PAUSE_MILLIS = 500L
+private const val SHIMMER_SWEEP_MILLIS = 1500L
+private const val SHIMMER_PAUSE_MILLIS = 300L
 private const val SHIMMER_TILT_DEGREES = 15f
 private const val SHIMMER_PROFILE_STEPS = 8
 
@@ -45,7 +50,9 @@ public fun Modifier.shimmer(
     enabled: Boolean = true,
     highlightColor: Color = AppTokens.colors.shimmer.neutral,
 ): Modifier {
-    if (!enabled) return this
+    if (!enabled) {
+        return this
+    }
     val waveWidth = AppTokens.dp.shimmer.waveWidth
     val progress = produceState<Float?>(initialValue = null) {
         while (true) {
@@ -55,7 +62,7 @@ public fun Modifier.shimmer(
                 withInfiniteAnimationFrameMillis { frameTime ->
                     val elapsed = (frameTime % cycle) / motionScale
                     value = if (elapsed < SHIMMER_SWEEP_MILLIS) {
-                        EaseInOutSine.transform(elapsed / SHIMMER_SWEEP_MILLIS)
+                        elapsed / SHIMMER_SWEEP_MILLIS
                     } else {
                         null
                     }
@@ -109,14 +116,52 @@ private fun shimmerStops(highlight: Color): Array<Pair<Float, Color>> {
 
 @AppPreview
 @Composable
-private fun ShimmerPreview() {
+private fun ShimmerSurfacesPreview() {
     PreviewContainer {
-        Box(
-            Modifier.fillMaxWidth()
-                .height(AppTokens.dp.button.medium.height)
-                .clip(CircleShape)
-                .background(AppTokens.colors.background.card)
-                .shimmer(),
-        )
+        listOf(
+            AppTokens.colors.background.screen,
+            AppTokens.colors.background.card,
+            AppTokens.colors.background.dialog,
+        ).forEach { surface ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(surface)
+                    .padding(AppTokens.dp.contentPadding.content),
+            ) {
+                SkeletonBone(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(AppTokens.dp.button.medium.height),
+                    shape = RoundedCornerShape(AppTokens.dp.button.medium.radius),
+                )
+            }
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun ShimmerWarmSurfacePreview() {
+    PreviewContainer {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .illustrationBackground(RoundedCornerShape(AppTokens.dp.brandHeader.radius))
+                .padding(AppTokens.dp.contentPadding.content),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            SkeletonBone(
+                modifier = Modifier.size(AppTokens.dp.userCard.avatar.small),
+                shape = CircleShape,
+            )
+            SkeletonBone(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(AppTokens.dp.button.small.height),
+                animated = false,
+            )
+        }
     }
 }

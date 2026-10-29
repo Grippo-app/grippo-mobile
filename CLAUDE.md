@@ -266,7 +266,7 @@ for Claude Code and Codex launch, capabilities and protection.
 | Agent | Role | Rights | Skills |
 |---|---|---|---|
 | `scout` | Inventory callers, screens, routes, dependencies, resource usages | Read-only (guarded Bash) | - |
-| `code-reviewer` | Independent review of a diff against requirements, gates and forbidden patterns | Read-only | validation-gates, compose-components |
+| `code-reviewer` | Independent review of a diff against requirements, gates and forbidden patterns | Read-only | validation-gates |
 | `design-reviewer` | Independent visual/brand acceptance with the usage/state inventory and renders | Read-only | brand-design, design-system, compose-components |
 | `gate-auditor` | Analytics coverage gate and preservation gate inventories and verdicts | Read-only | feature-analytics, state-preservation |
 | `backend-contract-auditor` | Backend evidence gathering and drift tables before wire changes | Read-only + WebFetch | backend-contract-client |

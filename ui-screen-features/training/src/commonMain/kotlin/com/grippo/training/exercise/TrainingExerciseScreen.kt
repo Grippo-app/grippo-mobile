@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,7 +49,8 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.divider.ContentDivider
 import com.grippo.design.components.dragdrop.DraggableItem
 import com.grippo.design.components.dragdrop.rememberDragDropListState
-import com.grippo.design.components.empty.IllustratedEmptyState
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.frames.OverlayContainer
@@ -175,15 +178,18 @@ internal fun TrainingExerciseScreen(
                 targetState = state.exercise.iterations.isEmpty(),
             ) { isEmpty ->
                 when (isEmpty) {
-                    true -> IllustratedEmptyState(
+                    true -> EmptyState(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-                        painter = AppTokens.drawables.res(Res.drawable.empty_sets),
-                        illustrationStyle = IllustrationStyle.Medium,
-                        title = AppTokens.strings.res(Res.string.training_no_sets),
+                            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                            .verticalScroll(rememberScrollState())
+                            .padding(resolvedPadding),
                         text = AppTokens.strings.res(Res.string.training_first_set_hint),
-                        contentPadding = resolvedPadding,
+                        style = EmptyStateStyle.Illustrated(
+                            painter = AppTokens.drawables.res(Res.drawable.empty_sets),
+                            illustrationStyle = IllustrationStyle.Medium,
+                        ),
+                        title = AppTokens.strings.res(Res.string.training_no_sets),
                     )
 
                     false -> {

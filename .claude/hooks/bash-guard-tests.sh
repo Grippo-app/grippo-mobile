@@ -116,8 +116,8 @@ run readonly-build './gradlew :ui-core:state:compileAndroidMain' allow
 run readonly-build './gradlew clean' block
 run readonly-build './gradlew :androidApp:assembleDebug --rerun-tasks' block
 run readonly-build 'xcrun simctl boot "iPhone 17"' allow
-run readonly-build 'adb install -r build/app.apk' allow
-run readonly-build 'adb exec-out screencap -p > /private/tmp/shots/s1.png' allow
+run readonly-build 'adb -s emulator-5554 install -r build/app.apk' allow
+run readonly-build 'adb -s emulator-5554 exec-out screencap -p > /private/tmp/shots/s1.png' allow
 run readonly-build 'adb exec-out screencap -p > "$SCRATCH/s1.png"' block
 run readonly-build 'adb exec-out screencap -p > shots/s1.png' block
 run readonly-build "adb exec-out screencap -p > $CLAUDE_PROJECT_DIR/s1.png" block
@@ -239,11 +239,115 @@ run readonly-build 'xcrun simctl delete unavailable' block
 run readonly-build 'xcrun agvtool new-version 2' block
 run readonly-build 'adb shell "rm -rf /sdcard/x"' block
 run readonly-build "adb pull /sdcard/x $CLAUDE_PROJECT_DIR/build/x" block
-run readonly-build 'adb pull /sdcard/x /private/tmp/shots/x' allow
+run readonly-build 'adb -s emulator-5554 pull /sdcard/x /private/tmp/shots/x' allow
 run readonly-build 'adb root' block
 run readonly-build 'emulator -avd x -wipe-data' block
 run readonly-build './gradlew :androidApp:assembleDebug -Pandroid.injected.signing.store.file=x' block
 run no-git-write 'git config --unset user.name' block
 run no-git-write 'gh repo clone x' block
+# ---------- owner/capability regressions ----------
+run readonly 'git branch -l guard-probe' allow
+run readonly-build 'git branch --create-reflog guard-probe' block
+run no-git-write 'git branch -v guard-probe' block
+run readonly 'git branch -vv guard-probe' block
+run readonly 'git branch --column guard-probe' block
+run readonly 'git branch --sort=refname guard-probe' block
+run readonly 'git branch --format="%(refname)" guard-probe' block
+run readonly 'git branch --sort refname guard-probe' block
+run readonly 'git branch --sort refname' allow
+run readonly 'git branch -v --list "guard*"' allow
+run readonly 'git branch --list --no-list guard-probe' block
+run readonly 'git tag --sort=refname guard-probe' block
+run readonly 'git -ccore.fsmonitor=touch status' block
+run readonly 'git -cuser.name=reviewer status --short' allow
+run readonly 'git --exec-path=/private/tmp status' block
+run readonly 'git diff --ext-diff' block
+run readonly 'git show --textconv HEAD:CLAUDE.md' block
+run readonly 'git grep --open-files-in-pager=sh pattern' block
+run readonly 'git grep -Osh pattern' block
+run readonly 'sed -n "s/foo/bar/w /private/tmp/guard-probe" CLAUDE.md' block
+run readonly 'sed -n "1w /private/tmp/guard-probe" CLAUDE.md' block
+run readonly 'sed -f /private/tmp/unreviewed-script CLAUDE.md' block
+run readonly 'sed --file=/private/tmp/unreviewed-script CLAUDE.md' block
+run readonly 'sed "s/foo/bar/e" CLAUDE.md' block
+run readonly 'sed -n "1,20p" CLAUDE.md' allow
+run readonly 'sed -n -e "1,20p" -e "25,30p" CLAUDE.md' allow
+run readonly 'sed -E "s|foo|bar|g" CLAUDE.md' allow
+run readonly 'awk '\''BEGIN {system ("touch /private/tmp/guard-probe")}'\''' block
+run readonly 'awk -f /private/tmp/unreviewed-script CLAUDE.md' block
+run readonly 'awk '\''NR <= 20 {print $0}'\'' CLAUDE.md' allow
+run readonly-build './gradlew :shared:publish' block
+run readonly-build './gradlew :androidApp:testDebugUnitTest' block
+run readonly-build './gradlew :androidApp:lintDebug' block
+run readonly-build './gradlew :shared:tasks --all' allow
+run readonly-build 'adb install -r build/app.apk' block
+run readonly-build 'adb -e shell input tap 10 10' block
+run readonly-build 'adb -s emulator-5554 emu avd name' allow
+run readonly-build 'adb -s emulator-5554 shell input tap 10 10' allow
+run readonly-build 'xcrun simctl io selected-simulator screenshot /private/tmp/shots/ios.png' allow
+run readonly-build "xcrun simctl io selected-simulator screenshot $CLAUDE_PROJECT_DIR/ios.png" block
+run readonly-build 'xcrun simctl io booted screenshot /private/tmp/shots/ios.png' block
+run readonly-build 'simctl erase all' block
+run readonly-build 'xcrun simctl io selected-simulator screenshot "/private/tmp/$OUT"' block
+run readonly-build 'adb -s emulator-5554 pull /sdcard/x "/private/tmp/$OUT"' block
+run readonly-build 'mkdir -p "/private/tmp/$OUT"' block
+run readonly-build 'adb -s emulator-5554 exec-out screencap -p > "/private/tmp/$OUT"' block
+run readonly-build 'xcrun simctl io selected-simulator screenshot /private/tmp/*/shot.png' block
+run readonly-build 'adb -s emulator-5554 pull /sdcard/x' block
+run readonly-build 'adb -s emulator-5554 pull -a /sdcard/x' block
+# ---------- deep parser and supported-inspection regressions ----------
+run readonly 'echo token#literal; git add -A' block
+run no-git-write 'echo token#literal; git add -A' block
+run readonly 'ls # comment'"$NL"'git add -A' block
+run readonly 'ls # only this line is a comment'"$NL"'git status --short' allow
+run readonly 'ls # inspect $(literal)' allow
+run readonly "echo \\'; git add -A; echo \\'" block
+run readonly 'echo \"literal; git add -A; echo \"' block
+run no-git-write 'gi\'"$NL"'t add -A' block
+run no-git-write "# don't parse comment quotes"$NL'gi\'"$NL"'t add -A' block
+run readonly 'echo text # continued comment \'"$NL"'git add -A' allow
+run readonly 'rg QSPAN999Z CLAUDE.md' allow
+run readonly 'rg QSPAN0Z "literal value" CLAUDE.md' allow
+run readonly-build 'echo safe > QSPAN0Z; cat "/private/tmp/guard-evidence"' block
+run readonly 'echo "$(printf literal)"' block
+run readonly 'rg '\''line one\'"$NL"'line two'\'' CLAUDE.md' allow
+run readonly 'GIT_TRACE=/private/tmp/guard-trace git status' block
+run no-git-write 'env -S "git add -A"' block
+run no-git-write 'env --split-string="git add -A"' block
+run no-git-write 'env --unset GIT_DIR git add -A' block
+run readonly 'env --unset GIT_DIR git status --short' allow
+run readonly 'env rg -S pattern CLAUDE.md' allow
+run readonly '/usr/bin/time -o/private/tmp/guard-time cat CLAUDE.md' block
+run readonly 'time -p cat CLAUDE.md' allow
+run readonly 'nice -n5 git status --short' allow
+run readonly 'timeout --signal TERM 5 git status --short' allow
+run readonly 'command -v python3' allow
+run readonly 'command -V git' allow
+run readonly 'command -v git; git add -A' block
+run readonly 'sort --compress-program=touch CLAUDE.md' block
+run readonly 'file -C -m /private/tmp/guard-magic' block
+run readonly 'file CLAUDE.md' allow
+run readonly-build 'xcrun --sdk macosx git add -A' block
+run no-git-write 'xcrun --sdk macosx git add -A' block
+run readonly-build 'xcrun xcodebuild archive -scheme iosApp' block
+run readonly-build 'xcrun --sdk iphonesimulator simctl erase all' block
+run readonly 'xcrun --sdk iphonesimulator simctl list devices booted' allow
+run readonly-build 'xcrun --sdk iphonesimulator xcodebuild -scheme iosApp build' allow
+run readonly 'git -c include.path=/private/tmp/guard-config status' block
+run readonly 'git -c includeIf.gitdir.path=/private/tmp/guard-config status' block
+run readonly 'git -c diff.guard.textconv=sh show HEAD:CLAUDE.md' block
+run readonly 'git -c diff.guard.extra.textconv=sh show HEAD:CLAUDE.md' block
+run readonly 'git remote show origin' block
+run readonly 'git remote show -- origin -n' block
+run readonly 'git remote show -n origin' allow
+run readonly 'git remote get-url show' allow
+run readonly 'git diff -O /private/tmp/orderfile' allow
+run readonly 'git grep -- -Osh' allow
+run readonly 'git --exec-path' allow
+run readonly 'git branch -uorigin/main' block
+run readonly-build './gradlew :androidApp:assembleDebug --console plain' allow
+run readonly-build './gradlew :shared:dependencyInsight --dependency koin --configuration androidRuntimeClasspath' allow
+run readonly-build './gradlew --project-dir=/private/tmp :androidApp:assembleDebug' block
+run readonly-build './gradlew -p/private/tmp :androidApp:assembleDebug' block
 echo "failures: $fails"
-exit $fails
+exit $((fails > 0))

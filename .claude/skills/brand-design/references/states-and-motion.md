@@ -77,8 +77,10 @@ concrete issues through their existing owners.
 ## Motion
 
 Motion explains an existing change or adds restrained brand presence. MUST NOT gate
-readiness, input, loading or navigation, or add timers, requests or state for
-decoration; a product timer (rest, countdown) is feature state owned by its ViewModel.
+readiness, input, loading or navigation, or add business timers, requests or feature
+state solely for decoration. Local presentation animation state follows
+[Compose lifetimes](../../compose-components/references/structure-and-runtime.md#effects-and-changing-callbacks);
+a product timer (rest, countdown) remains feature state owned by its ViewModel.
 
 | Use | Treatment |
 |---|---|

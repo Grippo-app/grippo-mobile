@@ -24,7 +24,6 @@ public data object AppDp {
         val medium: Dp = 50.dp
         val large: Dp = 64.dp
         val xLarge: Dp = 96.dp
-        val xxLarge: Dp = 262.dp
     }
 
     private data object Radius {
@@ -56,7 +55,6 @@ public data object AppDp {
         val iconSize: Dp = icon.large
         val indicatorWidth: Dp = 56.dp
         val indicatorHeight: Dp = size.small
-        val indicatorRadius: Dp = radius.large
         val horizontalPadding: Dp = padding.small
         val verticalPadding: Dp = padding.small
         val gap: Dp = padding.extraSmall
@@ -104,12 +102,12 @@ public data object AppDp {
     val userCard: UserCard = UserCard
     val welcome: Welcome = Welcome
     val illustration: Illustration = Illustration
+    public val emptyState: EmptyState = EmptyState
     val badge: Badge = Badge
     val bannerCard: BannerCard = BannerCard
     val focusFrame: FocusFrame = FocusFrame
     val tooltip: Tooltip = Tooltip
     val training: Training = Training
-    val accent: Accent = Accent
     val stepProgressIndicator: StepProgressIndicator = StepProgressIndicator
     val periodPicker: PeriodPicker = PeriodPicker
     val pagerIndicator: PagerIndicator = PagerIndicator
@@ -515,6 +513,23 @@ public data object AppDp {
         val spaceBetween: Dp = padding.extraSmall
     }
 
+    public data object EmptyState {
+        public val compact: Compact = Compact
+
+        public data object Compact {
+            public val radius: Dp = AppDp.radius.large
+            public val padding: Dp = AppDp.padding.small
+            public val spacing: Dp = AppDp.padding.medium
+            public val leadingIcon: LeadingIcon = LeadingIcon
+
+            public data object LeadingIcon {
+                public val size: Dp = 40.dp
+                public val radius: Dp = AppDp.radius.medium
+                public val iconSize: Dp = AppDp.icon.medium
+            }
+        }
+    }
+
     public data object BannerCard {
         val iconRadius: Dp = radius.medium
         val space: Dp = padding.medium
@@ -786,10 +801,6 @@ public data object AppDp {
             public val radius: Dp = AppDp.radius.medium
             val leadingIcon: Dp = icon.medium
         }
-    }
-
-    public data object Accent {
-        val smallWidth: Dp = padding.extraSmall
     }
 
     public data object PeriodPicker {

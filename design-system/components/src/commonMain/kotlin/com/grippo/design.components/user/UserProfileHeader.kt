@@ -21,6 +21,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.rememberTextMeasurer
 import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.profile.stubUser
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.modifiers.illustrationBackground
 import com.grippo.design.components.skeleton.SkeletonBone
 import com.grippo.design.components.skeleton.SkeletonText
@@ -173,10 +175,9 @@ private fun AccountHeader(
             color = AppTokens.colors.text.secondary,
         )
         if (name == null && email == null) {
-            Text(
+            EmptyState(
                 text = AppTokens.strings.res(Res.string.profile_settings_identity_unavailable),
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.secondary,
+                style = EmptyStateStyle.Text,
             )
         } else {
             if (name != null) {

@@ -81,7 +81,7 @@ internal fun ProfileSettingsScreen(
             style = UserProfileHeaderStyle.Account,
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         MenuSection(
             title = AppTokens.strings.res(Res.string.profile_settings_language_title),
@@ -131,7 +131,7 @@ internal fun ProfileSettingsScreen(
             }
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         MenuActionRow(
             title = AppTokens.strings.res(Res.string.logout_btn),

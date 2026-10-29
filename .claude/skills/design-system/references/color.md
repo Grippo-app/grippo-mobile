@@ -32,12 +32,13 @@ them in `@Immutable` state.
 - Keep the existing nested-group structure; sub-element and variant nesting follows
   the [hierarchy rule in dimension tokens](dp.md). Inspect current chart groups
   rather than inventing signatures.
-- AppColor has no card groups: the colors a card family paints for its entity,
-  including role-specific ones, live in that entity's group, nested by role or drawing context under
+- Entity-card drawing colors, including role-specific ones, live in that
+  entity's group, nested by role or drawing context under
   the hierarchy rule (`muscle.compact.background/inactive`,
   `equipment.compact.highlight`). Another group, such as `example` (exercise-example
   attribute colors), does not hold them. A role reuses the entity's identity color
   (`muscle.highlight`) instead of adding an equal-valued slot.
+  Existing component-role groups retain their own responsibilities.
 - Both themes MUST implement the same interface. ProvideResources owns selection;
   components MUST NOT branch on theme to replace that ownership.
 

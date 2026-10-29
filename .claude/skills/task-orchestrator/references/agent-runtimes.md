@@ -97,8 +97,10 @@ to a verifier. Apply the same check scope, device/site boundaries and evidence
 requirements; a missing helper does not make an available check unavailable.
 
 Report independent review as unperformed; do not substitute self-review or
-request a restart that cannot add the capability. Completion still follows the
-project's definition of done, with that missing review stated explicitly.
+request a restart that cannot add the capability. Its absence does not satisfy or
+waive independent review under the project's definition of done. Continue the
+available work and report the outstanding review; do not claim completion while
+that requirement remains unmet.
 
 ## Runtime references
 

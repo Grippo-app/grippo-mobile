@@ -186,10 +186,10 @@ the reference file(s) to read.
 
 Use the canonical [reference routing table](references/index.md#task-kind--topic--read); do not maintain a second table here.
 
-Always-on cross-cuts (MVI, dialogs, error pipeline, Decompose nav,
-process-death) are summarized at the foot of `references/mvi-contract.md`. The
-forbidden-patterns surface is owned by the validation-gates skill; each reference
-file restates the patterns relevant to its topic under its own "Anti-patterns".
+Use [MVI contract](references/mvi-contract.md) for the seven-file responsibilities
+and the routed references for their owned topics. Cross-cut prohibitions follow
+[forbidden patterns](../validation-gates/references/forbidden-patterns.md);
+recipes link to the owning rule instead of defining it again.
 
 ## Completion gate
 

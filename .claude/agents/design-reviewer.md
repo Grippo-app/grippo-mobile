@@ -42,9 +42,7 @@ renders are an evidence limit to record, not a reason to stop.
 1. Read `.claude/skills/brand-design/references/usage-and-states.md`,
    `workflow-and-review.md` (design acceptance table) and
    `.claude/skills/design-system/references/visual-consistency.md`
-   (standard viewport 412 x 915 dp; default acceptance = the two `@AppPreview`
-   variants uk-light and en-dark rendered when available, plus source review of
-   the ru strings; evidence rules in its `Evidence` section). SKILL.md files
+   for its canonical acceptance matrix and evidence requirements. SKILL.md files
    are preloaded; references are not.
 2. Reconcile the final source against the usage/state inventory: every
    production consumer, variant, applicable state and reachable combination.

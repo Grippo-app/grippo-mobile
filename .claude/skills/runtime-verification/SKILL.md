@@ -1,6 +1,6 @@
 ---
 name: runtime-verification
-description: Build, install, run and inspect the Grippo app on the Android emulator and iOS simulator for manual checks - navigation, dialogs, drafts after process death, deeplinks, themes, logs and screenshots. Use when a task needs runtime evidence the verification policy allows and the user permits running the app; owns the build-target catalog used by build verification.
+description: Run scoped Grippo build checks and, when the user authorizes running the app, verify behavior on Android emulators and iOS simulators. Owns the build-target catalog and manual navigation, restoration, deeplink, rendering and log-evidence procedures.
 ---
 
 # Runtime verification
@@ -112,7 +112,7 @@ xcrun simctl install "<simulator-udid>" <scratchpad>/ios-derived/Build/Products/
 xcrun simctl launch "<simulator-udid>" com.grippo.app
 xcrun simctl io "<simulator-udid>" screenshot /private/tmp/<scratchpad from the brief>/<scenario>-<step>-ios-<theme>.png
 xcrun simctl ui "<simulator-udid>" appearance dark      # or light
-xcrun simctl spawn "<simulator-udid>" log stream --level debug --predicate 'process == "iosApp"'
+xcrun simctl spawn "<simulator-udid>" log stream --level debug --predicate 'process == "Grippo"'
 ```
 
 - When the iOS Simulator tool is available, prefer it: `attach` first so the user

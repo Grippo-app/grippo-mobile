@@ -32,9 +32,9 @@ import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.metrics.volume.TrainingTotalState
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.core.state.trainings.stubPendingIteration
-import com.grippo.design.components.banner.BannerCard
-import com.grippo.design.components.banner.BannerCardStyle
 import com.grippo.design.components.divider.ContentDivider
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.metrics.volume.ExerciseVolumeHistoryChart
 import com.grippo.design.components.utils.rememberTextHeight
 import com.grippo.design.core.AppTokens
@@ -264,23 +264,15 @@ private fun ExerciseVolumeHistory(
                                 value = value.history.toPersistentList().adding(exercise),
                             )
                         } else {
-                            val shape = RoundedCornerShape(AppTokens.dp.metrics.panel.small.radius)
-                            BannerCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(color = AppTokens.colors.background.dialog, shape = shape)
-                                    .padding(AppTokens.dp.contentPadding.subContent),
-                                style = BannerCardStyle.Custom(
-                                    tint = AppTokens.colors.icon.secondary,
-                                    surface = AppTokens.colors.background.card,
-                                ),
-                                icon = AppTokens.icons.LineUp,
-                                title = AppTokens.strings.res(
+                            EmptyState(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = AppTokens.strings.res(
                                     when {
                                         previous == null -> Res.string.exercise_history_no_previous
                                         else -> Res.string.exercise_history_chart_unavailable
                                     },
                                 ),
+                                style = EmptyStateStyle.Compact(icon = AppTokens.icons.LineUp),
                             )
                         }
                     }

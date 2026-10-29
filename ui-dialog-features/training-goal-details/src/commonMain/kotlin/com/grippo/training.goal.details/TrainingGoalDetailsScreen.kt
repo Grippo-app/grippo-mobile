@@ -39,6 +39,8 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.metrics.profile.goal.GoalCard
 import com.grippo.design.components.metrics.profile.goal.GoalCardStyle
@@ -133,11 +135,10 @@ private fun TrainingGoalDetailsContent(
 
                 if (notice != null) {
                     item(key = "notice") {
-                        Text(
+                        EmptyState(
                             modifier = Modifier.fillMaxWidth(),
                             text = notice,
-                            style = AppTokens.typography.b13Med(),
-                            color = AppTokens.colors.text.secondary,
+                            style = EmptyStateStyle.Text,
                         )
                     }
                 }

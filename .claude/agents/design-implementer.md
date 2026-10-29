@@ -59,8 +59,9 @@ and whether a build is authorized.
    shared default, token, or artwork.
 3. Implement with product values only from producers: a changed color role
    updates `DarkColor` and `LightColor`; a new dimension lives in its `AppDp`
-   group; strings land in `values`, `values-uk` and `values-ru` with positional
-   placeholders; icons are real `AppIcon` vector paths; rasters are WebP with
+   group; localized resources pass the canonical
+   [locale and placeholder gate](../skills/design-system/references/resources.md#strings-and-plurals);
+   icons are real `AppIcon` vector paths; rasters are WebP with
    descriptive snake_case names.
 4. Migrate every caller of a changed public contract in the same slice; remove
    obsolete in-scope styles/resources after checking all uses and previews.

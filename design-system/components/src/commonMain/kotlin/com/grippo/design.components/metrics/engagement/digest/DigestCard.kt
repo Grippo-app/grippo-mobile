@@ -13,6 +13,8 @@ import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.engagement.DigestState
 import com.grippo.core.state.metrics.engagement.stubDigest
 import com.grippo.design.components.divider.ContentDivider
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.metrics.internal.MetricBreakdownItem
 import com.grippo.design.components.metrics.internal.MetricBreakdownRow
 import com.grippo.design.components.metrics.internal.MetricOverviewHeader
@@ -52,7 +54,10 @@ public fun DigestCard(
         MetricOverviewHeader(title = AppTokens.strings.res(Res.string.digest_title))
 
         when (value) {
-            is DigestState.Empty -> EmptyDigestBody()
+            is DigestState.Empty -> EmptyState(
+                text = AppTokens.strings.res(Res.string.digest_empty),
+                style = EmptyStateStyle.Text,
+            )
             is DigestState.Content -> ContentDigestBody(value = value)
         }
     }
@@ -70,15 +75,6 @@ public fun DigestCardSkeleton(modifier: Modifier = Modifier) {
         AppTokens.dp.divider.thickness + AppTokens.dp.metrics.panel.large.spacer * 3
 
     SkeletonPanel(modifier = modifier, contentHeight = contentHeight)
-}
-
-@Composable
-private fun EmptyDigestBody() {
-    Text(
-        text = AppTokens.strings.res(Res.string.digest_empty),
-        style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.secondary,
-    )
 }
 
 @Composable

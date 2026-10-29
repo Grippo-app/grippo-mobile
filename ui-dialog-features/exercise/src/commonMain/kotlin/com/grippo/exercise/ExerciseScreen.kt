@@ -31,6 +31,8 @@ import com.grippo.core.state.trainings.stubPendingIteration
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.components.frames.OverlayContainer
@@ -77,10 +79,9 @@ internal fun ExerciseScreen(
             ) {
                 val exercise = state.exercise
                 when {
-                    exercise == null -> Text(
+                    exercise == null -> EmptyState(
                         text = AppTokens.strings.res(Res.string.exercise_history_unavailable),
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.secondary,
+                        style = EmptyStateStyle.Text,
                     )
 
                     else -> {
@@ -119,10 +120,9 @@ internal fun ExerciseScreen(
                         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
                         if (exercise.iterations.isEmpty()) {
-                            Text(
+                            EmptyState(
                                 text = AppTokens.strings.res(Res.string.exercise_history_no_sets),
-                                style = AppTokens.typography.b14Med(),
-                                color = AppTokens.colors.text.secondary,
+                                style = EmptyStateStyle.Text,
                             )
                         } else {
                             ExerciseSetsContent(

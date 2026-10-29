@@ -64,10 +64,13 @@ fixing.
 ## 5. Fix at the owner
 
 Apply the owning skill for the layer (ui-feature, data-layer, mappers,
-di-modules, design-system, platform-build-toolkit). Fix the cause, not the
-symptom: no local `try/catch`, no retry loops, no restoration flags, no extra
-launches, no guard booleans. A behavior change triggers the analytics and
-preservation gates like any other change. Keep the fix inside authorized scope;
+di-modules, design-system, platform-build-toolkit). Fix the cause under the
+[forbidden patterns](../validation-gates/references/forbidden-patterns.md)
+and that owner's error, cancellation and state boundaries. Preserve required
+SDK failure translation, transport retry and best-effort sink isolation at their
+existing owners; they do not authorize recovery wrappers in consumers.
+A behavior change triggers the analytics and preservation gates like any other
+change. Keep the fix inside authorized scope;
 a defect in a locked decision or a backend contract is a question, not a patch.
 
 ## 6. Regression gate

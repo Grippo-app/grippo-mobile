@@ -15,6 +15,8 @@ import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.performance.EstimatedOneRepMaxState
 import com.grippo.core.state.metrics.performance.stubEstimatedOneRepMax
 import com.grippo.design.components.chart.internal.Sparkline
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -47,10 +49,9 @@ public fun EstimatedOneRepMaxCard(
         )
 
         if (entries.isNullOrEmpty()) {
-            Text(
+            EmptyState(
                 text = AppTokens.strings.res(Res.string.estimated_one_rm_unavailable),
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.secondary,
+                style = EmptyStateStyle.Text,
             )
             return@Column
         }

@@ -37,6 +37,8 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.datetime.DialogRangeHeader
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCard
 import com.grippo.design.components.metrics.engagement.streak.TrainingStreakCardStyle
@@ -109,11 +111,10 @@ private fun TrainingStreakDetailsContent(
 
                     streak.totalActiveDays == 0 -> {
                         item(key = "empty") {
-                            Text(
+                            EmptyState(
                                 modifier = Modifier.fillMaxWidth(),
                                 text = AppTokens.strings.res(Res.string.training_streak_details_empty),
-                                style = AppTokens.typography.b14Med(),
-                                color = AppTokens.colors.text.secondary,
+                                style = EmptyStateStyle.Text,
                             )
                         }
                     }

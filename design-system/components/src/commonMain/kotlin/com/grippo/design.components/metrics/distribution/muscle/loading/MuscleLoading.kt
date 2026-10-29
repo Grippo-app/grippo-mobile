@@ -4,13 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.rememberTextMeasurer
 import com.grippo.core.state.metrics.distribution.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummary
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.metrics.distribution.muscle.loading.internal.MuscleLoadingPerGroup
 import com.grippo.design.components.metrics.distribution.muscle.loading.internal.MuscleLoadingPerMuscle
 import com.grippo.design.components.skeleton.SkeletonBone
@@ -52,10 +53,9 @@ public fun MuscleLoading(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
         if (entries.isEmpty()) {
-            Text(
+            EmptyState(
                 text = AppTokens.strings.res(Res.string.muscle_load_no_data),
-                style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.secondary,
+                style = EmptyStateStyle.Text,
             )
         }
         when (mode) {

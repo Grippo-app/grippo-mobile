@@ -29,7 +29,12 @@ including released consumers. Matching names alone is not synchronization.
     `trackOperation` or consent change." The `gate-auditor` verifies the
     assessment against the diff; the author's statement alone
     waives nothing. If any analytics-facing symbol changed, the gate applies.
-  - A small editorial change to analytics rules or records needs no gate.
+  - Rulebook prose or record structure alone needs no gate when the task changes
+    no app instrumentation, reporting semantics or claim about current analytics
+    coverage. A rulebook audit by itself authorizes no admin work. If any of
+    those change, or the task also requests an analytics setup, report or audit,
+    apply the normal trigger. Small editorial changes to analytics records keep
+    this exception when their claims remain unchanged.
   - A review the user explicitly restricted to source-only scope skips live
     access. Label the admin state uninspected and draw no live-admin conclusion.
     Do not infer source-only scope merely because the request omits browser

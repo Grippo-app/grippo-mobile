@@ -23,6 +23,23 @@ and Latin text in both themes; each role keeps its existing size and line height
 | Primary metric | `h4`–`h5` | `text.primary` |
 | Overview performance value (concise Home tile) | `h2` | `text.primary` |
 
+## Empty-state text
+
+| Role | Typography | Color |
+| --- | --- | --- |
+| Optional empty-state title | `h4` | `text.primary` |
+| Empty-state explanatory message, including text-only states | `b14Med` | `text.secondary` |
+
+Scope and review follow [empty-state typography](../.claude/skills/design-system/references/typography.md#empty-state-text).
+
+| EmptyState style | Visual role and geometry |
+| --- | --- |
+| Text | Open, start-aligned title/message group with `contentPadding.text` between present text roles |
+| Illustrated | Centered title/message group below Illustration, with its supplied illustration size, radial illustration halo and `contentPadding.block` gap |
+| Compact | Neutral `background.dialog` region with `dp.emptyState.compact` dimensions, a `background.card` icon tile and an `icon.secondary` glyph |
+
+Component usage and host responsibilities follow the [empty-state family](../.claude/skills/design-system/references/components.md#empty-states).
+
 ## Color and state
 
 - Filled segments, highlighted navigation and iteration-picker suggestion chips use the warm
@@ -876,9 +893,10 @@ and Latin text in both themes; each role keeps its existing size and line height
 - Home's welcome hero uses the Compact `welcome_training` gym bag and bottle.
   Library empty results use the Large `empty_exercise_search` magnifier and catalog
   cards; recording and new-workout empty states retain `empty_exercises`.
-  Empty performance history uses the Medium `empty_progress` blank plotting slate
-  and pencil above its existing left-aligned title and description, within the
-  dialog's LazyColumn. Artwork communicates missing history without plotted values.
+  Empty performance history uses EmptyState's Illustrated style with the Medium
+  `empty_progress` blank plotting slate and pencil above its centered title and
+  description, within the dialog's LazyColumn. Artwork communicates missing history
+  without plotted values.
 - Home muscle and training-rhythm summaries are separate full-width large panels;
   neither is stretched to a neighbor's height. Muscle distribution pairs a 144×140 dp
   front/back map with up to three real groups and their existing load shares.
@@ -1151,7 +1169,7 @@ and Latin text in both themes; each role keeps its existing size and line height
   An empty metric shows no value and no bar (a full "before" over an empty
   track would read as a drop to zero); without any earlier value the rows show their
   values without a bar under the first-workout title; without any values the title
-  is followed by one secondary `b13Med` empty note and no blocks.
+  is followed by one [empty-state message](#empty-state-text) and no blocks.
 - `TrainingStreakCardStyle.Growth(previous)` is the completed-workout streak, an
   open block (no panel; parts `metrics.section.spacer` apart) in the screen's
   "Progress" group: the
@@ -1432,9 +1450,9 @@ and Latin text in both themes; each role keeps its existing size and line height
   compressing text, images, sets or the final action.
 - The exercise-details Achievements tab without history (both the recent-exercise
   and achievement requests returned empty) stops the sheet body scroll and lets
-  IllustratedEmptyState fill the height left below the header and Segment: the
-  `empty_achievements` trophy artwork with a Medium illustration, `h4` title
-  and secondary `b14Med` description. Active finite requests select the tab skeleton
+  EmptyState's Illustrated style fill the height left below the header and Segment: the
+  `empty_achievements` trophy artwork with a Medium illustration and the
+  [empty-state text roles](#empty-state-text). Active finite requests select the tab skeleton
   only while both content lists are empty. Failures use the shared error popup;
   once no request is active, empty lists select the same empty presentation
   without a separate failure or readiness wrapper.
@@ -1443,8 +1461,8 @@ and Latin text in both themes; each role keeps its existing size and line height
   host height so the sheet, choices and action stay in place when content changes.
   Without a choice segment, the body starts at `dialog.top`; a present segment
   keeps `block` before its body.
-  Custom centers the existing empty-exercises artwork in IllustratedEmptyState
-  with a Large illustration, `h4` title and secondary `b14Med` description.
+  Custom centers the existing empty-exercises artwork in EmptyState's Illustrated style
+  with a Large illustration and the [empty-state text roles](#empty-state-text).
   Populated modes use a left-aligned `h3` introduction and secondary `b14Med`
   explanation. The introduction stays above the exercise scroll
   area. Repeat pins its Small CheckSelectableCard historical dates after that
@@ -1512,9 +1530,10 @@ and Latin text in both themes; each role keeps its existing size and line height
   Chronological stored-volume entries use the existing blue growth palette: P300
   for prior entries and P500 for the selected entry. Changed assistance or added
   weight does not hide known prior results. Empty history or unsupported tonnage
-  shows a neutral `BannerCard.Custom` in the same reserved chart region. Its dialog
-  surface and small panel radius separate unavailable comparison from
-  current facts; its icon is secondary and its copy keeps the actual reason. The compact chart retains
+  shows EmptyState's Compact style in the same reserved chart region,
+  using the [empty-state message role](#empty-state-text). Its dialog surface,
+  small panel radius, padding and secondary icon retain the existing geometry;
+  its copy keeps the actual reason. The compact chart retains
   `metrics.volume.chart.historyAspectRatio`, date-only labels, tooltips and the full
   selected-entry accessibility caption. It uses the same flat shared bar style as
   workout statistics and exercise-details history. Recorded volume does not imply strength

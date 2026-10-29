@@ -153,12 +153,14 @@ owners from the source rather than using a fixed Component/State census.
 
 ## Initialization from persistent settings
 
-A value that must outlive the screen or the session ("remember for next time")
-is a `LocalSettingsFeature` preference owned by the data layer. It is
-account-scoped unless the request says otherwise. StateKeeper drafts only bridge
-recreation and supported restoration. Time anchors such as start or end instants
-are business values; preserve them like any other draft field. The ticking text
-derived from them is rebuilt in the Screen.
+A committed setting is rebuilt from its existing persistent owner.
+[DataStore preferences](../data-layer/references/datastore.md) owns preference
+storage and account/installation scope; use `LocalSettingsFeature` for preferences
+it owns. Durable business records retain their existing
+[data-layer owner](../data-layer/SKILL.md), including Room-backed training drafts.
+StateKeeper drafts only bridge recreation and supported restoration. Time anchors
+such as start or end instants are business values; preserve them like any other
+draft field. The ticking text derived from them is rebuilt in the Screen.
 
 A selection already committed to an existing durable settings owner need not gain
 an additional StateKeeper copy solely for restoration. Record that source in the

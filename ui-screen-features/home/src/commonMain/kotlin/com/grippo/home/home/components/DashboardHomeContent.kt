@@ -24,6 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
+import com.grippo.core.state.metrics.performance.stubEmptyPerformanceMetrics
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCard
@@ -49,6 +52,7 @@ import com.grippo.design.resources.provider.home_unlock_banner_header
 import com.grippo.home.home.HomeContract
 import com.grippo.home.home.HomeState
 import com.grippo.home.home.HomeUnlock
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun DashboardHomeContent(
@@ -199,10 +203,9 @@ internal fun DashboardHomeContent(
                         color = AppTokens.colors.text.primary,
                     )
                     if (visiblePerformanceMetrics.all { it.isEmpty() }) {
-                        Text(
+                        EmptyState(
                             text = AppTokens.strings.res(Res.string.home_metrics_empty_description),
-                            style = AppTokens.typography.b13Med(),
-                            color = AppTokens.colors.text.secondary,
+                            style = EmptyStateStyle.Text,
                         )
                     }
                 }
@@ -301,6 +304,25 @@ private fun DashboardHomeContentPreview() {
         DashboardHomeContent(
             modifier = Modifier.fillMaxSize(),
             state = homePreviewState(),
+            contract = HomeContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun DashboardHomeContentEmptyPeriodPreview() {
+    PreviewContainer {
+        DashboardHomeContent(
+            modifier = Modifier.fillMaxSize(),
+            state = homePreviewState().copy(
+                lastTraining = null,
+                muscleLoad = null,
+                streak = null,
+                goalProgress = null,
+                spotlights = persistentListOf(),
+                performance = stubEmptyPerformanceMetrics(),
+            ),
             contract = HomeContract.Empty,
         )
     }

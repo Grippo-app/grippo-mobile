@@ -79,10 +79,9 @@ MUST distinguish content absence, filtering/no results, loading, failure and mis
 prerequisites through their actual meanings/actions. A generic empty illustration
 must not replace retry or failure feedback.
 
-Use IllustratedEmptyState for a fitting empty-list composition; use Illustration
-alone when the parent owns text/actions/layout. Inspect existing scrolling/padding
-before nesting compositions. Reuse artwork whose subject fits; artwork creation or
-style review follows illustrations. Use existing loader/skeleton owners for real work.
+Absence guidance follows the [shared empty-state family](../../design-system/references/components.md#empty-states).
+Reuse artwork whose subject fits; artwork creation or style review follows
+illustrations. Use existing loader/skeleton owners for real work.
 
 ## Dialogs and sheets
 

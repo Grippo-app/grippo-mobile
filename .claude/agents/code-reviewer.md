@@ -6,7 +6,6 @@ color: blue
 tools: Read, Grep, Glob, Bash
 disallowedTools: mcp__*, Agent, Edit, Write, NotebookEdit
 skills:
-  - compose-components
   - validation-gates
 hooks:
   PreToolUse:
@@ -43,8 +42,9 @@ report, and review anyway; do not stop to ask.
    `.claude/skills/validation-gates/references/code-style.md` and the
    `SKILL.md` of every owning skill named in the brief (for example
    `.claude/skills/ui-feature/SKILL.md`), including their completion gates. The
-   validation-gates and compose-components skills are preloaded. For Compose
-   changes also read `.claude/skills/compose-components/references/structure-and-runtime.md`;
+   validation-gates skill is preloaded. For Compose changes also read
+   `.claude/skills/compose-components/SKILL.md` and
+   `.claude/skills/compose-components/references/structure-and-runtime.md`;
    other owning skills and all references must be read separately.
 2. Trace each requested outcome to code and callers. Review the happy path,
    rejected input, empty/nullable data, failure, cancellation and lifecycle edges

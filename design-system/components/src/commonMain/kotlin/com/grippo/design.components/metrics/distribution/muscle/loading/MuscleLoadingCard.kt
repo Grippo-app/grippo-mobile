@@ -27,6 +27,8 @@ import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummaryEmpty
 import com.grippo.core.state.metrics.distribution.stubMuscleLoadSummarySingleGroup
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.muscles.MuscleGroupEnumState
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.indicators.LineIndicator
 import com.grippo.design.components.metrics.distribution.muscle.loading.internal.MuscleLoadingCardSummary
 import com.grippo.design.components.metrics.distribution.muscle.loading.internal.rememberMuscleLoadIndicatorColors
@@ -196,10 +198,9 @@ private fun MuscleLoadingTopGroups(
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         ) {
             if (entries.isEmpty()) {
-                Text(
+                EmptyState(
                     text = emptyLabel,
-                    style = AppTokens.typography.b13Med(),
-                    color = AppTokens.colors.text.secondary,
+                    style = EmptyStateStyle.Text,
                 )
             } else {
                 entries.forEach { entry ->

@@ -5,19 +5,19 @@ Run from the repository root:
     python3 -I .claude/hooks/check-rulebook.py
 
 Checks:
-  1. Every relative markdown link in CLAUDE.md, AGENTS.md, .claude/README.md,
+  1. Every relative markdown link outside fenced examples in CLAUDE.md, AGENTS.md, .claude/README.md,
      .claude/skills/**/*.md, .claude/agents/*.md and docs/**/*.md resolves to an
      existing file, and every #anchor matches a heading in the target.
-  2. Every .claude/skills/<name>/SKILL.md has frontmatter with name == directory
-     and a non-empty description.
+  2. Every .claude/skills/<name>/SKILL.md has supported frontmatter with name ==
+     directory, a non-empty description and an explicit completion section.
   3. Every .claude/agents/<name>.md has valid identity, model, tool rights,
      preloaded skills and a canonical PreToolUse Bash guard for its rights.
      Every backticked `.claude/...` path in the body (with {a,b} brace expansion)
      exists.
-  4. The CLAUDE.md skills index and agent roster match their files; roster skills
-     match each agent's required skill list.
+  4. The actual tables in CLAUDE.md's Skills index and Workflow and agents
+     sections match their files; roster skills match each required skill list.
   5. No `.claude/skills/*/agents/openai.yaml` leftovers and no empty skill dirs.
-  6. CLAUDE.md stays a map: at most 400 lines.
+  6. Required entry points exist; CLAUDE.md stays a map: at most 400 lines.
 Exit code 1 when any problem is found.
 """
 from fnmatch import fnmatchcase
@@ -35,10 +35,10 @@ def rel(p):
 
 
 def md_files():
-    files = [os.path.join(ROOT, f) for f in ("CLAUDE.md", "AGENTS.md", ".claude/README.md") if os.path.exists(os.path.join(ROOT, f))]
+    files = [os.path.join(ROOT, f) for f in ("CLAUDE.md", "AGENTS.md", ".claude/README.md") if os.path.isfile(os.path.join(ROOT, f))]
     for base in (".claude/skills", ".claude/agents", "docs"):
         for dp, _, fn in os.walk(os.path.join(ROOT, base)):
-            files += [os.path.join(dp, f) for f in fn if f.endswith(".md")]
+            files += [os.path.join(dp, f) for f in fn if f.endswith(".md") and os.path.isfile(os.path.join(dp, f))]
     return sorted(set(files))
 
 
@@ -49,25 +49,88 @@ def slug(h):
     return h.replace(" ", "-")
 
 
-_anchors = {}
+_markdown_lines = {}
+FRONTMATTER = re.compile(r"---\n(.*?)\n---(?:\n|$)", re.S)
+
+
+def markdown_lines(path):
+    """Read body lines outside metadata/fenced examples, retaining source numbers."""
+    if path not in _markdown_lines:
+        lines = []
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+            metadata = FRONTMATTER.match(text)
+            metadata_lines = len(metadata.group(0).splitlines()) if metadata else 0
+            fence = None
+            for number, line in enumerate(text.splitlines(keepends=True), 1):
+                if number <= metadata_lines:
+                    continue
+                marker = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
+                if marker:
+                    run, rest = marker.groups()
+                    if fence is None:
+                        fence = run
+                    elif run[0] == fence[0] and len(run) >= len(fence) and not rest.strip():
+                        fence = None
+                    lines.append((number, "\n"))
+                    continue
+                if fence:
+                    continue
+                lines.append((number, line))
+        _markdown_lines[path] = lines
+    return _markdown_lines[path]
+
+
+def atx_heading(line):
+    match = re.match(r"^ {0,3}(#{1,6})(?:[ \t]+(.*)|[ \t]*)$", line.rstrip("\r\n"))
+    if not match:
+        return None
+    title = re.sub(r"(?:^|[ \t]+)#+[ \t]*$", "", match.group(2) or "").strip()
+    return len(match.group(1)), title
+
+
+def headings_of(path):
+    return [heading for _, line in markdown_lines(path) if (heading := atx_heading(line))]
+
+
+def section_lines(path, title):
+    active = False
+    for number, line in markdown_lines(path):
+        heading = atx_heading(line)
+        if heading and heading[0] <= 2:
+            active = heading[0] == 2 and slug(heading[1]) == slug(title)
+        elif active:
+            yield number, line
+
+
+def table_cells(line):
+    if not re.match(r"^ {0,3}\|", line):
+        return None
+    cells = re.split(r"(?<!\\)\|", line.strip())[1:]
+    if cells and not cells[-1]:
+        cells.pop()
+    return [cell.strip() for cell in cells]
+
+
+def table_rows(path, section, header):
+    pending, active = False, False
+    for number, line in section_lines(path, section):
+        cells = table_cells(line)
+        if cells == header:
+            pending, active = True, False
+        elif pending:
+            pending = False
+            active = bool(cells and len(cells) == len(header)
+                          and all(re.fullmatch(r":?-+:?", cell) for cell in cells))
+        elif active:
+            if cells is None:
+                active = False
+            else:
+                yield number, cells
 
 
 def anchors_of(path):
-    if path not in _anchors:
-        s = set()
-        with open(path, encoding="utf-8") as f:
-            in_code = False
-            for line in f:
-                if line.startswith("```"):
-                    in_code = not in_code
-                    continue
-                if in_code:
-                    continue
-                m = re.match(r"^(#{1,6})\s+(.*)$", line)
-                if m:
-                    s.add(slug(m.group(2)))
-        _anchors[path] = s
-    return _anchors[path]
+    return {slug(title) for _, title in headings_of(path)}
 
 
 LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)\)")
@@ -75,17 +138,19 @@ LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)\)")
 
 def check_links():
     for t in md_files():
-        with open(t, encoding="utf-8") as f:
-            for ln, line in enumerate(f, 1):
-                for _, href in LINK.findall(line):
-                    if href.startswith(("http://", "https://", "mailto:")):
-                        continue
-                    path, _, frag = href.partition("#")
-                    tgt = os.path.normpath(os.path.join(os.path.dirname(t), path)) if path else t
-                    if not os.path.exists(tgt):
-                        problems.append(f"missing file: {rel(t)}:{ln} -> {href}")
-                        continue
-                    if frag and tgt.endswith(".md") and frag not in anchors_of(tgt):
+        for ln, line in markdown_lines(t):
+            for _, href in LINK.findall(line):
+                if href.startswith(("http://", "https://", "mailto:")):
+                    continue
+                path, _, frag = href.partition("#")
+                tgt = os.path.normpath(os.path.join(os.path.dirname(t), path)) if path else t
+                if not os.path.exists(tgt):
+                    problems.append(f"missing file: {rel(t)}:{ln} -> {href}")
+                    continue
+                if frag and tgt.endswith(".md"):
+                    if not os.path.isfile(tgt):
+                        problems.append(f"anchor target is not a regular Markdown file: {rel(t)}:{ln} -> {href}")
+                    elif frag not in anchors_of(tgt):
                         problems.append(f"missing anchor: {rel(t)}:{ln} -> {href}")
 
 
@@ -95,7 +160,7 @@ def frontmatter(path):
         text = f.read()
     if not text.startswith("---\n"):
         return None
-    match = re.match(r"---\n(.*?)\n---(?:\n|$)", text, flags=re.S)
+    match = FRONTMATTER.match(text)
     if not match:
         return None
     data, current = {}, None
@@ -156,6 +221,8 @@ def scalar(value, where):
             problems.append(f"invalid double-quoted scalar: {where}; use JSON-style escapes or YAML single quotes")
             return None
     value = re.split(r"(?:^|[ \t]+)#", value, maxsplit=1)[0].rstrip()
+    if value.lower() in ("true", "false"):
+        return value.lower() == "true"
     if re.search(r":(?:\s|$)", value) or re.match(r"[-?](?:\s|$)", value) or value.startswith(("[", "]", "{", "}", ",", "&", "*", "!", "|", ">", "@", "`", "%")):
         problems.append(f"unsupported plain YAML scalar: {where}; quote text containing YAML syntax")
         return None
@@ -174,6 +241,7 @@ def names_of(fm, key):
 
 
 WRITE_TOOLS = {"Edit", "Write", "NotebookEdit"}
+LOCAL_TOOLS = {"Read", "Grep", "Glob", "Bash"} | WRITE_TOOLS
 VERIFIERS = {"build-verifier", "runtime-verifier"}
 MCP_ALLOWANCES = {
     "analytics-admin-auditor": ("mcp__claude-in-chrome__*",),
@@ -189,6 +257,10 @@ def check_agent_rights(path, stem, fm):
     denied = set(names_of(fm, "disallowedTools"))
     if not tools or any(not re.fullmatch(r"(?:[A-Za-z][A-Za-z0-9_]*|mcp__[A-Za-z0-9_*-]+)", t) for t in tools):
         problems.append(f"agent needs a non-empty tool allowlist: {label}")
+    supported = LOCAL_TOOLS | ({"WebFetch"} if stem == "backend-contract-auditor" else set())
+    unknown = tools - supported - {t for t in tools if t.startswith("mcp__")}
+    if unknown:
+        problems.append(f"agent allows tools outside its role's capabilities: {label}; remove {', '.join(sorted(unknown))}")
     if "Agent" not in denied or "Agent" in tools:
         problems.append(f"agent must exclude Agent from tools and include it in disallowedTools: {label}")
     mcp_tools = {t for t in tools if t.startswith("mcp__")}
@@ -256,13 +328,16 @@ def check_backtick_paths(path):
 def check_skills():
     base = os.path.join(ROOT, ".claude/skills")
     names = []
+    if not os.path.isdir(base):
+        problems.append("missing .claude/skills directory")
+        return set()
     for d in sorted(os.listdir(base)):
         full = os.path.join(base, d)
         if not os.path.isdir(full):
             continue
         skill = os.path.join(full, "SKILL.md")
-        if not os.path.exists(skill):
-            problems.append(f"skill dir without SKILL.md: .claude/skills/{d}")
+        if not os.path.isfile(skill):
+            problems.append(f"skill dir without SKILL.md file: .claude/skills/{d}")
             continue
         fm = frontmatter(skill)
         if not fm:
@@ -272,6 +347,15 @@ def check_skills():
             problems.append(f"skill name mismatch: .claude/skills/{d}/SKILL.md name={fm.get('name')!r}")
         if not isinstance(fm.get("description"), str) or not fm["description"].strip():
             problems.append(f"skill needs a non-empty scalar string description: .claude/skills/{d}/SKILL.md")
+        unknown = set(fm) - {"name", "description", "disable-model-invocation", "user-invocable"}
+        if unknown:
+            problems.append(f"unsupported skill frontmatter fields: .claude/skills/{d}/SKILL.md; {', '.join(sorted(unknown))}")
+        for key in ("disable-model-invocation", "user-invocable"):
+            if key in fm and not isinstance(fm[key], bool):
+                problems.append(f"skill {key} must be a YAML boolean: .claude/skills/{d}/SKILL.md")
+        if not any(level == 2 and re.search(r"\b(?:gate|gates|completion|checks|hand-off)\b", title, re.I)
+                   for level, title in headings_of(skill)):
+            problems.append(f"skill needs an explicit completion section or pointer: .claude/skills/{d}/SKILL.md")
         if os.path.exists(os.path.join(full, "agents", "openai.yaml")):
             problems.append(f"stale Codex metadata: .claude/skills/{d}/agents/openai.yaml")
         names.append(d)
@@ -288,6 +372,9 @@ def check_agents(skill_names):
         if not f.endswith(".md"):
             continue
         path = os.path.join(base, f)
+        if not os.path.isfile(path):
+            problems.append(f"agent definition is not a regular file: .claude/agents/{f}")
+            continue
         fm = frontmatter(path)
         stem = f[:-3]
         if not fm:
@@ -297,6 +384,13 @@ def check_agents(skill_names):
             problems.append(f"agent name mismatch: .claude/agents/{f} name={fm.get('name')!r}")
         if not isinstance(fm.get("description"), str) or not fm["description"].strip():
             problems.append(f"agent needs a non-empty scalar string description: .claude/agents/{f}")
+        unknown = set(fm) - {"name", "description", "model", "color", "tools", "disallowedTools", "skills", "hooks"}
+        if unknown:
+            problems.append(f"unsupported agent frontmatter fields: .claude/agents/{f}; {', '.join(sorted(unknown))}")
+        for heading in ("Rights", "Inputs you must receive", "Duties", "Report format"):
+            if not any(level == 2 and re.fullmatch(re.escape(heading) + r"(?:\s+-.*)?", title)
+                       for level, title in headings_of(path)):
+                problems.append(f"agent needs a {heading} section: .claude/agents/{f}")
         if "skills" in fm:
             if not isinstance(fm["skills"], list) or not fm["skills"]:
                 problems.append(f"agent skills must be a non-empty two-space YAML list: .claude/agents/{f}")
@@ -314,24 +408,30 @@ def check_agents(skill_names):
 
 def check_roster(agents):
     claude = os.path.join(ROOT, "CLAUDE.md")
-    if not os.path.exists(claude):
+    if not os.path.isfile(claude):
         return
-    text = open(claude, encoding="utf-8").read()
-    listed = set(re.findall(r"^\| `([a-z][a-z0-9-]*)` \|", text, flags=re.M))
+    rows = list(table_rows(claude, "Workflow and agents", ["Agent", "Role", "Rights", "Skills"]))
+    entries = [(number, columns, re.fullmatch(r"`([^`]+)`", columns[0])) for number, columns in rows if columns]
+    names = [match.group(1) for _, _, match in entries if match]
+    listed = set(names)
+    for name in sorted(listed):
+        if names.count(name) > 1:
+            problems.append(f"duplicate agent in CLAUDE.md roster: {name}")
     for a in sorted(agents - listed):
         problems.append(f"agent not in CLAUDE.md roster table: {a}")
     for a in sorted(listed - agents):
         problems.append(f"roster lists missing agent: {a}")
-    for line in text.splitlines():
-        match = re.match(r"^\| `([a-z][a-z0-9-]*)` \|", line)
-        if not match or match.group(1) not in agents:
+    for number, columns, match in entries:
+        if not match:
+            problems.append(f"invalid agent identity in CLAUDE.md roster at line {number}")
+            continue
+        if match.group(1) not in agents:
             continue
         name = match.group(1)
-        columns = line.split("|")
-        if len(columns) != 6:
-            problems.append(f"agent roster row needs Agent/Role/Rights/Skills columns: {name}")
+        if len(columns) != 4:
+            problems.append(f"agent roster row needs Agent/Role/Rights/Skills columns: {name} at CLAUDE.md:{number}")
             continue
-        listed_skills = {s.strip() for s in columns[-2].split(",") if s.strip() not in ("", "-")}
+        listed_skills = {s.strip() for s in columns[-1].split(",") if s.strip() not in ("", "-")}
         fm = frontmatter(os.path.join(ROOT, ".claude", "agents", name + ".md"))
         required_skills = set(names_of(fm or {}, "skills"))
         if listed_skills != required_skills:
@@ -340,12 +440,19 @@ def check_roster(agents):
 
 def check_skill_index(skills):
     claude = os.path.join(ROOT, "CLAUDE.md")
-    if not os.path.exists(claude):
+    if not os.path.isfile(claude):
         return
-    text = open(claude, encoding="utf-8").read()
-    rows = re.findall(r"^\| \[([^]]+)\]\(\.claude/skills/([^/]+)/SKILL\.md\) \|", text, flags=re.M)
     listed = set()
-    for label, name in rows:
+    for number, columns in table_rows(claude, "Skills index", ["Skill", "Owns", "Apply when"]):
+        if not columns:
+            continue
+        match = re.fullmatch(r"\[([^]]+)\]\(\.claude/skills/([^/]+)/SKILL\.md\)", columns[0])
+        if not match:
+            problems.append(f"invalid skill identity in CLAUDE.md index at line {number}")
+            continue
+        label, name = match.groups()
+        if len(columns) != 3:
+            problems.append(f"skill index row needs Skill/Owns/Apply when columns: {name} at CLAUDE.md:{number}")
         if label != name:
             problems.append(f"skill index label differs from directory: {label} -> {name}")
         if name in listed:
@@ -359,15 +466,16 @@ def check_skill_index(skills):
 
 def check_map_size(limit=400):
     claude = os.path.join(ROOT, "CLAUDE.md")
-    if os.path.exists(claude):
+    if os.path.isfile(claude):
         n = sum(1 for _ in open(claude, encoding="utf-8"))
         if n > limit:
             problems.append(f"CLAUDE.md has {n} lines; the map must stay at most {limit} (move detail to the owning skill)")
 
 
 def main():
-    if not os.path.isfile(os.path.join(ROOT, ".claude/hooks/bash-guard.py")):
-        problems.append("missing guard file: .claude/hooks/bash-guard.py must be a regular file")
+    for path in ("CLAUDE.md", "AGENTS.md", ".claude/README.md", ".claude/hooks/bash-guard.py"):
+        if not os.path.isfile(os.path.join(ROOT, path)):
+            problems.append(f"missing required rulebook file: {path}")
     check_links()
     skills = check_skills()
     agents = check_agents(skills)

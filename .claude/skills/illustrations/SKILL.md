@@ -124,7 +124,8 @@ For decorative UI artwork, MUST use the design-system
 [Illustration](../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/illustration/Illustration.kt)
 and its existing size styles instead of repeating Image sizing/scale logic.
 For an illustration with an empty-state message, use
-[IllustratedEmptyState](../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/empty/IllustratedEmptyState.kt).
+[EmptyState](../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/empty/EmptyState.kt)
+with its illustrated style.
 Screen-specific backgrounds and actions remain with their consumers; do not add
 an artwork-specific widget or style when an existing one fits.
 

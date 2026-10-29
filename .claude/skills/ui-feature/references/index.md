@@ -50,6 +50,7 @@ Every task-kind: the architecture cross-cuts (MVI, dialogs, error pipeline,
 Decompose nav, process-death) are summarized at the foot of `mvi-contract.md`.
 Behavior changes also assess/update affected analytics coverage; visual-only edits
 assess impact. Screen/component examples show MVI mechanics, not complete telemetry.
-The forbidden-patterns surface (the validation-gates skill,
-references/forbidden-patterns.md) is owned by that skill, not this one — each reference file restates
-the patterns relevant to its topic under its own "Anti-patterns" heading.
+Cross-cut prohibitions follow
+[forbidden patterns](../../validation-gates/references/forbidden-patterns.md).
+Topic-specific implementation rules stay with their owning reference; other
+recipes link to that owner.

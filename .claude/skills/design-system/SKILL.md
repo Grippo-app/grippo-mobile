@@ -38,6 +38,7 @@ not trigger artwork generation.
   `AppTokens.colors|dp|typography|icons|strings|drawables`. Concrete producers own
   literals; neutral technical values such as `0.dp` and `Color.Transparent` are
   permitted. [Tokens](references/tokens.md) own facade/category boundaries.
+- Empty-state rendering follows the [shared empty-state family](references/components.md#empty-states).
 - Add only demanded slots/components/styles at their real owners. A changed color
   contract MUST update every concrete theme. Do not create unused scaffold or a
   parallel palette/provider.

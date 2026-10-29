@@ -64,7 +64,10 @@ dialogController.open(
     DialogConfig.WeightPicker(
         title = UiText.Res(Res.string.weight_picker_title),
         initial = state.value.weight.value,
-        onResult = { value -> update { it.copy(weight = WeightFormatState.of(value)) } },
+        onResult = { value ->
+            val weight = WeightFormatState.of(value)
+            update { it.copy(weight = weight) }
+        },
     )
 )
 ```
@@ -83,7 +86,10 @@ session navigation and result delivery.
 
 ### 5. ViewModel state is NOT restored automatically
 
-`BaseViewModel` does **not** use `SavedStateHandle`. State is rebuilt in `init { }` via re-subscription to data-layer `Flow`s. The excerpt omits the `analytics.trackOperation` wrapper a real startup load carries:
+`BaseViewModel` does **not** use `SavedStateHandle`. Data-backed fields are rebuilt
+in `init { }` via re-subscription to data-layer `Flow`s; unfinished input follows
+[editable form drafts](#editable-form-drafts). The excerpt omits the
+`analytics.trackOperation` wrapper a real startup load carries:
 
 ```kotlin
 init {
@@ -238,5 +244,8 @@ failures, check the Router and payload serializers.
 - **Putting non-`@Serializable` types in routes.** Crash on backgrounding.
 - **Relying on dialog sessions or callbacks to persist after process death.** They are in memory; persist required business data independently in a screen route, the owning Component's business draft or the data layer.
 - **Adding serialization or callback-default restoration to `DialogConfig`.** The host intentionally uses `serializer = null` for sessions and steps.
-- **Implementing custom save/restore in `BaseViewModel`.** Restore via `Flow` subscription in `init { }`.
+- **Implementing generic save/restore in `BaseViewModel`.** Follow
+  [Component-owned draft wiring](../../state-preservation/SKILL.md#ownership-and-implementation)
+  for unfinished input; data-source Flows rebuild data-backed fields rather than
+  restore those drafts.
 - **Forgetting `key = "..."`** in `childStack(...)` — duplicate default keys collide in the StateKeeper.

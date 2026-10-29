@@ -87,7 +87,16 @@ owns both `of` input factories and `ofTotal` for recorded tonnage. A generic
 
 State: `val weight: WeightFormatState = WeightFormatState.Empty()`, `val due: DateFormatState = DateFormatState.Empty(format = DateFormat.DateOnly.DateDdMmmYyyy)`.
 
-ViewModel: `update { it.copy(weight = WeightFormatState.of(raw)) }`; read the parsed value via `(state.value.weight as? WeightFormatState.Valid)?.value ?: return` (the `as? Valid` cast is canonical; no-op if not valid).
+ViewModel: compute the formatter before the state update, following
+[the update contract](../../validation-gates/references/code-style.md#update):
+
+```kotlin
+val weight = WeightFormatState.of(raw)
+update { it.copy(weight = weight) }
+```
+
+Read the parsed value via `(state.value.weight as? WeightFormatState.Valid)?.value ?: return`
+(the `as? Valid` cast is canonical; no-op if not valid).
 
 Compose: feed `value = state.weight` to the input; compute button enablement from `state.weight is WeightFormatState.Valid`.
 

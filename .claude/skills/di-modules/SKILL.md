@@ -32,6 +32,8 @@ Inspect the owning module, current provider/implementation and
   contracts; they do not define feature DI or call startup twice
   ([composition root](references/composition-root.md)).
 
+## Completion gate
+
 Before completion MUST review binding types, qualifiers, lifetime, includes, generated-module imports
 and all explicit startup registrations. Source review cannot prove runtime resolution: run the
 permitted checks under the [verification policy](../../../CLAUDE.md#verification-policy) and

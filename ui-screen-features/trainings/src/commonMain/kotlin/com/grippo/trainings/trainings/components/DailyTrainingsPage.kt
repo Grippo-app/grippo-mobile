@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +29,8 @@ import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.datetime.TimelineIndicator
-import com.grippo.design.components.empty.IllustratedEmptyState
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
@@ -55,11 +58,15 @@ internal fun DailyTrainingsPage(
     onExerciseClick: (String) -> Unit,
 ) {
     if (items.isEmpty()) {
-        IllustratedEmptyState(
-            modifier = modifier.fillMaxSize(),
-            painter = AppTokens.drawables.res(Res.drawable.empty_workouts),
+        EmptyState(
+            modifier = modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(contentPadding),
             text = AppTokens.strings.res(Res.string.empty_daily_trainings),
-            contentPadding = contentPadding,
+            style = EmptyStateStyle.Illustrated(
+                painter = AppTokens.drawables.res(Res.drawable.empty_workouts),
+            ),
         )
         return
     }

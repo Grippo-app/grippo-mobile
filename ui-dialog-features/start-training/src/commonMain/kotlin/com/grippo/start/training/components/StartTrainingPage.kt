@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -21,7 +23,8 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.divider.ContentDivider
-import com.grippo.design.components.empty.IllustratedEmptyState
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.illustration.IllustrationStyle
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
@@ -60,13 +63,16 @@ internal fun StartTrainingPage(
     }
     val exercises = when (option) {
         StartTrainingOption.Empty -> {
-            IllustratedEmptyState(
-                modifier = modifier,
-                painter = AppTokens.drawables.res(Res.drawable.empty_exercises),
-                title = AppTokens.strings.res(title),
+            EmptyState(
+                modifier = modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(contentPadding),
                 text = AppTokens.strings.res(description),
-                contentPadding = contentPadding,
-                illustrationStyle = IllustrationStyle.Large,
+                style = EmptyStateStyle.Illustrated(
+                    painter = AppTokens.drawables.res(Res.drawable.empty_exercises),
+                    illustrationStyle = IllustrationStyle.Large,
+                ),
+                title = AppTokens.strings.res(title),
             )
             return
         }

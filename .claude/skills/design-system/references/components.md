@@ -6,13 +6,9 @@ Visual creation/changes first pass
 Source owns complete signatures, token paths and callback behavior; this reference
 records component-specific constraints.
 
-Current shape, for orientation: 38 top-level packages under
-`design-system/components/src/commonMain/kotlin/com/grippo/design.components/`:
-achievement, badge, banner, brand, button, cards, chart, chip, datetime, divider, dragdrop,
-empty, equipment, example, frames, goal, illustration, indicators, inputs, konfetti,
-loading, menu, metrics, modifiers, muscle, navigation, segment, selectors, skeleton,
-spliter, swipe, toolbar, tooltip, training, user, utils, welcome, wheel. There is no
-`EmptyState` composable; the empty-list owner is `IllustratedEmptyState`.
+Inspect `design-system/components/src/commonMain/kotlin/com/grippo/design.components/`
+for the current component families. Reuse the declaration and callers of the
+affected family rather than treating a copied package or variant list as complete.
 
 ## Entity component families
 
@@ -25,8 +21,8 @@ variants by role, size or density rather than a generic `Default`. The entry
 composable takes only inputs common to all variants; variant-specific arguments,
 including callbacks and neutral content slots, belong to the sealed subtype.
 Inspect
-[ExerciseCard.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/training/ExerciseCard.kt):
-`ExerciseCardStyle` currently contains Large, Medium and Small variants.
+[ExerciseCard.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/training/ExerciseCard.kt)
+and its callers for the current `ExerciseCardStyle` variant contract.
 
 Caller-specific data and logic, such as a comparison with another workout, stay
 with the caller. Its UI may enter the card through a neutral `@Composable` trailing
@@ -42,6 +38,35 @@ Components with different entities or semantic responsibilities may keep separat
 owners. A new family does not require speculative variants. During a family
 migration, inspect every existing variant and caller, preserve the established
 behavior and cover the added variant under the existing preview rules.
+
+## Empty states
+
+Every empty, no-results or missing-data region that replaces content with absence
+guidance MUST use [EmptyState](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/empty/EmptyState.kt),
+including text-only messages inside sections and cards. Select the appropriate
+`EmptyStateStyle` role: `Text` for open text, `Illustrated` for artwork with text,
+or `Compact` for a neutral icon/message region. Concrete geometry and token choices
+belong to [CONSISTENCY.md](../../../../design-system/CONSISTENCY.md#empty-state-text);
+text roles follow [empty-state typography](typography.md#empty-state-text).
+
+Consumers MUST NOT replace this family with local `Text`/`Column`/`Icon`/`BannerCard`
+absence renderers or override its typography and visual treatment. Extend the
+sealed family at this owner only for a demonstrated unmet role, together with its
+real callers and [preview coverage](previews.md). Keep common title/message
+rendering shared. Consumer styling overrides, arbitrary render slots and flags
+selecting ad hoc presentation are forbidden; express demanded visual differences
+as sealed variants.
+
+The parent owns the absence predicate, localized content, actions, viewport,
+scrolling and outer padding/insets. The component adds no scroll owner or host
+padding contract; preserve those responsibilities when migrating a caller, including
+scrollable illustrated screens and content-sized lazy-list items. Inline unavailable
+metric values, status labels, input placeholders and operational result messages
+retain their own component roles. Standalone decorative artwork uses Illustration.
+
+Before completion, reconcile all affected absence branches and wrappers with this
+family, inspect every inherited style and verify that the host still owns scrolling,
+insets and reachable actions.
 
 ## Entry points and non-obvious behavior
 
@@ -60,7 +85,7 @@ behavior and cover the added variant under the existing preview rules.
 | Equipment selection | [EquipmentSelection.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/equipment/EquipmentSelection.kt); fixed group tabs and scrolling EquipmentCard Selection list; selection and bottom actions belong to the caller |
 | BannerCard | [BannerCard.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/banner/BannerCard.kt); Custom tint and surface are supplied by token colors; semantic and disabled surfaces are owned by the themes |
 | Decorative illustration | [Illustration.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/illustration/Illustration.kt) and [IllustrationStyle.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/illustration/IllustrationStyle.kt); owns token sizes, centering, aspect ratio and Fit; meaningful information stays in localized consumer text |
-| IllustratedEmptyState | [IllustratedEmptyState.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/empty/IllustratedEmptyState.kt); uses Illustration, supports a message or title with supporting text; CTA/insets belong to the parent |
+| EmptyState | [EmptyState.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/empty/EmptyState.kt); follows [empty states](#empty-states) |
 | LineIndicator | [LineIndicator.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/indicators/LineIndicator.kt); caller-supplied labels/markers must fit their actual chart and layout contracts |
 | Chip | [Chip.kt](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/chip/Chip.kt); primitive receives colors/brush and sealed label/leading/interaction/size inputs; product wrappers own token selection |
 
@@ -71,11 +96,14 @@ behavior and cover the added variant under the existing preview rules.
 - Button state comes from actual loaders and validity; MUST NOT add business
   eligibility rules inside the widget. Feature owners keep logical selection.
 - [Illustration background](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/modifiers/IllustrationBackground.kt)
-  is the single owner of the warm illustration-region gradient used by brand headers,
+  is the single owner of the warm illustration-region fill used by brand headers,
   hero blocks, the profile identity header and the loader. Consumers pass their own
-  shape; MUST NOT rebuild the region fill from `illustration.backgroundStart/End`
-  inline. Accepted exception: `BrandSplash` draws its animated radial glow from the
-  same two colors plus transparent, because it is a glow, not a region fill.
+  shape; the current modifier uses a solid `illustration.backgroundStart` fill.
+  MUST NOT rebuild the region fill from `illustration.backgroundStart/End` inline.
+  Accepted exceptions: `BrandSplash` draws its animated radial glow and
+  [EmptyState's Illustrated style](../../../../design-system/CONSISTENCY.md#empty-state-text)
+  draws its radial halo from those two colors plus transparent; both are glows
+  rather than region fills.
 - [Shared shimmer](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/modifiers/Shimmer.kt)
   adds highlight only, not skeleton shape/loading semantics. Apply
   it after clip/background; owning component supplies shape/semantics and the

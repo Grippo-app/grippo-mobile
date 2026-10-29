@@ -33,8 +33,9 @@ import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
 import com.grippo.core.state.metrics.performance.stubPerformanceTrendHistory
 import com.grippo.design.components.datetime.DialogRangeHeader
 import com.grippo.design.components.divider.ContentDivider
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.frames.OverlayContainer
-import com.grippo.design.components.illustration.Illustration
 import com.grippo.design.components.illustration.IllustrationStyle
 import com.grippo.design.components.metrics.performance.PerformanceMetricCard
 import com.grippo.design.components.metrics.performance.PerformanceMetricCardStyle
@@ -105,30 +106,15 @@ private fun PerformanceTrendDetailsContent(
             ) {
                 if (history.isEmpty()) {
                     item(key = "empty", contentType = "empty") {
-                        Column(
+                        EmptyState(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-                        ) {
-                            Illustration(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = AppTokens.dp.contentPadding.subContent),
+                            text = AppTokens.strings.res(Res.string.performance_trend_details_empty_message),
+                            style = EmptyStateStyle.Illustrated(
                                 painter = AppTokens.drawables.res(Res.drawable.empty_progress),
-                                style = IllustrationStyle.Medium,
-                            )
-                            Text(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = AppTokens.strings.res(Res.string.performance_history_empty),
-                                style = AppTokens.typography.h4(),
-                                color = AppTokens.colors.text.primary,
-                            )
-                            Text(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = AppTokens.strings.res(Res.string.performance_trend_details_empty_message),
-                                style = AppTokens.typography.b14Med(),
-                                color = AppTokens.colors.text.secondary,
-                            )
-                        }
+                                illustrationStyle = IllustrationStyle.Medium,
+                            ),
+                            title = AppTokens.strings.res(Res.string.performance_history_empty),
+                        )
                     }
                 } else {
                     val latest = history.first()

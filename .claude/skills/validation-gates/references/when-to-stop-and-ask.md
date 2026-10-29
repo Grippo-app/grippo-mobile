@@ -15,8 +15,9 @@ to deliver the request - callers, routes, DI registration, resources, coherent
 migrations - is already authorized and is not asked about again.
 
 A visual complaint that the source cannot map to one owner (for example "double
-frame" where the code draws one) is answered by obtaining a render first, then
-asking which element and treatment the user means.
+frame" where the code draws one) needs a render when available and authorized.
+If that evidence is unavailable, state the limit and ask which element and
+treatment the user means; do not guess or block clarification on a missing render.
 
 ## How to ask
 

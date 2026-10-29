@@ -166,7 +166,10 @@ dialogController.open(
     DialogConfig.WeightPicker(
         title = existingTitle,
         initial = state.value.weight.value,
-        onResult = { value -> update { it.copy(weight = WeightFormatState.of(value)) } }
+        onResult = { value ->
+            val weight = WeightFormatState.of(value)
+            update { it.copy(weight = weight) }
+        },
     )
 )
 ```

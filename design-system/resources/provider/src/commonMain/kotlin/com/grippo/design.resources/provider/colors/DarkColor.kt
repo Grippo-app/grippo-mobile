@@ -189,7 +189,6 @@ public object DarkColor : AppColor {
         object : AppColor.SelectionColors {
             override val accent = AppPalette.DarkAccent.Orange
             override val background = lerp(DarkColor.background.card, accent, 0.10f)
-            override val onAccent = AppPalette.NeutralDark.N100
             public override val selectedCardBackground = AppPalette.NeutralDark.N300
             public override val selectedCardBorder = AppPalette.NeutralDark.N650
             public override val checkedIndicator = AppPalette.NeutralDark.N800
@@ -200,12 +199,10 @@ public object DarkColor : AppColor {
     override val context: AppColor.ContextColors = object : AppColor.ContextColors {
         override val muscle: Color = AppPalette.DarkAccent.Coral
         override val equipment: Color = AppPalette.DarkAccent.Green
-        override val experience: Color = AppPalette.DarkAccent.Teal
         override val body: Color = AppPalette.DarkAccent.Sky
         override val volume: Color = AppPalette.DarkAccent.Blue
         override val repetitions: Color = AppPalette.DarkAccent.Purple
         override val intensity: Color = AppPalette.DarkAccent.Green
-        override val duration: Color = AppPalette.DarkAccent.Copper
     }
 
     public override val example: AppColor.ExampleColors = object : AppColor.ExampleColors {
@@ -246,7 +243,6 @@ public object DarkColor : AppColor {
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
         override val highlight = AppPalette.NeutralDark.N700
-        override val active = AppPalette.DarkAccent.Green
         override val inactive = AppPalette.NeutralDark.N400.copy(alpha = 0.90f)
         override val background = AppPalette.NeutralDark.N300
         override val outline = Color.Transparent
@@ -380,7 +376,5 @@ public object DarkColor : AppColor {
     override val palette: AppColor.PaletteColors = object : AppColor.PaletteColors {
         override val palette7BlueGrowth: List<Color> =
             AppPalette.Gradient.Palette7BlueGrowth
-        override val palette5OrangeRedGrowth: List<Color> =
-            AppPalette.Gradient.Palette5OrangeRedGrowth
     }
 }

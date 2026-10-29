@@ -12,9 +12,8 @@ Current shape, for orientation (source owns changes):
 - Locale bundles live in the provider's `values*` directories, with full key parity.
   Inspect the current directories for the shipped locale set; each bundle has
   `strings.xml` and `plurals.xml`. Every format argument is positional.
-- `drawable/` holds five WebP files with alpha and no PNG, all named without
-  prefixes: `empty_exercises`, `empty_sets`, `empty_workouts`, `error_dialog`,
-  `onboarding_hero` (768 × 768).
+- Inspect `drawable/` and the intended consumers for existing imagery before
+  creating an asset; file names alone do not establish its subject or alpha.
 
 ## Android packaging
 
@@ -27,9 +26,9 @@ resource packaging/use needs its relevant inspection or manual scenario.
 ## Strings and plurals
 
 - Every new user-facing string MUST have a real translation in every existing
-  locale, including unfinished features: the agent authors the Ukrainian and
-  Russian translations itself for every new key. A missing key or English
-  placeholder text in `values-uk`/`values-ru` is a defect.
+  locale, including unfinished features. Author translations for the actual
+  shipped locale directories; a missing key or untranslated placeholder text in
+  a translated bundle is a defect.
 - Format arguments MUST use explicit positional placeholders (`%1$s`, `%2$d`).
   Locale variants may reorder positions but keep argument indices and types.
   Do not concatenate localized sentence fragments or assume named formatting.
@@ -37,15 +36,16 @@ resource packaging/use needs its relevant inspection or manual scenario.
   numbered placeholder names such as `title1`.
 - Strings stay in each locale's `strings.xml`. Rich-text presentation belongs in
   the owning AnnotatedString consumer; resources carry no HTML markup.
-- A value inside a localized sentence that needs its own style (size, color or
-  animation) goes through [`ValueSlot`](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/utils/ValueSlot.kt):
-  format the resource with `ValueSlot.marker(index)` in place of each such value
-  (its placeholder is `%n$s`), then call `buildValueSlotString(sentence, slots,
-  appendRest)` with one `ValueSlot(value) { … }` per value and the style of the
-  surrounding text in `appendRest`. Any number of values is supported, and each
-  value finds its own marker, so a locale may reorder them. Never split such a
-  sentence into fragments, concatenate pieces or set a value and its words in
-  separate `Text`s to style them.
+- Keep a sentence with individually styled values in one localized resource;
+  never split it into fragments, concatenate pieces or set a value and its words
+  in separate `Text`s to style them. Within `:design-system:components`, use its
+  internal [`ValueSlot`](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/utils/ValueSlot.kt)
+  helper: format the resource with `ValueSlot.marker(index)` for each styled value
+  (placeholder `%n$s`), then call `buildValueSlotString(sentence, slots, appendRest)`
+  with one `ValueSlot(value) { … }` per value and the surrounding text style in
+  `appendRest`. Respect the implementation's supported marker range; a locale may
+  reorder the markers. Feature consumers use public component contracts rather
+  than importing or copying this internal utility.
 - Copy reads like a person talking, not like a report. Russian and Ukrainian
   address the user with "ты", English with "you", both Portuguese bundles with
   "você". A count is a plural phrase ("3 sets done", "12 workouts"), never

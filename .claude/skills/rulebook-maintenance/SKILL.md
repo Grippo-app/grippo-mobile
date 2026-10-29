@@ -57,8 +57,11 @@ writing the rule anywhere else.
   `description` says what the skill owns and when to apply it, in one or two
   sentences that start with a verb ("Implement...", "Review...", "Run..."). Optional
   fields only when needed: `disable-model-invocation: true` for manual-only
-  skills, `user-invocable: false` for internal ones. Body: purpose, when to use,
-  workflow, completion gate, references list. References hold the long form.
+  skills, `user-invocable: false` for internal ones; these fields are YAML
+  booleans. Body: purpose, when to use, workflow, a named completion/gate/checks
+  section (or a pointer there to its owner), references list. References hold
+  the long form. Other frontmatter fields require extending this schema and
+  the checker together.
 - `.claude/agents/<name>.md` frontmatter:
   - `name` equals the file stem.
   - `description` starts with the role and names the trigger ("Use proactively
@@ -81,6 +84,8 @@ writing the rule anywhere else.
     `Bash`; keep its structure and command explicit so the checker can validate it.
   - Body: role title and purpose, then Rights, Inputs you must receive, Duties,
     Report format (an optional Severity section may precede Report format).
+    `color` is optional UI metadata. Other fields and tool capabilities require
+    extending this schema and the checker's allowlists together.
 - `.claude/hooks/bash-guard.py` checks Bash commands against the role's mode;
   it supplements the runtime's sandbox and the role's procedural restrictions.
   Change its
@@ -146,10 +151,13 @@ file, run the checker. Never leave a tombstone paragraph explaining the removal.
 python3 -I .claude/hooks/check-rulebook.py
 ```
 
-It validates relative links and anchors, skill and agent identities, required
-models/tools/exclusions, required skill names, canonical Bash hook structure and
-the role's guard mode, plus the skills index and agent roster (including required
-skills) in `CLAUDE.md`. Read-only roles must exclude
+It validates required entry points, relative links and anchors, supported
+frontmatter fields/types, skill and agent identities, completion-section and
+role-section presence, required models/tools/exclusions, required skill names,
+canonical Bash hook structure and the role's guard mode, plus the skills index
+and unique agent roster (including required skills) in `CLAUDE.md`. Registry rows
+come from the actual tables in their owning sections; YAML metadata and fenced
+examples are not document structure or links. Read-only roles must exclude
 editing tools; agents without allowed MCP tools must block MCP access, and every
 agent must exclude delegation. Zero problems is a precondition for reporting a
 rulebook change complete. The checker proves configuration structure, not runtime

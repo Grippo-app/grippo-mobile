@@ -21,12 +21,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -45,7 +48,8 @@ import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.muscles.MuscleState
 import com.grippo.core.state.muscles.stubMuscleGroup
 import com.grippo.design.components.divider.ContentDivider
-import com.grippo.design.components.empty.IllustratedEmptyState
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.frames.FocusFrame
@@ -66,6 +70,7 @@ import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRangePresets
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.datetime.LocalDateTime
 
 @Composable
@@ -157,16 +162,19 @@ internal fun ExerciseLibraryScreen(
         targetState = isEmpty
     ) {
         when (it) {
-            true -> IllustratedEmptyState(
+            true -> EmptyState(
                 modifier = Modifier
                     .fillMaxSize()
-                    .navigationBarsPadding(),
-                painter = AppTokens.drawables.res(Res.drawable.empty_exercise_search),
-                contentPadding = PaddingValues(
-                    horizontal = AppTokens.dp.screen.horizontalPadding,
-                    vertical = AppTokens.dp.screen.verticalPadding,
+                    .navigationBarsPadding()
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        horizontal = AppTokens.dp.screen.horizontalPadding,
+                        vertical = AppTokens.dp.screen.verticalPadding,
+                    ),
+                text = AppTokens.strings.res(Res.string.empty_exercise_examples),
+                style = EmptyStateStyle.Illustrated(
+                    painter = AppTokens.drawables.res(Res.drawable.empty_exercise_search),
                 ),
-                text = AppTokens.strings.res(Res.string.empty_exercise_examples)
             )
 
             false -> {
@@ -178,9 +186,22 @@ internal fun ExerciseLibraryScreen(
                 )
 
                 val listState = rememberLazyListState()
+                val currentState by rememberUpdatedState(state)
                 val canLoadMore = state.pagination is PaginationState.Next &&
                         !state.pagination.isEndReached &&
                         state.exerciseExamples.size >= state.pagination.limit * state.pagination.page
+
+                LaunchedEffect(listState) {
+                    snapshotFlow {
+                        Triple(
+                            currentState.queries.name,
+                            currentState.queries.filter,
+                            currentState.pagination is PaginationState.Restartable,
+                        )
+                    }
+                        .drop(1)
+                        .collect { listState.requestScrollToItem(index = 0) }
+                }
 
                 LaunchedEffect(listState, canLoadMore) {
                     if (!canLoadMore) return@LaunchedEffect

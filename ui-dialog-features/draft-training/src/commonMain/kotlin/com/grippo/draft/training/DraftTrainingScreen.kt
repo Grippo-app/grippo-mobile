@@ -25,6 +25,8 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.divider.ContentDivider
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
@@ -137,11 +139,10 @@ internal fun DraftTrainingScreen(
                 } else {
                     if (state.exercises.isEmpty()) {
                         item(key = "empty", contentType = "empty") {
-                            Text(
+                            EmptyState(
                                 modifier = Modifier.fillMaxWidth(),
                                 text = AppTokens.strings.res(Res.string.draft_training_empty),
-                                style = AppTokens.typography.b14Med(),
-                                color = AppTokens.colors.text.secondary,
+                                style = EmptyStateStyle.Text,
                             )
                         }
                     } else {

@@ -39,3 +39,17 @@ the tokens.
 [resources.md](resources.md) owns asset conventions;
 [CONSISTENCY.md](../../../../design-system/CONSISTENCY.md) owns role selection.
 An annotation does not establish recomposition cost or accessibility correctness.
+
+## Empty-state text
+
+For empty, no-results and missing-data states that replace a content region,
+keep the optional title and explanatory message as distinct roles, using the
+[empty-state mapping](../../../../design-system/CONSISTENCY.md#empty-state-text).
+The message keeps its role when the title is omitted. Screen, sheet, section and
+card hosts, and illustration sizes, MUST NOT select different typography for the
+same role. Rendering belongs to the [shared empty-state family](components.md#empty-states).
+Inline unavailable metric values, status labels and input placeholders retain
+their own roles.
+
+Before completing an empty-state change, inspect every affected title/message,
+including text-only states and inherited component defaults, against that mapping.

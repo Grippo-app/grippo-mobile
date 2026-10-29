@@ -55,6 +55,8 @@ import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
 import com.grippo.core.state.metrics.performance.stubPerformanceMetricsByType
 import com.grippo.core.state.metrics.performance.stubPerformanceMetricsWithoutReference
 import com.grippo.design.components.divider.ContentDivider
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.indicators.ComparisonIndicator
 import com.grippo.design.components.metrics.performance.internal.PerformanceTrendChip
 import com.grippo.design.components.modifiers.scalableClick
@@ -134,10 +136,9 @@ public fun PerformanceComparisonSection(
         )
 
         if (!hasValues) {
-            Text(
+            EmptyState(
                 text = AppTokens.strings.res(Res.string.performance_comparison_empty),
-                style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.secondary,
+                style = EmptyStateStyle.Text,
             )
             return@Column
         }

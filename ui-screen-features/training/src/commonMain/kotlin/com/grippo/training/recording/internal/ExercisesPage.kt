@@ -11,13 +11,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.design.components.dragdrop.DraggableItem
 import com.grippo.design.components.dragdrop.rememberDragDropListState
-import com.grippo.design.components.empty.IllustratedEmptyState
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.swipe.SwipeRevealAction
 import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.training.ExerciseCard
@@ -49,13 +52,16 @@ internal fun ExercisesPage(
     ) { isEmpty ->
         when (isEmpty) {
             true -> {
-                IllustratedEmptyState(
+                EmptyState(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-                    painter = AppTokens.drawables.res(Res.drawable.empty_exercises),
-                    contentPadding = contentPadding,
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                        .verticalScroll(rememberScrollState())
+                        .padding(contentPadding),
                     text = AppTokens.strings.res(Res.string.empty_training_exercises),
+                    style = EmptyStateStyle.Illustrated(
+                        painter = AppTokens.drawables.res(Res.drawable.empty_exercises),
+                    ),
                 )
             }
 

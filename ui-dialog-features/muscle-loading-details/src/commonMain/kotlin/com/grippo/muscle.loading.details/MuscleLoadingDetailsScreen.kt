@@ -38,6 +38,8 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.datetime.DialogRangeHeader
+import com.grippo.design.components.empty.EmptyState
+import com.grippo.design.components.empty.EmptyStateStyle
 import com.grippo.design.components.frames.OverlayContainer
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoading
 import com.grippo.design.components.metrics.distribution.muscle.loading.MuscleLoadingCard
@@ -204,21 +206,12 @@ private fun MuscleLoadingMissingContent(
         else -> Res.string.muscle_loading_details_unknown_message
     }
 
-    Column(
+    EmptyState(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-    ) {
-        Text(
-            text = AppTokens.strings.res(title),
-            style = AppTokens.typography.h5(),
-            color = AppTokens.colors.text.primary,
-        )
-        Text(
-            text = AppTokens.strings.res(message),
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
-        )
-    }
+        text = AppTokens.strings.res(message),
+        style = EmptyStateStyle.Text,
+        title = AppTokens.strings.res(title),
+    )
 }
 
 @Composable

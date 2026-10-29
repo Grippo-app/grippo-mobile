@@ -189,11 +189,9 @@ public interface AppColor {
     public interface ContextColors {
         public val muscle: Color
         public val equipment: Color
-        public val experience: Color
         public val body: Color
         public val volume: Color
         public val intensity: Color
-        public val duration: Color
         public val repetitions: Color
     }
 
@@ -241,7 +239,6 @@ public interface AppColor {
 
     public interface MuscleColors {
         public val highlight: Color
-        public val active: Color
         public val inactive: Color
         public val background: Color
         public val outline: Color
@@ -282,7 +279,6 @@ public interface AppColor {
     public interface SelectionColors {
         public val accent: Color
         public val background: Color
-        public val onAccent: Color
         public val selectedCardBackground: Color
         public val selectedCardBorder: Color
         public val checkedIndicator: Color
@@ -379,7 +375,6 @@ public interface AppColor {
     }
 
     public interface PaletteColors {
-        public val palette5OrangeRedGrowth: List<Color>
         public val palette7BlueGrowth: List<Color>
     }
 }
