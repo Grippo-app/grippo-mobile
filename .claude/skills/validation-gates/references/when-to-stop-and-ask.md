@@ -8,9 +8,10 @@ and conventions, app shells, network/auth core, tokens, CompositionLocals,
 
 ## When to ask
 
-Ask when a change expands the authorized scope, revises a locked decision, or
-needs a behavior-affecting fact that neither the request nor the source provides
-(a product rule, a backend contract, a missing permission). Everything necessary
+Ask when a change expands the authorized scope, revises a locked decision without
+existing explicit approval, or needs a behavior-affecting fact that neither the
+request nor the source provides (a product rule, a backend contract, a missing
+permission). Everything necessary
 to deliver the request - callers, routes, DI registration, resources, coherent
 migrations - is already authorized and is not asked about again.
 

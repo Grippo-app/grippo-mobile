@@ -18,9 +18,9 @@ Inspect the owning module, current provider/implementation and
   per-VM/per-call state. Resolve ambiguous ownership or duplicate-interface qualification before
   choosing a binding.
 - Include dependencies the module actually uses; do not copy BackendModule/DatabaseModule blindly.
-  `:shared` registers every generated module explicitly. Composition changes stay inside the
-  authorized scope; scope expansion or a locked-decision change needs a question
-  ([scope discipline](../../../CLAUDE.md#scope-discipline)).
+  `:shared` registers every generated module explicitly. Composition changes follow
+  [scope discipline](../../../CLAUDE.md#scope-discipline) and the canonical
+  [scope decisions](../validation-gates/references/when-to-stop-and-ask.md#when-to-ask).
 - Existing `FeatureApiModule` is the sole hand-DSL carve-out. UseCases inside the authorized scope
   are registered there using its existing pattern. MUST NOT create a second hand-written module or
   annotate UseCases merely to bypass the carve-out.

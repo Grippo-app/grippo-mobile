@@ -44,8 +44,8 @@ Read source and target declarations, existing area mapper and its callers. Conve
   MUST remain in the owning business/state operation, outside mappers (no mapper in
   `data-mappers/**` generates identity or time today). When a signature inside the authorized
   scope needs identity or time, pass it explicitly from the owner.
-- Resolve an unknown source/target shape before writing code. A direction outside the seven or a
-  new module/dependency edge is scope expansion ([scope discipline](../../../CLAUDE.md#scope-discipline)).
+- Resolve an unknown source/target shape before writing code. Direction, module and dependency
+  changes follow [scope decisions](../validation-gates/references/when-to-stop-and-ask.md#when-to-ask).
 
 ## Completion gate
 

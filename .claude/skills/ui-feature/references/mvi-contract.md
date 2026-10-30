@@ -158,7 +158,9 @@ Opening a new picker follows [dialogs.md](dialogs.md): its config has caller-own
 Rules:
 - `internal class` for a leaf; `public class` when the owning Component is public (dialogs and feature roots expose `viewModel`, inspect `WeightPickerViewModel`/`ProfileViewModel`). Extends `BaseViewModel<State, Direction, Loader>`, **implements** `Contract`.
 - Constructor receives caller route inputs, typed feature analytics,
-  `Feature` / `UseCase` / `Controller` dependencies and a restored `initialState`.
+  `Feature` / `UseCase` / `Controller` dependencies. Add a restored `initialState`
+  only for screen drafts required by
+  [state-preservation](../../state-preservation/SKILL.md#ownership-and-implementation).
   No direct API/DAO/repository dependencies (observe Flows, call throwing suspend
   commands - see [data boundary](results.md#data-boundary-for-result-producers-and-receivers)).
   Authorization's documented

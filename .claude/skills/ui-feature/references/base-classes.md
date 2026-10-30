@@ -261,7 +261,9 @@ No `Toolbar` (the screen adds its own). No system-insets handling (edge-to-edge 
 
 ---
 
-## Marker interfaces & identity types (`:ui-core:foundation:models`)
+## Marker interfaces & identity types
+
+Source: the `com.grippo.core.foundation.models` package in `:ui-core:foundation`.
 
 - **`BaseDirection`** — `public interface BaseDirection`. ViewModel nav intents. Per-screen `<Name>Direction` is a `sealed interface : BaseDirection` (compiler-enforced exhaustiveness in `eventListener`); subtypes `data object`/`data class`. **No `@Serializable`** — Directions are consumed immediately; they don't survive process death (the router stack does).
 - **`BaseLoader`** — `public interface BaseLoader`. Active async ops. Per-screen `<Name>Loader` is an `@Immutable sealed interface : BaseLoader` (every subtype `@Immutable data object`). A screen with no async ops still declares the interface (empty body).

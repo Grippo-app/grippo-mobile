@@ -70,8 +70,9 @@ and that owner's error, cancellation and state boundaries. Preserve required
 SDK failure translation, transport retry and best-effort sink isolation at their
 existing owners; they do not authorize recovery wrappers in consumers.
 A behavior change triggers the analytics and preservation gates like any other
-change. Keep the fix inside authorized scope;
-a defect in a locked decision or a backend contract is a question, not a patch.
+change. Locked-decision and backend-contract decisions follow
+[scope questions](../validation-gates/references/when-to-stop-and-ask.md#when-to-ask);
+wire changes require the [backend evidence gate](../backend-contract-client/SKILL.md).
 
 ## 6. Regression gate
 

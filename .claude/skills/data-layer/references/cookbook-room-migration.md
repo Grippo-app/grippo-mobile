@@ -1,10 +1,9 @@
 # Room migration decisions
 
-Necessary schema/migration changes are inside the authorized scope; do not request repeat
-consent. Ask only when the proposed delta is scope expansion, changes a locked decision or needs
-an unresolved data-retention/product fact
-([scope discipline](../../../../CLAUDE.md#scope-discipline)). Current versions, migrations,
-builders and schema locations are listed in [Room persistence](persistence-room.md).
+Schema/migration authorization and unresolved data-retention/product decisions follow
+[scope decisions](../../validation-gates/references/when-to-stop-and-ask.md#when-to-ask).
+Current versions, migrations, builders and schema locations are listed in
+[Room persistence](persistence-room.md).
 
 1. Inspect current Database version, affected entities/DAOs, migrations, both platform builders
    and exported schemas under `data-services/database/`.

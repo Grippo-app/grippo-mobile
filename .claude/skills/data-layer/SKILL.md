@@ -28,9 +28,9 @@ implementations MUST remain internal. MUST NOT add analytics dependencies to the
 
 - Resolve an unclear domain shape or partial-update policy with the user before implementing it
   ([when to stop and ask](../../../CLAUDE.md#when-to-stop-and-ask)).
-- Module, schema/migration and auth/network-core changes stay inside the authorized scope: its
-  necessary steps need no repeated consent; scope expansion or a locked-decision change needs a
-  question ([scope discipline](../../../CLAUDE.md#scope-discipline)).
+- Module, schema/migration and auth/network-core changes follow
+  [scope discipline](../../../CLAUDE.md#scope-discipline) and the canonical
+  [scope decisions](../validation-gates/references/when-to-stop-and-ask.md#when-to-ask).
 - Response and request DTO fields, including collections, are nullable with `= null` and explicit
   wire keys; a request field the server must receive as explicit `null` carries
   `@EncodeDefault(EncodeDefault.Mode.ALWAYS)` ([DTO/API](references/dtos-and-api.md)).

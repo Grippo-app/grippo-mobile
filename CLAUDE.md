@@ -22,11 +22,12 @@ live in the owning skills under `.claude/skills/`; the code owns signatures.
 
 - **Authorized scope** - the user's request plus every step necessary to deliver
   it: callers, routes, DI registration, resources, coherent migrations. Doing
-  those steps needs no repeated approval. **Scope expansion** is new product
-  behavior, a change to a locked decision, a new module/dependency the request
-  does not imply, or a change to an existing public contract beyond what the
-  request implies (migrating the callers of a contract the task itself changes is
-  authorized); it requires a question (see [When to stop and ask](#when-to-stop-and-ask)).
+  those steps needs no repeated approval. **Scope expansion** is product behavior
+  beyond the request, a locked-decision change without existing explicit approval,
+  a new module/dependency the request does not imply, or a change to an existing
+  public contract beyond what the request implies (migrating the callers of a
+  contract the task itself changes is authorized); it requires a question
+  (see [When to stop and ask](#when-to-stop-and-ask)).
 - **Owning document / canonical rule** - the one skill or reference that defines
   a topic (listed in the [skills index](#skills-index)). "Apply the owning
   skill's gate" means: open that skill's `SKILL.md`, find its completion gate,
@@ -177,7 +178,7 @@ Use [code style](.claude/skills/validation-gates/references/code-style.md),
 - Dialog sessions are in-memory and never restored after process death.
 - No automated application tests, linters or screenshot tooling unless the user explicitly asks.
 
-Changing any of these is scope expansion and needs a question.
+Changes follow the [scope decision policy](.claude/skills/validation-gates/references/when-to-stop-and-ask.md#when-to-ask).
 
 ## Scope discipline
 

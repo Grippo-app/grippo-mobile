@@ -426,5 +426,198 @@ for mode in readonly readonly-compile readonly-build no-git-write; do
   run "$mode" 'git branch --sort -committerdate --list' allow
   run "$mode" 'git tag -ln2' allow
 done
+# Ref mutations include unique long-option abbreviations; values remain data.
+for mode in readonly readonly-compile readonly-build no-git-write; do
+  run "$mode" 'git branch --unset-upst' block
+  run "$mode" 'git branch --set-upstream-t=main' block
+  run "$mode" 'git branch --edit-desc' block
+  run "$mode" 'git branch --list --no-lis guard-probe' block
+  run "$mode" 'git tag --list --no-lis guard-probe' block
+  run "$mode" 'git tag --annot guard-probe' block
+  run "$mode" 'git branch --format --force --list' allow
+  run "$mode" 'git branch --format=--unset-upst --list' allow
+  run "$mode" 'git help --web status' block
+  run "$mode" 'git help -w status' block
+  run "$mode" 'git help status' block
+  run "$mode" 'git --help --web status' block
+  run "$mode" 'git status --help' block
+  run "$mode" 'git -c browser.guardprobe.cmd=touch help --web status' block
+  run "$mode" 'git -c help.format=web help status' block
+  run "$mode" 'git -c man.guardprobe.cmd=touch help status' block
+  run "$mode" 'git help -a' allow
+  run "$mode" 'git help --guides' allow
+  run "$mode" 'git status -h' allow
+  run "$mode" 'git grep --regexp --help' allow
+  run "$mode" 'git grep -- --help' allow
+done
+# Parse clustered options without interpreting option values or filenames as flags.
+for mode in readonly readonly-compile readonly-build; do
+  run "$mode" 'sort -ro/private/tmp/sorted CLAUDE.md' block
+  run "$mode" 'sort -rto CLAUDE.md' allow
+  run "$mode" 'sort -to CLAUDE.md' allow
+  run "$mode" 'sort --key 1,2 CLAUDE.md' allow
+  run "$mode" 'sort --out=/private/tmp/sorted CLAUDE.md' block
+  run "$mode" 'sort --compress-pr=touch CLAUDE.md' block
+  run "$mode" 'sort -- --output' allow
+  run "$mode" 'file -bC -m /private/tmp/guard-magic' block
+  run "$mode" 'file --comp -m /private/tmp/guard-magic' block
+  run "$mode" 'file -mC CLAUDE.md' allow
+  run "$mode" 'file --separator --compile CLAUDE.md' allow
+  run "$mode" 'file -- -C' allow
+  run "$mode" 'xmllint --shell /private/tmp/guard-input.xml' block
+  run "$mode" "printf 'save /private/tmp/guard-saved.xml\\nbye\\n' | xmllint --shell /private/tmp/guard-input.xml" block
+  run "$mode" 'xmllint --noout /private/tmp/guard-input.xml' allow
+done
+# A GET flag cannot mask a later write method, a header value or a request body.
+for mode in readonly-build no-git-write; do
+  run "$mode" 'gh api -X GET -X DELETE repos/x/y' block
+  run "$mode" 'gh api --method=GET --method=POST repos/x/y' block
+  run "$mode" 'gh api -XDELETE -XGET repos/x/y' block
+  run "$mode" 'gh api -H "X-Probe: -X GET" -X DELETE repos/x/y' block
+  run "$mode" 'gh api -H --method=GET repos/x/y' block
+  run "$mode" 'gh api repos/x/y -- -X GET' block
+  run "$mode" 'gh api -X GET -fa=b repos/x/y' block
+  run "$mode" 'gh api -X GET -Fa=b repos/x/y' block
+  run "$mode" 'gh api -XGET repos/x/y' allow
+  run "$mode" 'gh api -X=GET repos/x/y' allow
+  run "$mode" 'gh api -X =GET repos/x/y' block
+  run "$mode" 'gh api -X=GET -X=DELETE repos/x/y' block
+  run "$mode" 'gh api --method GET repos/x/y' allow
+  run "$mode" 'gh api -X GET -X GET repos/x/y' allow
+  run "$mode" 'gh api -X GET --template "-X DELETE" repos/x/y' allow
+done
+# Installed reader aliases and option values must agree with actual CLI parsing.
+for mode in readonly readonly-compile readonly-build; do
+  run "$mode" 'file -MC CLAUDE.md' allow
+  run "$mode" 'file -M C CLAUDE.md' allow
+  run "$mode" 'file --sep --compile CLAUDE.md' allow
+  run "$mode" 'file --magic-fil -- -C input' block
+  run "$mode" 'file -M -- -C input' block
+  run "$mode" 'file -F "$separator" -- "$file"' allow
+  run "$mode" 'sort --temporary-dir -- -o /private/tmp/sorted input' block
+  run "$mode" 'sort --tem --output CLAUDE.md' allow
+  run "$mode" 'sort -t"$separator" -k "$key" -- "$file"' allow
+  run "$mode" 'sort "$flags" input' block
+  run "$mode" 'flags=-o; sort $flags /private/tmp/sorted input' block
+  run "$mode" 'sort *' block
+  run "$mode" 'sort -- *' allow
+  run "$mode" 'sort "./$file"' allow
+  run "$mode" "sort \$'-o' /private/tmp/sorted input" block
+  run "$mode" "sort \$'\\x2d\\x6f' /private/tmp/sorted input" block
+  run "$mode" "sort \$'\\u002d\\u006f' /private/tmp/sorted input" block
+  run "$mode" "rg \$'line\\nnext' CLAUDE.md" allow
+  run "$mode" "rg \$'\$(printf literal)' CLAUDE.md" allow
+  run "$mode" "rg \$'\\0' CLAUDE.md" block
+  run "$mode" 'cat "$file"' allow
+  run "$mode" 'rg -e "$pattern" -- "$file"' allow
+  run "$mode" 'rg -e --pre CLAUDE.md' allow
+  run "$mode" 'rg --pre="$helper" CLAUDE.md' block
+  run "$mode" 'rg --"$flag" CLAUDE.md' block
+  run "$mode" 'xmllint -output /private/tmp/saved.xml --auto' block
+  run "$mode" 'xmllint -shell input.xml' block
+  run "$mode" 'xmllint --path --shell --auto' allow
+  run "$mode" 'xmllint -path -shell --auto' allow
+  run "$mode" 'xmllint --path --shell -shell input.xml' block
+  run "$mode" 'xmllint --xpath "$expression" input.xml' allow
+  run "$mode" 'xmllint --noout http://127.0.0.1/input.xml' block
+  run "$mode" 'xmllint --nonet --noout http://127.0.0.1/input.xml' allow
+  run "$mode" 'xmllint --loaddtd input.xml' block
+  run "$mode" 'xmllint -nonet -loaddtd input.xml' allow
+  run "$mode" 'find . -name "$pattern" -print' allow
+  run "$mode" 'awk "{ print }" -- "$file"' allow
+  run "$mode" 'awk -F "$separator" "{ print }" -- "$file"' allow
+  run "$mode" 'awk "$program" input' block
+  run "$mode" 'awk -- "$program" input' block
+  run "$mode" 'sed -n "1,5p" "./$file"' allow
+  run "$mode" 'sed -e "$expression" input' block
+  run "$mode" 'sed -e"s|x|$replacement|p" input' block
+  run "$mode" 'sed --expression="s|x|$replacement|p" input' block
+  run "$mode" 'sort --files0-from -- -o /private/tmp/sorted' block
+  run "$mode" 'rg --ignore-file -- --pre /private/tmp/helper pattern input' block
+  run "$mode" 'rg --context-separator -- --pre /private/tmp/helper pattern input' block
+  run "$mode" 'rg --field-context-separator -- --hostname-bin /private/tmp/helper pattern input' block
+  run "$mode" 'rg \$pattern input' allow
+  run "$mode" 'rg foo\* input' allow
+  run "$mode" 'env VAR=\"$extra\" printf safe' block
+  run "$mode" 'sort -k "${keys[@]}" input' block
+  run "$mode" 'sort -k "$keys[@]" input' block
+  run "$mode" 'cat "$data[index]"' block
+  run "$mode" 'cat "$data[0]"' allow
+  run "$mode" 'env VAR="${@}" printf safe' block
+  run "$mode" 'env VAR="${=extra}" printf safe' block
+  run "$mode" 'cat "${(e)payload}"' block
+  run "$mode" 'cat "${data[index]}"' block
+  run "$mode" 'cat "$@"' allow
+  run "$mode" "rg '\${(e)payload}' input" allow
+  run "$mode" 'xmllint --c14n input.xml' block
+  run "$mode" 'xmllint --nonet --c14n input.xml' allow
+done
+for mode in readonly readonly-compile readonly-build no-git-write; do
+  run "$mode" 'git reflog drop --all' block
+  run "$mode" 'git reflog write HEAD old new message' block
+  run "$mode" 'git reflog show HEAD' allow
+  run "$mode" 'git reflog show drop' allow
+  run "$mode" 'git cat-file --filters HEAD:file' block
+  run "$mode" 'git cat-file --filter HEAD:file' block
+  run "$mode" 'git cat-file -p HEAD:file' allow
+  run "$mode" 'git diff --src-prefix --help' allow
+  run "$mode" 'git diff --dst-prefix --filters' allow
+  run "$mode" 'git help -h' allow
+  run "$mode" 'git grep -e "$pattern" -- "$file"' allow
+  run "$mode" 'git -C "$repo" status --short' allow
+  run "$mode" 'git -c "$settings" status' block
+  run "$mode" 'git "$action"' block
+  run "$mode" 'tool=git; "$tool" add -A' block
+  run "$mode" "g\$'it' add -A" block
+  run "$mode" 'RIPGREP_CONFIG_PATH=/private/tmp/rg.conf rg pattern CLAUDE.md' block
+  run "$mode" 'env RIPGREP_CONFIG_PATH=/private/tmp/rg.conf rg pattern CLAUDE.md' block
+  run "$mode" 'RIPGREP_CONFIG_PATH= rg pattern CLAUDE.md' allow
+  run "$mode" 'env VAR=$extra git status --short' block
+  run "$mode" 'env VAR="$extra" git status --short' allow
+  run "$mode" 'VAR=$extra git status --short' allow
+  run "$mode" 'git -C $repo status --short' block
+  run "$mode" 'nice -n $priority git status --short' block
+  run "$mode" 'nice -n "$priority" git status --short' allow
+  run "$mode" 'xcrun --sdk $sdk git status --short' block
+  run "$mode" 'xcrun --sdk "$sdk" git status --short' allow
+  run "$mode" 'git --git-dir="$repo" status --short' allow
+  run "$mode" 'git --git-dir "$repo" status --short' allow
+  run "$mode" 'git --work-tree="$repo" status --short' allow
+  run "$mode" 'git -c user.name="$name" status --short' allow
+  run "$mode" 'git -cuser.name="$name" status --short' allow
+  run "$mode" 'git config -- guard.probe --get' block
+  run "$mode" 'git config -f --get guard.fileprobe value' block
+  run "$mode" 'git config --file --get --list' allow
+  run "$mode" 'git config --fil --get guard.fileprobe value' block
+  run "$mode" 'git config --comm --get guard.commentprobe value' block
+  run "$mode" 'git cat-file --path -- --filters HEAD:file' block
+  run "$mode" 'git cat-file --path --filters -p HEAD:file' allow
+done
+for mode in readonly-build no-git-write; do
+  run "$mode" 'gh repo view x/y --web' block
+  run "$mode" 'gh pr view 1 --comments --web' block
+  run "$mode" 'gh repo view x/y' allow
+  run "$mode" 'gh api -X "$method" repos/x/y' block
+  run "$mode" 'gh pr view 1 --json "$fields"' allow
+  run "$mode" 'gh pr list --search "$query"' allow
+  run "$mode" 'gh pr list --search --web' allow
+  run "$mode" 'gh run list -w "$workflow"' allow
+  run "$mode" 'gh run list --workflow --web' allow
+  run "$mode" 'gh repo view x/y --web=false' allow
+  run "$mode" 'gh pr view 1 -w=false' allow
+  run "$mode" 'gh auth status --show-token' block
+  run "$mode" 'gh auth status -t' block
+  run "$mode" 'gh auth status --show-token=false' allow
+  run "$mode" 'gh auth status --template "$template"' allow
+done
+run readonly-build 'adb -s emulator-5554 "$action"' block
+run readonly-build 'adb -s emulator-5554 root' block
+run readonly-build 'adb -s emulator-5554 shell input text "$text"' allow
+check_payload readonly '{"tool_name":"Bash","tool_input":{"command":"cat \ud800"}}' block 'surrogate command rejected without traceback'
+run readonly-compile './gradlew :shared:dependencyInsight --dependency "$dependency" --configuration "$configuration"' allow
+run readonly-compile 'xcodebuild -scheme "$scheme" -configuration Debug build' allow
+run readonly-compile 'xcodebuild "$action" -scheme iosApp' block
+run readonly-compile 'xcodebuild -scheme iosApp -derivedDataPath build/derived build' block
+run readonly-compile 'xcodebuild -scheme iosApp -derivedDataPath /private/tmp/ios-derived build' allow
 echo "failures: $fails"
 exit $((fails > 0))

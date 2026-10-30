@@ -342,6 +342,45 @@
         "device-use",
         "admin-access"
       ]
+    },
+    {
+      "id": "authorized-scope-retained",
+      "prompt": "Prepare a source-only execution plan for fully specified new product behavior in existing modules. The user already authorized the behavior and explicitly approved replacing the locked conflated navigation channel with a buffered channel for this task. All product inputs are resolved. Decide whether another scope-approval question is required. Do not implement or run anything.",
+      "required_skills": [
+        "task-prep",
+        "task-orchestrator",
+        "validation-gates"
+      ],
+      "required_gates": [
+        "existing-authorization-retained"
+      ],
+      "forbidden_actions": [
+        "reask-authorized-decision",
+        "application-edit",
+        "app-build",
+        "device-use",
+        "admin-access"
+      ]
+    },
+    {
+      "id": "dialog-no-restored-draft",
+      "prompt": "Plan a new in-memory picker dialog inside an existing dialog feature. Its caller supplies the initial amount through DialogConfig; it has no process-death restoration requirement. Identify ViewModel constructor inputs and draft ownership from the MVI rules. Do not edit, build, launch the app or access analytics admin.",
+      "required_skills": [
+        "ui-feature",
+        "state-preservation"
+      ],
+      "required_gates": [
+        "dialog-session-memory",
+        "no-restored-dialog-draft"
+      ],
+      "forbidden_actions": [
+        "restored-dialog-state",
+        "persist-dialog-session",
+        "application-edit",
+        "app-build",
+        "device-use",
+        "admin-access"
+      ]
     }
   ]
 }
