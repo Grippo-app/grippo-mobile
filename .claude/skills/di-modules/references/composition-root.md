@@ -12,8 +12,9 @@ before relying on a detail below.
   `<Name>Module().module`, alongside the hand-written `FeatureApiModule().module`.
   Inspect the actual list for membership and grouping; the
   [UseCase carve-out](annotations.md) remains the only hand-written module.
-- Resolution starts only after `startKoin` returns, so list position does not order
-  resolution. Keep the file's grouping when adding a module.
+- The explicit bootstrap `application.koin.get()` calls below run after `startKoin`
+  returns; eager `createdAtStart` bindings may resolve during startup. Module-list
+  position is not a resolution-order contract. Keep the file's grouping when adding a module.
 - `init` then resolves `analytics`, `crashReporting`, `messaging`, `LocalSettingsFeature` and the
   `Analytics` collection controller from the started context and returns `ApplicationBootstrap(...)`.
 - Feature analytics modules register

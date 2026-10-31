@@ -23,9 +23,9 @@ with its illustrated style.
 Screen-specific backgrounds and actions remain with their consumers; do not add
 an artwork-specific widget or style when an existing one fits.
 
-For UI integration, export the chosen asset to the shared Compose resource provider
-as WebP by default, preserving alpha for cutouts. Use descriptive snake_case names
-under the resource policy. PNG is suitable as a lossless generation master or
+For UI integration, use the [resource policy](../../design-system/references/resources.md)
+for the shared provider's format and naming rules; preserve alpha for cutouts.
+PNG is suitable as a lossless generation master or
 when required by tooling, with the reason
 stated; do not bundle duplicate PNG/WebP masters without a real consumer.
 Choose pixel dimensions and compression for the largest actual display size;

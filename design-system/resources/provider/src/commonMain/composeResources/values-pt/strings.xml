@@ -910,4 +910,8 @@
     <string name="home_all_indicators">Todos os indicadores</string>
     <string name="home_fewer_indicators">Recolher indicadores</string>
     <string name="home_selected_period">Período selecionado</string>
+    <string name="home_goal_details">Mostrar mais</string>
+    <string name="home_goal_less_details">Mostrar menos</string>
+    <string name="home_muscle_incomplete_data">Alguns dados das séries estão incompletos. Consulte os detalhes.</string>
+    <string name="home_goal_open_details">Abrir análise da meta</string>
 </resources>

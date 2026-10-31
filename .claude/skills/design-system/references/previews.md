@@ -32,11 +32,10 @@ preview infrastructure without a concrete authorized need.
 
 ## What a preview establishes
 
-The `@Preview(locale = ...)` configuration decides the rendered language and
-`uiMode` decides the theme; a preview's display name proves nothing, and
-PreviewContainer only forwards that configured locale as its `localeTag` (see the
-[default viewport scope](visual-consistency.md#default-viewport-scope) and
-[theme](theme.md)). Current PreviewContainer adds preview padding and replaces
+Use the [default viewport variants](visual-consistency.md#default-viewport-scope)
+for configured locale/theme settings and [theme ownership](theme.md) for provider
+semantics; a preview's display name proves nothing. Current PreviewContainer adds
+12 dp preview padding and replaces
 Coil images with a placeholder. Its framing is not production host geometry, and
 that placeholder does not verify the real image's silhouette, proportions or
 loading outcome.

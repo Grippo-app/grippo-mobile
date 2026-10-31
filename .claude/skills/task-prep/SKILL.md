@@ -23,9 +23,9 @@ Keep it in the reply (the task report), in the user's language like every reply
 - **Facts** - confirmed requirements, source-supported defaults, open decisions.
 - **Slices** - ordered implementation slices, each with outcome, owned paths,
   prerequisites and the agent or session that will implement it.
-- **Gates** - which gates the change triggers: behavior change -> feature-analytics
-  and state-preservation; visual change -> brand-design and design-system; wire
-  change -> backend evidence; new module -> platform checklist.
+- **Gates** - enumerate the applicable gates per slice from
+  [Definitions](../../../CLAUDE.md#definitions), [mandatory review](../validation-gates/SKILL.md#mandatory-review)
+  and its topic owners, including visual-only impact assessments.
 - **Checks** - the default build rule from the
   [verification policy](../../../CLAUDE.md#verification-policy) and the runtime
   scenarios worth running if the user allows the app to run.
@@ -59,9 +59,12 @@ for the triggers, wording and handling of unanswered decisions.
    session; dependent slices run sequentially.
    Establish the [task baseline](../task-orchestrator/references/change-attribution.md)
    before the first edit; include existing user changes in delegation briefs.
-5. Enumerate per slice the gate items that will have to pass: screens needing a
-   `screenPresentation`, fields needing a draft, callers needing migration,
-   locales needing strings.
+5. Before implementation, keep one compact affected-scope inventory in the task
+   context: producers, direct and indirect callers, significant states, contract
+   migrations, owning gates, required evidence and records. Bound it by the
+   requested outcome and actual dependency impact; extend it when new affected
+   paths are discovered. Reuse it for implementation and review rather than
+   commissioning the same inventory again.
 6. Decide which checks the task can run and what they establish; name the runtime
    scenarios that would prove the behavior if the user allows running the app.
 

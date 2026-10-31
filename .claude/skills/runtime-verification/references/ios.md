@@ -16,7 +16,7 @@ xcrun simctl list devices available
 xcrun simctl boot "<simulator-udid>"           # or use the simulator tool's attach/launch
 xcrun simctl install "<simulator-udid>" <scratchpad>/ios-derived/Build/Products/Debug-iphonesimulator/Grippo.app
 xcrun simctl launch "<simulator-udid>" com.grippo.app
-xcrun simctl io "<simulator-udid>" screenshot /private/tmp/<scratchpad from the brief>/<scenario>-<step>-ios-<theme>.png
+xcrun simctl io "<simulator-udid>" screenshot "<absolute-scratchpad>/<scenario>-<step>-ios-<theme>.png"
 xcrun simctl ui "<simulator-udid>" appearance dark      # or light
 xcrun simctl spawn "<simulator-udid>" log stream --level debug --predicate 'process == "Grippo"'
 ```
@@ -32,7 +32,7 @@ xcrun simctl spawn "<simulator-udid>" log stream --level debug --predicate 'proc
   terminating, prove the checkpoint exists: the container path comes from
   `xcrun simctl get_app_container "<simulator-udid>" com.grippo.app data` (run it on its own;
   the guard rejects `$(...)`), then `ls "<container>/Library/Application Support/GrippoRestoration/state.json"`.
-  Restoration also requires the same binary, build number and archive format
+  Restoration also requires the same app version, build number and archive format
   between save and relaunch; `ApplicationStateStore.restore()` returns nil
   silently on a mismatch. Killing the app while active, or terminating before
   the background save completes, has no restoration guarantee and must not be

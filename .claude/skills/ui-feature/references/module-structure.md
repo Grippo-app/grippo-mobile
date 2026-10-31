@@ -60,14 +60,13 @@ One module per bottom-sheet flow (`weight-picker`, `date-picker`, `confirmation`
 
 Build (typical): same plugins; each module overrides the default namespace with `com.grippo.ui.dialog.features.<name>`; deps `uiCore.foundation`, `analytics.analyticsApi`, `uiCore.state`, `designSystem.core/resources.provider/components/preview`, `compose.foundation`/`material3`, immutable-collections (pickers add `composeLibs.wheelPicker`). Dialog features do **not** depend on `:data-features:feature-api` unless they read/write domain data (rare).
 
-Every dialog module depends on `:analytics:analytics-api` and has its own
-`:analytics:<dialog>` implementation module registered in `shared/.../Koin.kt`.
-The dialog ViewModel observes its own callbacks through that
+Dialog analytics ownership and wiring follow the
+[new module checklist](../../platform-build-toolkit/references/new-module.md#dialog-feature-ui-dialog-featuresdialog).
+The dialog ViewModel observes its own callbacks through its typed
 service — `SelectionChanged`, `SubmitClicked`, `DismissRequested` in
 `WeightPickerViewModel` — and declares no `screenPresentation` hook. Caller
-open/result facts belong to the owning screen VM. Wiring:
-[new module checklist](../../platform-build-toolkit/references/new-module.md#dialog-feature-ui-dialog-featuresdialog);
-rules: [feature-analytics](../../feature-analytics/SKILL.md).
+open/result facts belong to the owning screen VM. Rules:
+[feature-analytics](../../feature-analytics/SKILL.md).
 
 ## File layout for a feature
 
@@ -156,7 +155,8 @@ Reference modules: `:compose-libs:chart`, `:konfetti`, `:wheel-picker`, `:segmen
 1. **No design-system imports.** Style customization comes through Composable parameters (`Color`, `TextStyle`, `Dp`), not by reading `AppTokens` — keeps the widget reusable across products.
 2. **No data-layer access.** Input arrives as Composable parameters (`List<ChartPoint>`, `ImmutableList<WheelOption>`), never from a feature/repository.
 3. **Stateless or self-contained state.** Owns animation/gesture state via `remember`/`rememberSaveable`; no ViewModel dependency.
-4. **Public API.** All types/Composables `public`.
+4. **Public API.** Expose reusable entry points publicly; helper visibility follows
+   [code style](../../validation-gates/references/code-style.md#visibility-and-files).
 5. Apply [Compose stability contracts](../../compose-components/references/structure-and-runtime.md#stability-and-recomposition).
 
 Build (typical): `android.library.convention` + `kotlin.multiplatform.convention` + `compose.multiplatform.convention`; namespace `com.grippo.compose.libs.<name>`; deps `compose.foundation` (+ `compose.material3` only if it uses Material3 primitives, immutable-collections). **No Koin. No `:toolkit:*`. No `:design-system:*`.**

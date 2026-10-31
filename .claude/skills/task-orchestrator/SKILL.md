@@ -26,7 +26,10 @@ live in `.claude/agents/`; the roster is in
    for correctness, simplicity, boundaries, privacy,
    lifecycle and cancellation against the owning skill's completion gate,
    [forbidden patterns](../validation-gates/references/forbidden-patterns.md) and
-   [code style](../validation-gates/references/code-style.md). Fix what you find.
+   [code style](../validation-gates/references/code-style.md). Reconcile the prepared
+   inventory using [review completeness](../validation-gates/SKILL.md#review-completeness),
+   including required records, before handing over a coherent revision. Fix what
+   you find.
 4. **Independent review.** Required for every change that is not a small
    editorial change ([definitions](../../../CLAUDE.md#definitions)):
    - `code-reviewer` for every reviewed change;
@@ -36,11 +39,20 @@ live in `.claude/agents/`; the roster is in
    - `analytics-admin-auditor` whenever the
      [admin-sync gate](../feature-analytics/references/admin-sync.md#trigger-and-access-gate-must)
      applies (it owns the trigger).
-   Send the brief below; receive findings with `path:line` and severity. The
-   author's self-review never counts as independent review.
-5. **Resolve findings.** Fix every blocking finding, then obtain independent
-   re-review of the fixes and affected paths against the current task delta.
-   Retain review conclusions for unchanged paths unless the fixes affect them.
+   Send the same prepared inventory and current task delta in each brief below.
+   Run independent role reviews in parallel when capacity permits. Collect their
+   completed scope reports before routine corrections; interim blockers may be
+   addressed immediately. The author's self-review never counts as independent review.
+5. **Resolve findings.** Consolidate and deduplicate completed review findings,
+   then resolve blocking findings in a coherent batch and self-review the resulting
+   delta. Apply suggestions when they improve the authorized slice without
+   unnecessary churn. Obtain
+   independent re-review of the fixes and their affected paths. Retain conclusions
+   for unchanged paths; reopen them when scope changes, fixes affect them or new
+   concrete evidence appears. A request for a final check first reconciles existing
+   evidence and gaps instead of restarting every review. An explicit fresh or
+   broader audit still receives the requested coverage. Do not cap genuine findings
+   or iterations.
    A finding the user explicitly chose to keep is an accepted risk, recorded
    with its trigger and consequence - never a fix or a pass. If the same finding
    returns twice, reassess its root cause before changing anything else; ask only
@@ -53,8 +65,8 @@ live in `.claude/agents/`; the roster is in
    when needed; run runtime
    scenarios through `runtime-verifier`
    when the user allows the app to run. If fixes changed checked code, repeat only
-   the affected checks. Update the [records](../../../CLAUDE.md#records) the task
-   changed.
+   the affected checks. Required [records](../../../CLAUDE.md#records) are part
+   of the reviewed revision; reconcile them with any subsequent corrections.
 7. **Complete** against the [definition of done](../../../CLAUDE.md#definition-of-done),
    reply in the [final response format](../validation-gates/SKILL.md#final-response-format),
    and end with the [delivery](../delivery/SKILL.md) hand-off (proposed commit
@@ -120,8 +132,7 @@ Required additions per agent (each definition's "Inputs you must receive"):
 ## Working with findings
 
 Severity and format are owned by [validation-gates](../validation-gates/SKILL.md).
-Route a defect reported by several reviewers once, at its highest justified
-severity; keep each reviewer's evidence. A finding without `path:line` and a
+Keep each reviewer's evidence. A finding without `path:line` and a
 concrete trigger is a question for the reviewer, not a fix to apply blindly.
 
 ## Completion

@@ -10,9 +10,8 @@ Inspect the owning module, current provider/implementation and
 
 - MUST declare new production modules/bindings using Koin Annotations + KSP. A module whose
   package holds annotated classes is `@Module @ComponentScan`; a module whose bindings are only
-  provider methods on the module class omits `@ComponentScan` (today: `AnalyticsModule`,
-  `CrashReportingModule`, `MessagingModule`, `ShareModule`, `GoogleAuthModule`, `AppleAuthModule`,
-  `LocalizationModule`).
+  provider methods on the module class omits `@ComponentScan`; inspect the owning
+  module rather than copying a catalog of current module names.
 - MUST give interface implementations explicit `binds`; a provider's lifetime follows the owner
   ([annotation patterns](references/annotations.md)). Singleton state must not accidentally own
   per-VM/per-call state. Resolve ambiguous ownership or duplicate-interface qualification before

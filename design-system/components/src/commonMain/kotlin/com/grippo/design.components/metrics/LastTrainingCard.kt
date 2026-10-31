@@ -5,27 +5,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.formatters.DateTimeFormatState
 import com.grippo.core.state.formatters.DurationFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.stubTraining
-import com.grippo.design.components.illustration.Illustration
-import com.grippo.design.components.illustration.IllustrationStyle
-import com.grippo.design.components.modifiers.illustrationBackground
 import com.grippo.design.components.modifiers.scalableClick
+import com.grippo.design.components.modifiers.illustrationBackground
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.home_last_workout_in_period
-import com.grippo.design.resources.provider.last_training
 import com.grippo.design.resources.provider.metric_overview_duration
 import com.grippo.design.resources.provider.metric_overview_volume
 import com.grippo.toolkit.date.utils.DateCompose
@@ -54,6 +50,7 @@ public fun LastTrainingCard(
     Column(
         modifier = modifier
             .scalableClick(onClick = onClick)
+            .clip(shape)
             .illustrationBackground(shape)
             .padding(
                 horizontal = AppTokens.dp.metrics.panel.large.horizontalPadding,
@@ -61,49 +58,33 @@ public fun LastTrainingCard(
             ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+        ) {
+            Text(
+                text = AppTokens.strings.res(Res.string.home_last_workout_in_period),
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.secondary,
+            )
+            Text(
+                text = createdAtText,
+                style = AppTokens.typography.h5(),
+                color = AppTokens.colors.text.primary,
+            )
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column(
+            RecapMetric(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-                ) {
-                    Text(
-                        text = AppTokens.strings.res(Res.string.home_last_workout_in_period),
-                        style = AppTokens.typography.h5(),
-                        color = AppTokens.colors.text.primary,
-                    )
-                    Text(
-                        text = createdAtText,
-                        style = AppTokens.typography.b13Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                ) {
-                    RecapMetric(
-                        modifier = Modifier.weight(1f),
-                        value = value.duration.short(),
-                        label = AppTokens.strings.res(Res.string.metric_overview_duration),
-                    )
-                    RecapMetric(
-                        modifier = Modifier.weight(1f),
-                        value = value.total.volume.short(),
-                        label = AppTokens.strings.res(Res.string.metric_overview_volume),
-                    )
-                }
-            }
-            Illustration(
-                modifier = Modifier.width(AppTokens.dp.illustration.compact),
-                painter = AppTokens.drawables.res(Res.drawable.last_training),
-                style = IllustrationStyle.Compact,
+                value = value.duration.short(),
+                label = AppTokens.strings.res(Res.string.metric_overview_duration),
+            )
+            RecapMetric(
+                modifier = Modifier.weight(1f),
+                value = value.total.volume.short(),
+                label = AppTokens.strings.res(Res.string.metric_overview_volume),
             )
         }
     }

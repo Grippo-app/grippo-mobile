@@ -44,8 +44,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.home_muscle_incomplete_data
 import com.grippo.design.resources.provider.highlight_muscle_focus
-import com.grippo.design.resources.provider.metric_overview_muscle_details
 import com.grippo.design.resources.provider.metric_overview_muscle_distribution
 import com.grippo.design.resources.provider.metric_overview_muscle_primary
 import com.grippo.design.resources.provider.muscle_load_no_data
@@ -142,7 +142,13 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
 
     MuscleLoadingTopGroups(summary = summary, primaryMuscle = primaryMuscle)
 
-    MuscleLoadingDataNotice(summary = summary)
+    if (summary.meta.excludedSets > 0 || summary.meta.unassignedSets > 0 || summary.meta.unmeasuredVolumeSets > 0) {
+        Text(
+            text = AppTokens.strings.res(Res.string.home_muscle_incomplete_data),
+            style = AppTokens.typography.b12Med(),
+            color = AppTokens.colors.text.secondary,
+        )
+    }
 
 }
 
@@ -272,7 +278,7 @@ public fun MuscleLoadingCardSkeleton(
         MuscleLoadingCardStyle.Overview -> SkeletonPanel(
             modifier = modifier,
             contentHeight = maxOf(titleLine, AppTokens.dp.metrics.overview.detailsIcon) +
-                AppTokens.dp.contentPadding.text + captionLine + mapRowHeight + captionLine + spacer * 2,
+                AppTokens.dp.contentPadding.text + captionLine + mapRowHeight + spacer,
             style = SkeletonPanelStyle.Large,
         )
 

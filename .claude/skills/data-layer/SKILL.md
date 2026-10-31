@@ -52,3 +52,5 @@ Read the relevant reference only:
 [DTO/API](references/dtos-and-api.md), [network](references/backend-client.md),
 [auth session](references/auth-session.md), [Room](references/persistence-room.md),
 [migration](references/cookbook-room-migration.md), [DataStore](references/datastore.md).
+For equipment/muscle catalog refresh, startup/session ordering, exercise-example
+hydration or exclusions, also read [catalog compatibility](references/catalog-compatibility.md).

@@ -58,32 +58,12 @@ internal fun HomeSkeleton(
         ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
-        item(key = "last_training_skeleton") {
-            HomeRecapSkeleton(
-                modifier = Modifier.padding(horizontal = horizontalPadding),
-            )
-        }
-
-        if (state.hasGoal) {
-            item(key = "current_goal_skeleton") {
-                Column(
-                    modifier = Modifier.padding(horizontal = horizontalPadding),
-                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-                ) {
-                    SkeletonText(style = AppTokens.typography.h5())
-                    SkeletonText(style = AppTokens.typography.b12Med())
-                    SkeletonText(style = AppTokens.typography.b12Med())
-                }
-            }
-        }
-
         item(key = "highlights_header_skeleton") {
             val textMeasurer = rememberTextMeasurer()
 
             Column(
                 modifier = Modifier
-                    .padding(horizontal = horizontalPadding)
-                    .padding(top = AppTokens.dp.contentPadding.subContent),
+                    .padding(horizontal = horizontalPadding),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
             ) {
                 if (state.range.value != null && (lifetimeTrainingCount ?: 0) > 0) {
@@ -119,14 +99,15 @@ internal fun HomeSkeleton(
             }
         }
 
+        item(key = "last_training_skeleton") {
+            HomeRecapSkeleton(
+                modifier = Modifier.padding(horizontal = horizontalPadding),
+            )
+        }
+
         if (state.hasGoal) {
-            item(key = "goal_progress_skeleton") {
-                HomeGoalSkeleton(
-                    modifier = Modifier.padding(
-                        horizontal = horizontalPadding,
-                        vertical = AppTokens.dp.contentPadding.subContent,
-                    ),
-                )
+            item(key = "current_goal_skeleton") {
+                HomeGoalSkeleton(modifier = Modifier.padding(horizontal = horizontalPadding))
             }
         }
 
@@ -215,8 +196,8 @@ internal fun HomeSkeleton(
 @Composable
 private fun HomeRecapSkeleton(modifier: Modifier) {
     val textMeasurer = rememberTextMeasurer()
-    val titleLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
-    val dateLine = rememberTextHeight(style = AppTokens.typography.b13Med(), textMeasurer = textMeasurer)
+    val titleLine = rememberTextHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
+    val dateLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
     val valueLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
     val labelLine = rememberTextHeight(style = AppTokens.typography.b11Med(), textMeasurer = textMeasurer)
     val textGap = AppTokens.dp.contentPadding.text
@@ -225,9 +206,7 @@ private fun HomeRecapSkeleton(modifier: Modifier) {
 
     SkeletonPanel(
         modifier = modifier,
-        contentHeight = maxOf(AppTokens.dp.illustration.compact, summaryHeight) +
-            AppTokens.dp.metrics.panel.large.spacer +
-            maxOf(factHeight, AppTokens.dp.button.small.height),
+        contentHeight = summaryHeight,
     )
 }
 
@@ -235,17 +214,18 @@ private fun HomeRecapSkeleton(modifier: Modifier) {
 private fun HomeGoalSkeleton(modifier: Modifier) {
     val textMeasurer = rememberTextMeasurer()
     val captionLine = rememberTextHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
-    val scoreLine = rememberTextHeight(style = AppTokens.typography.h2(), textMeasurer = textMeasurer)
-    val criterionLine = rememberTextHeight(style = AppTokens.typography.b13Semi(), textMeasurer = textMeasurer)
+    val scoreLine = rememberTextHeight(style = AppTokens.typography.h3(), textMeasurer = textMeasurer)
+    val nameLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
     val textGap = AppTokens.dp.contentPadding.text
-    val rowGap = AppTokens.dp.contentPadding.subContent
 
-    val alignmentHeight = maxOf(scoreLine, criterionLine + textGap + captionLine) + rowGap + captionLine
+    val identityHeight = maxOf(AppTokens.dp.goal.markSize, nameLine + textGap + captionLine)
+    val alignmentHeight = maxOf(scoreLine + textGap + captionLine, captionLine * 2 + textGap)
 
-    SkeletonBone(
-        modifier = modifier.fillMaxWidth().height(
-            alignmentHeight,
-        ),
+    SkeletonPanel(
+        modifier = modifier,
+        contentHeight = identityHeight + alignmentHeight + AppTokens.dp.button.small.height +
+            AppTokens.dp.metrics.panel.large.spacer * 2,
+        style = SkeletonPanelStyle.Large,
     )
 }
 

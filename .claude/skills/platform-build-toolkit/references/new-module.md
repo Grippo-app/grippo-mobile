@@ -43,10 +43,11 @@ plugin list and dependency shape; do not copy a blanket dependency scaffold.
   and its `hasSameContentAs` branch in `:ui-dialog-features:dialog-api`;
   `DialogContentComponent.createChild` branch and `Child` entry in `:shared`;
   `shared/build.gradle.kts` dependency.
-- Analytics: every existing dialog module has its own `:analytics:<dialog>`
-  module and depends on `:analytics:analytics-api`; a new dialog follows the
-  same convention (dialog events observed from the dialog VM's own callbacks,
-  no screen hook). Register the module in `Koin.kt`.
+- New dialogs use a dedicated `:analytics:<dialog>` module and depend on
+  `:analytics:analytics-api`; observe events from the dialog VM's own callbacks,
+  without a screen hook. Register the module in `Koin.kt`. Preserve existing
+  documented owners when modifying a dialog: `confirm-training-completion`
+  deliberately reuses `TrainingAnalytics`; this is not a second default for new modules.
 - Owner: [dialogs](../../ui-feature/references/dialogs.md).
 
 ## Data feature (`:data-features:<feature>`)
@@ -62,10 +63,12 @@ plugin list and dependency shape; do not copy a blanket dependency scaffold.
 
 ## Toolkit or compose-libs module
 
-- Toolkit: `commonMain` contract plus complete `androidMain`/`iosMain` actuals;
+- Toolkit: keep pure common implementations in `commonMain`; when the contract
+  needs platform-specific implementations, provide complete Android/iOS actuals;
   no data, Firebase or design-system dependencies beyond the documented
   exceptions; app-lifetime state only in a `core` module with its Koin module.
 - Compose libs: no `AppTokens`, no Koin, no toolkit; style and data arrive as
-  parameters; all public.
+  parameters. Expose the reusable API publicly; helper visibility follows
+  [code style](../../validation-gates/references/code-style.md#visibility-and-files).
 - Owner: [toolkit ownership](toolkit-utilities-core.md),
   [platform utilities](toolkit-utilities-platform.md).

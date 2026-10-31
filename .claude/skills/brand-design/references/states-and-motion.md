@@ -76,9 +76,10 @@ concrete issues through their existing owners.
 
 ## Motion
 
-Motion explains an existing change or adds restrained brand presence. MUST NOT gate
-readiness, input, loading or navigation, or add business timers, requests or feature
-state solely for decoration. Local presentation animation state follows
+Decoration, including static artwork and motion, MUST NOT gate readiness, input,
+loading or navigation. Motion explains an existing change or adds restrained brand
+presence; it uses existing presentation owners and adds no business timers,
+requests or feature state solely for decoration. Local presentation animation state follows
 [Compose lifetimes](../../compose-components/references/structure-and-runtime.md#effects-and-changing-callbacks);
 a product timer (rest, countdown) remains feature state owned by its ViewModel.
 

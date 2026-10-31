@@ -20,14 +20,9 @@ current shape:
 - `@AppPreview` declares exactly two previews: "Phone • UK • Standard • Light"
   (412 × 915 dp, `locale = "uk"`, light) and "Phone • EN • Standard • Dark"
   (412 × 915 dp, `locale = "en"`, dark).
-- `PreviewContainer` reads `isSystemInDarkTheme()`, installs a Coil preview handler,
-  wraps content in `AppTheme(darkTheme, localeTag = Locale.current.toLanguageTag())`
-  (the preview configuration locale) and adds 12 dp padding.
-- `AppTheme.localeTag` reaches only `AppString(localeTag)`; its `res` overloads do
-  not read it, while composition that needs the active language reads it
-  ([theme](theme.md)). Compose Resources follow the platform or preview
-  configuration locale, so the `@Preview(locale = ...)` configuration decides the
-  rendered language, and the container passes that same locale as its tag.
+- Provider and locale-tag semantics follow [theme ownership](theme.md); container
+  framing, image substitutions and their evidence limits follow
+  [what a preview establishes](previews.md#what-a-preview-establishes).
 
 Default visual acceptance is therefore: both AppPreview variants (uk-light and
 en-dark) rendered when a render is available, plus source review of the `values-ru`

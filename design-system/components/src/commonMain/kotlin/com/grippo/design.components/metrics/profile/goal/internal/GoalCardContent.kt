@@ -58,10 +58,11 @@ internal fun GoalCardContent(
 
 @Composable
 internal fun GoalIdentity(
+    modifier: Modifier = Modifier,
     value: GoalProgressState,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -93,9 +94,8 @@ internal fun GoalIdentity(
 }
 
 @Composable
-internal fun GoalTrainingAlignment(
+private fun GoalTrainingAlignment(
     value: GoalProgressState,
-    showDetails: Boolean = false,
 ) {
     val score = value.score?.coerceIn(0, 100)
     val hasPartialEvidence = value.evidence.excludedSetCount > 0 ||
@@ -138,14 +138,6 @@ internal fun GoalTrainingAlignment(
                 )
                 GoalStatusLabel(
                     value = value,
-                )
-            }
-            if (showDetails) {
-                Icon(
-                    modifier = Modifier.size(AppTokens.dp.metrics.overview.detailsIcon),
-                    imageVector = AppTokens.icons.ArrowRight,
-                    tint = AppTokens.colors.icon.secondary,
-                    contentDescription = null,
                 )
             }
         }

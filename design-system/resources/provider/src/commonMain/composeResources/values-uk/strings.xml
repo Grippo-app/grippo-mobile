@@ -890,4 +890,8 @@
     <string name="home_all_indicators">Усі показники</string>
     <string name="home_fewer_indicators">Згорнути показники</string>
     <string name="home_selected_period">Вибраний період</string>
+    <string name="home_goal_details">Показати більше</string>
+    <string name="home_goal_less_details">Показати менше</string>
+    <string name="home_muscle_incomplete_data">Дані деяких підходів неповні. Докладніше — у деталях.</string>
+    <string name="home_goal_open_details">Відкрити аналіз цілі</string>
 </resources>

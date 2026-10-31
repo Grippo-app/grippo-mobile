@@ -84,8 +84,7 @@ require new artwork.
   and data-series color. Similar hues do not make those roles interchangeable.
 - Preserve necessary content and usable interaction. Resolve layout pressure through
   composition and content-driven sizing, not hidden values or shrunken useful imagery.
-- Decoration MUST NOT gate readiness, input, loading or navigation. Motion uses
-  existing presentation owners, without business timers or extra requests.
+- Decorative presentation follows the [motion contract](references/states-and-motion.md#motion).
 - Visual work preserves feature behavior unless a behavior change is authorized.
   Assess [analytics](../feature-analytics/SKILL.md) and
   [state preservation](../state-preservation/SKILL.md) at their owning gates; a

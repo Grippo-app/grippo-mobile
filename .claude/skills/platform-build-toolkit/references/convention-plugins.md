@@ -20,13 +20,9 @@ What each plugin does (verified):
 
 - `kotlin.multiplatform.convention` (`KotlinMultiplatformConventionPlugin`): applies
   `org.jetbrains.kotlin.multiplatform`, `explicitApi()`, `iosArm64()`, `iosSimulatorArm64()`,
-  `applyDefaultHierarchyTemplate()` and the global opt-ins for every source set:
-  `ExperimentalMaterial3Api`, `ExperimentalTextApi`, `ExperimentalFoundationApi`,
-  `ExperimentalComposeUiApi`, `ExperimentalLayoutApi`, `ExperimentalCoroutinesApi`,
-  `ExperimentalSerializationApi`, `ExperimentalUnitApi`, `ExperimentalAnimationApi`,
-  `kotlin.time.ExperimentalTime`, `ExperimentalForeignApi`, `ExperimentalNativeApi`,
-  `DelicateDecomposeApi`, `ExperimentalSharedTransitionApi`, `ExperimentalUuidApi`,
-  `ExperimentalDecomposeApi`. Source files do not repeat these with `@OptIn`.
+  `applyDefaultHierarchyTemplate()` and global opt-ins for every source set. Inspect
+  [the convention source](../../../../build-logic/convention/src/main/kotlin/KotlinMultiplatformConventionPlugin.kt)
+  for the current opt-in inventory; source files do not repeat them with `@OptIn`.
 - `android.library.convention`: applies `com.android.kotlin.multiplatform.library`; the KMP
   Android target gets `compileSdk = 37`, `minSdk = 26`, `namespace = "com.grippo"` (modules set
   their own namespace locally); JVM toolchain 19.

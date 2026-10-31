@@ -94,7 +94,7 @@ Current shape (verified against these files; re-inspect before relying on it):
   preparation load initializes consent to granted only when onboarding was never
   shown, then sets the shown flag. On a first onboarding the observation may emit
   Denied before the default write lands, then Granted. Its control is the shared
-  `Check` (`components/OnboardingAnalyticsConsent.kt`);
+  `Toggle` (`components/OnboardingAnalyticsConsent.kt`);
   Profile Settings uses `Toggle`.
 - `ApplicationBootstrap` (`shared/.../bootstrap/ApplicationBootstrap.kt`, a class
   constructed by `Koin.init`) collects `observeAnalyticsConsent().distinctUntilChanged()`
@@ -114,9 +114,9 @@ and transport diagnostics must not expose raw payloads, user inputs or secrets.
 
 Grippo collects optional usage analytics when the installation preference is saved
 as granted. By the explicit product decision of 2026-10-14, first onboarding
-initializes absent consent to granted immediately on opening, with its checkbox
+initializes absent consent to granted immediately on opening, with its consent control
 on by default. Existing saved true/false decisions are preserved atomically; each
-accepted checkbox change is persisted immediately. This is an opt-out onboarding
+accepted consent change is persisted immediately. This is an opt-out onboarding
 policy, not a claim that the user explicitly opted in through Get started.
 Missing storage and saved false map to Denied; saved true maps to Granted. A pending
 UI read is separate from both and cannot authorize collection. Platform SDK defaults

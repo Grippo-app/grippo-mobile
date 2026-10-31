@@ -25,7 +25,7 @@ For a current variant example, inspect
 [Butterfly](../../../../design-system/resources/provider/src/commonMain/kotlin/com/grippo/design.resources/provider/equipment/Butterfly.kt)
 and [ButterflyForearm](../../../../design-system/resources/provider/src/commonMain/kotlin/com/grippo/design.resources/provider/equipment/ButterflyForearm.kt).
 They use a 191 × 321 viewport and
-[AppPalette.NeutralDark](../../../../design-system/resources/provider/src/commonMain/kotlin/com/grippo/design.resources/provider/colors/AppPalette.kt)
+[AppPalette.NeutralDark and NeutralLight](../../../../design-system/resources/provider/src/commonMain/kotlin/com/grippo/design.resources/provider/colors/AppPalette.kt)
 for the metal and upholstery faces. These are reference facts, not dimensions
 required for unrelated equipment.
 

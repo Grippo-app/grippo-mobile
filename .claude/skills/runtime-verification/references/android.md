@@ -18,10 +18,9 @@ Identifiers: application id `com.grippo.android`, launcher activity
 adb devices -l
 adb -s "<emulator-serial>" emu avd name
 adb -s "<emulator-serial>" wait-for-device
-./gradlew :androidApp:assembleDebug --console=plain
-adb -s "<emulator-serial>" install -r androidApp/build/outputs/apk/debug/androidApp-debug.apk
+# Build and install using the catalog above, including APK metadata discovery.
 adb -s "<emulator-serial>" shell am start -n com.grippo.android/.MainActivity
-adb -s "<emulator-serial>" exec-out screencap -p > /private/tmp/<scratchpad from the brief>/<scenario>-<step>-android-<theme>.png
+adb -s "<emulator-serial>" exec-out screencap -p > "<absolute-scratchpad>/<scenario>-<step>-android-<theme>.png"
 adb -s "<emulator-serial>" shell cmd uimode night yes        # dark theme; `no` for light
 adb -s "<emulator-serial>" logcat -d -v time | rg "System.out|AndroidRuntime|grippo" | tail -200
 ```
@@ -41,7 +40,7 @@ adb -s "<emulator-serial>" logcat -d -v time | rg "System.out|AndroidRuntime|gri
   (read `settings get global always_finish_activities` on the selected emulator,
   then use `adb -s "<emulator-serial>" shell settings put global always_finish_activities 1`
   and restore the recorded value afterwards) only proves Activity recreation
-  with a live retained ViewModel.
+  without process death; it does not establish ViewModel identity or process restoration.
 - **Logs**: `AppLogger` prints to stdout in every build (logcat tag `System.out`,
   chunked) and appends to a file resolved in
   `toolkit/logger/src/androidMain/.../LogFileWriter.android.kt`; the in-app Debug

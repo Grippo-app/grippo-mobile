@@ -6,7 +6,8 @@ and [ResourceProvider](../../../../design-system/core/src/commonMain/kotlin/com/
 The root wraps content in `AppTheme(darkTheme, localeTag, content)` with
 `localeTag = AppLocale.current`, the effective tag owned by
 [toolkit localization](../../platform-build-toolkit/references/toolkit-utilities-core.md);
-previews use PreviewContainer. Internal ProvideResources selects DarkColor or
+previews use PreviewContainer, which passes the configured preview `Locale` as
+`localeTag` to AppTheme rather than runtime AppLocale. Internal ProvideResources selects DarkColor or
 LightColor and provides AppIcon, AppTypography, `AppString(localeTag)`, AppDrawable
 and AppDp through static CompositionLocals. `AppString` is a data class holding the
 tag, so a locale change provides a new value and recomposes the provided subtree
@@ -16,8 +17,8 @@ interface language reads `AppTokens.strings.localeTag`, which matches the render
 strings in the same frame (`LanguageEnumState.current()` in `ui-core/state`); code
 outside composition reads `AppLocale.current()`. Compose Resources follow the platform
 locale at runtime, which `AppLocale.update` applies, and the `@Preview(locale = ...)`
-configuration in previews; the preview consequence is stated once in the
-[default viewport scope](visual-consistency.md#default-viewport-scope). Date
+configuration in previews; [preview limits](previews.md#what-a-preview-establishes)
+define what those renders establish. Date
 formatting in `toolkit/date-utils` reads `AppLocale` directly; inspect it with
 `toolkit/localization` when changing locale behavior.
 

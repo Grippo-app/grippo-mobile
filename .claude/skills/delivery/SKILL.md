@@ -24,9 +24,8 @@ and a proposed commit message; commits happen only when the user asks.
 
 ## Before a requested commit
 
-1. Run the checks the verification policy requires for the change (rulebook
-   checker for documentation, scoped build for code) if they have not run on
-   the final revision.
+1. Run the checks required by the [verification policy](../../../CLAUDE.md#verification-policy)
+   if they have not run on the final revision.
 2. Read `git status --short`, the staged diff and the task-only delta established
    by [change attribution](../task-orchestrator/references/change-attribution.md).
    Stage only the requested task's actual delta. Separate hunks in a pre-dirty

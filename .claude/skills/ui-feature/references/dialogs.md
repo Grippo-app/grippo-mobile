@@ -220,39 +220,18 @@ Dialogs keep these typed config callbacks. Separate screen results use
 
 
 ### 1. Add the module to `settings.gradle.kts`
-```kotlin
-include(":ui-dialog-features:tag-picker")
-```
+
+For a new `:ui-dialog-features:tag-picker`, follow the
+[new module checklist](../../platform-build-toolkit/references/new-module.md#dialog-feature-ui-dialog-featuresdialog).
+It owns settings, build, analytics/DI registration and shared dependencies. Skip
+module creation when extending an existing dialog module.
 
 ### 2. Create `build.gradle.kts`
-```kotlin
-plugins {
-    id("android.library.convention")
-    id("kotlin.multiplatform.convention")
-    id("compose.multiplatform.convention")
-    id("koin.annotation.convention")
-}
-kotlin {
-    android {
-        namespace = "com.grippo.ui.dialog.features.tag.picker"
-    }
 
-    sourceSets.commonMain.dependencies {
-        implementation(projects.uiCore.foundation)
-        implementation(projects.analytics.analyticsApi)
-        implementation(projects.uiCore.state)
-        implementation(projects.designSystem.core)
-        implementation(projects.designSystem.resources.provider)
-        implementation(projects.designSystem.components)
-        implementation(projects.designSystem.preview)
-        implementation(compose.foundation)
-        implementation(compose.material3)
-        implementation(libs.immutable.collections)
-    }
-}
-```
-Mirror a neighbor such as `ui-dialog-features/weight-picker/build.gradle.kts`; every
-dialog module depends on `:analytics:analytics-api`.
+Inspect a current neighbor such as `ui-dialog-features/weight-picker/build.gradle.kts`
+and apply the checklist's convention matrix. Include `:analytics:analytics-api` and
+only the foundation/UI/design-system dependencies actually used by the dialog;
+do not copy an entire dependency scaffold.
 
 ### 3. Create the seven MVI files (package `com.grippo.tag.picker`)
 
@@ -390,10 +369,8 @@ is DialogConfig.TagPicker -> Child.TagPicker(
 
 ### 6. Create `:analytics:tag-picker` and register it in `Koin.kt`
 
-Every dialog module has its own `:analytics:<dialog>` implementation module,
-registered in `shared/src/commonMain/kotlin/com/grippo/shared/Koin.kt`;
-the `TagPickerAnalytics` contract and its `TagPickerEvent` family live in
-`:analytics:analytics-api`. Follow the
+For this new dialog, `TagPickerAnalytics` and its `TagPickerEvent` family live
+in `:analytics:analytics-api`; the dedicated implementation follows the
 [new module checklist](../../platform-build-toolkit/references/new-module.md#dialog-feature-ui-dialog-featuresdialog)
 for the wiring and [feature-analytics](../../feature-analytics/SKILL.md) for the
 events and the coverage matrix; `analytics/weight-picker/` is the neighbor to mirror.

@@ -17,48 +17,16 @@ The **only** ViewModel base class. Every screen/dialog ViewModel extends it. Pro
 
 ### Signature
 
-```kotlin
-public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : BaseLoader>(
-    state: STATE,
-) : InstanceKeeper.Instance, KoinComponent
-```
+Inspect [BaseViewModel.kt](../../../../ui-core/foundation/src/commonMain/kotlin/com/grippo/core/foundation/BaseViewModel.kt) for its exact declaration. It takes initial State and the `STATE`, `DIRECTION : BaseDirection` and `LOADER : BaseLoader` types.
 
 Implements `InstanceKeeper.Instance` so Decompose retains the instance across config changes; `onDestroy()` (the public `InstanceKeeper.Instance` override) runs when its owning InstanceKeeper destroys it; ordinary retained-component recreation is not fresh-VM restoration. Implements `KoinComponent` for its own wiring only: `OperationManager` (with `parametersOf(coroutineScope)`), `ErrorProvider` and the toolkit `CrashReporting` API resolve through `inject`; `ScreenAnalytics` is resolved with `get<ScreenAnalytics>()` inside `bindScreen`. Feature dependencies stay constructor-injected from the Component's `retainedInstance` block. No SDK transport dependency is allowed. `ResultManager` is injected by `BaseComponent`, not here.
 
 ### Public / protected API
 
-```kotlin
-public val state: StateFlow<STATE>
-protected fun update(updateFunc: (STATE) -> STATE)
-
-public val loaders: StateFlow<ImmutableSet<LOADER>>
-protected suspend fun <T> withLoader(loader: LOADER?, block: suspend () -> T): T
-
-public val navigator: Flow<DIRECTION>
-protected fun navigateTo(destination: DIRECTION)
-
-protected open val screenPresentation: ((NavigationReason) -> ScreenPresentation)? = null
-
-protected enum class Processing {
-    WhileActive,
-    Infinity,
-}
-protected fun safeLaunch(
-    dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
-    loader: LOADER? = null,
-    recovery: ErrorRecovery,
-    mapError: (Throwable) -> Throwable = { it },
-    block: suspend CoroutineScope.() -> Unit,
-): Job
-protected fun <T> Flow<T>.safeLaunch(
-    dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
-    processing: Processing = Processing.WhileActive,
-    recovery: ErrorRecovery,
-    mapError: (Throwable) -> Throwable = { it },
-): Job
-
-override fun onDestroy()
-```
+The source above owns signatures, defaults and visibility. The contracts used here are
+`state`/`update`, `loaders`/`withLoader`, `navigator`/`navigateTo`, both `safeLaunch`
+overloads, `screenPresentation`, `Processing` and `onDestroy`. Their usage and
+lifetime rules below remain mandatory; inspect the actual overload before changing a call.
 
 ### Foundation-internal lifecycle wiring
 

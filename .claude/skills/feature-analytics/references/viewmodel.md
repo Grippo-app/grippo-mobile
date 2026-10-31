@@ -123,12 +123,11 @@ the popup's Retry. Follow [coroutine rules](../../validation-gates/references/fo
 and [Kotlin blocks](../../validation-gates/references/code-style.md#kotlin-blocks)
 for cancellation, function declarations and block layout.
 
-Emit in existing Contract→VM callbacks after eligibility/busy guards. Rejected
-callbacks emit neither accepted intent nor operation events. Text events compare
-old/new status from existing validated UI state, using mapping in UI analytics/;
-equal status, including initial Empty→Empty, is omitted without a cache.
-Picker confirmations/clicks/selections remain distinct. Raw values are not encoded.
-Telemetry never decides validation, navigation, retries or business results.
+Text events compare old/new status from existing validated UI state through mapping
+in UI `analytics/`, without a private status cache. Eligibility, event distinctions,
+status suppression and business isolation follow the canonical
+[business/event invariants](../SKILL.md#business-and-event-invariants); payloads
+follow the [privacy gate](../SKILL.md#privacy-and-completion-checks).
 
 For dialogs/pickers, open intent and accepted result are separate facts in the
 owning VM's existing callbacks. An onDismiss callback may return an observed fact

@@ -585,7 +585,8 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   under the shared `progress` string as an `h4` `text.primary` heading with
   `heading()` semantics: `WeeklyVolumeSection` when available, then
   `TrainingStreakCardStyle.Growth` and `GoalCardStyle.Growth` when a goal exists,
-  each preceded by a `ContentDivider` with `content` space above and below it →
+  separated from an available preceding progress row by a `ContentDivider` with
+  `content` space above and below it →
   `MuscleLoadingCardStyle.Session`, whose `muscle_loading` title is the section's
   `h4` heading, for this workout's own muscle load. No exercise spotlights, no
   exercise rows and no table-like summary card remain on this screen. The list
@@ -635,7 +636,7 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   inside the open sections' text edge, deliberately: the shared image is this
   surface, and the share sheet's center-cropped preview cuts text that sits only
   `screen.horizontalPadding` from the image edge -
-  and `brandHeader.verticalPadding`. Like the last-workout recap, its top row pairs
+  and `brandHeader.verticalPadding`. Its top row pairs
   the text column (verdict title and description, `content` apart) with a compact
   illustration slot (`illustration.compact`) at the end, and the facts row spans
   the region below it. The slot always takes its space, also while `Pending` and in
@@ -761,7 +762,7 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   vertical padding), so the section adds no bottom padding; other section content
   brings `menu.contentPadding` below it.
 - Working metric panels carry no decorative illustration spot or icon tile;
-  Home's welcome and last-workout recap and the completed-workout recap hero own
+  Home's welcome and the completed-workout recap hero own
   the warm illustration regions.
 - Training history uses compact Medium exercise rows: a 48 dp Compact image,
   `b14Semi` full wrapping title and `subContent` gaps. Completed/total sets and
@@ -785,10 +786,17 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   treatment; unavailable duration shows "—" and recorded zero shows "0 min".
   Average volume per workout is not shown.
   The history toolbar uses `divider.subtle` to separate controls from records.
-- Home separates current goal identity/deadline (`GoalCardStyle.Current`) from
-  selected-period assessment (`GoalCardStyle.Period`). The period selector labels
-  the analysis context explicitly; the dated recap names the latest workout in
-  that period. Current-goal update keeps its existing action.
+- Completed keeps its expandable warm recap as the primary brand region. Its
+  Progress heading groups available weekly volume, rhythm and goal rows; quiet
+  dividers appear only between actual rows, never before the first. Session muscle
+  load retains its own heading and does not create an empty Progress group.
+- Home groups goal identity, selected-period score and short status in one neutral
+  `GoalCardStyle.Summary` panel. Its score names the analysis range explicitly;
+  deadline and evidence live in an animated local disclosure. Partial evidence
+  remains visible when collapsed, and overdue Update remains immediately available.
+  The identity opens full details; the disclosure and expanded details action
+  are separate controls. The period selector precedes every range-dependent
+  section, including recap and goal, in both content and loading.
   `TrainingStreakCardStyle.Section` remains open; muscle load uses
   `MuscleLoadingCardStyle.Overview` and performance uses
   `PerformanceMetricCardStyle.Overview`. Open sections use `background.screen`
@@ -806,7 +814,7 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   diagnostic findings and timeline breakdowns remain available through the existing card action.
 - Home card headings use `h5` and `text.primary`; section headings retain `h4`,
   while values and secondary metadata keep their distinct roles. Whole-card
-  detail entries (goal, muscle, streak, performance and exercise highlights) use
+  detail entries (muscle, streak, performance and exercise highlights) use
   `MetricOverviewHeader`: one decorative 18 dp `icon.secondary` chevron at the
   right of the heading. Calendar and Update remain their existing explicit buttons.
 - Home's initial loading and an active refresh without period content use
@@ -814,8 +822,8 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   Each card uses one broad `colors.skeleton.bone` block with shared clipped shimmer,
   without simulated facts, icons or chart details. Panel geometry derives from
   the existing typography, image and spacing slots; section text placeholders
-  are one laid-out line of their typography role tall and stay static. The highlights header keeps
-  one animated slot, its `b13Med` hint line below the static period-picker bone
+  are one laid-out line of their typography role tall and stay static. The highlights header
+  contains its heading and static period-picker bone
   (the larger of the `h6` line and `periodPicker.icon`); the spotlight gallery uses one coarse panel without a
   nested loading scroll. One localized indeterminate loading
   node describes the skeleton; the real period picker remains independently
@@ -875,7 +883,7 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   muscle Summary for the muscle dialog sizes the `h3` count over its `b12Med`
   label; the
   muscle Overview for Home sizes the title with its `b12Med` period context, the
-  map row and the `b12Med` details hint with two Large spacers - data notices
+  map row with one Large spacer - data notices
   appear only with real data, so no skeleton reserves them;
   `TrainingRecordsCardSkeleton` sized to the records title/description and two
   record rows, each a name over a one-line kinds line, with their divider,
@@ -921,13 +929,12 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   only Recording's persisted exercise draft retains null to distinguish an
   unresolved source from an intentionally empty saved draft, while its UI
   receives a non-null list. No readiness wrappers or loading-flow helpers exist.
-- The last-workout recap names its selected-period scope. Title/date and two
-  training facts share a row with the Compact `last_training` stopwatch-and-towel illustration;
-  exercise count and Calendar share the footer. Like the completed-workout recap hero
-  and the welcome hero it fills its large card shape with the flat
-  `illustration.backgroundStart` (`IllustrationBackgroundStyle.Solid`), with
-  content-driven height and complete values; the gradient's fading end had blended
-  the card into the screen.
+- The last-workout recap is a compact warm region without decorative artwork,
+  using the existing solid `illustrationBackground` treatment as Home's single
+  brand focal region; goal and working panels remain neutral.
+  Its small secondary label names selected-period scope, its date leads, and two
+  recorded values retain their duration and weight-lifted labels. The existing
+  whole-panel history action remains. Loading uses the same compact geometry.
 - Home's welcome hero uses the Compact `welcome_training` gym bag and bottle.
   Library empty results use the Large `empty_exercise_search` magnifier and catalog
   cards; recording and new-workout empty states retain `empty_exercises`.
@@ -973,7 +980,7 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   Shared cards keep the compact calendar row with the actual target and remaining
   time; expiry never implies success. Analyzed-workout counts include only
   eligible sessions in the selected period.
-  The sealed GoalCard family owns Overview, Assessment and Calendar styles.
+  The sealed GoalCard family owns Summary, Overview, Assessment, Calendar and Growth styles.
   Goal details use its open Assessment style on `background.dialog`, with the shared
   copper GoalMark, an `h4` goal name, a modest neutral `h3` alignment value and a
   secondary status label with its semantic status `Dot`. Actual
@@ -1074,8 +1081,8 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   chips and best-value repetitions; missing current data, missing earlier data and a
   zero earlier value have distinct quiet copy, the last two worded for the reference
   (`missingValueNotice()`, `zeroValueNotice()`).
-  Home Overview retains its title/chevron, statuses, comparisons and paired
-  intrinsic-height rows; for an empty metric it shows the Detailed card's
+  Home Overview retains its title/chevron and one comparison line, with the primary
+  pair in an intrinsic-height row; for an empty metric it shows the Detailed card's
   `performance_trend_details_value_unavailable` copy as one secondary `b12Med`
   line instead of a value. Complete localized names, units and explanations wrap.
 - Performance history uses open date/value rows for up to nine previous sessions;

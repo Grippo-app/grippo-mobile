@@ -910,4 +910,8 @@
     <string name="home_all_indicators">All indicators</string>
     <string name="home_fewer_indicators">Fewer indicators</string>
     <string name="home_selected_period">Selected period</string>
+    <string name="home_goal_details">Show more</string>
+    <string name="home_goal_less_details">Show less</string>
+    <string name="home_muscle_incomplete_data">Some set data is incomplete. See details.</string>
+    <string name="home_goal_open_details">Open goal details</string>
 </resources>

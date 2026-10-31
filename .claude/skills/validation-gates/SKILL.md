@@ -21,8 +21,7 @@ and footprint; recover them from the request and the source before asking.
    ([skills index](../../../CLAUDE.md#skills-index)). Review correctness,
    simplicity, dependency direction, privacy and work done in frequently called paths.
 3. A behavior change passes the [analytics screen coverage gate](../feature-analytics/SKILL.md#mandatory-screen-coverage-gate)
-   (every independent screen has exactly one `screenPresentation`; containers keep
-   `null`; typed facts only) and the [preservation gate](../state-preservation/SKILL.md#mandatory-preservation-gate).
+   and the [preservation gate](../state-preservation/SKILL.md#mandatory-preservation-gate).
    The [admin synchronization gate](../feature-analytics/references/admin-sync.md)
    applies under the trigger it owns; missing admin access leaves that task
    unfinished, not merely unverified.
@@ -33,6 +32,22 @@ and footprint; recover them from the request and the source before asking.
 5. Checks follow the [verification policy](../../../CLAUDE.md#verification-policy):
    an available, authorized check must have run; compilation proves no runtime,
    visual or restoration behavior.
+
+## Review completeness
+
+Reconcile the prepared affected-scope inventory against the final source and
+actual task delta within the reviewer's role. For each applicable item, inspect
+the owning implementation and affected callers: contract migration, significant
+states, loading geometry, previews, resources, records and obsolete in-scope
+APIs, imports or helpers. Use the owning skills' gates; a healthy item needs no
+edit. Extend the inventory if review reveals another affected path.
+
+Return one completed role-scoped report with all findings, covered scope and
+explicit gaps. Interim messages can flag blockers or progress, but do not replace
+that reconciliation. An incomplete assigned source review cannot receive PASS;
+report missing runtime or render evidence separately under its owning policy.
+Review coordination and correction batches belong to
+[task-orchestrator](../task-orchestrator/SKILL.md#execution-loop).
 
 ## Findings
 

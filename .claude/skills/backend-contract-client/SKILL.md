@@ -25,16 +25,16 @@ Grippo backend, states in chat the exact method, path, wire keys, types, null/om
 semantics and error outcomes of the operation. An owner-attested contract is recorded verbatim
 in the task report with its date; missing required facts are asked for directly, never
 inferred; a later OpenAPI/source that contradicts it is reported, not silently adopted.
-DTO collection properties MUST be nullable with `= null`; element nullability/types MUST follow
-the verified backend contract, not a blanket nullable-element convention.
+DTO structure follows the [DTO/API rules](../data-layer/references/dtos-and-api.md).
+Collection element nullability/types MUST follow the verified backend contract,
+not a blanket nullable-element convention.
 
 ## Workflow
 
 1. Read the exact operation and referenced schemas. Compare method/path/query/body/response,
    null-versus-omitted/empty semantics, error outcomes and related consumers.
-2. Hand-author mobile changes inside the authorized scope (no codegen). Keep every response/request DTO
-   field and collection nullable with default null and explicit exact SerialName. Server-required
-   request values are validated before sending; do not relax wire validity.
+2. Hand-author mobile changes inside the authorized scope (no codegen), following the linked
+   DTO/API rules. Server-required request values are validated before sending; do not relax wire validity.
 3. DTOs retain raw wire strings/numbers. Domain promotion and unknown-value handling follow
    [mappers](../mappers/SKILL.md). Preserve exact enum keys; do not infer a dictionary from examples.
 4. During a drift audit report evidence and a concrete correction proposal. Apply fixes only when

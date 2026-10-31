@@ -34,16 +34,16 @@ registers its own BackCallback that closes without an event.
 
 ## Callbacks and operations
 
-Dashboard summaries use shared compact presentations: current goal identity/deadline above the selected-period context, period goal assessment, open rhythm and contained muscle/performance summaries. The existing card actions
+The selected-period header/picker precedes all dependent dashboard summaries, including recap and goal. Dashboard summaries use shared compact presentations: one unified goal summary with explicitly scoped score and local detail disclosure, open rhythm and contained muscle/performance summaries. The existing card actions
 open MuscleLoadingDetails, TrainingStreakDetails, PerformanceTrendDetails and
 TrainingGoalDetails. Detail dialogs provide the corresponding period evidence
 and diagnostics; the muscle dialog retains its full distribution and offers the
 PerGroup/PerMuscle selector when a known group distribution exists. Overview
 card headings use the same primary style and decorative top-right chevron, with
-their existing parent click as the sole detail action; Calendar and Update retain
+their existing parent click as the detail action; goal identity/details and Update retain
 their explicit callbacks.
 Performance initially shows the fixed Duration and Volume pair, subject to the existing lifetime unlock thresholds and null-item omission. The local All indicators disclosure reveals Density, Repetitions and Intensity without changing individual detail callbacks. The primary pair shares a natural-height row; disclosed metrics use individual full-width cards. Disclosure is deliberately untracked presentation state; it is not a screen, business selection or operation.
-Goal Current shows current identity/deadline; Goal Period uses the selected analysis window. An unavailable
+Goal Summary combines current goal identity with the explicitly labelled selected analysis window. Its local untracked disclosure reveals deadline and evidence; partial-data notice and overdue Update stay available when collapsed. Identity and the expanded details action share the unchanged details callback. An unavailable
 score stays neutral; an empty period preserves an existing goal, and removing the
 goal clears its card. Details show the same grouped findings that produce the
 score (100/50/0 for assessable criteria); unknown criteria are omitted. Evidence
@@ -53,7 +53,7 @@ positive finding; the remaining checks and calculation details are disclosed on
 request. A deadline is a goal date, never evidence of achieving the outcome.
 The full-width muscle summary shows recorded-set distribution and selected-period
 workouts and counted sets (the sets part is omitted at zero). Accepted performed sets retain their shares when required load
-measurements are incomplete; `unmeasuredVolumeSets` discloses sets omitted from
+measurements are incomplete; a short incomplete-data notice flags any quality limitation on Home; full details disclose `unmeasuredVolumeSets` omitted from
 physical volume, which is calculated only from measured sets. Missing groups are
 not displayed as zero or assigned a training recommendation. The Home map uses
 its compact centered 144×140 slot; muscle
@@ -83,9 +83,8 @@ increasing assistance alone cannot raise that average by removing a set. Existin
 historical totals are not recalculated by these views. Exercise PeakIntensity is
 a server-supplied achievement, not a client recomputation. The change adds no
 Home analytics symbol or editable/archived metric state.
-The last-training recap labels its mapped exercise count as Available exercises,
-preserves saved duration/volume, identifies the selected-period scope and shows date,
-duration, volume and exercise count; its existing Calendar action opens history.
+The compact last-training recap preserves saved duration/volume and date, names
+the selected-period scope, and opens history through its existing whole-panel action.
 Spotlights combine selected-period trainings with their observed exercise
 catalog. The caller caps evaluatedAt at min(now, period.to) and supplies
 period.from.date as the earliest queried history date. Progress and near-best
@@ -214,7 +213,7 @@ screen identity. Existing row actions remain available outside the loaded image.
 | HomeViewModel / HomeScreen | Loading presentation | Runtime only | Existing finite Trainings command loader without period content | Plain user/range/metric observations do not manage loading or perform extra initial reads. Non-null lists and actual optional results render content when no real request is active. Cached content remains visible during refresh; obsolete period results are rejected. No readiness flag, draft or timer |
 | HomeViewModel | Jobs, whileActive subscriptions, notification permission/schedule, dialog sessions, analytics provenance | Runtime only | `Flow.safeLaunch` default WhileActive (one-second disconnect grace); each range refresh is a step of the range Flow; live DialogConfig callbacks; host serializers null | Resume beyond the grace re-emits the current range and repeats RefreshTrainings. A request failure ends the range refresh Flow unless the error popup's Retry re-collects it; range/lifecycle cancellation cancels the in-flight request with its `mapLatest` step. NonCancellable is confined to cancellation cleanup; requests remain cancellable. No persisted Job, restoration flag, previous-source cache or shadow copy |
 | Home dialogs | Unaccepted picker selection; `onResult`/`onAddGoal` closures | Runtime only | Dialog slot/step stacks unserialized; the picker value lives only in the dialog VM | The accepted period goes straight to DataStore through SavePeriod; a result still queued at process death has no durability |
-| Home composables | Dashboard and spotlight-gallery scroll positions; All indicators expansion | Presentation only | Existing anchored grid state; gallery's standard `rememberScrollState` pixel offset; local range-keyed `rememberSaveable` expansion | No business selection, draft field, restoration flag or ViewModel owner added; swipe scrolling has no feature analytics event |
+| Home composables | Dashboard and spotlight-gallery scroll positions; All indicators and goal-summary expansion | Presentation only | Existing anchored grid state; gallery's standard `rememberScrollState` pixel offset; local range-keyed indicator expansion and goal/range-keyed summary expansion via `rememberSaveable` | No business selection, draft field, restoration flag or ViewModel owner added; swipe scrolling has no feature analytics event |
 
 No PersistenceKey, `restoreState`/`saveState`, `@Serializable`, `@Transient` or
 `var` member exists in the home module; HomeState is `@Immutable` only and

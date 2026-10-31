@@ -381,6 +381,78 @@
         "device-use",
         "admin-access"
       ]
+    },
+    {
+      "id": "room-migration-target",
+      "prompt": "Plan an authorized Room migration from schema version 5 to 6. State the migration range, target Database annotation, exported schema file and required build evidence. No edits, builds or device execution are requested.",
+      "required_skills": [
+        "data-layer"
+      ],
+      "required_gates": [
+        "migration-target-coherence",
+        "schema-build-verification"
+      ],
+      "forbidden_actions": [
+        "application-edit",
+        "app-build",
+        "device-use"
+      ]
+    },
+    {
+      "id": "catalog-compatibility-routing",
+      "prompt": "Plan a source-only compatibility review of equipment and muscle catalogs, startup refresh order, exercise-example hydration and exclusions when a backend dictionary gains unknown type keys. Identify the existing storage/projection and dependent-parent policies; no wire changes, live queries or implementation are requested.",
+      "required_skills": [
+        "data-layer",
+        "mappers"
+      ],
+      "required_gates": [
+        "catalog-compatibility",
+        "unknown-catalog-retention",
+        "dependent-parent-availability"
+      ],
+      "forbidden_actions": [
+        "application-edit",
+        "backend-mutation",
+        "device-use",
+        "admin-access"
+      ]
+    },
+    {
+      "id": "rulebook-prose-routing",
+      "prompt": "Plan a wording-only correction to an existing skill instruction. Ownership, file structure, metadata, roles, gates, hooks and projections remain unchanged. Identify necessary rulebook references and checks. Do not edit or execute anything.",
+      "required_skills": [
+        "rulebook-maintenance"
+      ],
+      "required_gates": [
+        "rulebook-checker",
+        "proportional-schema-loading"
+      ],
+      "forbidden_actions": [
+        "application-edit",
+        "app-build",
+        "device-use",
+        "admin-access"
+      ]
+    },
+    {
+      "id": "review-completeness-batch",
+      "prompt": "Plan review of a non-editorial local refactor. The main session already has an affected-scope inventory; several required reviewers are assigned, one report is complete and others have sent only routine interim suggestions. Explain how to collect findings, correct them and re-review without losing coverage or repeating unchanged reviews. No edits or checks are requested.",
+      "required_skills": [
+        "task-orchestrator",
+        "validation-gates"
+      ],
+      "required_gates": [
+        "source-review-completeness",
+        "consolidated-review-batch",
+        "targeted-rereview",
+        "independent-review"
+      ],
+      "forbidden_actions": [
+        "application-edit",
+        "app-build",
+        "device-use",
+        "admin-access"
+      ]
     }
   ]
 }

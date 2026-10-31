@@ -23,12 +23,10 @@ import com.grippo.core.state.metrics.performance.stubPerformanceMetrics
 import com.grippo.design.components.metrics.internal.MetricOverviewHeader
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
-import com.grippo.design.components.metrics.performance.internal.PerformanceTrendChip
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.metric_overview_performance_average
 import com.grippo.design.resources.provider.metric_overview_performance_comparison
 import com.grippo.design.resources.provider.performance_comparison_unavailable
 import com.grippo.design.resources.provider.performance_trend_details_comparison

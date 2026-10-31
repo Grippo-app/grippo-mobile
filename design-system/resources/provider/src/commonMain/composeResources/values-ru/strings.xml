@@ -899,4 +899,8 @@
     <string name="home_all_indicators">Все показатели</string>
     <string name="home_fewer_indicators">Свернуть показатели</string>
     <string name="home_selected_period">Выбранный период</string>
+    <string name="home_goal_details">Показать больше</string>
+    <string name="home_goal_less_details">Показать меньше</string>
+    <string name="home_muscle_incomplete_data">Данные некоторых подходов неполные. Подробнее — в деталях.</string>
+    <string name="home_goal_open_details">Открыть анализ цели</string>
 </resources>

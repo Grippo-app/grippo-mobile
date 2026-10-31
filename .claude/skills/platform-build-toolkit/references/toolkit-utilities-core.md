@@ -47,7 +47,6 @@ Inspect the affected `toolkit/<module>/` implementation and direct consumers.
   `:design-system:resources:provider` + Compose foundation (`DateCompose.kt`, locale-aware formats).
   Because `:data-features:feature-api` depends on `toolkit/date-utils`, every domain consumer
   transitively pulls design-system and Compose; add no further UI edges there.
-  `:data-services:database` declares `:ui-core:error:error-provider` without using it; do not
-  start using it. Pure helpers do not acquire DI/lifecycle state to work around a consumer bug.
+  Pure helpers do not acquire DI/lifecycle state to work around a consumer bug.
 
 Review callback lifetime, owner shutdown, cancellation, shared state and platform behavior in source.

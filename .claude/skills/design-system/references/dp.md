@@ -25,8 +25,10 @@ are the elevation steps.
   `checkSelectableCard.small.leadingIcon`. MUST NOT flatten a sub-element into
   prefixed leaves such as `setRadius`, `editorIcon` or `toolbarHeight`. The
   private base scales stay the producers behind the leaves. The same rule holds
-  for every `AppTokens` producer with groups (`AppColor`:
-  `colors.charts.tooltip.background`).
+  for the hierarchy of every grouped `AppTokens` producer, including
+  `colors.charts.tooltip.background`. The nested `data object` implementation above
+  is AppDp-specific; preserve each producer's contract (AppColor groups use interfaces
+  with concrete theme implementations).
 - An entity drawn by a card family keeps its drawing sizes in an entity group,
   and each card variant that sizes the drawing itself references them instead of
   the private scales, through the entity group's val (`muscle.image`, not the

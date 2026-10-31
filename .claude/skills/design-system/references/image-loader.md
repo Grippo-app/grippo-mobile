@@ -2,7 +2,8 @@
 
 Inspect the actual [ExerciseExampleImage component](../../../../design-system/components/src/commonMain/kotlin/com/grippo/design.components/example/ExerciseExampleImage.kt)
 and its callers before changing the image contract. It uses Coil AsyncImage,
-AppTokens for product styling and an existing inset-vector painter adapter.
+AppTokens for product styling. Inspect its current loading and fallback branches
+rather than assuming a separate painter adapter.
 
 Reuse actual public component token groups for size/radius/padding and real AppIcon
 placeholders. Add a new demanded token through the design-system workflow only

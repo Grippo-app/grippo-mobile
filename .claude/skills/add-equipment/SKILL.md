@@ -84,8 +84,10 @@ permissions. Apply the task's existing authorization and the backend's own rules
   locale and a distinct preview identity.
 - The identifier naming check passes, including collisions, explicit legacy/reuse
   mappings and agreement between source and the backend handoff.
-- The diagram passes its vector pipeline checks; both the ordinary type and the
-  variant remain recognizable when the task requires both.
+- New or changed diagram geometry passes the vector pipeline checks. Unchanged
+  reuse retains source/naming, mechanical-fit and actual-consumer visual checks
+  under design-system and brand-design; it does not require authoring/export work.
+  Both the ordinary type and variant remain recognizable when the task requires both.
 - Selection, saved exclusions and restored drafts retain independent IDs;
   analytics and preservation gates are reconciled against the affected owners.
 - Required reviews and permitted checks have actual results. Distinguish source

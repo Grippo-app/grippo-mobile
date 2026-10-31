@@ -88,12 +88,14 @@ internal val childStack: Value<ChildStack<RootRouter, Child>> = childStack(
 ```
 
 - `serializer = RootRouter.serializer()` — Decompose writes/reads router state from `StateKeeper`.
-- `initialConfiguration` — required; the route shown when the stack is empty.
+- `initialConfiguration` supplies one initial route; `initialStack` supplies an initial route list factory. Preserve the owning stack's existing initialization and restoration behavior.
 - `handleBackButton = true` — wires system back into Decompose's stack pop.
 - `key = "..."` — unique within the parent context; the state-keeper key. Forgetting it collides multiple children in the StateKeeper.
 - `childFactory = ::createChild` — builds a `Child` (sealed wrapper around `<X>Component`) per `<X>Router` config.
 
-Feature-root stacks use `initialStack = { listOf(initial) }` instead of `initialConfiguration`.
+Feature-root stacks use either form: for example Profile uses `initialConfiguration`,
+while Home uses `initialStack`. Inspect the affected stack; a local change does not
+require migrating its initializer.
 
 `createChild` maps each route to a `Child` wrapping a constructed `<X>Component`, threading the navigation callbacks (`toHome = viewModel::toHome`, `close = viewModel::onClose`, one per cross-feature destination). The `Child` wrapper:
 

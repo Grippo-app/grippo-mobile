@@ -47,11 +47,7 @@ An existing deviation in the code never authorizes copying it.
 - **`viewModelScope.launch`, `lifecycleScope.launch`, `GlobalScope.launch`, `CoroutineScope(...).launch`** inside a `BaseViewModel`. Only `safeLaunch` / `Flow.safeLaunch()`.
 - **`runBlocking { ... }`** anywhere in production.
 - **Manual `CoroutineExceptionHandler`** inside a VM. The pipeline handles errors.
-- **Local exception handling that hides, replaces or presents unhandled failures
-  in a ViewModel** (`try/catch`, `runCatching`, result failure branches). Call throwing
-  commands inside `safeLaunch`, including private suspend helpers. Recovery
-  wrappers and stage flags follow
-  [the error pipeline](../../ui-feature/references/error-pipeline.md).
+- ViewModel failure-handling prohibitions, including helpers, follow [Errors](#errors).
 - **`async { }.await()`** to start a single piece of async work. Use `safeLaunch { ... }`. `async` is for parallel forks.
 
 ## Collections in state

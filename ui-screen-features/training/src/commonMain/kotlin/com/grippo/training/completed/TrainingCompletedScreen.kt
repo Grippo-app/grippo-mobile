@@ -329,9 +329,7 @@ private fun TrainingCompletedContent(
             }
         }
 
-        if (state.weeklyVolume != null || state.streak != null ||
-            state.goalProgress != null || state.muscleLoad != null
-        ) {
+        if (state.weeklyVolume != null || state.streak != null || state.goalProgress != null) {
             item(key = "progress_heading") {
                 Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
 
@@ -357,7 +355,9 @@ private fun TrainingCompletedContent(
 
         if (state.streak != null) {
             item(key = "training_streak") {
-                ProgressDivider(modifier = sectionModifier)
+                if (state.weeklyVolume != null) {
+                    ProgressDivider(modifier = sectionModifier)
+                }
 
                 TrainingStreakCard(
                     modifier = sectionModifier.scalableClick(onClick = contract::onStreakClick),
@@ -369,7 +369,9 @@ private fun TrainingCompletedContent(
 
         if (state.goalProgress != null) {
             item(key = "goal_progress") {
-                ProgressDivider(modifier = sectionModifier)
+                if (state.weeklyVolume != null || state.streak != null) {
+                    ProgressDivider(modifier = sectionModifier)
+                }
 
                 GoalCard(
                     modifier = sectionModifier.scalableClick(onClick = contract::onGoalClick),
@@ -597,6 +599,40 @@ private fun TrainingCompletedRecordsPendingPreview() {
         TrainingCompletedScreen(
             state = trainingCompletedPreviewState().copy(records = persistentListOf()),
             loaders = persistentSetOf(TrainingCompletedLoader.LoadRecords),
+            contract = TrainingCompletedContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingCompletedStreakOnlyProgressPreview() {
+    PreviewContainer {
+        TrainingCompletedScreen(
+            state = trainingCompletedPreviewState().copy(
+                weeklyVolume = null,
+                goalProgress = null,
+                previousGoalProgress = null,
+                muscleLoad = null,
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingCompletedContract.Empty,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingCompletedGoalOnlyProgressPreview() {
+    PreviewContainer {
+        TrainingCompletedScreen(
+            state = trainingCompletedPreviewState().copy(
+                weeklyVolume = null,
+                streak = null,
+                previousStreak = null,
+                muscleLoad = null,
+            ),
+            loaders = persistentSetOf(),
             contract = TrainingCompletedContract.Empty,
         )
     }

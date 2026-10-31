@@ -31,30 +31,13 @@ internal fun GoalCardCalendar(
     value: GoalProgressState,
     onUpdateClick: () -> Unit,
 ) {
-    val targetText = value.goal.target.short()
     val isOverdue = value.daysRemaining < 0
 
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-        ) {
-            Icon(
-                modifier = Modifier.size(AppTokens.dp.metrics.overview.detailsIcon),
-                imageVector = AppTokens.icons.Calendar,
-                tint = AppTokens.colors.icon.secondary,
-                contentDescription = null,
-            )
-            Text(
-                modifier = Modifier.weight(1f),
-                text = "${AppTokens.strings.res(Res.string.goal_period_label)} · $targetText",
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-            )
-        }
+        GoalDeadline(value = value)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
@@ -74,6 +57,33 @@ internal fun GoalCardCalendar(
                 )
             }
         }
+    }
+}
+
+@Composable
+internal fun GoalDeadline(
+    modifier: Modifier = Modifier,
+    value: GoalProgressState,
+) {
+    val targetText = value.goal.target.short()
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+    ) {
+        Icon(
+            modifier = Modifier.size(AppTokens.dp.metrics.overview.detailsIcon),
+            imageVector = AppTokens.icons.Calendar,
+            tint = AppTokens.colors.icon.secondary,
+            contentDescription = null,
+        )
+        Text(
+            modifier = Modifier.weight(1f),
+            text = "${AppTokens.strings.res(Res.string.goal_period_label)} · $targetText",
+            style = AppTokens.typography.b12Med(),
+            color = AppTokens.colors.text.secondary,
+        )
     }
 }
 

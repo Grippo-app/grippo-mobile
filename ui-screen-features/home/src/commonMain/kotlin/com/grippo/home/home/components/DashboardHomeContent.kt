@@ -37,7 +37,6 @@ import com.grippo.design.resources.provider.home_fewer_indicators
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.performance.stubEmptyPerformanceMetrics
@@ -115,6 +114,14 @@ internal fun DashboardHomeContent(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
+        item(key = "highlights_header", span = { GridItemSpan(2) }) {
+            HighlightsHeader(
+                modifier = Modifier.fillMaxWidth(),
+                range = state.range,
+                onPeriodChange = contract::onOpenPeriodPicker,
+            )
+        }
+
         if (state.lastTraining != null) {
             item(key = "last_training", span = { GridItemSpan(2) }) {
                 LastTrainingCard(
@@ -128,43 +135,13 @@ internal fun DashboardHomeContent(
         if (state.goalProgress != null) {
             item(key = "current_goal", span = { GridItemSpan(2) }) {
                 GoalCard(
-                    modifier = Modifier.fillMaxWidth().scalableClick(onClick = contract::onOpenGoalDetails),
-                    value = state.goalProgress,
-                    style = GoalCardStyle.Current(onUpdateClick = contract::onAddGoal),
-                )
-            }
-        }
-
-        item(key = "highlights_header", span = { GridItemSpan(2) }) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        top = if (state.lastTraining != null) {
-                            AppTokens.dp.contentPadding.subContent
-                        } else {
-                            0.dp
-                        },
-                    ),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-            ) {
-                HighlightsHeader(
                     modifier = Modifier.fillMaxWidth(),
-                    range = state.range,
-                    onPeriodChange = contract::onOpenPeriodPicker,
-                )
-            }
-        }
-
-        if (state.goalProgress != null) {
-            item(key = "goal_progress", span = { GridItemSpan(2) }) {
-                GoalCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = AppTokens.dp.contentPadding.subContent)
-                        .scalableClick(onClick = contract::onOpenGoalDetails),
                     value = state.goalProgress,
-                    style = GoalCardStyle.Period,
+                    style = GoalCardStyle.Summary(
+                        range = state.range,
+                        onDetailsClick = contract::onOpenGoalDetails,
+                        onUpdateClick = contract::onAddGoal,
+                    ),
                 )
             }
         }
