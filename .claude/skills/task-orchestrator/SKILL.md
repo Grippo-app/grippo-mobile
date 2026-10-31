@@ -38,8 +38,10 @@ live in `.claude/agents/`; the roster is in
      applies (it owns the trigger).
    Send the brief below; receive findings with `path:line` and severity. The
    author's self-review never counts as independent review.
-5. **Resolve findings.** Fix every blocking finding and re-review the changed
-   area. A finding the user explicitly chose to keep is an accepted risk, recorded
+5. **Resolve findings.** Fix every blocking finding, then obtain independent
+   re-review of the fixes and affected paths against the current task delta.
+   Retain review conclusions for unchanged paths unless the fixes affect them.
+   A finding the user explicitly chose to keep is an accepted risk, recorded
    with its trigger and consequence - never a fix or a pass. If the same finding
    returns twice, reassess its root cause before changing anything else; ask only
    for a real product or scope blocker. Never repeat an unchanged attempt or

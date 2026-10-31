@@ -34,7 +34,7 @@ registers its own BackCallback that closes without an event.
 
 ## Callbacks and operations
 
-Dashboard cards use concise `Overview` presentations. The existing card actions
+Dashboard summaries use shared compact presentations: current goal identity/deadline above the selected-period context, period goal assessment, open rhythm and contained muscle/performance summaries. The existing card actions
 open MuscleLoadingDetails, TrainingStreakDetails, PerformanceTrendDetails and
 TrainingGoalDetails. Detail dialogs provide the corresponding period evidence
 and diagnostics; the muscle dialog retains its full distribution and offers the
@@ -42,9 +42,8 @@ PerGroup/PerMuscle selector when a known group distribution exists. Overview
 card headings use the same primary style and decorative top-right chevron, with
 their existing parent click as the sole detail action; Calendar and Update retain
 their explicit callbacks.
-Performance metrics retain their order, individual click owners and null-item
-omission; each pair shares a natural-height row to align card boundaries.
-Goal Overview uses the current goal and selected analysis window. An unavailable
+Performance initially shows the fixed Duration and Volume pair, subject to the existing lifetime unlock thresholds and null-item omission. The local All indicators disclosure reveals Density, Repetitions and Intensity without changing individual detail callbacks. The primary pair shares a natural-height row; disclosed metrics use individual full-width cards. Disclosure is deliberately untracked presentation state; it is not a screen, business selection or operation.
+Goal Current shows current identity/deadline; Goal Period uses the selected analysis window. An unavailable
 score stays neutral; an empty period preserves an existing goal, and removing the
 goal clears its card. Details show the same grouped findings that produce the
 score (100/50/0 for assessable criteria); unknown criteria are omitted. Evidence
@@ -75,8 +74,7 @@ remain unavailable; the displayed percentage and status share that comparison,
 with a 5% minimum widened by historical variability. A period record requires a
 strict increase over the preceding maximum. Duration remains neutral and retains
 fractional minutes; its compact Home view deliberately shows the percentage
-without a second average value. The five metrics retain their order and click
-owners. Recorded zero remains available; a zero baseline has no percentage
+without a second average value. The five metrics retain their individual click owners; Duration and Volume lead, with the remaining three available through disclosure. Recorded zero remains available; a zero baseline has no percentage
 comparison, and density requires a positive duration denominator. These pure
 calculations add no telemetry or persisted fields.
 Intensity uses saved Training.intensity in Home and PerformanceTrendDetails.
@@ -117,8 +115,7 @@ period picker and its callback remain available once the range is resolved.
 Skeleton slots add no event, operation, feature callback or persisted field,
 and do not impose a minimum loading duration. Existing shared
 error feedback still owns failures before the first successful metric publication.
-The Progress hint is present only alongside a goal, muscle or streak summary;
-it explains the existing card action and adds no control or observation.
+The selected-period heading and picker scope the evidence; detail chevrons identify existing entry actions without repeated instructional copy.
 
 | Observation owner / callback | Typed event / operation | Eligibility / wire payload |
 |---|---|---|
@@ -217,7 +214,7 @@ screen identity. Existing row actions remain available outside the loaded image.
 | HomeViewModel / HomeScreen | Loading presentation | Runtime only | Existing finite Trainings command loader without period content | Plain user/range/metric observations do not manage loading or perform extra initial reads. Non-null lists and actual optional results render content when no real request is active. Cached content remains visible during refresh; obsolete period results are rejected. No readiness flag, draft or timer |
 | HomeViewModel | Jobs, whileActive subscriptions, notification permission/schedule, dialog sessions, analytics provenance | Runtime only | `Flow.safeLaunch` default WhileActive (one-second disconnect grace); each range refresh is a step of the range Flow; live DialogConfig callbacks; host serializers null | Resume beyond the grace re-emits the current range and repeats RefreshTrainings. A request failure ends the range refresh Flow unless the error popup's Retry re-collects it; range/lifecycle cancellation cancels the in-flight request with its `mapLatest` step. NonCancellable is confined to cancellation cleanup; requests remain cancellable. No persisted Job, restoration flag, previous-source cache or shadow copy |
 | Home dialogs | Unaccepted picker selection; `onResult`/`onAddGoal` closures | Runtime only | Dialog slot/step stacks unserialized; the picker value lives only in the dialog VM | The accepted period goes straight to DataStore through SavePeriod; a result still queued at process death has no durability |
-| Home composables | Dashboard and spotlight-gallery scroll positions | Presentation only | Existing anchored grid state; gallery's standard `rememberScrollState` pixel offset | No business selection, draft field, restoration flag or ViewModel owner added; swipe scrolling has no feature analytics event |
+| Home composables | Dashboard and spotlight-gallery scroll positions; All indicators expansion | Presentation only | Existing anchored grid state; gallery's standard `rememberScrollState` pixel offset; local range-keyed `rememberSaveable` expansion | No business selection, draft field, restoration flag or ViewModel owner added; swipe scrolling has no feature analytics event |
 
 No PersistenceKey, `restoreState`/`saveState`, `@Serializable`, `@Transient` or
 `var` member exists in the home module; HomeState is `@Immutable` only and

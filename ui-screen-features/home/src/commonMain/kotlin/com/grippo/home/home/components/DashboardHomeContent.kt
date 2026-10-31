@@ -20,7 +20,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.resources.provider.home_all_indicators
+import com.grippo.design.resources.provider.home_fewer_indicators
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.metrics.performance.PerformanceMetricState
 import com.grippo.core.state.metrics.performance.PerformanceMetricTypeState
@@ -53,6 +69,8 @@ import com.grippo.home.home.HomeContract
 import com.grippo.home.home.HomeState
 import com.grippo.home.home.HomeUnlock
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun DashboardHomeContent(
@@ -87,6 +105,7 @@ internal fun DashboardHomeContent(
     val gridState = rememberAnchoredLazyGridState(
         behavior = AnchorScrollBehavior.Animated,
     )
+    var allIndicatorsExpanded by rememberSaveable(state.range) { mutableStateOf(false) }
 
     LazyVerticalGrid(
         state = gridState,
@@ -102,6 +121,16 @@ internal fun DashboardHomeContent(
                     modifier = Modifier.fillMaxWidth(),
                     value = state.lastTraining,
                     onClick = contract::onOpenTrainings
+                )
+            }
+        }
+
+        if (state.goalProgress != null) {
+            item(key = "current_goal", span = { GridItemSpan(2) }) {
+                GoalCard(
+                    modifier = Modifier.fillMaxWidth().scalableClick(onClick = contract::onOpenGoalDetails),
+                    value = state.goalProgress,
+                    style = GoalCardStyle.Current(onUpdateClick = contract::onAddGoal),
                 )
             }
         }
@@ -132,9 +161,10 @@ internal fun DashboardHomeContent(
                 GoalCard(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(vertical = AppTokens.dp.contentPadding.subContent)
                         .scalableClick(onClick = contract::onOpenGoalDetails),
                     value = state.goalProgress,
-                    style = GoalCardStyle.Overview(onUpdateClick = contract::onAddGoal),
+                    style = GoalCardStyle.Period,
                 )
             }
         }
@@ -156,9 +186,10 @@ internal fun DashboardHomeContent(
                 TrainingStreakCard(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(vertical = AppTokens.dp.contentPadding.subContent)
                         .scalableClick(onClick = contract::onOpenTrainingStreak),
                     value = state.streak,
-                    style = TrainingStreakCardStyle.Overview,
+                    style = TrainingStreakCardStyle.Section,
                 )
             }
         }
@@ -172,6 +203,7 @@ internal fun DashboardHomeContent(
                     verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                 ) {
                     Text(
+                        modifier = Modifier.semantics { heading() },
                         text = AppTokens.strings.res(Res.string.home_exercise_highlights_title),
                         style = AppTokens.typography.h4(),
                         color = AppTokens.colors.text.primary,
@@ -198,6 +230,7 @@ internal fun DashboardHomeContent(
                     verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
                 ) {
                     Text(
+                        modifier = Modifier.semantics { heading() },
                         text = AppTokens.strings.res(Res.string.home_metrics_title),
                         style = AppTokens.typography.h4(),
                         color = AppTokens.colors.text.primary,
@@ -214,25 +247,22 @@ internal fun DashboardHomeContent(
 
         if (HomeUnlock.DurationTrend.isUnlocked(lifetimeTrainingCount)) {
             performanceMetricsItem(
-                itemKey = "performance_duration",
+                itemKey = "performance_primary",
                 first = durationMetric,
+                second = volumeMetric.takeIf { HomeUnlock.PerformanceTrends.isUnlocked(lifetimeTrainingCount) },
                 contract = contract,
             )
         }
 
         if (HomeUnlock.PerformanceTrends.isUnlocked(lifetimeTrainingCount)) {
-            performanceMetricsItem(
-                itemKey = "performance_density_volume",
-                first = densityMetric,
-                second = volumeMetric,
-                contract = contract,
-            )
-            performanceMetricsItem(
-                itemKey = "performance_repetitions_intensity",
-                first = repetitionsMetric,
-                second = intensityMetric,
-                contract = contract,
-            )
+            item(key = "all_indicators", span = { GridItemSpan(2) }) {
+                AllIndicatorsSection(
+                    metrics = listOfNotNull(densityMetric, repetitionsMetric, intensityMetric).toPersistentList(),
+                    expanded = allIndicatorsExpanded,
+                    onToggle = { allIndicatorsExpanded = !allIndicatorsExpanded },
+                    onMetricClick = contract::onPerformanceMetricClick,
+                )
+            }
         }
 
         if (state.user != null && HomeUnlock.shouldShowBanner(
@@ -258,6 +288,43 @@ internal fun DashboardHomeContent(
                     onAddGoal = contract::onAddGoal,
                     modifier = Modifier.fillMaxWidth(),
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AllIndicatorsSection(
+    modifier: Modifier = Modifier,
+    metrics: ImmutableList<PerformanceMetricState>,
+    expanded: Boolean,
+    onToggle: () -> Unit,
+    onMetricClick: (PerformanceMetricTypeState) -> Unit,
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)) {
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            content = ButtonContent.Text(text = AppTokens.strings.res(
+                if (expanded) Res.string.home_fewer_indicators else Res.string.home_all_indicators,
+            )),
+            style = ButtonStyle.Secondary,
+            onClick = onToggle,
+        )
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)) {
+                metrics.forEach { metric ->
+                    key(metric.type) {
+                        PerformanceMetricCard(
+                            modifier = Modifier.fillMaxWidth().scalableClick { onMetricClick(metric.type) },
+                            metric = metric,
+                            style = PerformanceMetricCardStyle.Overview,
+                        )
+                    }
+                }
             }
         }
     }
@@ -294,6 +361,21 @@ private fun LazyGridScope.performanceMetricsItem(
                 }
             }
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun AllIndicatorsExpandedPreview() {
+    PreviewContainer {
+        AllIndicatorsSection(
+            metrics = homePreviewState().performance.filter {
+                it.type != PerformanceMetricTypeState.Duration && it.type != PerformanceMetricTypeState.Volume
+            }.toPersistentList(),
+            expanded = true,
+            onToggle = {},
+            onMetricClick = {},
+        )
     }
 }
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Isolated structural regression cases; never runs application checks."""
+import json
 import os
 import pathlib
 import runpy
@@ -71,6 +72,7 @@ with tempfile.TemporaryDirectory(prefix='grippo-checker-deep-fixture-') as tmp:
         ('missing agent duties', agent, lambda s: s.replace('## Duties', '## Work'), 1, 'needs a Duties section'),
         ('misspelled agent field', agent, lambda s: s.replace('model: inherit', 'model: inherit\ntoolz: Bash'), 1, 'unsupported agent frontmatter'),
         ('guard mode drift', '.claude/agents/build-verifier.md', lambda s: s.replace('readonly-compile', 'readonly-build'), 1, 'agent guard must run exact command'),
+        ('non-isolated native guard', agent, lambda s: s.replace('python3 -I "$CLAUDE_PROJECT_DIR/', 'python3 "$CLAUDE_PROJECT_DIR/'), 1, 'agent guard must run exact command'),
         ('missing native adapter', '.codex/agents/code-reviewer.toml', None, 1, 'native agent adapter missing or drifted'),
         ('native adapter instructions drift', '.codex/agents/code-reviewer.toml', lambda s: s.replace('Read CLAUDE.md', 'Ignore CLAUDE.md'), 1, 'native agent adapter missing or drifted'),
         ('native capability drift', '.codex/agents/code-reviewer.toml', lambda s: s.replace('apps = false', 'apps = true'), 1, 'native agent adapter missing or drifted'),
@@ -216,7 +218,8 @@ with tempfile.TemporaryDirectory(prefix='grippo-checker-deep-fixture-') as tmp:
     (fixture / '.claude/skills').rename(fixture / '.claude/skills-removed')
     run('missing skills root diagnosed without traceback', 1, 'missing .claude/skills directory')
 
-grade = runpy.run_path(str(root / '.claude/skills/rulebook-maintenance/evals/evaluate.py'))['grade']
+evaluation = runpy.run_path(str(root / '.claude/skills/rulebook-maintenance/evals/evaluate.py'))
+grade, select_cases = evaluation['grade'], evaluation['select_cases']
 case = {'id': 'sample', 'prompt': 'Plan the sample task.', 'required_skills': ['owner'], 'required_gates': ['review'], 'forbidden_actions': ['device-use']}
 valid = {'id': 'sample', 'skills': ['owner'], 'references': [], 'gates': ['review'], 'roles': [], 'actions': [], 'loaded_files': []}
 grader_cases = [
@@ -258,6 +261,20 @@ for label, cases in rubric_cases:
     checks.append((label, good))
     print('PASS' if good else 'FAIL', label)
 
+other = dict(case, id='other')
+for label, catalog, selected_ids, expected_ids, failure in [
+    ('selection defaults to the whole catalog', [case, other], None, ['sample', 'other'], False),
+    ('selection preserves catalog order', [case, other], ['other', 'sample'], ['sample', 'other'], False),
+    ('selection supports affected cases only', [case, other], ['other'], ['other'], False),
+    ('selection rejects unknown ids', [case], ['unknown'], [], True),
+    ('selection rejects duplicate ids', [case], ['sample', 'sample'], [], True),
+    ('selection validates unselected rubric cases', [case, dict(other, prompt=None)], ['sample'], [], True),
+]:
+    selected, errors = select_cases(catalog, selected_ids)
+    good = [entry['id'] for entry in selected] == expected_ids and bool(errors) == failure
+    checks.append((label, good))
+    print('PASS' if good else 'FAIL', label)
+
 evaluator = root / '.claude/skills/rulebook-maintenance/evals/evaluate.py'
 with tempfile.TemporaryDirectory(prefix='grippo-evaluator-input-') as tmp:
     invalid = pathlib.Path(tmp) / 'responses.json'
@@ -272,6 +289,45 @@ with tempfile.TemporaryDirectory(prefix='grippo-evaluator-input-') as tmp:
     good = result.returncode != 0 and 'Unicode string id' in result.stdout and 'Traceback' not in result.stderr
     checks.append(('surrogate response ID reports a clean CLI error', good))
     print('PASS' if good else 'FAIL', 'surrogate response ID reports a clean CLI error')
+    catalog = json.loads(evaluator.with_name('cases.json').read_text())['cases']
+    sample = catalog[0]
+    response = dict(valid, id=sample['id'], skills=sample['required_skills'], gates=sample['required_gates'])
+    invalid.write_text(json.dumps([response]))
+    for label, selection, expected in [
+        ('targeted CLI run reports selected scope', ['--case', sample['id']], 0),
+        ('targeted CLI rejects unknown selection', ['--case', 'absent-case'], 1),
+        ('targeted CLI rejects repeated selection', ['--case', sample['id'], '--case', sample['id']], 1),
+        ('full CLI still requires every case', [], 1),
+    ]:
+        result = subprocess.run([sys.executable, '-I', str(evaluator), str(invalid), *selection], capture_output=True, text=True)
+        good = result.returncode == expected and 'selected /' in result.stdout and not result.stderr
+        checks.append((label, good))
+        print('PASS' if good else 'FAIL', label)
+    selection = ['--case', catalog[1]['id']]
+    result = subprocess.run([sys.executable, '-I', str(evaluator), str(invalid), *selection], capture_output=True, text=True)
+    good = result.returncode == 1 and 'unknown response:' in result.stdout and not result.stderr
+    checks.append(('targeted CLI rejects responses outside selection', good))
+    print('PASS' if good else 'FAIL', 'targeted CLI rejects responses outside selection')
+
+    shadow = pathlib.Path(tmp) / 'json.py'
+    marker = pathlib.Path(tmp) / 'shadow-imported'
+    shadow.write_text('from pathlib import Path\nPath(' + repr(str(marker)) + ').touch()\n')
+    environment = dict(os.environ, PYTHONPATH=tmp)
+    result = subprocess.run([sys.executable, '-I', str(root / '.claude/hooks/bash-guard.py'), 'readonly'],
+                            input='{}', env=environment, capture_output=True, text=True)
+    good = result.returncode == 2 and not marker.exists() and 'Traceback' not in result.stderr
+    checks.append(('isolated native guard ignores shadow imports', good))
+    print('PASS' if good else 'FAIL', 'isolated native guard ignores shadow imports')
+
+    crashing_guard = pathlib.Path(tmp) / 'crashing-guard.py'
+    guard_source = (root / '.claude/hooks/bash-guard.py').read_text()
+    crashing_guard.write_text(guard_source.replace(
+        'def main() -> None:\n', 'def main() -> None:\n    raise RuntimeError("fixture validator failure")\n', 1))
+    result = subprocess.run([sys.executable, '-I', str(crashing_guard), 'readonly'],
+                            input='{}', capture_output=True, text=True)
+    good = result.returncode == 2 and 'RuntimeError' in result.stderr and 'Traceback' not in result.stderr
+    checks.append(('unexpected guard validation failures reject with exit 2', good))
+    print('PASS' if good else 'FAIL', 'unexpected guard validation failures reject with exit 2')
 
 print('Checker scenarios:', len(checks), 'passed:', sum(good for _, good in checks))
 raise SystemExit(any(not good for _, good in checks))

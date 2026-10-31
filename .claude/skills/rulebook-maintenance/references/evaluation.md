@@ -21,11 +21,19 @@ and declared loaded files
 against the trace; the script type-checks those fields but does not prove their
 semantic correctness. Grade the normalized skill/gate/action decisions with
 `python3 -I .claude/skills/rulebook-maintenance/evals/evaluate.py <responses.json>`
-from the repository root. The catalog uses schema 1, unique nonempty case IDs,
+from the repository root. By default, responses are required for the full catalog.
+For affected cases only, repeat `--case CASE_ID`, for example
+`python3 -I .claude/skills/rulebook-maintenance/evals/evaluate.py <responses.json> --case rules-only --case proportional-scout`.
+The grader validates the full catalog before selecting cases, rejects unknown or
+duplicate selections and responses outside the selection, and reports selected
+and total case counts. The catalog uses schema 1, unique nonempty case IDs,
 nonempty prompts and string lists for required skills/gates and forbidden actions.
 The grader rejects malformed catalogs and responses before scoring. A static
 metadata check does not establish model routing. Compare before and after on the
-same cases. Keep responses and traces in the task scratchpad, not the repository.
+same selected cases, identifying each run's case IDs and rule revision. A targeted
+run supports fresh results only for its selected cases. Omit unrun cases or cite
+their actual earlier responses and revision as retained evidence. Keep responses
+and traces in the task scratchpad, not the repository.
 
 Review failures semantically: required gates and prohibited side effects decide
 correctness, not exact wording or a single prescribed sequence. Measure the

@@ -18,7 +18,7 @@
     <string name="home_progress_details_hint">Натисни картку, щоб побачити подробиці.</string>
     <string name="home_metrics_title">Показники тренування</string>
     <string name="home_metrics_empty_description">За цей період поки немає показників. Спробуй інший період.</string>
-    <string name="home_last_workout_in_period">Останнє тренування</string>
+    <string name="home_last_workout_in_period">Останнє тренування за період</string>
     <string name="metric_overview_muscle_distribution">Як розподілилося навантаження</string>
     <string name="metric_overview_muscle_primary">Найбільше навантаження: %1$s</string>
     <string name="metric_overview_muscle_details">Усі групи та м’язи</string>
@@ -887,4 +887,7 @@
     <string name="monthly">Місяць</string>
     <string name="yearly">Рік</string>
     <string name="digest_empty">У цьому місяці тренувань немає</string>
+    <string name="home_all_indicators">Усі показники</string>
+    <string name="home_fewer_indicators">Згорнути показники</string>
+    <string name="home_selected_period">Вибраний період</string>
 </resources>

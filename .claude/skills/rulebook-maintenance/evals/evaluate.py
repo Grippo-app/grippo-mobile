@@ -34,6 +34,25 @@ def validate_cases(cases):
     return problems
 
 
+def select_cases(cases, case_ids=None):
+    problems = validate_cases(cases)
+    if problems:
+        return [], problems
+    if not case_ids:
+        return cases, []
+    known = {case["id"] for case in cases}
+    selected = set()
+    for identity in case_ids:
+        if identity in selected:
+            problems.append(f"duplicate selected case: {identity}")
+        elif identity not in known:
+            problems.append(f"unknown selected case: {identity}")
+        selected.add(identity)
+    if problems:
+        return [], problems
+    return [case for case in cases if case["id"] in selected], []
+
+
 def grade(cases, responses):
     problems = validate_cases(cases)
     if problems:
@@ -79,19 +98,24 @@ def grade(cases, responses):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("responses", type=pathlib.Path)
+    parser.add_argument("--case", dest="case_ids", action="append", metavar="CASE_ID",
+                        help="grade only this case; repeat to select more (default: all cases)")
     args = parser.parse_args()
     try:
         catalog = json.loads(pathlib.Path(__file__).with_name("cases.json").read_text(encoding="utf-8"))
         if not isinstance(catalog, dict) or type(catalog.get("schema")) is not int or catalog["schema"] != 1 or catalog.get("response_fields") != RESPONSE_FIELDS:
             raise ValueError("unsupported case catalog schema or response_fields")
-        cases = catalog.get("cases")
+        catalog_cases = catalog.get("cases")
         responses = json.loads(args.responses.read_text(encoding="utf-8"))
     except (OSError, ValueError) as error:
         parser.error(str(error))
-    problems = grade(cases, responses)
+    cases, problems = select_cases(catalog_cases, args.case_ids)
+    if not problems:
+        problems = grade(cases, responses)
     for problem in problems:
         print("FAIL", problem)
-    print(f"{len(cases) if isinstance(cases, list) else 0} cases; {len(problems)} problem(s)")
+    total = len(catalog_cases) if isinstance(catalog_cases, list) else 0
+    print(f"{len(cases)} selected / {total} total cases; {len(problems)} problem(s)")
     raise SystemExit(bool(problems))
 
 

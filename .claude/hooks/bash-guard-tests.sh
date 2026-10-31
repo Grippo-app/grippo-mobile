@@ -4,11 +4,12 @@
 GUARD="$(cd "$(dirname "$0")" && pwd)/bash-guard.py"
 export CLAUDE_PROJECT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 ERR="$(mktemp "${TMPDIR:-/tmp}/grippo-guard.XXXXXX")" || exit 1
-trap 'rm -f "$ERR"' EXIT
+PATH_FIXTURE=""
+trap 'rm -f "$ERR"; [[ -z "$PATH_FIXTURE" ]] || rm -rf -- "$PATH_FIXTURE"' EXIT
 fails=0
 check_payload() {
   local mode="$1"; local payload="$2"; local expect="$3"; local label="$4"
-  printf "%s\n" "$payload" | python3 "$GUARD" "$mode" 2>"$ERR"
+  printf "%s\n" "$payload" | python3 -I "$GUARD" "$mode" 2>"$ERR"
   local rc=$?
   local got="error"
   case "$rc" in
@@ -305,7 +306,7 @@ run readonly "echo \\'; git add -A; echo \\'" block
 run readonly 'echo \"literal; git add -A; echo \"' block
 run no-git-write 'gi\'"$NL"'t add -A' block
 run no-git-write "# don't parse comment quotes"$NL'gi\'"$NL"'t add -A' block
-run readonly 'echo text # continued comment \'"$NL"'git add -A' allow
+run readonly 'echo text # continued comment \'"$NL"'git add -A' block
 run readonly 'rg QSPAN999Z CLAUDE.md' allow
 run readonly 'rg QSPAN0Z "literal value" CLAUDE.md' allow
 run readonly-build 'echo safe > QSPAN0Z; cat "/private/tmp/guard-evidence"' block
@@ -612,12 +613,399 @@ for mode in readonly-build no-git-write; do
 done
 run readonly-build 'adb -s emulator-5554 "$action"' block
 run readonly-build 'adb -s emulator-5554 root' block
-run readonly-build 'adb -s emulator-5554 shell input text "$text"' allow
+run readonly-build 'adb -s emulator-5554 shell input text "$text"' block
 check_payload readonly '{"tool_name":"Bash","tool_input":{"command":"cat \ud800"}}' block 'surrogate command rejected without traceback'
 run readonly-compile './gradlew :shared:dependencyInsight --dependency "$dependency" --configuration "$configuration"' allow
 run readonly-compile 'xcodebuild -scheme "$scheme" -configuration Debug build' allow
 run readonly-compile 'xcodebuild "$action" -scheme iosApp' block
 run readonly-compile 'xcodebuild -scheme iosApp -derivedDataPath build/derived build' block
 run readonly-compile 'xcodebuild -scheme iosApp -derivedDataPath /private/tmp/ios-derived build' allow
+# Builtins, shell precommands and parameter operations must not conceal execution.
+for mode in readonly readonly-compile readonly-build no-git-write; do
+  run "$mode" 'path=/private/tmp/guard-bin; git status' block
+  run "$mode" 'path=/private/tmp/guard-bin git status' block
+  run "$mode" 'env path=/private/tmp/data git status' allow
+  run "$mode" 'NULLCMD=/private/tmp/helper; > /dev/null' block
+  run "$mode" 'READNULLCMD=/private/tmp/helper; < /dev/null' block
+  run "$mode" 'env NULLCMD=data git status' allow
+  run "$mode" 'echo "${PATH::=/private/tmp/guard-bin}"; git status' block
+  run "$mode" 'echo "${path[1]::=/private/tmp/guard-bin}"; git status' block
+  run "$mode" 'echo "${GIT_CONFIG_COUNT:=1}"' block
+  run "$mode" 'echo "${RIPGREP_CONFIG_PATH:=/private/tmp/config}"' block
+  run "$mode" 'echo "${VALUE:=fallback}"' allow
+  run "$mode" 'echo "${VALUE:-fallback}"' allow
+  run "$mode" 'echo "${value:2:3}"' allow
+  run "$mode" 'echo "${value: -2:1}"' allow
+  run "$mode" 'echo "${value:offset}"' block
+  run "$mode" 'echo "${value:2:length}"' block
+  run "$mode" 'echo "${0:offset}"' block
+  run "$mode" 'echo "${@:offset}"' block
+  run "$mode" 'echo "${?:offset}"' block
+  run "$mode" 'echo "${0:2:3}"' allow
+  run "$mode" 'echo "${#data[index]}"' block
+  run "$mode" 'echo "${#data[0]}"' allow
+  run "$mode" 'echo ${~pattern}' block
+  run "$mode" 'echo $~pattern' block
+  run "$mode" 'echo ${=~pattern}' block
+  run "$mode" 'echo $^~pattern' block
+  run "$mode" '! git add -A' block
+  run "$mode" 'noglob git add -A' block
+  run "$mode" 'nocorrect git add -A' block
+  run "$mode" 'if git add -A; then true; fi' block
+  run "$mode" 'while git add -A; do true; done' block
+  run "$mode" 'repeat 1 git add -A' block
+  run "$mode" 'coproc git add -A' block
+  run "$mode" '! git diff --quiet' allow
+  run "$mode" 'if git diff --quiet; then git status; fi' allow
+  run "$mode" 'g$"it" add -A' block
+  run "$mode" 'git -c core.alternateRefsCommand=helper rev-list --alternate-refs' block
+  run "$mode" 'git --config-env=core.alternateRefsCommand=HELPER rev-list --alternate-refs' block
+  run "$mode" 'git -c user.name=Inspector status' allow
+  run "$mode" 'DYLD_LIBRARY_PATH=/private/tmp/lib git status' block
+  run "$mode" 'LD_AUDIT=/private/tmp/helper.so git status' block
+done
+run no-git-write 'exec -a inspect git add -A' block
+run no-git-write 'exec git status' allow
+for mode in readonly readonly-compile readonly-build; do
+  run "$mode" 'printf -v PATH %s /private/tmp/guard-bin; git status' block
+  run "$mode" "printf '%n' PATH; git status" block
+  run "$mode" "printf '%5ln' PATH" block
+  run "$mode" "printf '%.n' PATH" block
+  run "$mode" "printf '%0.n' PATH" block
+  run "$mode" "printf '%1\$n' PATH" block
+  run "$mode" 'printf "$format" data' block
+  run "$mode" "printf '%%n\\n'" allow
+  run "$mode" "printf '%s\\n' '%n'" allow
+  run "$mode" 'printf "%s\n" "$value"' allow
+  run "$mode" 'printf -- -v' allow
+  run "$mode" 'printf "%03d %s\n" 2 data' allow
+  run "$mode" 'uniq input /private/tmp/output' block
+  run "$mode" 'uniq -c -- input /private/tmp/output' block
+  run "$mode" 'uniq input -c' block
+  run "$mode" 'uniq - /private/tmp/output' block
+  run "$mode" 'uniq -c - /private/tmp/output' block
+  run "$mode" 'uniq - -' block
+  run "$mode" 'uniq -c -' allow
+  run "$mode" 'uniq "$files" "$output"' block
+  run "$mode" 'uniq $files' block
+  run "$mode" 'uniq -f 2 -s 1 -c input' allow
+  run "$mode" 'uniq --skip-fields 2 -- input' allow
+  run "$mode" 'uniq -- "$file"' allow
+  run "$mode" 'sort input | uniq -c' allow
+  run "$mode" 'cat < /dev/tcp/127.0.0.1/12345' block
+  run "$mode" 'cat < /dev/udp/127.0.0.1/12345' block
+  run "$mode" 'cat < "$source"' block
+  run "$mode" 'cat < "./$source"' allow
+  run "$mode" 'cat < "/private/tmp/$source"' allow
+  run "$mode" 'cat <<< "$text"' allow
+  run "$mode" 'cat <<< /dev/tcp/127.0.0.1/12345' allow
+  run "$mode" 'cat =(echo data)' block
+  run "$mode" 'cat < CLAUDE.md' allow
+  run "$mode" 'date -s 2030-01-01' block
+  run "$mode" 'date --set=2030-01-01' block
+  run "$mode" 'date 110100002030.00' block
+  run "$mode" 'date -I 110100002030.00' block
+  run "$mode" 'date 110100002030.00 -j' block
+  run "$mode" 'date -f "%Y-%m-%d" 2030-01-01' block
+  run "$mode" 'date -j -f "%Y-%m-%d" "$when" +%s' allow
+  run "$mode" 'date -uIseconds' allow
+  run "$mode" 'date "--$action"' block
+  run "$mode" 'date -r 0 +%Y' allow
+  run "$mode" 'date -u +%Y-%m-%d' allow
+  run "$mode" "awk --profile=/private/tmp/profile 'BEGIN{}'" block
+  run "$mode" "awk --dump-variables 'BEGIN{}'" block
+  run "$mode" "awk -E /private/tmp/program" block
+  run "$mode" "awk -Wfile=/private/tmp/program" block
+  run "$mode" "awk -F '>' '{print \$1}' ./system-data" allow
+done
+for mode in readonly-compile readonly-build no-git-write; do
+  run "$mode" './gradlew :androidApp:assembleDebug --write-verification-metadata=sha256' block
+  run "$mode" './gradlew :androidApp:assembleDebug -Msha256' block
+  run "$mode" './gradlew :androidApp:assembleDebug --gradle-user-home=/private/tmp/gradle' block
+  run "$mode" './gradlew :androidApp:assembleDebug -g/private/tmp/gradle' block
+  run "$mode" './gradlew -- :androidApp:assembleDebug --write-verification-metadata=sha256' block
+  run "$mode" './gradlew :androidApp:assembleDebug --console plain --stacktrace --no-daemon --max-workers 2' allow
+  run "$mode" './gradlew :shared:dependencyInsight --dependency module:clean --configuration runtimeClasspath' allow
+done
+run readonly-build 'adb -s emulator-5554 bugreport' block
+run readonly-build "adb -s emulator-5554 bugreport $CLAUDE_PROJECT_DIR/probe.zip" block
+run readonly-build 'adb -s emulator-5554 bugreport /private/tmp/guard-bugreport.zip' allow
+run readonly-build 'adb -s emulator-5554 connect 127.0.0.1:5555' block
+run readonly-build 'adb -s emulator-5554 shell "sh -c rm"' block
+run readonly-build 'adb -s emulator-5554 shell "input tap 1 2; rm -rf /sdcard/x"' block
+run readonly-build 'adb -s emulator-5554 shell settings put global always_finish_activities 1' allow
+run readonly-build 'adb -s emulator-5554 shell am kill com.grippo.android' allow
+run readonly-build 'adb -s emulator-5554 shell input text literal-text' allow
+run readonly-build 'adb -s emulator-5554 shell input text rm' allow
+run readonly-build 'adb -s emulator-5554 wait-for-device' allow
+run readonly-build 'xcrun simctl --set /private/tmp/devices erase all' block
+run readonly-build 'xcrun simctl shutdown all' block
+run readonly-build 'xcrun simctl launch --console booted com.grippo.app' block
+run readonly-build 'xcrun simctl list devices booted' allow
+run readonly-build 'xcrun simctl keychain selected-simulator reset' block
+run readonly-build 'xcrun simctl spawn selected-simulator sh -c "touch /private/tmp/output"' block
+run readonly-build 'xcrun simctl spawn selected-simulator log stream --level debug' allow
+run readonly-build "xcrun simctl launch --stdout=$CLAUDE_PROJECT_DIR/output selected-simulator com.grippo.app" block
+run readonly-build 'xcrun simctl launch --stdout=/private/tmp/app-output selected-simulator com.grippo.app' allow
+run readonly-build 'xcrun simctl get_app_container selected-simulator com.grippo.app data' allow
+# Shell dialect boundaries and quote decoding; these are guard decisions only.
+for mode in readonly readonly-compile readonly-build no-git-write; do
+  run "$mode" 'echo text # comment \'"$NL"'git add -A' block
+  run "$mode" $'echo x\v#data; git add -A' block
+  run "$mode" $'echo x\f#data; git add -A' block
+  run "$mode" $'echo x\u00a0#data; git add -A' block
+  run "$mode" 'echo safe &| git add -A' block
+  run "$mode" '=git add -A' block
+  run "$mode" '""=git add -A' block
+  run "$mode" 'echo "=git"' allow
+  run "$mode" 'echo \=git' allow
+  run "$mode" '/usr/bin/git(:A) add -A' block
+  run "$mode" 'echo "${x:-"'\''$(touch /private/tmp/guard-marker)'\''"}"' block
+  run "$mode" 'echo "${x:-fallback}"' allow
+  run "$mode" 'echo "${x:-fallback with spaces}"' allow
+  run "$mode" 'git branch --list -- --delete' allow
+  run "$mode" 'git tag --list -- --force' allow
+  run "$mode" 'git branch --delete -- --list' block
+  run "$mode" 'git cat-file --textc HEAD:CLAUDE.md' block
+  run "$mode" 'git cat-file --path -- --textc HEAD:CLAUDE.md' block
+  run "$mode" 'GH_PAGER=helper gh pr view 1' block
+done
+for mode in readonly readonly-compile readonly-build; do
+  run "$mode" "cat <<true${NL}echo '\$(touch /private/tmp/guard-marker)'${NL}true" block
+  run "$mode" "cat 0<<true${NL}echo '\$(touch /private/tmp/guard-marker)'${NL}true" block
+  run "$mode" "cat <<'EOF'${NL}literal data${NL}EOF" block
+  run "$mode" 'cat 0<<< "$text"' allow
+  run "$mode" 'printf "%1\$n" PATH' block
+  run "$mode" "printf '%d' 'flag=7'" block
+  run "$mode" "printf '%f' 'flag=7'" block
+  run "$mode" "printf '%*s' 'flag=7' data" block
+  run "$mode" "printf '%.*s' 'flag=7' data" block
+  run "$mode" "printf '%s %d' data 'PATH=0'" block
+  run "$mode" "printf '%d %s' 2 data 'PATH=0'" block
+  run "$mode" 'printf "%d" "$number"' block
+  run "$mode" 'printf "%s %d" $words 2' block
+  run "$mode" 'printf "%03d %s" 2 "$data"' allow
+  run "$mode" "printf '%*.*f' 8 2 1.5" allow
+  run "$mode" "printf '%2\$s %1\$d' 2 data" allow
+  run "$mode" "printf '%2\$*1\$s' 5 data" allow
+  run "$mode" "printf '%2\$*1\$s' 'flag=7' data" block
+  run "$mode" "printf '%d' 1 2 3" allow
+  run "$mode" "printf '%d' 0xff" allow
+  run "$mode" "printf '%s' 'flag=7'" allow
+  run "$mode" "printf '%d' '\"A'" allow
+  run "$mode" 'printf "%s" "a\"b\\c\$d"' allow
+  run "$mode" 'noglob rg foo* CLAUDE.md' allow
+  run "$mode" 'noglob rg -e $pattern CLAUDE.md' block
+  run "$mode" 'git diff --quiet || :' allow
+  run "$mode" "awk 'BEGIN { f=\"sy\" \"stem\"; @f(\"command\") }'" block
+  run "$mode" "awk -v email=user@example.org 'BEGIN {print email}'" allow
+done
+for mode in readonly-compile readonly-build; do
+  run "$mode" "printf '%s' data > '/private/tmp/shot [dark].txt'" allow
+  run "$mode" "printf '%s' data > '/private/tmp/shot \$literal.txt'" allow
+  run "$mode" 'printf "%s" data > "/private/tmp/$output"' block
+done
+for mode in readonly-compile readonly-build no-git-write; do
+  run "$mode" "xcodebuild -create-xcframework -framework /private/tmp/Input.framework -output $CLAUDE_PROJECT_DIR/output.xcframework" block
+  run "$mode" "xcodebuild -scheme iosApp -derivedDataPath $CLAUDE_PROJECT_DIR/derived build" block
+  run "$mode" "xcodebuild -scheme iosApp -derivedDataPath=$CLAUDE_PROJECT_DIR/derived build" block
+  run "$mode" "xcodebuild -scheme iosApp SYMROOT=$CLAUDE_PROJECT_DIR/derived build" block
+  run "$mode" 'xcodebuild -scheme archive -configuration Debug -derivedDataPath /private/tmp/derived build' allow
+  run "$mode" 'xcodebuild -scheme clean -configuration Debug build' allow
+  run "$mode" 'xcodebuild -scheme iosApp CODE_SIGNING_ALLOWED=NO build' allow
+  run "$mode" 'xcodebuild -scheme iosApp -derivedDataPath="/private/tmp/$output" build' block
+  run "$mode" 'xcodebuild -scheme iosApp -derivedDataPath=/private/tmp/derived build' allow
+  run "$mode" 'xcodebuild -list -project iosApp/iosApp.xcodeproj -json' allow
+done
+run readonly-build 'adb -s emulator-5554 shell am instrument -w test.runner' block
+run readonly-build 'adb -s emulator-5554 shell "am instrument -w test.runner"' block
+run readonly-build 'adb -s emulator-5554 shell cmd activity instrument -w test.runner' block
+run readonly-build 'adb -s emulator-5554 shell pm clear com.grippo.android' block
+run readonly-build 'adb -s emulator-5554 shell settings put secure android_id changed' block
+run readonly-build 'adb -s emulator-5554 shell settings get secure android_id' allow
+run readonly-build 'adb -s emulator-5554 shell settings delete global always_finish_activities' allow
+run readonly-build 'adb -s emulator-5554 shell settings put system font_scale 1.3' allow
+run readonly-build 'adb -s emulator-5554 shell cmd uimode night yes' allow
+run readonly-build 'adb -s emulator-5554 shell pm path com.grippo.android' allow
+run readonly-build 'emulator -list-avds' allow
+run readonly-build 'emulator -avd Pixel -no-snapshot-load -no-boot-anim -no-window' allow
+run readonly-build 'emulator @Pixel -no-snapshot-load' allow
+run readonly-build "emulator -avd Pixel -datadir $CLAUDE_PROJECT_DIR/avd" block
+run readonly-build "emulator -avd Pixel -cache $CLAUDE_PROJECT_DIR/cache.img" block
+run readonly-build 'emulator -avd Pixel -data /private/tmp/test-avd-data.img' allow
+run readonly-build 'emulator -avd Pixel -datadir="/private/tmp/$dir"' block
+run readonly-build 'emulator -avd Pixel -datadir=/private/tmp/test-avd' allow
+# Canonicalize the repository root as well as targets; fixture paths stay external.
+PATH_FIXTURE=$(mktemp -d "${TMPDIR:-/tmp}/grippo-guard-path.XXXXXX") || exit 1
+mkdir "$PATH_FIXTURE/project"
+ln -s "$PATH_FIXTURE/project" "$PATH_FIXTURE/alias"
+ln -s "$PATH_FIXTURE/project" "$PATH_FIXTURE/link\""
+TASK_PROJECT_DIR="$CLAUDE_PROJECT_DIR"
+export CLAUDE_PROJECT_DIR="$PATH_FIXTURE/alias"
+run readonly-build "printf data > '$PATH_FIXTURE/project/output'" block
+run readonly-build "printf data > \"$PATH_FIXTURE/link\\\"/output\"" block
+run readonly-build "printf data > '$PATH_FIXTURE/external-output'" allow
+export CLAUDE_PROJECT_DIR="$TASK_PROJECT_DIR"
+rm -rf -- "$PATH_FIXTURE"
+PATH_FIXTURE=""
+# Numeric output names after Zsh append operators are files, not FD duplication.
+for mode in readonly readonly-compile readonly-build; do
+  run "$mode" 'printf data >>&1' block
+  run "$mode" 'printf data 2>>&1' block
+  run "$mode" 'printf data 1>&1' allow
+  run "$mode" 'printf data 2>&1' allow
+  run "$mode" 'nohup cat CLAUDE.md' block
+  run "$mode" 'nohup cat CLAUDE.md 2>/dev/null' block
+  run "$mode" 'nohup cat CLAUDE.md >/dev/null' allow
+  run "$mode" 'nohup cat CLAUDE.md | head' allow
+  run "$mode" 'cat CLAUDE.md >/dev/null; nohup cat CLAUDE.md' block
+  run "$mode" 'nohup cat CLAUDE.md >/dev/null 1>&2' block
+  run "$mode" 'nohup cat CLAUDE.md 2>/dev/null 1>&2' allow
+  run "$mode" 'nohup cat CLAUDE.md >/dev/null 1<&2' block
+  run "$mode" 'nohup cat CLAUDE.md 2>/dev/null 1<&2' allow
+  run "$mode" 'nohup cat CLAUDE.md >/dev/null 1</dev/tty' block
+  run "$mode" 'nohup cat CLAUDE.md >/dev/null 1<>/dev/tty' block
+  run "$mode" 'nohup cat CLAUDE.md </dev/null 1<&0' allow
+  run "$mode" 'nohup cat CLAUDE.md 1<<< data' allow
+  run "$mode" 'nohup cat CLAUDE.md 1>&-' block
+  run "$mode" 'nohup cat CLAUDE.md 1<&-' block
+  run "$mode" 'nohup cat CLAUDE.md 1>&- 2>/dev/null' allow
+  run "$mode" 'nohup cat CLAUDE.md 1>&- 2>&-' allow
+  run "$mode" 'nohup cat CLAUDE.md >/dev/null 2>&1 1>&-' allow
+  run "$mode" 'nohup cat CLAUDE.md 1>&- 2>&1' allow
+  run "$mode" 'nohup cat CLAUDE.md 2>&1 1>&-' block
+  run "$mode" 'nohup cat CLAUDE.md 2>&- 1>&2' allow
+  run "$mode" 'nohup cat CLAUDE.md >/dev/null 1<"/private/tmp/$source"' block
+  run "$mode" "find . -name '-delete' -print" allow
+  run "$mode" "find . -name '-exec' -print" allow
+  run "$mode" "find . -path '-fprint' -print" allow
+  run "$mode" "find . -name '-delete' -delete" block
+  run "$mode" "find . -name '-exec' -exec cat '{}' ';'" block
+  run "$mode" "find . -name '-fprint' -fprint /private/tmp/guard-output" block
+  for predicate in -lname -ilname -wholename -iwholename -samefile -anewer -cnewer -mnewer -Bnewer -newerac -newerma -xattrname -fstype; do
+    run "$mode" "find . $predicate '-delete' -print" allow
+    run "$mode" "find . $predicate '-delete' -delete" block
+    run "$mode" "find . $predicate '-exec' -exec cat '{}' ';'" block
+    run "$mode" "find . $predicate '-fprint' -fprint /private/tmp/guard-output" block
+  done
+  for predicate in -atime -ctime -amin -cmin -Bmin -Btime -uid -gid -inum -links -flags; do
+    run "$mode" "find . $predicate \"\$value\" -print" allow
+    run "$mode" "find . $predicate \"\$value\" -delete" block
+    run "$mode" "find . $predicate \$values -print" block
+  done
+done
+for mode in readonly-compile readonly-build; do
+  run "$mode" 'nohup cat CLAUDE.md > /private/tmp/guard-nohup.log' allow
+  run "$mode" 'nohup cat CLAUDE.md > /dev/tty' block
+  run "$mode" 'nohup cat CLAUDE.md >/private/tmp/guard-nohup.log 2>&1' allow
+  for alias in /dev/stderr /dev/fd/2 /dev/./fd/2 /proc/self/fd/2 /proc/thread-self/fd/2; do
+    run "$mode" "nohup cat CLAUDE.md > $alias" block
+    run "$mode" "nohup cat CLAUDE.md 2>/dev/null > $alias" allow
+  done
+  run "$mode" 'nohup cat CLAUDE.md >/dev/stdout' block
+  run "$mode" 'nohup cat CLAUDE.md >/dev/null >/dev/stdout' allow
+  run "$mode" 'nohup cat CLAUDE.md 3>/dev/null >/dev/fd/3' allow
+  run "$mode" 'nohup cat CLAUDE.md >/dev/fd/3 3>/dev/null' block
+done
+PATH_FIXTURE=$(mktemp -d "${TMPDIR:-/tmp}/grippo-guard-fd.XXXXXX") || exit 1
+ln -s /dev/stderr "$PATH_FIXTURE/stderr"
+ln -s /dev/fd "$PATH_FIXTURE/fds"
+ln -s cycle-b "$PATH_FIXTURE/cycle-a"
+ln -s cycle-a "$PATH_FIXTURE/cycle-b"
+for mode in readonly-compile readonly-build; do
+  run "$mode" "nohup cat CLAUDE.md > '$PATH_FIXTURE/stderr'" block
+  run "$mode" "nohup cat CLAUDE.md 2>/dev/null > '$PATH_FIXTURE/stderr'" allow
+  run "$mode" "nohup cat CLAUDE.md > '$PATH_FIXTURE/fds/2'" block
+  run "$mode" "nohup cat CLAUDE.md 2>/dev/null > '$PATH_FIXTURE/fds/2'" allow
+  run "$mode" "nohup cat CLAUDE.md > '$PATH_FIXTURE/cycle-a'" block
+done
+rm -rf -- "$PATH_FIXTURE"
+PATH_FIXTURE=""
+for mode in readonly readonly-compile readonly-build no-git-write; do
+  run "$mode" 'git-status --short' allow
+  run "$mode" 'git-add -A' block
+  run "$mode" '/Applications/Xcode.app/Contents/Developer/usr/libexec/git-core/git-status --short' allow
+  run "$mode" '/Applications/Xcode.app/Contents/Developer/usr/libexec/git-core/git-add -A' block
+  run "$mode" 'env A-B=x git-add -A' block
+  run "$mode" 'git-branch --lis "guard*"' allow
+  run "$mode" 'git-branch --delete guard-deleted' block
+  run "$mode" 'git-config --get user.name' allow
+  run "$mode" 'git-config user.name writer' block
+  run "$mode" 'git-cat-file --textconv HEAD:CLAUDE.md' block
+  run "$mode" 'git-upload-pack .' block
+  run "$mode" 'git-unknown-extension inspect' block
+  run "$mode" 'COUNT+=1 git add -A' block
+  run "$mode" 'COUNT+=1 git status' allow
+  run "$mode" "NOTE='first${NL}second' git add -A" block
+  run "$mode" "NOTE='first${NL}second' git status" allow
+  run "$mode" "NOTE+='first${NL}second' git add -A" block
+  run "$mode" "NOTE+='first${NL}second' git status" allow
+  run "$mode" "PATH='first${NL}second' git status" block
+  run "$mode" "env NOTE='first${NL}second' git add -A" block
+  run "$mode" "env NOTE='first${NL}second' git status" allow
+  run "$mode" 'PATH+=/private/tmp/bin git status' block
+  run "$mode" 'GIT_PAGER+=cat git status' block
+  run "$mode" 'GH_PAGER+=cat git status' block
+  run "$mode" 'RIPGREP_CONFIG_PATH+=config rg pattern CLAUDE.md' block
+  run "$mode" 'env A-B=x git add -A' block
+  run "$mode" 'env 1=x git add -A' block
+  run "$mode" 'env A-B=x git status' allow
+  run "$mode" 'env 1=x git status' allow
+  run "$mode" 'env COUNT+=1 git status' allow
+  run "$mode" 'env PATH+=/private/tmp/bin git status' allow
+  run "$mode" 'COUNT+=1 env A-B=x git status' allow
+  run "$mode" 'env A-B="$value" git status' allow
+  run "$mode" 'env A-B=$values git status' block
+  run "$mode" 'env "$key"=value git status' block
+  run "$mode" 'env =git add -A' block
+  run "$mode" 'env ""=git add -A' block
+  run "$mode" 'env -i A-B=x /usr/bin/git status' allow
+  run "$mode" "git branch --lis 'guard*'" allow
+  run "$mode" "git tag --lis 'v*'" allow
+  run "$mode" "git branch --rem 'guard*'" allow
+  run "$mode" 'git branch --contain HEAD' allow
+  run "$mode" 'git tag --lis --forma --delete' allow
+  run "$mode" 'git branch --contain HEAD --help' block
+  run "$mode" 'git branch --lis --del guard-deleted' block
+  run "$mode" 'git tag --lis --del tag-deleted' block
+  run "$mode" 'exec -a git-status git --short' block
+  run "$mode" 'exec -agit-status git --short' block
+  run "$mode" 'nohup cat CLAUDE.md {guard_fd}>/dev/null' block
+  run "$mode" 'nohup cat CLAUDE.md {guard_fd}>>/dev/null' block
+  run "$mode" '{guard_fd}>/dev/null git add -A' block
+  run "$mode" '{PATH}>/dev/null git status' block
+  run "$mode" 'nohup cat CLAUDE.md "{guard_fd}">/dev/null' allow
+  run "$mode" 'nohup cat CLAUDE.md \{guard_fd\}>/dev/null' allow
+  run "$mode" 'nohup cat CLAUDE.md {guard_"fd"}>/dev/null' allow
+  run "$mode" "nohup cat CLAUDE.md {guard_'fd'}>/dev/null" allow
+  run "$mode" 'nohup cat CLAUDE.md {guard_\fd}>/dev/null' allow
+  run "$mode" "git branch -al 'guard*'" allow
+  run "$mode" "git branch -avl 'guard*'" allow
+  run "$mode" "git branch -rl 'guard*'" allow
+  run "$mode" "git tag -ln2 'v*'" allow
+  run "$mode" "git tag -n2 'v*'" allow
+  run "$mode" 'git branch -tinherit guard-created' block
+  run "$mode" 'git branch -ald guard-deleted' block
+  run "$mode" 'git tag -ldn2 tag-deleted' block
+done
+run no-git-write 'exec git status' allow
+run no-git-write "cat <<'EOF'${NL}git add -A${NL}\$(literal)${NL}' unmatched${NL}EOF" allow
+run no-git-write "cat <<'EOF'${NL}data${NL}EOF${NL}git add -A" block
+run no-git-write "cat <<'EOF'; git add -A${NL}data${NL}EOF" block
+run no-git-write "cat <<'EOF' \\${NL}; git add -A${NL}EOF" block
+run no-git-write "cat <<EOF${NL}data${NL}EOF" block
+run no-git-write "cat <<'EOF'${NL}missing delimiter" block
+run no-git-write "cat <<-'EOF'${NL}"$'\tdata\n\tEOF' allow
+run no-git-write "cat <<'A' <<'B'${NL}git add -A${NL}A${NL}\$(literal)${NL}B" allow
+run no-git-write "cat <<'EOF'${NL}first${NL}EOF${NL}cat <<'EOF'${NL}second${NL}EOF" allow
+run no-git-write "printf '%s' 'literal${NL}<<quoted data${NL}'" allow
+run no-git-write "cat <<'EO'F${NL}data${NL}EOF" block
+run readonly-build 'kill -TERM -1' block
+run readonly-build 'pkill -9 Finder' block
+run readonly-build 'open https://example.com' block
+run readonly-build 'open -a Terminal /private/tmp/script.command' block
+run readonly-build 'open -a Simulator --args -CurrentDeviceUDID 11111111-2222-3333-4444-555555555555' allow
+run readonly-build 'open -a Simulator --args -CurrentDeviceUDID booted' block
+run readonly-build 'open -a Simulator --args -CurrentDeviceUDID 11111111-2222-3333-4444-555555555555 /private/tmp/script' block
 echo "failures: $fails"
 exit $((fails > 0))

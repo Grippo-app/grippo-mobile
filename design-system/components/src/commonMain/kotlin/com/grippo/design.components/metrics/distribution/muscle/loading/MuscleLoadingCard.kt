@@ -144,11 +144,6 @@ private fun MuscleLoadingOverview(summary: MuscleLoadSummaryState) {
 
     MuscleLoadingDataNotice(summary = summary)
 
-    Text(
-        text = AppTokens.strings.res(Res.string.metric_overview_muscle_details),
-        style = AppTokens.typography.b12Med(),
-        color = AppTokens.colors.text.secondary,
-    )
 }
 
 @Composable

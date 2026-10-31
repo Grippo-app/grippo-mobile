@@ -785,11 +785,18 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   treatment; unavailable duration shows "—" and recorded zero shows "0 min".
   Average volume per workout is not shown.
   The history toolbar uses `divider.subtle` to separate controls from records.
-- Home uses `GoalCardStyle.Overview`, `MuscleLoadingCardStyle.Overview` and
-  `TrainingStreakCardStyle.Overview` for goal, muscle and streak summaries, and
-  `PerformanceMetricCardStyle.Overview` for performance summaries. The streak dialog
-  summary is `TrainingStreakCardStyle.Detailed`; both keep their established
-  rendering unchanged beside the Growth variant.
+- Home separates current goal identity/deadline (`GoalCardStyle.Current`) from
+  selected-period assessment (`GoalCardStyle.Period`). The period selector labels
+  the analysis context explicitly; the dated recap names the latest workout in
+  that period. Current-goal update keeps its existing action.
+  `TrainingStreakCardStyle.Section` remains open; muscle load uses
+  `MuscleLoadingCardStyle.Overview` and performance uses
+  `PerformanceMetricCardStyle.Overview`. Open sections use `background.screen`
+  and token spacing without extra card fill. Duration and Volume are the fixed
+  primary metrics, subject to existing unlocks; All indicators reveals Density,
+  Repetitions and Intensity with the shared disclosure transition. Shared overview
+  presentations avoid repeated average/status/detail instructions while retaining
+  unavailable and limited-evidence meaning. Details keep full diagnostics.
   Detail dialogs provide the corresponding period evidence and diagnostics;
   muscle details keep the full distribution and expose the PerGroup/PerMuscle
   selector when a known group distribution exists.
@@ -797,8 +804,6 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   distribution and session/set counts, inferred training rhythm and active days,
   and a guarded comparison with previous workouts' average. Period history,
   diagnostic findings and timeline breakdowns remain available through the existing card action.
-  A quiet hint under Progress identifies the summary cards as detail entry points;
-  it appears only when at least one of those cards is present.
 - Home card headings use `h5` and `text.primary`; section headings retain `h4`,
   while values and secondary metadata keep their distinct roles. Whole-card
   detail entries (goal, muscle, streak, performance and exercise highlights) use
@@ -855,7 +860,7 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   `MuscleLoadingCardSkeleton(style)` take the ordinary existing card styles
   directly, with exhaustive geometry for every accepted variant and no Loadable
   subtype. Detailed muscle anatomy uses its Small panel; each
-  host names its style: the streak Overview for Home sizes the header, the
+  host names its style: the open streak Section for Home sizes the header, the
   headline/active-days row (the flame beside the headline alone), the indicator
   and the current-period line (`TrainingStreakFeaturedState.currentPeriodLine()`:
   the period's training days, or today's status for Daily) with three Large spacers; the
@@ -930,7 +935,8 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   `empty_progress` blank plotting slate and pencil above its centered title and
   description, within the dialog's LazyColumn. Artwork communicates missing history
   without plotted values.
-- Home muscle and training-rhythm summaries are separate full-width large panels;
+- Home muscle and training-rhythm summaries are separate full-width regions:
+  muscle load uses a large panel and training rhythm is an open Section;
   neither is stretched to a neighbor's height. Muscle distribution pairs a 144×140 dp
   front/back map with up to three real groups and their existing load shares.
   Its compact image row removes the generic weighted outer spacers, uses two
@@ -943,7 +949,7 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   uniquely leading individual muscle when that fact exists. Missing groups are
   not invented zeros.
 - The training-rhythm overview has the common heading/chevron and a compact row:
-  the existing streak headline and cadence on the left, active-day count on the
+  the existing streak headline on the left, active-day count on the
   right, with its short localized caption. Both columns wrap naturally; the
   existing thin progress indicator follows below. Full history stays in Details.
 - Training-rhythm details use one Large neutral summary: `h3` result, `b14Med`
@@ -994,13 +1000,12 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   Status wording describes a course to follow or adjust without judging the user.
 - Performance labels explain weight/minute and average weight; overview compares
   the latest workout with available prior measurements in the selected period.
-  Numeric averages and their percentage comparison occupy separate lines so both
-  remain visible within the metric panel's intrinsic height.
+  Overview keeps the latest value and one comparison/availability line; numeric
+  baseline detail remains in the detail presentation.
   Duration comparison stays neutral in both Home and Details; no duration status
   or best-duration claim is shown. Aggregate values preserve fractional means and
   format through canonical unit owners without input-field limits. On Home,
-  signed percentages use `text.secondary`, while the status chip carries the
-  semantic accent. Completed-workout comparison also keeps its signed change
+  signed comparison text uses `text.secondary` without a repeated status chip. Completed-workout comparison also keeps its signed change
   neutral: when a comparison bar is present, the bar carries the status color
   and the chip uses `semantic.neutralBackground`; without a bar the chip retains
   its semantic background. Values, labels and comparison eligibility are unchanged.
@@ -1148,10 +1153,8 @@ Component usage and host responsibilities follow the [empty-state family](../.cl
   workout / Like last workout / Below last workout" under `Previous`, and "Period
   best" in either - a Record is never produced against the previous workout, and
   no preview pairs the two;
-  Home's `PerformanceMetricCardStyle.Overview` card shows its chip on the same
-  `showsComparison()`, always worded for `Average` through the same
-  `label(reference)` (the Overview style carries no reference), and the detailed
-  summary shows no chip) under that
+  Home's `PerformanceMetricCardStyle.Overview` omits the redundant chip and
+  keeps a single comparison line; the detailed summary also shows no chip) under that
   sub-line in the left column; the right column holds the `h5` `text.primary`
   value that counts from the average to this workout through `displayValue()`
   with the `b12Semi` signed change in `text.secondary` beneath it whenever a

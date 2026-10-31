@@ -12,7 +12,7 @@ hooks:
     - matcher: "Bash"
       hooks:
         - type: command
-          command: python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" readonly-compile
+          command: python3 -I "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" readonly-compile
 ---
 
 # Build verifier
@@ -45,8 +45,9 @@ and any explicit platform restriction from the user.
 1. Read `.claude/skills/runtime-verification/SKILL.md` (preloaded) for the
    build prerequisites and target catalog only. Runtime platform/scenario
    references are not needed for compilation. Keep Gradle defaults from
-   `gradle.properties`; do not add `--rerun-tasks`, `--no-build-cache` or extra
-   workers unless the brief asks.
+   `gradle.properties`; add extra workers only when the brief asks. Requests for
+   `--rerun-tasks` or `--no-build-cache` belong to the main session: report the
+   requested command to the parent instead of bypassing this role's guard.
 2. Run one target at a time and wait for the process to finish; run long builds
    in the background. Gradle uses `--console=plain`, exit status 0 and
    `BUILD SUCCESSFUL`. Xcode uses the catalog's `xcodebuild` command, exit status 0

@@ -13,11 +13,21 @@ import com.grippo.design.components.metrics.profile.goal.internal.GoalCardAssess
 import com.grippo.design.components.metrics.profile.goal.internal.GoalCardCalendar
 import com.grippo.design.components.metrics.profile.goal.internal.GoalCardContent
 import com.grippo.design.components.metrics.profile.goal.internal.GoalCardGrowth
+import com.grippo.design.components.metrics.profile.goal.internal.GoalIdentity
+import com.grippo.design.components.metrics.profile.goal.internal.GoalTrainingAlignment
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
 @Stable
 public sealed interface GoalCardStyle {
+    @Stable
+    public data class Current(public val onUpdateClick: () -> Unit) : GoalCardStyle
+
+    @Immutable
+    public data object Period : GoalCardStyle
     @Stable
     public data class Overview(
         public val onUpdateClick: () -> Unit,
@@ -44,6 +54,18 @@ public fun GoalCard(
     style: GoalCardStyle,
 ) {
     when (style) {
+        is GoalCardStyle.Current -> Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        ) {
+            GoalIdentity(value = value)
+            GoalCardCalendar(value = value, onUpdateClick = style.onUpdateClick)
+        }
+
+        GoalCardStyle.Period -> Column(modifier = modifier) {
+            GoalTrainingAlignment(value = value, showDetails = true)
+        }
+
         is GoalCardStyle.Overview -> MetricSectionPanel(
             modifier = modifier,
             style = MetricSectionPanelStyle.Large,
@@ -70,6 +92,57 @@ public fun GoalCard(
             modifier = modifier,
             value = value,
             previous = style.previous,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalCardCurrentPreview() {
+    PreviewContainer {
+        GoalCard(
+            value = stubGoalProgressList().first(),
+            style = GoalCardStyle.Current(onUpdateClick = {}),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalCardCurrentOverduePreview() {
+    PreviewContainer {
+        GoalCard(
+            value = stubGoalProgressList().first { it.daysRemaining < 0 },
+            style = GoalCardStyle.Current(onUpdateClick = {}),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalCardPeriodPartialEvidencePreview() {
+    PreviewContainer {
+        val value = stubGoalProgressList().first { it.daysRemaining > 0 }
+        GoalCard(
+            value = value.copy(evidence = value.evidence.copy(missingMetadataSetCount = 8)),
+            style = GoalCardStyle.Period,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun GoalCardPeriodNoScorePreview() {
+    PreviewContainer {
+        val value = stubGoalProgressList().first { !it.isFinished && it.daysRemaining > 0 }
+        GoalCard(
+            value = value.copy(
+                score = null,
+                sessionCount = 0,
+                evidence = value.evidence.copy(setCount = 0),
+                findings = kotlinx.collections.immutable.persistentListOf(),
+            ),
+            style = GoalCardStyle.Period,
         )
     }
 }

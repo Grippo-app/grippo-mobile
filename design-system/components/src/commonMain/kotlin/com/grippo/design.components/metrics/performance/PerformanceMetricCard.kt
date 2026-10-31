@@ -91,10 +91,6 @@ private fun OverviewPerformanceMetric(
             )
         }
 
-        if (metric.showsComparison()) {
-            PerformanceTrendChip(status = metric.status, reference = PerformanceReferenceState.Average)
-        }
-
         if (!empty && comparisonPercentage == null) {
             Text(
                 text = AppTokens.strings.res(Res.string.performance_comparison_unavailable),
@@ -104,36 +100,14 @@ private fun OverviewPerformanceMetric(
         }
 
         if (!empty && comparisonPercentage != null) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-            ) {
-                if (metric is PerformanceMetricState.Duration) {
-                    Text(
-                        text = AppTokens.strings.res(
-                            Res.string.metric_overview_performance_comparison,
-                            PercentageFormatState.shortDelta(comparisonPercentage),
-                        ),
-                        style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-                } else {
-                    Text(
-                        text = AppTokens.strings.res(
-                            Res.string.metric_overview_performance_average,
-                            metric.averageDisplay(),
-                        ),
-                        style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-
-                    Text(
-                        text = PercentageFormatState.shortDelta(comparisonPercentage),
-                        style = AppTokens.typography.b13Semi(),
-                        color = AppTokens.colors.text.secondary,
-                    )
-                }
-            }
+            Text(
+                text = AppTokens.strings.res(
+                    Res.string.metric_overview_performance_comparison,
+                    PercentageFormatState.shortDelta(comparisonPercentage),
+                ),
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.secondary,
+            )
         }
     }
 }

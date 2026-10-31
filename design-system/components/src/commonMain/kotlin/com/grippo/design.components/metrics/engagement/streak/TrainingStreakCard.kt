@@ -59,6 +59,8 @@ import kotlinx.collections.immutable.toPersistentList
 @Immutable
 public sealed interface TrainingStreakCardStyle {
     @Immutable
+    public data object Section : TrainingStreakCardStyle
+    @Immutable
     public data object Overview : TrainingStreakCardStyle
 
     @Immutable
@@ -80,6 +82,7 @@ public fun TrainingStreakCard(
     style: TrainingStreakCardStyle = TrainingStreakCardStyle.Detailed,
 ) {
     when (style) {
+        TrainingStreakCardStyle.Section -> TrainingStreakOverview(modifier = modifier, value = value, contained = false)
         TrainingStreakCardStyle.Overview -> TrainingStreakOverview(modifier = modifier, value = value)
         TrainingStreakCardStyle.Detailed -> TrainingStreakDetailSummary(modifier = modifier, value = value)
         is TrainingStreakCardStyle.Growth -> TrainingStreakGrowth(
@@ -94,12 +97,11 @@ public fun TrainingStreakCard(
 private fun TrainingStreakOverview(
     modifier: Modifier = Modifier,
     value: TrainingStreakState,
+    contained: Boolean = true,
 ) {
     val title = AppTokens.strings.res(Res.string.metric_overview_streak_title)
 
     val headline = value.featured.headline()
-    val cadenceLabel = value.featured.cadence()
-
     val progressValue =
         (value.featured.progressPercent.coerceIn(0, 100)) / 100f
 
@@ -108,6 +110,7 @@ private fun TrainingStreakOverview(
     MetricSectionPanel(
         modifier = modifier,
         style = MetricSectionPanelStyle.Large,
+        contained = contained,
     ) {
         MetricOverviewHeader(title = title)
 
@@ -137,11 +140,6 @@ private fun TrainingStreakOverview(
                         color = AppTokens.colors.text.primary,
                     )
                 }
-                Text(
-                    text = cadenceLabel,
-                    style = AppTokens.typography.b13Med(),
-                    color = AppTokens.colors.text.secondary,
-                )
             }
 
             Column(
@@ -354,17 +352,23 @@ public fun TrainingStreakCardSkeleton(
     val indicatorHeight = AppTokens.dp.metrics.charts.indicator.height
 
     when (style) {
-        TrainingStreakCardStyle.Overview -> {
+        TrainingStreakCardStyle.Section, TrainingStreakCardStyle.Overview -> {
             val countLine = rememberTextHeight(style = AppTokens.typography.h3(), textMeasurer = textMeasurer)
-            val headlineHeight = maxOf(AppTokens.dp.metrics.overview.rhythmIcon, headlineLine) + textGap + cadenceLine
+            val headlineHeight = maxOf(AppTokens.dp.metrics.overview.rhythmIcon, headlineLine)
             val activeDaysHeight = countLine + textGap + captionLine
 
-            SkeletonPanel(
-                modifier = modifier,
-                contentHeight = headerHeight + maxOf(headlineHeight, activeDaysHeight) + indicatorHeight +
-                    captionLine + spacer * 3,
-                style = SkeletonPanelStyle.Large,
-            )
+            val contentHeight = headerHeight + maxOf(headlineHeight, activeDaysHeight) + indicatorHeight +
+                captionLine + spacer * 3
+
+            if (style == TrainingStreakCardStyle.Section) {
+                SkeletonBone(modifier = modifier.fillMaxWidth().height(contentHeight))
+            } else {
+                SkeletonPanel(
+                    modifier = modifier,
+                    contentHeight = contentHeight,
+                    style = SkeletonPanelStyle.Large,
+                )
+            }
         }
 
         TrainingStreakCardStyle.Detailed -> {
@@ -388,6 +392,25 @@ public fun TrainingStreakCardSkeleton(
                     .height(headerHeight + headlineHeight + captionLine + textGap + captionLine + sectionSpacer * 2),
             )
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakCardSectionPreview() {
+    PreviewContainer {
+        TrainingStreakCard(
+            value = stubTrainingStreaks().first(),
+            style = TrainingStreakCardStyle.Section,
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingStreakCardSkeletonSectionPreview() {
+    PreviewContainer {
+        TrainingStreakCardSkeleton(style = TrainingStreakCardStyle.Section)
     }
 }
 

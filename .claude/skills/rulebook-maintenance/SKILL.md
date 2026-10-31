@@ -161,7 +161,8 @@ delete extras automatically. Never leave a tombstone paragraph explaining the re
 python3 -I .claude/hooks/check-rulebook.py
 ```
 
-It validates required entry points, relative links and anchors, supported
+It validates required entry points, simple inline relative links with unspaced
+destinations and their anchors, supported
 frontmatter fields/types, skill and agent identities, completion-section and
 role-section presence, required models/tools/exclusions, required skill names,
 canonical Bash hook structure and the role's guard mode, native projection identity/target/content, plus the skills index

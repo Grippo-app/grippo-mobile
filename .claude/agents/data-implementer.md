@@ -14,7 +14,7 @@ hooks:
     - matcher: "Bash"
       hooks:
         - type: command
-          command: python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" no-git-write
+          command: python3 -I "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" no-git-write
 ---
 
 # Data implementer

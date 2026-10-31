@@ -5,7 +5,7 @@ Run from the repository root:
     python3 -I .claude/hooks/check-rulebook.py
 
 Checks:
-  1. Every relative markdown link outside fenced examples in CLAUDE.md, AGENTS.md, .claude/README.md,
+  1. Every simple inline relative Markdown link (`[label](path#anchor)`) outside fenced examples in CLAUDE.md, AGENTS.md, .claude/README.md,
      .claude/skills/**/*.md, .claude/agents/*.md and docs/**/*.md resolves to an
      existing file, and every #anchor matches a heading in the target.
   2. Every .claude/skills/<name>/SKILL.md has supported frontmatter with name ==
@@ -282,7 +282,7 @@ def check_agent_rights(path, stem, fm):
 
 
 def check_agent_guard(path, lines, mode):
-    expected = f'python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" {mode}'
+    expected = f'python3 -I "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" {mode}'
     label = rel(path)
     # Accept the one canonical hook, with YAML quoting and consistent indentation.
     # Extra keys (async, alternate events, etc.) can change whether the guard runs.

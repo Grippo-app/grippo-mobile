@@ -7,7 +7,7 @@ Usage (agent frontmatter):
         - matcher: "Bash"
           hooks:
             - type: command
-              command: python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" readonly
+              command: python3 -I "$CLAUDE_PROJECT_DIR/.claude/hooks/bash-guard.py" readonly
 
 Modes:
     readonly        inspection only (reviewers, scouts, auditors): read-only
@@ -41,13 +41,12 @@ READONLY_PROGRAMS = {
     "ls", "cat", "head", "tail", "wc", "grep", "rg", "egrep", "fgrep", "find",
     "sed", "awk", "sort", "uniq", "cut", "tr", "echo", "printf", "pwd", "basename",
     "dirname", "stat", "file", "du", "df", "diff", "cmp", "test", "[", "true",
-    "false", "which", "type", "date", "md5", "shasum", "realpath", "readlink",
+    "false", ":", "which", "type", "date", "md5", "shasum", "realpath", "readlink",
     "column", "nl", "tac", "rev", "comm", "jq", "xmllint", "strings", "git",
-    "xcrun", "simctl", "adb", "python3", "sleep", "identify", "env", "command", "nice",
+    "simctl", "adb", "python3", "sleep", "identify", "env", "command", "nice",
     "timeout", "nohup", "time",
 }
-BUILD_PROGRAMS = {"gradlew", "gradle", "xcodebuild", "xcrun", "adb", "emulator",
-                  "simctl", "mkdir", "kill", "pkill", "open", "sips", "plutil"}
+BUILD_PROGRAMS = {"emulator", "mkdir", "open"}
 GIT_READONLY = {
     "diff", "log", "show", "status", "ls-files", "blame", "grep", "rev-parse",
     "shortlog", "describe", "cat-file", "ls-tree", "help", "version", "stash",
@@ -64,7 +63,7 @@ GIT_WRITE = {
 GIT_GLOBAL_WITH_VALUE = {"-C", "-c", "--git-dir", "--work-tree", "--namespace",
                          "--exec-path", "--super-prefix", "--config-env"}
 GIT_DANGEROUS_CONFIG = re.compile(
-    r"^(alias\.|include\.|includeif\.|diff\.(?:external|.+\.(?:command|textconv))|core\.(fsmonitor|pager|editor|sshcommand|hookspath|gitproxy|askpass)|"
+    r"^(alias\.|include\.|includeif\.|diff\.(?:external|.+\.(?:command|textconv))|core\.(alternaterefscommand|fsmonitor|pager|editor|sshcommand|hookspath|gitproxy|askpass)|"
     r"credential\.|filter\.|url\.|protocol\.|uploadpack\.|receive\.|http\.|ssh\.|sequence\.editor|"
     r"merge\.tool|mergetool\.|difftool\.|gpg\.|pager\.|interactive\.|browser\.|man\.|help\.(?:browser|format)|web\.browser)", re.I)
 GIT_SAFE_ENV = {"GIT_DIR", "GIT_WORK_TREE", "GIT_CEILING_DIRECTORIES", "GIT_TERMINAL_PROMPT",
@@ -73,18 +72,28 @@ DANGEROUS_ENV = {"PATH", "LD_PRELOAD", "DYLD_INSERT_LIBRARIES", "GRADLE_OPTS", "
                  "HOME", "PAGER", "EDITOR", "VISUAL", "XDG_CONFIG_HOME", "LESSOPEN", "LESSCLOSE",
                  "SHELL", "IFS", "PS4", "BASH_ENV", "ENV", "ZDOTDIR", "PYTHONPATH", "PYTHONSTARTUP",
                  "PERL5OPT", "RUBYOPT", "NODE_OPTIONS", "GRADLE_USER_HOME", "JAVA_HOME", "ANDROID_HOME",
-                 "ANDROID_SDK_ROOT", "DEVELOPER_DIR"}
+                 "ANDROID_SDK_ROOT", "DEVELOPER_DIR", "path", "LD_LIBRARY_PATH", "LD_AUDIT",
+                 "LD_DEBUG_OUTPUT", "DYLD_LIBRARY_PATH", "DYLD_FRAMEWORK_PATH", "DYLD_ROOT_PATH",
+                 "DYLD_FALLBACK_LIBRARY_PATH", "DYLD_FALLBACK_FRAMEWORK_PATH", "DYLD_PRINT_TO_FILE",
+                 "NULLCMD", "READNULLCMD"}
+SHELL_ONLY_ENV = {"path", "NULLCMD", "READNULLCMD"}
 INTERPRETERS = {"python", "perl", "ruby", "node", "sh", "bash", "zsh", "eval",
                 "exec", "xargs", "source", ".", "osascript", "swift", "kotlin", "java"}
 FS_MUTATORS = {"rm", "mv", "cp", "touch", "mkdir", "chmod", "chown", "ln", "tee",
                "truncate", "install", "rmdir", "dd", "sips", "plutil", "yq", "tree"}
-SEPARATORS = {"|", "||", "&&", ";", "&", "(", ")", "{", "}", "|&", ";;", "\n"}
-PROJECT_DIR = os.path.abspath(os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd())
+SEPARATORS = {"|", "||", "&&", ";", "&", "(", ")", "{", "}", "|&", "&|", ";;", "\n"}
+PROJECT_DIR = os.path.realpath(os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd())
 GH_ALLOWED = {("pr", "view"), ("pr", "list"), ("pr", "diff"), ("pr", "checks"), ("pr", "status"),
               ("issue", "view"), ("issue", "list"), ("repo", "view"), ("auth", "status"),
               ("run", "view"), ("run", "list"), ("api", None), ("--version", None), ("help", None)}
 
 WRAPPER_OPTIONS = {
+    "!": (set(), set()),
+    "-": (set(), set()),
+    "noglob": (set(), set()),
+    "nocorrect": (set(), set()),
+    "coproc": (set(), set()),
+    "exec": ({"-c", "-l"}, set()),
     "time": ({"-p", "-l", "--portability", "--verbose", "-v"}, {"-f", "--format"}),
     "nohup": (set(), set()),
     "command": ({"-p", "-v", "-V"}, set()),
@@ -102,14 +111,15 @@ def block(msg: str) -> None:
 
 
 class ShellWord(str):
-    def __new__(cls, value, dynamic=False, may_split=False):
+    def __new__(cls, value, dynamic=False, may_split=False, raw=None):
         word = super().__new__(cls, value)
         word.dynamic = dynamic
         word.may_split = may_split
+        word.raw = raw
         return word
 
 
-def ansi_quote(cmd, start):
+def ansi_quote(cmd, start, incomplete_ok=False):
     """Decode the portable ANSI-C quote escapes; reject unsupported dialect forms."""
     escapes = {"a": "\a", "b": "\b", "e": "\x1b", "E": "\x1b", "f": "\f", "n": "\n",
                "r": "\r", "t": "\t", "v": "\v", "\\": "\\", "'": "'", '"': '"', "?": "?"}
@@ -144,12 +154,14 @@ def ansi_quote(cmd, start):
         if value == b"\0":
             block("NUL in an ANSI-C quote cannot be represented as a command argument")
         out.extend(value)
+    if incomplete_ok:
+        return None
     block("unclosed ANSI-C shell quote")
 
 
-def expansion_flags(raw):
+def expansion_flags(raw, noglob=False):
     """Track unresolved parameters and unquoted word/glob expansion, not regex data."""
-    quote, dynamic, may_split, i = None, False, False, 0
+    quote, dynamic, may_split, i = None, bool(re.match(r'''(?:""|'')*=''', raw)), False, 0
     while i < len(raw):
         ch = raw[i]
         if quote == "'":
@@ -168,8 +180,8 @@ def expansion_flags(raw):
                         (tail[1:2] in ("(", "=", "~", "^", "@", "!") or
                          re.match(r"\{[^}]*\[@\]", tail)))
             may_split = may_split or quote is None or bool(multiword)
-        elif quote is None and (ch in "*?" or (ch == "[" and "]" in raw[i + 1:]) or
-                                     (ch == "{" and re.match(r"[^{}]*(?:,|\.\.)[^{}]*\}", raw[i + 1:]))):
+        elif quote is None and ((not noglob and (ch in "*?" or (ch == "[" and "]" in raw[i + 1:]))) or
+                               (ch == "{" and re.match(r"[^{}]*(?:,|\.\.)[^{}]*\}", raw[i + 1:]))):
             dynamic = may_split = True
         i += 1
     return dynamic, may_split
@@ -185,7 +197,7 @@ def require_single_word(word):
         block("this expansion can produce multiple arguments; use a quoted scalar or literal control argument")
 
 
-def mask_quotes(cmd: str):
+def mask_quotes(cmd: str, incomplete_ok=False):
     """Scan quoting, comments and continuations together; markers cannot collide."""
     prefix = "QSPAN"
     while prefix in cmd:
@@ -198,6 +210,8 @@ def mask_quotes(cmd: str):
             continue
         if ch == "\\":
             if i + 1 == len(cmd):
+                if incomplete_ok:
+                    return None
                 block("unclosed shell escape")
             marker = f"{prefix}{len(spans)}Z"
             spans[marker] = (cmd[i:i + 2], cmd[i + 1])
@@ -207,15 +221,20 @@ def mask_quotes(cmd: str):
             continue
         if ch == "#" and word_start:
             while i < len(cmd) and cmd[i] != "\n":
-                i += 2 if cmd.startswith("\\\n", i) else 1
+                i += 1  # A backslash inside a comment does not continue that comment.
             continue
         if cmd.startswith("$'", i):
-            value, i = ansi_quote(cmd, i + 2)
+            decoded = ansi_quote(cmd, i + 2, incomplete_ok)
+            if decoded is None:
+                return None
+            value, i = decoded
             marker = f"{prefix}{len(spans)}Z"
             spans[marker] = ("'" + value.replace("'", "'\"'\"'") + "'", value)
             out.append(marker)
             word_start = False
             continue
+        if cmd.startswith('$"', i):
+            block("locale-translated shell quotes are not deterministic; use ordinary quotes")
         if ch in "'\"":
             quote, raw = ch, [ch]
             i += 1
@@ -227,19 +246,72 @@ def mask_quotes(cmd: str):
                 raw.append(cmd[i:i + size])
                 i += size
             if i >= len(cmd):
+                if incomplete_ok:
+                    return None
                 block("unclosed shell quote; simplify the command")
             raw.append(quote)
             marker = f"{prefix}{len(spans)}Z"
             raw = "".join(raw)
-            spans[marker] = (raw, raw[1:-1])
+            value = re.sub(r'\\([$`"\\])', r'\1', raw[1:-1]) if quote == '"' else raw[1:-1]
+            spans[marker] = (raw, value)
             out.append(marker)
             word_start = False
             i += 1
             continue
         out.append(ch)
-        word_start = ch.isspace() or ch in ";&|()<>"
+        word_start = ch in " \t\n;&|()<>"
         i += 1
     return "".join(out), spans
+
+
+def prepare_heredocs(cmd, mode):
+    """Separate supported literal heredoc data from executable command headers."""
+    lines, prepared, pending, index = cmd.split("\n"), "", False, 0
+    while index < len(lines):
+        line = lines[index]
+        prepared += line + ("\n" if index + 1 < len(lines) else "")
+        pending = pending or "<<" in line
+        index += 1
+        if not pending:
+            continue
+        scanned = mask_quotes(prepared, incomplete_ok=True)
+        if scanned is None:
+            continue
+        masked, spans = scanned
+        if index < len(lines) and not masked.endswith("\n"):
+            continue  # The command header still has a quoted/continued newline.
+        pending = False
+        operators = list(re.finditer(r"(?<!<)<<(?!<)", masked))
+        if not operators:
+            continue
+        if mode != "no-git-write":
+            block("here-documents are outside inspection; use a file argument or here-string")
+        queue, replacements = [], []
+        for operator in operators:
+            cursor = operator.end()
+            strip_tabs = masked[cursor:cursor + 1] == "-"
+            cursor += int(strip_tabs)
+            while cursor < len(masked) and masked[cursor] in " \t":
+                cursor += 1
+            token = next((marker for marker in spans if masked.startswith(marker, cursor)), None)
+            end = cursor + len(token) if token else cursor
+            if token is None or (end < len(masked) and masked[end] not in " \t\n;&|()<>"):
+                block("heredoc delimiters must be wholly quoted literals such as 'EOF'; expansion-bearing heredocs are unsupported")
+            raw, delimiter = spans[token]
+            if raw[:1] not in {"'", '"'} or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_.-]*", delimiter):
+                block("use a simple quoted heredoc delimiter such as 'EOF'")
+            queue.append((delimiter, strip_tabs))
+            replacements.append((operator.start(), end, "<<< ''"))
+        for delimiter, strip_tabs in queue:
+            while index < len(lines) and (lines[index].lstrip("\t") if strip_tabs else lines[index]) != delimiter:
+                index += 1
+            if index == len(lines):
+                block("unterminated literal heredoc; close its quoted delimiter on a separate line")
+            index += 1
+        for start, end, replacement in reversed(replacements):
+            masked = masked[:start] + replacement + masked[end:]
+        prepared = unmask(masked, spans, keep_quotes=True)
+    return prepared
 
 
 def has_command_substitution(cmd: str) -> bool:
@@ -257,15 +329,38 @@ def has_command_substitution(cmd: str) -> bool:
             quote = "'"
         elif ch == '"':
             quote = None if quote == '"' else '"'
-        elif ch == "`" or cmd.startswith(("$(", "$[", "${("), i):
+        elif ch == "`" or cmd.startswith(("$(", "$[", "${(", "${~", "$~"), i):
             return True
+        elif ch == "$" and re.match(r"\$(?:\{[=#^+]*~|[=^+]*~)", cmd[i:]):
+            return True  # Zsh can combine glob substitution with splitting/array flags.
         elif cmd.startswith("${!", i) and not cmd.startswith("${!}", i):
             return True
         elif cmd.startswith("${", i):
             parameter = cmd[i:]
+            if quote == '"':
+                depth, cursor = 1, i + 2
+                while cursor < len(cmd) and depth:
+                    if cmd[cursor] == "\\":
+                        cursor += 2
+                        continue
+                    if cmd[cursor] == '"':
+                        block("nested quotes inside a double-quoted parameter expansion are unsupported; use a simple scalar or fallback")
+                    if cmd.startswith("${", cursor):
+                        depth += 1
+                        cursor += 2
+                        continue
+                    if cmd[cursor] == "}":
+                        depth -= 1
+                    cursor += 1
+            assignment = re.match(r"\$\{[#=^+]*([A-Za-z_]\w*)(?:\[[^]]*\])?:{0,2}=", parameter)
+            if assignment:
+                check_environment(assignment[1], None)
+            substring = re.match(r"\$\{(?:[A-Za-z_]\w*|[0-9]+|[@*#?$!-])(?:\[[0-9@*]+\])?:(?![-+?=])([^}]*)\}", parameter)
+            if substring and not re.fullmatch(r"\s*-?[0-9]+\s*(?::\s*-?[0-9]+\s*)?", substring[1]):
+                return True  # Bash recursively evaluates substring arithmetic, including variable contents.
             if re.match(r"\$\{[A-Za-z_]\w*(?:\[[^]]*\])?@P\}", parameter):
                 return True  # Bash transformations include prompt evaluation (@P).
-            index = re.match(r"\$\{[A-Za-z_]\w*\[([^]]*)\]", parameter)
+            index = re.match(r"\$\{[#=^+]*[A-Za-z_]\w*\[([^]]*)\]", parameter)
             if index and not re.fullmatch(r"[0-9]+|[@*]", index[1]):
                 return True  # An arithmetic index can recursively evaluate variable contents.
         elif ch == "$":
@@ -310,33 +405,38 @@ def tokenize(masked: str):
 
 
 def split_segments(tokens, redirects):
-    """Return simple commands as token lists; collect (op, target) redirections."""
-    segments, seg = [], []
+    """Return (words, local redirects, stdout pipe) and collect all redirections."""
+    segments, seg, local_redirects = [], [], []
     i = 0
     while i < len(tokens):
         tok = tokens[i]
         if tok in SEPARATORS:
             if seg:
-                segments.append(seg)
-            seg = []
+                segments.append((seg, local_redirects, tok in {"|", "|&"}))
+            seg, local_redirects = [], []
             i += 1
             continue
+        if re.fullmatch(r"[;&|()]+", tok):
+            block("unsupported shell control operator; use separate simple commands")
         if any(ch in tok for ch in "<>") and re.fullmatch(r"[\d&]*[<>]+[&|]?", tok):
             target = tokens[i + 1] if i + 1 < len(tokens) else ""
             if target in ("(",):
                 block("process substitution is not allowed")
             redirects.append((tok, target))
+            local_redirects.append((tok, target))
             i += 2
             continue
         seg.append(tok)
         i += 1
     if seg:
-        segments.append(seg)
+        segments.append((seg, local_redirects, False))
     return segments
 
 
 def check_evidence_path(target):
-    if re.search(r"[$`*?\[\]{}]", target) or not os.path.isabs(target):
+    require_literal(target)
+    require_single_word(target)
+    if not os.path.isabs(target):
         block(f"evidence target '{target}' must be a literal absolute path without shell expansions")
     path = os.path.realpath(target)
     if path == PROJECT_DIR or path.startswith(PROJECT_DIR + os.sep):
@@ -345,10 +445,21 @@ def check_evidence_path(target):
 
 def check_redirects(redirects, spans, mode: str) -> None:
     for op, raw_target in redirects:
-        target = unmask(raw_target, spans)
+        target = ShellWord(unmask(raw_target, spans), *expansion_flags(unmask(raw_target, spans, keep_quotes=True)))
+        kind = op.lstrip("0123456789")
+        if kind == "<<" and mode != "no-git-write":
+            block("here-documents have separate expansion rules; use a file argument or a here-string for inspection")
+        if kind in {"<<", "<<<"}:
+            continue
+        if mode != "no-git-write" and target.startswith(("/dev/tcp/", "/dev/udp/")):
+            block("shell network-device redirections are outside inspection; use an authorized network tool")
         if "<" in op and ">" not in op:
+            if mode != "no-git-write":
+                require_single_word(target)
+                if target.dynamic and not re.match(r"^(?:\./|\.\./|/(?!dev/)[A-Za-z0-9_.-]+/)", target):
+                    block("an expanded input redirect can open a shell network device; use a literal local path or cat with a filename argument")
             continue  # input redirection reads only
-        if op.endswith("&") and re.fullmatch(r"\d+|-", target):
+        if kind in {">&", "<&"} and re.fullmatch(r"\d+|-", target):
             continue  # fd duplication such as 2>&1
         if target == "/dev/null":
             continue
@@ -358,27 +469,95 @@ def check_redirects(redirects, spans, mode: str) -> None:
             check_evidence_path(target)
 
 
-def strip_prefixes(seg, mode):
+def check_environment(key, value, shell_assignment=True):
+    if key.startswith("GIT_") and key not in GIT_SAFE_ENV and not (key == "GIT_PAGER" and value in ("", "cat")):
+        block(f"environment variable {key} can change git behavior; not allowed")
+    if key in DANGEROUS_ENV and (key not in SHELL_ONLY_ENV or shell_assignment):
+        block(f"environment variable {key} may redirect execution; not allowed")
+    if key == "RIPGREP_CONFIG_PATH" and value != "":
+        block("RIPGREP_CONFIG_PATH can load command helpers; use an empty value or plain rg --no-config")
+    if key == "GH_PAGER" and value not in ("", "cat"):
+        block("GH_PAGER can execute helpers; disable it or use cat for terminal inspection")
+
+
+def descriptor_alias(target):
+    """Return an FD, None for a plain path, or 'unknown' when link resolution is exhausted."""
+    directories = {os.path.realpath(path) for path in ("/dev/fd", "/proc/self/fd", "/proc/thread-self/fd")}
+    names = {"/dev/stdin": "0", "/dev/stdout": "1", "/dev/stderr": "2"}
+    path = target
+    for _ in range(40):
+        if path in names:
+            return names[path]
+        parent, name = os.path.split(path)
+        if re.fullmatch(r"[0-9]+", name) and os.path.realpath(parent) in directories:
+            return name.lstrip("0") or "0"
+        if not os.path.islink(path):
+            return None
+        path = os.path.join(parent, os.readlink(path))
+    return "unknown"
+
+
+def safe_stdout(redirects, spans, piped):
+    """Track explicit file/pipe stdout routing; nohup must not invent nohup.out."""
+    safe_fds = {"1": "safe" if piped else "unknown"}
+    for op, raw_target in redirects:
+        kind = op.lstrip("0123456789")
+        prefix = re.match(r"[0-9]*", op)[0]
+        source = (prefix.lstrip("0") or "0") if prefix else ("0" if kind.startswith("<") else "1")
+        target = unmask(raw_target, spans)
+        if kind in {">&", "<&"} and re.fullmatch(r"\d+|-", target):
+            safe_fds[source] = safe_fds.get(target.lstrip("0") or "0", "unknown") if target != "-" else "closed"
+            continue
+        if kind in {"<<", "<<<"}:
+            safe_fds[source] = "safe"  # Literal shell input is a file/pipe, never a terminal.
+            continue
+        dynamic, _ = expansion_flags(unmask(raw_target, spans, keep_quotes=True))
+        alias = descriptor_alias(target) if not dynamic else None
+        if alias is not None:
+            safe_fds[source] = safe_fds.get(alias, "unknown")
+        else:
+            safe = not dynamic and (target == "/dev/null" or (os.path.isabs(target) and
+                   (not os.path.exists(target) or os.path.isfile(target))))
+            safe_fds[source] = "safe" if safe else "unknown"
+        if kind.startswith("&") or (not prefix and kind in {">&", ">>&"}):
+            safe_fds["1"] = safe_fds["2"] = safe_fds[source]
+    # GNU nohup opens nohup.out for terminal stderr when stdout is closed.
+    return safe_fds.get("1") == "safe" or (safe_fds.get("1") == "closed" and
+           safe_fds.get("2") in {"safe", "closed"})
+
+
+def strip_prefixes(seg, mode, stdout_routed=False):
     """Drop env assignments and transparent wrapper programs; return (prog, args)."""
     i = 0
     while i < len(seg):
         tok = seg[i]
-        m = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)=(.*)$", tok)
+        m = re.fullmatch(r"([A-Za-z_][A-Za-z0-9_]*)(\+?)=(.*)", tok, re.S)
         if m:
-            key, value = m.group(1), m.group(2)
-            if key.startswith("GIT_") and key not in GIT_SAFE_ENV and not (key == "GIT_PAGER" and value in ("", "cat")):
-                block(f"environment variable {key} can change git behavior; not allowed")
-            if key in DANGEROUS_ENV:
-                block(f"environment variable {key} may redirect execution; not allowed")
-            if key == "RIPGREP_CONFIG_PATH" and value:
-                block("RIPGREP_CONFIG_PATH can load command helpers; use an empty value or plain rg --no-config")
+            key, append, value = m.groups()
+            check_environment(key, None if append else value)
             i += 1
             continue
         require_literal(tok)
         prog = tok.rsplit("/", 1)[-1].lower()
+        if prog in {"if", "elif", "while", "until", "then", "else", "do", "fi", "done"}:
+            i += 1  # Inspect the literal condition/body as a normal simple command.
+            continue
+        if prog == "repeat":
+            if i + 1 >= len(seg) or not re.fullmatch(r"[0-9]+", seg[i + 1]):
+                block("repeat needs a literal count and an explicit command")
+            i += 2
+            continue
         if prog in ("sudo", "doas"):
             block("privilege escalation is not allowed")
         if prog in WRAPPER_OPTIONS:
+            if prog == "nohup" and mode != "no-git-write" and not stdout_routed:
+                block("nohup can create nohup.out implicitly; route stdout on the nohup command itself to a pipe, /dev/null or an external log; closed stdout also needs explicitly nonterminal stderr")
+            if prog == "exec" and mode != "no-git-write":
+                block("exec replaces the inspection shell; invoke the read-only program directly")
+            if prog == "noglob":
+                for word in seg[i + 1:]:
+                    if word.raw is not None:
+                        word.dynamic, word.may_split = expansion_flags(word.raw, noglob=True)
             i += 1
             switches, valued = WRAPPER_OPTIONS[prog]
             query = False
@@ -408,15 +587,12 @@ def strip_prefixes(seg, mode):
             if prog == "timeout" and i < len(seg) and re.fullmatch(r"(?:\d+(?:\.\d*)?|\.\d+)[smhd]?", seg[i]):
                 i += 1
             if prog == "env":
-                while i < len(seg) and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", seg[i]):
+                while i < len(seg) and "=" in seg[i]:
                     require_single_word(seg[i])
                     key, value = seg[i].split("=", 1)
-                    if key.startswith("GIT_") and key not in GIT_SAFE_ENV and not (key == "GIT_PAGER" and value in ("", "cat")):
-                        block(f"environment variable {key} can change git behavior; not allowed")
-                    if key in DANGEROUS_ENV:
-                        block(f"environment variable {key} may redirect execution; not allowed")
-                    if key == "RIPGREP_CONFIG_PATH" and value:
-                        block("RIPGREP_CONFIG_PATH can load command helpers; use an empty value or plain rg --no-config")
+                    if getattr(seg[i], "dynamic", False) and (not key or re.search(r"[$*?\[{}]", key)):
+                        require_literal(seg[i])
+                    check_environment(key, value, shell_assignment=False)
                     i += 1
             continue
         if prog == "xcrun":
@@ -497,18 +673,33 @@ def ref_listing(sub, args):
     else:
         write_options |= {"--annotate", "--sign", "--local-user", "--file", "--message"}
     forbidden_options = write_options | {"--no-list", "--no-all", "--no-remotes", "--no-show-current"}
+    read_options = REF_FILTERS | {"--list", "--sort", "--format"}
+    if sub == "branch":
+        read_options |= {"--all", "--remotes", "--show-current"}
     i = 0
     while i < len(args):
         arg = args[i]
+        if arg == "--":
+            operands.extend(args[i + 1:])
+            break
         key = arg.split("=", 1)[0]
         if len(key) > 2 and key.startswith("--") and any(option.startswith(key) for option in forbidden_options):
             block(f"mutating or negating git {sub} options, including abbreviations, are not allowed")
+        if key.startswith("--") and len(key) > 2 and key not in read_options:
+            matches = [option for option in read_options if option.startswith(key)]
+            if len(matches) == 1:
+                key = matches[0]
         if arg.startswith("-") and not arg.startswith("--"):
             write_flags = "dDmMcCufe" if sub == "branch" else "dasmFuf"
-            if any(flag in write_flags for flag in arg[1:]):
-                block(f"mutating git {sub} flags are not allowed inside short-option clusters")
-        if key in REF_FILTERS or arg in ("-l", "--list") or (
-                sub == "branch" and arg in ("-a", "--all", "-r", "--remotes", "--show-current")):
+            for flag in arg[1:]:
+                if flag in write_flags:
+                    block(f"mutating git {sub} flags are not allowed inside short-option clusters")
+                if flag == "l" or (sub == "branch" and flag in "ar") or (sub == "tag" and flag == "n"):
+                    listing = True
+                if (sub == "branch" and flag == "t") or (sub == "tag" and flag == "n"):
+                    break  # Remaining characters are an optional tracking value / line count.
+        if key in REF_FILTERS or key in ("-l", "--list") or (
+                sub == "branch" and key in ("-a", "--all", "-r", "--remotes", "--show-current")):
             listing = True
         if key in REF_FILTERS | {"--sort", "--format"} and "=" not in arg:
             i += 1  # This option's value is not a new branch/tag name.
@@ -519,18 +710,25 @@ def ref_listing(sub, args):
 
 
 def option_values(args, short_values="", long_values=(), short_equals=False,
-                  abbreviations=False, single_dash_long=False, terminator=True, short_booleans=()):
+                  abbreviations=False, single_dash_long=False, terminator=True, short_booleans=(),
+                  include_operands=False, options_first=False):
     """Separate options, their attached/separate values and the '--' terminator."""
     i = 0
     while i < len(args):
         arg = args[i]
         if arg == "--" and terminator:
+            if include_operands:
+                for operand in args[i + 1:]:
+                    require_single_word(operand)
+                    yield None, operand
             return
         require_single_word(arg)
         if single_dash_long and arg.startswith("-") and not arg.startswith("--") and len(arg) > 2:
             arg = ShellWord("-" + arg, getattr(arg, "dynamic", False))
         if arg.startswith("--"):
             name, separator, value = arg.partition("=")
+            if separator:
+                value = ShellWord(value, getattr(arg, "dynamic", False), getattr(arg, "may_split", False))
             if getattr(arg, "dynamic", False) and re.search(r"[$*?\[{}]", name):
                 require_literal(arg)
             if abbreviations and name not in long_values:
@@ -544,7 +742,7 @@ def option_values(args, short_values="", long_values=(), short_equals=False,
                 value = args[i] if i < len(args) else None
                 require_single_word(value)
             yield name, value if name in long_values or separator else None
-        elif arg.startswith("-"):
+        elif arg.startswith("-") and arg != "-":
             for position, flag in enumerate(arg[1:], 1):
                 if getattr(arg, "dynamic", False) and flag in "$*?[{":
                     require_literal(arg)
@@ -552,9 +750,9 @@ def option_values(args, short_values="", long_values=(), short_equals=False,
                     yield "-" + flag, arg[position + 2:]
                     break
                 if flag in short_values:
-                    value = arg[position + 1:]
+                    value = ShellWord(arg[position + 1:], getattr(arg, "dynamic", False), getattr(arg, "may_split", False))
                     if short_equals and value.startswith("="):
-                        value = value[1:]  # pflag accepts -X=GET; getopt keeps '=' as data.
+                        value = ShellWord(value[1:], value.dynamic, value.may_split)  # pflag accepts -X=GET.
                     if position == len(arg) - 1:
                         i += 1
                         value = args[i] if i < len(args) else None
@@ -562,6 +760,13 @@ def option_values(args, short_values="", long_values=(), short_equals=False,
                     yield "-" + flag, value
                     break
                 yield "-" + flag, None
+        elif include_operands:
+            yield None, arg
+            if options_first:
+                for operand in args[i + 1:]:
+                    require_single_word(operand)
+                    yield None, operand
+                return
         elif getattr(arg, "dynamic", False) and not arg.startswith(("/", "./", "../")):
             require_literal(arg)
         i += 1
@@ -586,7 +791,7 @@ def check_git(args) -> None:
         values = {"--file", "--blob", "--type", "--default", "--comment"}
     elif sub == "cat-file":
         values = {"--path"}
-    option_args = [name for name, _ in option_values(rest, short_values, values, abbreviations=sub == "config")]
+    option_args = [name for name, _ in option_values(rest, short_values, values, abbreviations=sub in {"config", "branch", "tag"})]
     if sub in GIT_WRITE:
         block(f"'git {sub}' mutates the repository or talks to the remote; subagents never commit, stage, reset, push or fetch. Report the intended change instead")
     if sub == "stash" and (not rest or rest[0] not in ("list", "show")):
@@ -620,9 +825,10 @@ def check_git(args) -> None:
     if any(a in ("--ext-diff", "--textconv", "--open-files-in-pager")
            or a.startswith("--open-files-in-pager=") for a in option_args):
         block("git external diff/text conversion/pager execution is outside read-only inspection")
-    if sub == "cat-file" and any(a.startswith("--") and len(a) > 2 and "--filters".startswith(a)
+    if sub == "cat-file" and any(a.startswith("--") and len(a) > 2 and any(
+                                 flag.startswith(a) for flag in ("--filters", "--textconv"))
                                  for a in option_args):
-        block("git cat-file --filters executes configured smudge filters; inspect the raw blob instead")
+        block("git cat-file filters/textconv options, including abbreviations, execute helpers; inspect the raw blob instead")
     if sub == "grep" and any(a == "-O" or (
             a.startswith("--") and a != "--text" and any(
                 option.startswith(a) for option in ("--open-files-in-pager", "--textconv"))) for a in option_args):
@@ -675,35 +881,26 @@ def check_gh(args) -> None:
 
 
 def check_gradle(args) -> None:
-    list(option_values(args, long_values={"--console", "--warning-mode", "--dependency", "--configuration"}))
-    choices = {"--console": {"plain", "auto", "rich", "verbose"},
-               "--warning-mode": {"all", "fail", "none", "summary"},
-               "--dependency": None, "--configuration": None}
-    i = 0
-    while i < len(args):
-        option = args[i]
-        if option in choices:
-            if i + 1 >= len(args) or args[i + 1].startswith("-") or (
-                    choices[option] is not None and args[i + 1] not in choices[option]):
-                block(f"{option} needs a supported value")
-            args = args[:i] + [option + "=" + args[i + 1]] + args[i + 2:]
-        i += 1
-    for a in args:
-        if a in ("-p", "--project-dir", "-b", "--build-file", "-c", "--settings-file", "--include-build") or re.match(r"^-[pbc].+", a) or a.startswith(("--project-dir=", "--build-file=", "--settings-file=", "--include-build=")):
-            block("Gradle project/build redirects are not allowed; build this repository with its configured inputs")
-        if a.rsplit(":", 1)[-1] == "syncSecureConfigs":
-            block("syncSecureConfigs rewrites tracked configuration; preparation belongs to the main session")
-        if a == "clean" or a.endswith(":clean"):
-            block("'clean' discards build outputs; build the specific target instead")
-        if a.rsplit(":", 1)[-1] in ("build", "assemble", "check", "test"):
-            block(f"aggregate task '{a}' is not allowed; use a scoped target such as :androidApp:assembleDebug or :shared:assembleSharedDebugXCFramework")
-        if a.startswith(("-D", "-P")) and a not in ("-Dorg.gradle.jvmargs", "-Dorg.gradle.workers.max"):
-            block(f"Gradle property '{a}' changes how the build runs; verifiers build with the repository's settings")
-        if a in ("--init-script", "-I", "--rerun-tasks", "--no-build-cache") or a.startswith(("--init-script=", "-I")):
-            block(f"'{a}' changes how the build runs; not allowed for verifiers")
-        if not a.startswith("-") and not re.fullmatch(
-                r"(?::[A-Za-z0-9_.-]+)+:(?:assemble[A-Z][A-Za-z0-9]*|compile[A-Z][A-Za-z0-9]*|ksp[A-Z][A-Za-z0-9]*|tasks|dependencies|dependencyInsight)", a):
-            block(f"task '{a}' is outside scoped build/inspection targets; tests, linters, publishing and other tasks belong to the main session when explicitly authorized")
+    values = {"--console": {"plain", "auto", "rich", "verbose"},
+              "--warning-mode": {"all", "fail", "none", "summary"},
+              "--dependency": None, "--configuration": None,
+              "--max-workers": None, "--priority": {"normal", "low"}}
+    switches = {"--all", "--stacktrace", "--full-stacktrace", "--info", "--debug", "--quiet", "--warn",
+                "--no-daemon", "--daemon", "--offline", "--parallel", "--no-parallel", "--continue",
+                "--dry-run", "--build-cache", "--configuration-cache", "--no-configuration-cache",
+                "--no-watch-fs", "--watch-fs", "--no-scan", "--no-problems-report", "--help", "--version",
+                "-s", "-S", "-i", "-d", "-q", "-w", "-m", "-h", "-v"}
+    for name, value in option_values(args, long_values=values, include_operands=True, terminator=False):
+        if name is None:
+            require_literal(value)
+            if not re.fullmatch(
+                    r"(?::[A-Za-z0-9_.-]+)+:(?:assemble[A-Z][A-Za-z0-9]*|compile[A-Z][A-Za-z0-9]*|ksp[A-Z][A-Za-z0-9]*|tasks|dependencies|dependencyInsight)", value):
+                block("Gradle needs a scoped compile/inspection task; clean, aggregates, tests, publishing and configuration preparation belong to the main session")
+        elif name in values:
+            if value is None or not value or value.startswith("-") or (values[name] is not None and value not in values[name]):
+                block(f"{name} needs a supported value")
+        elif name not in switches or value is not None:
+            block("unsupported Gradle option; use scoped compilation/inspection with repository settings and diagnostic flags")
 
 
 def check_sed(args) -> None:
@@ -745,26 +942,149 @@ def check_sed(args) -> None:
         block("sed expression is outside display ranges and plain substitutions; use rg or separate inspection commands")
 
 
+def check_printf(args):
+    if not args:
+        return
+    index = 1 if args[0] == "--" else 0
+    if index == len(args):
+        return
+    format_word = args[index]
+    require_literal(format_word)
+    if index == 0 and format_word.startswith("-"):
+        block("printf variable assignment/options can change shell execution; use a literal format such as '%s\\n'")
+    conversion = re.compile(
+        r"%(?:(?P<position>[1-9][0-9]*)\$)?[-+ #0']*"
+        r"(?P<width>[0-9]+|\*(?:[1-9][0-9]*\$)?)?"
+        r"(?:\.(?P<precision>[0-9]*|\*(?:[1-9][0-9]*\$)?))?"
+        r"[hlLjzt]*(?P<kind>[%diouxXfFeEgGaAcspbqQn])")
+    numeric_slots, used_slots, styles, cursor, offset = [], [], set(), 0, 0
+
+    def slot(position, numeric):
+        nonlocal cursor
+        styles.add("positional" if position else "sequential")
+        number = int(position) - 1 if position else cursor
+        if not position:
+            cursor += 1
+        used_slots.append(number)
+        if numeric:
+            numeric_slots.append(number)
+
+    while offset < len(format_word):
+        if format_word[offset] != "%":
+            offset += 1
+            continue
+        spec = conversion.match(format_word, offset)
+        if spec is None:
+            block("unsupported printf directive; use portable conversions or '%s' for literal data")
+        if spec["kind"] == "n":
+            block("printf %n assigns shell variables; use '%s' to print data")
+        for dimension in (spec["width"], spec["precision"]):
+            if dimension and dimension.startswith("*"):
+                slot(dimension[1:-1] if dimension.endswith("$") else None, True)
+        if spec["kind"] != "%":
+            slot(spec["position"], spec["kind"] in "diouxXfFeEgGaA")
+        offset = spec.end()
+    if len(styles) > 1:
+        block("mixed positional/sequential printf arguments are not portable; use one argument style")
+    if not numeric_slots:
+        return
+    operands = args[index + 1:]
+    for operand in operands:
+        require_single_word(operand)  # Splitting even a string slot can move data into a numeric slot.
+    stride = max(used_slots) + 1
+    number = re.compile(r"[+-]?(?:[0-9]+(?:\.[0-9]*)?(?:[eE][+-]?[0-9]+)?|"
+                        r"\.[0-9]+(?:[eE][+-]?[0-9]+)?|0[xX][0-9a-fA-F]+(?:\.[0-9a-fA-F]*)?(?:[pP][+-]?[0-9]+)?|"
+                        r"[0-9]+#[0-9a-zA-Z]+)")
+    for base in range(0, len(operands), stride):
+        for position in numeric_slots:
+            if base + position >= len(operands):
+                continue  # Missing printf arguments use inert default values.
+            operand = operands[base + position]
+            if operand.startswith(("'", '\"')):
+                continue  # The shell's character-code convention does not evaluate arithmetic.
+            require_literal(operand)
+            if not number.fullmatch(operand):
+                block("printf numeric arguments can evaluate shell arithmetic; use a literal number or '%s' for data")
+
+
+def check_awk(args):
+    options = list(option_values(args, "Fv", {"--field-separator", "--assign"}, include_operands=True))
+    if any(name is not None and name not in {"-F", "-v", "--field-separator", "--assign"}
+           for name, _ in options):
+        block("awk accepts only -F/-v data options and a literal program; script files, includes and output modes are not inspection")
+    operands = [value for name, value in options if name is None]
+    if not operands:
+        return
+    program = operands[0]
+    require_literal(program)
+    # This is a conservative expression subset, not an AWK lexer: the same
+    # spellings in strings, regexes and comparisons may need rg/sed instead.
+    if re.search(r"\bsystem\b|\bgetline\b", program) or any(symbol in program for symbol in ("@", ">", "|")):
+        block("awk expression is outside the supported subset (system/getline, '@', '>' or '|', including literal spellings); pass data with -v or use rg/sed")
+
+
+def check_date(args):
+    # BSD -I has an optional attached value, never a separate one.
+    normalized = [re.sub(r"^(-[jnRu]*I)(?:date|hours|minutes|seconds|ns)$", r"\1", arg)
+                  if re.fullmatch(r"-[jnRu]*I(?:date|hours|minutes|seconds|ns)", arg) else arg for arg in args]
+    options = list(option_values(normalized, "dfrvz", {"--date", "--file", "--reference", "--rfc-3339"},
+                                 include_operands=True, options_first=True))
+    names = {name for name, _ in options}
+    if "-s" in names or any(name and name.startswith("--") and "--set".startswith(name) for name in names):
+        block("date setter modes change the host clock; use a query or BSD date -j")
+    if "-j" not in names and any(name is None and not value.startswith("+") for name, value in options):
+        block("a supplied BSD date needs -j to avoid setting the host clock; use '+format' for the current time")
+
+
 def check_xcodebuild(args, mode) -> None:
-    values = {"--project", "--workspace", "--scheme", "--configuration", "--sdk", "--destination", "--arch",
-              "--derivedDataPath", "--resultBundlePath", "--resultStreamPath", "--jobs", "--target", "--toolchain", "--xcconfig"}
-    list(option_values(args, long_values=values, single_dash_long=True, terminator=False))
-    for index, arg in enumerate(args):
-        if arg in ("-derivedDataPath", "-resultBundlePath", "-resultStreamPath"):
-            if index + 1 == len(args):
-                block(f"{arg} needs a literal external evidence path")
-            check_evidence_path(args[index + 1])
-    if "clean" in args:
-        block("'xcodebuild clean' discards build outputs; build the specific scheme instead")
-    if any(a in ("archive", "-exportArchive", "-exportLocalizations", "-importLocalizations") for a in args):
-        block("archiving/exporting with xcodebuild is release work, not verification")
-    if any(a in ("test", "test-without-building", "build-for-testing", "install", "installsrc", "installhdrs", "analyze",
-                 "-runFirstLaunch", "-downloadPlatform", "-downloadAllPlatforms", "-downloadComponent",
-                 "-importPlatform", "-importComponent", "-license", "-allowProvisioningUpdates",
-                 "-allowProvisioningDeviceRegistration") for a in args):
-        block("Xcode tests, installation, analysis and tool setup are outside scoped compilation")
-    if mode == "readonly-compile" and "-showdestinations" in args:
-        block("Xcode device destination queries belong to runtime verification")
+    values = {"--project", "--workspace", "--scheme", "--configuration", "--sdk", "--destination",
+              "--arch", "--derivedDataPath", "--resultBundlePath", "--resultStreamPath", "--jobs", "--target", "--toolchain"}
+    outputs = {"--derivedDataPath", "--resultBundlePath", "--resultStreamPath"}
+    switches = {"--quiet", "--verbose", "--json", "--list", "--version", "--showsdks",
+                "--showBuildSettings", "--showdestinations", "--help", "-h"}
+    settings = {"CODE_SIGNING_ALLOWED=NO", "CODE_SIGNING_REQUIRED=NO", "CODE_SIGN_IDENTITY=", "COMPILER_INDEX_STORE_ENABLE=NO"}
+    for name, value in option_values(args, long_values=values, single_dash_long=True,
+                                     include_operands=True, terminator=False):
+        if name is None:
+            require_literal(value)
+            if value != "build" and value not in settings:
+                block("Xcode verification supports build and diagnostic queries; packaging, tests, configuration overrides and setup belong to the main session")
+        elif name in values:
+            if value is None or not value:
+                block(f"{name} needs a value")
+            if name in outputs:
+                check_evidence_path(value)
+        elif name not in switches or value is not None:
+            block("unsupported Xcode option; use the scoped build catalog command or a diagnostic query")
+        elif mode == "readonly-compile" and name == "--showdestinations":
+            block("Xcode device destination queries belong to runtime verification")
+
+
+def check_emulator(args):
+    outputs = {"--datadir", "--data", "--cache", "--sdcard", "--snapstorage", "--tcpdump", "--pidfile"}
+    values = outputs | {"--avd", "--port", "--ports", "--gpu", "--memory", "--cores", "--camera-back", "--camera-front"}
+    queries = {"--list-avds", "--version", "--help"}
+    switches = queries | {"--no-snapshot-load", "--no-snapshot-save", "--no-snapshot", "--no-boot-anim",
+                          "--no-window", "--no-audio", "--read-only", "--verbose", "--no-cache", "--no-snapstorage", "--no-accel"}
+    selected, query = False, False
+    for name, value in option_values(args, long_values=values, single_dash_long=True,
+                                     include_operands=True, terminator=False):
+        if name is None:
+            require_literal(value)
+            if not value.startswith("@") or len(value) == 1:
+                block("emulator needs an explicit -avd name or a supported inspection query")
+            selected = True
+        elif name in values:
+            if value is None or not value:
+                block(f"{name} needs a value")
+            if name in outputs:
+                check_evidence_path(value)
+            selected = selected or name == "--avd"
+        elif name not in switches or value is not None:
+            block("unsupported emulator option; use the selected AVD, standard launch flags and external writable paths")
+        query = query or name in queries
+    if not selected and not query:
+        block("emulator launch needs the selected AVD; inspect -list-avds first")
 
 
 def check_simctl(args, mode) -> None:
@@ -774,16 +1094,28 @@ def check_simctl(args, mode) -> None:
         if args[:1] != ["list"]:
             block("only simulator listing is allowed in read-only mode")
         return
-    if args[:1] in (["erase"], ["delete"]):
-        block("simctl erase/delete destroys simulator state; not allowed")
-    if "booted" in args[:2]:
-        block("simctl actions need the selected simulator identifier, not the ambiguous 'booted' alias")
+    actions = {"list", "help", "boot", "bootstatus", "shutdown", "install", "launch", "terminate",
+               "io", "ui", "spawn", "get_app_container"}
+    if not args or args[0] not in actions:
+        block("simctl needs a supported inspection/runtime action; device-set redirects, resets and credential changes are not verification")
+    if args[0] not in {"list", "help"} and any(arg in {"booted", "all", "unavailable"} for arg in args[1:]):
+        block("simctl actions need the selected simulator identifier; booted/all/unavailable selectors are not allowed")
+    if args[:1] == ["io"] and args[2:3] not in (["screenshot"], ["recordVideo"], ["enumerate"], ["poll"]):
+        block("simctl io is limited to inspection, screenshots and video evidence")
     if args[:1] == ["io"] and args[2:3] in (["screenshot"], ["recordVideo"]):
         check_evidence_path(args[-1])
+    if args[:1] == ["spawn"] and (args[2:3] != ["log"] or args[3:4] not in (["stream"], ["show"])):
+        block("simctl spawn is limited to log stream/show; use simulator controls for the authorized scenario")
+    for index, arg in enumerate(args):
+        name, separator, value = arg.partition("=")
+        if name in {"--stdout", "--stderr", "--output", "-o"}:
+            if not separator:
+                value = args[index + 1] if index + 1 < len(args) else ""
+            check_evidence_path(value)
 
 
 def check_readonly_program(prog, args, mode) -> None:
-    if mode == "readonly-compile" and prog in {"adb", "emulator", "simctl", "xcrun", "kill", "pkill", "open", "sips", "plutil"}:
+    if mode == "readonly-compile" and prog in {"adb", "emulator", "simctl", "open", "sips", "plutil"}:
         block(f"'{prog}' is outside compilation; device work belongs to runtime-verifier")
     if prog in INTERPRETERS:
         block(f"'{prog}' can execute arbitrary code; not allowed in {mode} mode")
@@ -792,6 +1124,21 @@ def check_readonly_program(prog, args, mode) -> None:
         checker = os.path.realpath(os.path.join(PROJECT_DIR, ".claude", "hooks", "check-rulebook.py"))
         if script is None or os.path.realpath(os.path.expanduser(script)) != checker or len(args) != 2:
             block("python3 is allowed only as 'python3 -I .claude/hooks/check-rulebook.py'")
+    if prog == "open":
+        for arg in args:
+            require_literal(arg)
+        if len(args) != 5 or args[:4] != ["-a", "Simulator", "--args", "-CurrentDeviceUDID"] or not re.fullmatch(
+                r"[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}", args[4]):
+            block("open is limited to Simulator with --args -CurrentDeviceUDID <selected UUID>; use device-specific controls for cleanup")
+    if prog == "printf":
+        check_printf(args)
+    if prog == "uniq":
+        options = list(option_values(args, "fsw", {"--skip-fields", "--skip-chars", "--check-chars"},
+                                     abbreviations=True, include_operands=True, options_first=True))
+        if sum(name is None for name, _ in options) > 1:
+            block("uniq's second operand is an output file; use one input or a stdin pipeline")
+    if prog == "date":
+        check_date(args)
     if prog == "rg":
         options = option_values(args, "efgtrmABCMjTdE", {"--regexp", "--file", "--glob", "--iglob", "--encoding",
                                 "--type", "--type-not", "--type-add", "--type-clear", "--replace", "--threads",
@@ -819,29 +1166,42 @@ def check_readonly_program(prog, args, mode) -> None:
             block("unsupported adb selector; use -s emulator-<port> or -e")
         if mode == "readonly-build" and args[:1] != ["devices"] and not selected_emulator:
             block("adb actions need an explicit -s emulator-<port> serial; inspect adb devices first")
+        if mode == "readonly-build":
+            actions = {"devices", "shell", "exec-out", "install", "install-multiple", "logcat", "pull",
+                       "bugreport", "emu", "wait-for-device", "get-state", "get-serialno", "get-devpath"}
+            if not args or args[0] not in actions:
+                block("adb needs an emulator-scoped verification action; global network/server/device administration is not allowed")
+            if args[:1] == ["emu"] and args[1:] not in (["avd", "name"], ["kill"]):
+                block("adb emu is limited to the selected AVD name and shutdown")
+            if args[:1] == ["exec-out"] and args[1:] != ["screencap", "-p"]:
+                block("adb exec-out is limited to screenshot evidence; use a supported shell query or logcat")
+            if args[:1] == ["shell"]:
+                for word in args[1:]:
+                    require_literal(word)
+                    if re.search(r"[\r\n;&|<>`$]", word):
+                        block("adb shell operators and executable expansions are not scenario commands; pass one supported operation")
+                try:
+                    remote = shlex.split(" ".join(args[1:]))
+                except ValueError:
+                    block("adb shell arguments need balanced remote quoting")
+                operation = remote[0] if remote else ""
+                if operation not in {"am", "cmd", "input", "settings", "getprop", "pidof", "dumpsys", "wm", "pm"}:
+                    block("adb shell needs a supported app/device query or scenario operation; nested interpreters and filesystem commands are not allowed")
+                if operation == "am" and remote[1:2] not in (["start"], ["start-activity"], ["force-stop"], ["kill"], ["get-current-user"], ["to-uri"], ["to-intent-uri"]):
+                    block("adb am is limited to app launch, process lifecycle and inspection; instrumentation and administration are not manual scenarios")
+                if operation == "cmd" and remote[1:3] != ["uimode", "night"]:
+                    block("adb cmd is limited to the scenario's night-mode control; use normal app/device controls for other actions")
+                if operation == "pm" and remote[1:2] not in (["list"], ["path"]):
+                    block("adb pm is limited to package inspection; clearing app data and package administration are not verification")
+                if operation == "settings" and remote[1:2] not in (["get"], ["list"]):
+                    writable = {("global", "always_finish_activities"), ("system", "font_scale")}
+                    if remote[1:2] not in (["put"], ["delete"]) or tuple(remote[2:4]) not in writable:
+                        block("adb settings writes are limited to activity recreation and font-scale scenarios; restore the recorded value afterwards")
     if prog == "sed":
         list(option_values(args, "e", {"--expression"}))
         check_sed(args)
     if prog == "awk":
-        list(option_values(args, "Fv", {"--field-separator", "--assign"}))
-        index = 0
-        while index < len(args):
-            arg = args[index]
-            if arg in ("-F", "-v", "--field-separator", "--assign"):
-                index += 2
-                continue
-            if arg == "--":
-                index += 1
-                if index < len(args):
-                    require_literal(args[index])
-                break
-            if not arg.startswith("-"):
-                require_literal(arg)
-                break
-            index += 1
-    if prog == "awk" and any((re.search(r"\bsystem\b|\bgetline\b|@(?:include|load)", a)
-                              or ">" in a or "|" in a or a == "-f" or a.startswith(("-f", "--file"))) for a in args):
-        block("awk with system()/redirection/getline is not allowed")
+        check_awk(args)
     if prog == "sort":
         options = option_values(args, "kSoTt", {"--key", "--buffer-size", "--output", "--temporary-directory",
                                 "--field-separator", "--compress-program", "--batch-size", "--parallel", "--random-source", "--files0-from"}, abbreviations=True)
@@ -864,20 +1224,23 @@ def check_readonly_program(prog, args, mode) -> None:
         if "--nonet" not in names and (names & network_options or any(re.match(r"(?:https?|ftp)://", arg, re.I) for arg in args)):
             block("xmllint URI/entity/schema loading needs --nonet; read-only roles cannot use the network")
     if prog == "find":
-        data_options = {"-f", "-name", "-iname", "-path", "-ipath", "-regex", "-iregex", "-type", "-size",
-                        "-maxdepth", "-mindepth", "-mtime", "-mmin", "-newer", "-user", "-group", "-perm"}
+        data_options = {"-f", "-name", "-iname", "-lname", "-ilname", "-path", "-ipath", "-wholename", "-iwholename",
+                        "-regex", "-iregex", "-type", "-size", "-maxdepth", "-mindepth", "-mtime", "-mmin",
+                        "-atime", "-ctime", "-amin", "-cmin", "-Bmin", "-Btime", "-uid", "-gid", "-inum", "-links", "-flags",
+                        "-newer", "-anewer", "-cnewer", "-mnewer", "-Bnewer", "-samefile", "-xattrname", "-fstype",
+                        "-user", "-group", "-perm"}
         index = 0
         while index < len(args):
             arg = args[index]
             if getattr(arg, "may_split", False) or (getattr(arg, "dynamic", False) and not arg.startswith(("/", "./", "../"))):
                 require_literal(arg)
-            if arg in data_options and index + 1 < len(args):
+            if (arg in data_options or re.fullmatch(r"-newer[aBcm][aBcmt]", arg)) and index + 1 < len(args):
                 index += 1
                 if getattr(args[index], "may_split", False):
                     block("unquoted find values can introduce predicates; quote the data value")
+            elif arg in {"-delete", "-exec", "-execdir", "-ok", "-okdir", "-fprint", "-fprint0", "-fprintf", "-fls"}:
+                block("find execution/deletion/output predicates are not inspection; use a name/path predicate and print results")
             index += 1
-        if any(a in ("-delete", "-exec", "-execdir", "-ok", "-okdir", "-fprint", "-fprint0", "-fprintf", "-fls") for a in args):
-            block("find with -delete/-exec/-fprint is not allowed")
     if prog in FS_MUTATORS:
         if mode == "readonly-build" and prog == "mkdir":
             for a in args:
@@ -907,18 +1270,18 @@ def check_readonly_program(prog, args, mode) -> None:
             elif args[:1] != ["devices"]:
                 block("only 'adb devices' and read-only 'adb shell' queries are allowed")
     if prog == "adb":
-        if args[:1] in (["root"], ["remount"], ["disable-verity"], ["sideload"], ["reboot"]):
-            block(f"'adb {args[0]}' changes the device beyond verification needs; not allowed")
-        if args[:1] == ["shell"] and any(re.match(r"^(rm|su|root|remount|dd|mkfs|reboot)(\s|$)", a) or " rm " in f" {a} " for a in args[1:]):
-            block("adb shell rm/su/root/remount is not allowed")
         if args[:1] == ["pull"]:
             if len(args) != 3 or args[1].startswith("-"):
                 block("adb pull needs one remote source and one explicit scratchpad destination; implicit destinations and option forms are not allowed")
             check_evidence_path(args[-1])
+        if args[:1] == ["bugreport"]:
+            if len(args) != 2:
+                block("adb bugreport needs one explicit external evidence destination")
+            check_evidence_path(args[-1])
     if prog == "simctl":
         check_simctl(args, mode)
-    if prog == "emulator" and any(a in ("-wipe-data", "-delete-temp-dir") for a in args):
-        block("emulator -wipe-data destroys the AVD state; not allowed")
+    if prog == "emulator":
+        check_emulator(args)
     if prog not in READONLY_PROGRAMS and not (mode == "readonly-build" and prog in BUILD_PROGRAMS):
         block(f"'{prog}' is not in the {mode} program set")
 
@@ -944,22 +1307,31 @@ def main() -> None:
     if not cmd.strip():
         sys.exit(0)
 
-    masked, spans = mask_quotes(cmd)
+    masked, spans = mask_quotes(prepare_heredocs(cmd, mode))
     if has_command_substitution(unmask(masked, spans, keep_quotes=True)):
         block("executable or unsupported parameter expansion can hide operations; use literals and simple quoted data")
-    if re.search(r"[<>]\(", masked):
+    for allocation in re.finditer(r"(?:^|[ \t\n;&|()])(\{[^{}\n]*\})(?=[<>])", masked):
+        if unmask(allocation[1], spans, keep_quotes=True) == allocation[1]:
+            block("named file-descriptor allocation is unsupported; use an explicit numeric descriptor or ordinary redirection")
+    if re.search(r"[<>]\(|(?:^|[\s;&|(<>=])=\(", masked):
         block("process substitution is not allowed")
+    if re.search(r"[^ \t\n;&|()<>=]\((?!\))", masked):
+        block("attached shell parentheses or filename qualifiers are unsupported; quote data and use an explicit command")
 
     tokens = tokenize(masked)
     redirects = []
     segments = split_segments(tokens, redirects)
     check_redirects(redirects, spans, mode)
 
-    for seg in segments:
-        seg = [ShellWord(unmask(t, spans), *expansion_flags(unmask(t, spans, keep_quotes=True))) for t in seg]
-        prog, args = strip_prefixes(seg, mode)
+    for seg, local_redirects, piped in segments:
+        seg = [ShellWord(unmask(t, spans), *expansion_flags(unmask(t, spans, keep_quotes=True)),
+                         raw=unmask(t, spans, keep_quotes=True)) for t in seg]
+        prog, args = strip_prefixes(seg, mode, safe_stdout(local_redirects, spans, piped))
         if prog is None:
             continue
+        if prog.startswith("git-"):
+            args = [prog[4:], *args]
+            prog = "git"
         if prog == "git":
             check_git(args)
             continue
@@ -984,4 +1356,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as exc:
+        block(f"could not validate command ({type(exc).__name__}); use a simpler supported command")

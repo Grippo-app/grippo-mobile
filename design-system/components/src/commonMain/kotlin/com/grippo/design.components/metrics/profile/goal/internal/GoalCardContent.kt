@@ -93,8 +93,9 @@ internal fun GoalIdentity(
 }
 
 @Composable
-private fun GoalTrainingAlignment(
+internal fun GoalTrainingAlignment(
     value: GoalProgressState,
+    showDetails: Boolean = false,
 ) {
     val score = value.score?.coerceIn(0, 100)
     val hasPartialEvidence = value.evidence.excludedSetCount > 0 ||
@@ -137,6 +138,14 @@ private fun GoalTrainingAlignment(
                 )
                 GoalStatusLabel(
                     value = value,
+                )
+            }
+            if (showDetails) {
+                Icon(
+                    modifier = Modifier.size(AppTokens.dp.metrics.overview.detailsIcon),
+                    imageVector = AppTokens.icons.ArrowRight,
+                    tint = AppTokens.colors.icon.secondary,
+                    contentDescription = null,
                 )
             }
         }

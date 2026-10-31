@@ -37,8 +37,6 @@ import com.grippo.design.resources.provider.loading
 import com.grippo.home.home.HomeState
 import com.grippo.home.home.HomeUnlock
 
-private const val PERFORMANCE_ROW_COUNT = 2
-
 @Composable
 internal fun HomeSkeleton(
     modifier: Modifier,
@@ -64,6 +62,19 @@ internal fun HomeSkeleton(
             HomeRecapSkeleton(
                 modifier = Modifier.padding(horizontal = horizontalPadding),
             )
+        }
+
+        if (state.hasGoal) {
+            item(key = "current_goal_skeleton") {
+                Column(
+                    modifier = Modifier.padding(horizontal = horizontalPadding),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                ) {
+                    SkeletonText(style = AppTokens.typography.h5())
+                    SkeletonText(style = AppTokens.typography.b12Med())
+                    SkeletonText(style = AppTokens.typography.b12Med())
+                }
+            }
         }
 
         item(key = "highlights_header_skeleton") {
@@ -105,19 +116,16 @@ internal fun HomeSkeleton(
                         )
                     }
                 }
-                SkeletonText(
-                    modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.long),
-                    style = AppTokens.typography.b13Med(),
-                    textMeasurer = textMeasurer,
-                    animated = true,
-                )
             }
         }
 
         if (state.hasGoal) {
             item(key = "goal_progress_skeleton") {
                 HomeGoalSkeleton(
-                    modifier = Modifier.padding(horizontal = horizontalPadding),
+                    modifier = Modifier.padding(
+                        horizontal = horizontalPadding,
+                        vertical = AppTokens.dp.contentPadding.subContent,
+                    ),
                 )
             }
         }
@@ -131,8 +139,11 @@ internal fun HomeSkeleton(
 
         item(key = "training_streak_skeleton") {
             TrainingStreakCardSkeleton(
-                modifier = Modifier.padding(horizontal = horizontalPadding),
-                style = TrainingStreakCardStyle.Overview,
+                modifier = Modifier.padding(
+                    horizontal = horizontalPadding,
+                    vertical = AppTokens.dp.contentPadding.subContent,
+                ),
+                style = TrainingStreakCardStyle.Section,
             )
         }
 
@@ -174,32 +185,28 @@ internal fun HomeSkeleton(
                         style = AppTokens.typography.h4(),
                         textMeasurer = textMeasurer,
                     )
-                    SkeletonText(
-                        modifier = Modifier.fillMaxWidth(AppTokens.dp.skeleton.line.long),
-                        style = AppTokens.typography.b13Med(),
-                        textMeasurer = textMeasurer,
-                    )
                 }
             }
 
             item(key = "performance_duration_skeleton") {
-                HomePerformanceSkeleton(
-                    modifier = Modifier.padding(horizontal = horizontalPadding),
-                    compact = true,
-                )
-            }
-        }
-
-        if (lifetimeTrainingCount != null && HomeUnlock.PerformanceTrends.isUnlocked(lifetimeTrainingCount)) {
-            items(count = PERFORMANCE_ROW_COUNT, key = { "performance_row_skeleton_$it" }) {
                 Row(
                     modifier = Modifier.padding(horizontal = horizontalPadding),
                     horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                 ) {
-                    repeat(2) {
+                    HomePerformanceSkeleton(modifier = Modifier.weight(1f))
+                    if (HomeUnlock.PerformanceTrends.isUnlocked(lifetimeTrainingCount)) {
                         HomePerformanceSkeleton(modifier = Modifier.weight(1f))
                     }
                 }
+            }
+        }
+
+        if (lifetimeTrainingCount != null && HomeUnlock.PerformanceTrends.isUnlocked(lifetimeTrainingCount)) {
+            item(key = "all_indicators_skeleton") {
+                SkeletonBone(
+                    modifier = Modifier.padding(horizontal = horizontalPadding)
+                        .fillMaxWidth().height(AppTokens.dp.button.medium.height),
+                )
             }
         }
     }
@@ -228,27 +235,17 @@ private fun HomeRecapSkeleton(modifier: Modifier) {
 private fun HomeGoalSkeleton(modifier: Modifier) {
     val textMeasurer = rememberTextMeasurer()
     val captionLine = rememberTextHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
-    val goalLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
     val scoreLine = rememberTextHeight(style = AppTokens.typography.h2(), textMeasurer = textMeasurer)
     val criterionLine = rememberTextHeight(style = AppTokens.typography.b13Semi(), textMeasurer = textMeasurer)
-    val periodLine = rememberTextHeight(style = AppTokens.typography.b12Semi(), textMeasurer = textMeasurer)
-    val remainingLine = rememberTextHeight(style = AppTokens.typography.b13Med(), textMeasurer = textMeasurer)
     val textGap = AppTokens.dp.contentPadding.text
     val rowGap = AppTokens.dp.contentPadding.subContent
 
-    val identityHeight = maxOf(
-        AppTokens.dp.goal.markSize,
-        captionLine + textGap + goalLine,
-        AppTokens.dp.metrics.overview.detailsIcon,
-    )
     val alignmentHeight = maxOf(scoreLine, criterionLine + textGap + captionLine) + rowGap + captionLine
-    val calendarHeight = maxOf(AppTokens.dp.metrics.overview.detailsIcon, periodLine, captionLine) + rowGap +
-        remainingLine
 
-    SkeletonPanel(
-        modifier = modifier,
-        contentHeight = identityHeight + alignmentHeight + calendarHeight +
-            AppTokens.dp.divider.thickness * 2 + AppTokens.dp.metrics.panel.large.spacer * 4,
+    SkeletonBone(
+        modifier = modifier.fillMaxWidth().height(
+            alignmentHeight,
+        ),
     )
 }
 
@@ -272,25 +269,15 @@ private fun HomeSpotlightSkeleton(modifier: Modifier) {
 @Composable
 private fun HomePerformanceSkeleton(
     modifier: Modifier,
-    compact: Boolean = false,
 ) {
     val textMeasurer = rememberTextMeasurer()
     val titleLine = rememberTextHeight(style = AppTokens.typography.h5(), textMeasurer = textMeasurer)
     val valueLine = rememberTextHeight(style = AppTokens.typography.h2(), textMeasurer = textMeasurer)
     val captionLine = rememberTextHeight(style = AppTokens.typography.b12Med(), textMeasurer = textMeasurer)
-    val chipLine = rememberTextHeight(style = AppTokens.typography.b11Semi(), textMeasurer = textMeasurer)
-    val deltaLine = rememberTextHeight(style = AppTokens.typography.b13Semi(), textMeasurer = textMeasurer)
     val spacer = AppTokens.dp.metrics.panel.small.spacer
     val summaryHeight = maxOf(titleLine, AppTokens.dp.metrics.overview.detailsIcon) + valueLine + captionLine +
         spacer * 2
-    val contentHeight = if (compact) {
-        summaryHeight
-    } else {
-        val chipHeight = chipLine + AppTokens.dp.metrics.status.verticalPadding * 2
-        summaryHeight + chipHeight + spacer + AppTokens.dp.contentPadding.text + deltaLine
-    }
-
-    SkeletonPanel(modifier = modifier, contentHeight = contentHeight, style = SkeletonPanelStyle.Small)
+    SkeletonPanel(modifier = modifier, contentHeight = summaryHeight, style = SkeletonPanelStyle.Small)
 }
 
 @AppPreview

@@ -6,6 +6,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.formatters.DateRangeFormatState
 import com.grippo.design.components.datetime.PeriodPicker
@@ -13,7 +15,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.progress
+import com.grippo.design.resources.provider.home_selected_period
 import com.grippo.toolkit.date.utils.DateRangeKind
 
 @Composable
@@ -28,8 +30,8 @@ public fun HighlightsHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            modifier = Modifier.weight(1f),
-            text = AppTokens.strings.res(Res.string.progress),
+            modifier = Modifier.weight(1f).semantics { heading() },
+            text = AppTokens.strings.res(Res.string.home_selected_period),
             style = AppTokens.typography.h4(),
             color = AppTokens.colors.text.primary,
             maxLines = 1,

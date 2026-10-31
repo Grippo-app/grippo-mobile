@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -28,6 +29,7 @@ internal enum class MetricSectionPanelStyle {
 internal fun MetricSectionPanel(
     modifier: Modifier = Modifier,
     style: MetricSectionPanelStyle,
+    contained: Boolean = true,
     decorator: (@Composable BoxScope.() -> Unit)? = null,
     overlay: (@Composable BoxScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
@@ -55,9 +57,13 @@ internal fun MetricSectionPanel(
     val shape = RoundedCornerShape(radius)
 
     Box(
-        modifier = modifier
-            .clip(shape)
-            .background(AppTokens.colors.background.card, shape)
+        modifier = if (contained) {
+            modifier
+                .clip(shape)
+                .background(AppTokens.colors.background.card, shape)
+        } else {
+            modifier
+        }
     ) {
         decorator?.invoke(this)
 
@@ -65,8 +71,8 @@ internal fun MetricSectionPanel(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = horizontalPadding,
-                    vertical = verticalPadding
+                    horizontal = if (contained) horizontalPadding else 0.dp,
+                    vertical = if (contained) verticalPadding else 0.dp
                 ),
             verticalArrangement = Arrangement.spacedBy(spacer),
             content = content
